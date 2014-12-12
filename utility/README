@@ -1,0 +1,62 @@
+Use fit_test (same as fit_new but handles correctly a truncated dataset)
+
+fit.C
+-----
+MC 				: From config
+MC method		: Fill or plot
+Data	 		: From file
+Data method		: Fill
+Fill option 	: MC only
+Binomial ratio 	: no
+Bin edges		: bad
+Rescaling		: correct
+Fit error		: Data sigma
+
+fit_new.C
+---------
+MC 				: From config
+MC method		: Fill or plot
+Data	 		: From config
+Data method		: Fill or plot
+Fill option 	: MC and/or data
+Binomial ratio 	: partial
+Bin edges		: correct
+Rescaling		: correct
+Fit error		: Data + MC sigma
+
+fit_bckp.C
+----------
+MC 				: From config
+MC method		: Fill
+Data	 		: From file
+Data method		: Fill
+Fill option 	: None
+Binomial ratio 	: no
+Bin edges		: bad
+Rescaling		: correct
+Fit error		: MC sigma
+
+fit_old.C
+----------
+MC 				: From config
+MC method		: Fill or plot
+Data	 		: From file
+Data method		: Fill
+Fill option 	: MC
+Binomial ratio 	: no
+Bin edges		: bad
+Rescaling		: bad
+Fit error		: MC sigma
+
+fit_test.C
+----------
+MC 				: From config
+MC method		: Fill or plot
+Data	 		: From config
+Data method		: Fill
+Fill option 	: MC
+Binomial ratio 	: no
+Bin edges		: bad
+Rescaling		: bad
+Fit error		: MC sigma
+
