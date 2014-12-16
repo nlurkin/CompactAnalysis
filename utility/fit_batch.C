@@ -72,6 +72,9 @@ void closeMCOutput(TFile *fdo, int index){
 		d2->at(index)->Write();
 		d3->at(index)->Write();
 		dNew->at(index)->Write();
+		dAlpha->at(index)->Write();
+		dBeta->at(index)->Write();
+		dGamma->at(index)->Write();
 
 		fdo->Close();
 
