@@ -4,6 +4,7 @@
 #include <TSystem.h>
 #include <TStyle.h>
 #include <TH1.h>
+#include <TH2D.h>
 #include <TLegend.h>
 #include <THStack.h>
 #include <TCanvas.h>
@@ -16,6 +17,7 @@ Long_t iCanvas = 0;
 
 static vector< vector<TH1D*> > *d1;
 static vector< vector<TH1D*> > *dSig;
+static vector< vector<TH2D*> > *dMap, *dSigMap;
 
 /***************************
  * Mandatory from header
@@ -46,10 +48,18 @@ void closeMCOutput(TFile *fdo, int index){
 			d1->at(index).at(i)->Write();
 		}
 
+		for(unsigned int i=0; i<dMap->at(index).size(); ++i){
+			dMap->at(index).at(i)->Write();
+		}
+
 		fdo->Close();
 
 		for(unsigned int i=0; i<d1->at(index).size(); ++i){
 			d1->at(index).at(i)->SetName(TString::Format("%s%i", d1->at(index).at(i)->GetName(), index));
+		}
+
+		for(unsigned int i=0; i<dMap->at(index).size(); ++i){
+			dMap->at(index).at(i)->SetName(TString::Format("%s%i", dMap->at(index).at(i)->GetName(), index));
 		}
 	}
 }
@@ -62,10 +72,16 @@ void closeDataOutput(TFile *fdo, int index){
 	for(unsigned int i=0; i<dSig->at(index).size(); ++i){
 		dSig->at(index).at(i)->Write();
 	}
+	for(unsigned int i=0; i<dSigMap->at(index).size(); ++i){
+		dSigMap->at(index).at(i)->Write();
+	}
 	fdo->Close();
 
 	for(unsigned int i=0; i<dSig->at(index).size(); ++i){
 		dSig->at(index).at(i)->SetName(TString::Format("%s%i", dSig->at(index).at(i)->GetName(), index));
+	}
+	for(unsigned int i=0; i<dSigMap->at(index).size(); ++i){
+		dSigMap->at(index).at(i)->SetName(TString::Format("%s%i", dSigMap->at(index).at(i)->GetName(), index));
 	}
 }
 
@@ -74,6 +90,12 @@ void closeDataOutput(TFile *fdo, int index){
  *******************************/
 void addHisto(TString name, int index, vector<TH1D*> *v, int bins, double min, double max){
 	TH1D* xxx1 = new TH1D(name, "sample 1", bins,min,max);
+	xxx1->Sumw2();
+	v->push_back(xxx1);
+}
+
+void addHisto(TString name, int index, vector<TH2D*> *v, int binsx, double minx, double maxx, int binsy, double miny, double maxy){
+	TH2D* xxx1 = new TH2D(name, "sample 1", binsx,minx,maxx, binsy,miny,maxy);
 	xxx1->Sumw2();
 	v->push_back(xxx1);
 }
@@ -89,14 +111,25 @@ void getHisto(TFile* fd, TString name, unsigned int index, vector<TH1D*> *v){
 		v->at(index)->Add(xxx, 1.);
 	}
 }
+void getHisto(TFile* fd, TString name, unsigned int index, vector<TH2D*> *v){
+	TH2D* xxx = (TH2D*)fd->Get(name);
+	if(v->size()==index){
+		xxx->SetName(TString::Format("%s%i", name.Data(), index));
+		tempFD->cd();
+		v->push_back((TH2D*)xxx->Clone());
+	}
+	else{
+		v->at(index)->Add(xxx, 1.);
+	}
+}
 
-void addAllHisto(vector<TH1D*> *v, int index){
+void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	tempFD->cd();
 	addHisto("mK", index, v, 100, 0.47, 0.52);
 	addHisto("RDCH", index, v, 100, -75, 75);
 	addHisto("RLKr", index, v, 100, -75, 75);
 	addHisto("Zvtx", index, v, 100, 0, 350000);
-	addHisto("Pt", index, v, 100, 0, 0.05);
+	addHisto("Pt2", index, v, 100, 0, 0.05);
 	addHisto("P", index, v, 100, 68, 80);
 	
 	//Photon
@@ -127,15 +160,18 @@ void addAllHisto(vector<TH1D*> *v, int index){
 	addHisto("pipVtxZ", index, v, 100, -2000, 8000);
 	addHisto("pipCDA", index, v, 100, 0, 10);
 	addHisto("pipEnergy", index, v, 60, 0, 60);
+
+	addHisto("xMap", index, vMap, 1000,0,1, 1000, 0, 1);
 }
 
-void getAllHisto(TFile *fd, vector<TH1D*> *v){
+void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	int i=-1;
+	int iMap=-1;
 	getHisto(fd, "mK", ++i, v);
 	getHisto(fd, "RDCH", ++i, v);
 	getHisto(fd, "RLKr", ++i, v);
 	getHisto(fd, "Zvtx", ++i, v);
-	getHisto(fd, "Pt", ++i, v);
+	getHisto(fd, "Pt2", ++i, v);
 	getHisto(fd, "P", ++i, v);
 	
 	//Photon
@@ -166,11 +202,14 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v){
 	getHisto(fd, "pipVtxZ", ++i, v);
 	getHisto(fd, "pipCDA", ++i, v);
 	getHisto(fd, "pipEnergy", ++i, v);
+
+	getHisto(fd, "xMap", ++iMap, vMap);
 }
 
-void fillHistos(vector<TH1D*> *d, TObject *value, double weight=1.){
+void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, TObject *value, double weight=1.){
 	pi0dEvent *evt = (pi0dEvent*)value;
 	int i=-1;
+	int iMap=-1;
 
 	d->at(++i)->Fill(evt->mK, weight);
 	//d->at(++i)->Fill(evt->, weight);
@@ -179,7 +218,8 @@ void fillHistos(vector<TH1D*> *d, TObject *value, double weight=1.){
 	++i;
 	++i;
 	++i;
-	d->at(++i)->Fill(evt->pTotal.Perp2(), weight);
+	//d->at(++i)->Fill(evt->pTotal.Perp2(), weight);
+	++i;
 	d->at(++i)->Fill(evt->pTotal.Mag(), weight);
 	//Photon
 	d->at(++i)->Fill(evt->gamma->energy, weight);
@@ -227,6 +267,8 @@ void fillHistos(vector<TH1D*> *d, TObject *value, double weight=1.){
 	d->at(++i)->Fill(evt->pip->cda, weight);
 	
 	d->at(++i)->Fill(evt->pip->clusterEnergy, weight);
+
+	vMap->at(++iMap)->Fill(evt->x, evt->xTrue, weight);
 }
 
 /*************************
@@ -239,6 +281,9 @@ void scaleMC(fitStruct N, int index, double br){
 	// Rescale histo
 	for(unsigned int i=0; i<d1->at(0).size(); ++i){
 		scale(d1->at(index).at(i), 1., N.totEvents, br);
+	}
+	for(unsigned int i=0; i<dMap->at(0).size(); ++i){
+		scale(dMap->at(index).at(i), 1., N.totEvents, br);
 	}
 	cout << d1->at(index).at(0)->Integral() << endl;
 }
@@ -263,8 +308,10 @@ void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index){
 	//Create histo
 	if(index == d1->size()){
 		vector<TH1D*> v;
-		addAllHisto(&v, index+1);
+		vector<TH2D*> vMap;
+		addAllHisto(&v, &vMap, index+1);
 		d1->push_back(v);
+		dMap->push_back(vMap);
 	}
 
 	//Read events and fill histo
@@ -274,7 +321,7 @@ void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index){
 		t->GetEntry(i);
 		if(!runIncluded(eventBrch->runNumber)) continue;
 		weight = applyWeights(eventBrch->runNumber);
-		fillHistos(&(d1->at(index)), eventBrch, weight);
+		fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, weight);
 		processedEvents++;
 	}
 
@@ -301,8 +348,10 @@ int getInputDataFill(TFile *fd, TFile* fdout){
 
 	if(dSig->size()==0){
 		vector<TH1D*> v;
-		addAllHisto(&v, 0);
+		vector<TH2D*> vMap;
+		addAllHisto(&v, &vMap, 0);
 		dSig->push_back(v);
+		dSigMap->push_back(vMap);
 	}
 
 	//Read event and fill histo
@@ -312,7 +361,7 @@ int getInputDataFill(TFile *fd, TFile* fdout){
 	for(i=0; i<nevt; i++){
 		t->GetEntry(i);
 		if(!runIncluded(eventBrch->runNumber)) continue;
-		fillHistos(&(dSig->at(0)), eventBrch);
+		fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch);
 		processedEvents++;
 	}
 
@@ -337,11 +386,13 @@ void getInputMCGet(TFile *fd, double br, unsigned int index){
 	//index = d1->size();
 	if(index==d1->size()){
 		vector<TH1D*> v;
-		getAllHisto(fd, &v);
+		vector<TH2D*> vMap;
+		getAllHisto(fd, &v, &vMap);
 		d1->push_back(v);
+		dMap->push_back(vMap);
 	}
 	else{
-		getAllHisto(fd, &d1->at(index));
+		getAllHisto(fd, &d1->at(index), &dMap->at(index));
 	}
 
 	scaleMC(totFit, index, br);
@@ -363,11 +414,13 @@ int getInputDataGet(TFile *fd){
 	unsigned int index=0;
 	if(index == dSig->size()){
 		vector<TH1D*> v;
-		getAllHisto(fd, &v);
+		vector<TH2D*> vMap;
+		getAllHisto(fd, &v, &vMap);
 		dSig->push_back(v);
+		dSigMap->push_back(vMap);
 	}
 	else{
-		getAllHisto(fd, &dSig->at(index));
+		getAllHisto(fd, &dSig->at(index), &dSigMap->at(index));
 	}
 
 	return nsig;
@@ -485,10 +538,7 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 	double factor = ((double)(dSig->at(0).at(index)->Integral()))/totalMC;
 	for(int i=0; i<inputMCNbr; ++i){
 		d1->at(i).at(index)->Scale(factor);
-		cout << d1->at(i).at(index)->Integral() << endl;
 	}
-
-	cout << dSig->at(0).at(index)->Integral() << endl;
 
 	//Stack MC
 	for(unsigned int i=0; i<d1->size();++i){
@@ -502,10 +552,39 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 	dSig->at(0).at(index)->SetLineColor(kRed);
 	if(legendTitle) leg->AddEntry(dSig->at(0).at(index),dataLegendTitle[0].Data(),"lep");
 	
-	d1->at(1).at(index)->Draw();
-	new TCanvas("c2", "c2");
-	dSig->at(0).at(index)->Draw();
 	drawCanvas(name, hStack, dSig->at(0).at(index), leg);
+
+	hStack->Write();
+}
+
+void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
+	tempFD->cd();
+
+	THStack *hStack = new THStack(name, title);
+
+	//Scale MC to Data
+	double totalMC = 0;
+	for(int i=0; i<inputMCNbr; ++i){
+		totalMC += dMap->at(i).at(index)->Integral();
+		dMap->at(i).at(index)->SetFillColor(gStyle->GetColorPalette(colors[i]));
+		if(legendTitle) leg->AddEntry(dMap->at(i).at(index),legendTitle->at(i).Data(),"f");
+	}
+
+
+	double factor = ((double)(dSig->at(0).at(0)->Integral()))/totalMC;
+	for(int i=0; i<inputMCNbr; ++i){
+		dMap->at(i).at(index)->Scale(factor);
+	}
+
+	//Stack MC
+	for(unsigned int i=0; i<dMap->size();++i){
+		hStack->Add(dMap->at(i).at(index));
+		dMap->at(i).at(index)->Write();
+	}
+
+	TCanvas *c1 = new TCanvas(TString::Format("c%li", iCanvas), name);
+	hStack->Draw("HIST");
+	++iCanvas;
 
 	hStack->Write();
 }
@@ -523,7 +602,9 @@ void combine_batch(TString inFile){
 	tempFD = TFile::Open(tempFileName, "RECREATE");
 
 	d1 = new vector< vector<TH1D*> >;
+	dMap = new vector< vector<TH2D*> >;
 	dSig = new vector< vector<TH1D*> >;
+	dSigMap = new vector< vector<TH2D*> >;
 	TLegend *leg = new TLegend(.65,0.6,0.98,0.82);
 	leg->SetHeader("The Legend Title");
 
@@ -547,7 +628,9 @@ void combine_show(TString inFile, int maxPlots){
 	tempFD = TFile::Open(tempFileName, "RECREATE");
 
 	d1 = new vector< vector<TH1D*> >;
+	dMap = new vector< vector<TH2D*> >;
 	dSig = new vector< vector<TH1D*> >;
+	dSigMap = new vector< vector<TH2D*> >;
 	TLegend *leg = new TLegend(.65,0.6,0.98,0.82);
 	leg->SetHeader("The Legend Title");
 
@@ -563,8 +646,8 @@ void combine_show(TString inFile, int maxPlots){
 //	doPlot(1, "RDCH", "DCH Radius", leg, mcColors);
 //	doPlot(2, "RLKr", "LKr radius", leg, mcColors);
 //	doPlot(3, "Zvtx", "Z Vertex", leg, mcColors);
-	doPlot(4, "Pt", "Transverse momentum", leg, mcColors);
-	if(maxPlots--==0) return;
+	//doPlot(4, "Pt", "Transverse momentum", leg, mcColors);
+	//if(maxPlots--==0) return;
 	doPlot(5, "P", "Total momentum", leg, mcColors);
 	if(maxPlots--==0) return;
 
@@ -616,6 +699,9 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot(27, "pipCDA", "Pi+ CDA", leg, mcColors);
 	if(maxPlots--==0) return;
 	doPlot(28, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
+	if(maxPlots--==0) return;
+
+	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);
 	if(maxPlots--==0) return;
 }
 

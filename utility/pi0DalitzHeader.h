@@ -114,7 +114,7 @@ void scaleMC(fitStruct N, int index, double br);
 /************************
  * Utility
  ************************/
-void scale(TH1D *histo, double scaleFactor, double totEvents, double br){
+void scale(TH1 *histo, double scaleFactor, double totEvents, double br){
 	//histo->Scale(br/((double)totEvents/(double)selEvents)/integral);
 	histo->Scale(br/(totEvents*scaleFactor));
 }
