@@ -37,8 +37,8 @@ typedef struct fitResult_t{
 #define BINS 10000
 #define MAX 1
 #define MAXEVENTS 0
-vector<TH1D*> *d1, *d2, *d3, *dSig, *dNew;
-static TH1D *sig, *other,*alphaH, *betaH, *gammaH;
+vector<TH1D*> *d1, *d2, *d3, *dSig, *dNew, *dAlpha, *dBeta, *dGamma;
+static TH1D *sig, *other;
 double Mpi0 = 0.1349766;
 static double bins[BINS];
 static int nbins;
@@ -72,9 +72,6 @@ void closeMCOutput(TFile *fdo, int index){
 		d2->at(index)->Write();
 		d3->at(index)->Write();
 		dNew->at(index)->Write();
-		alphaH->Write();
-		betaH->Write();
-		gammaH->Write();
 
 		fdo->Close();
 
@@ -82,6 +79,9 @@ void closeMCOutput(TFile *fdo, int index){
 		d2->at(index)->SetName(TString::Format("d2_%i", index));
 		d3->at(index)->SetName(TString::Format("d3_%i", index));
 		dNew->at(index)->SetName(TString::Format("dNew_%i", index));
+		dAlpha->at(index)->SetName(TString::Format("dAlpha_%i", index));
+		dBeta->at(index)->SetName(TString::Format("dBeta_%i", index));
+		dGamma->at(index)->SetName(TString::Format("dGamma_%i", index));
 	}
 }
 
@@ -110,6 +110,9 @@ void scaleMC(fitStruct N, int index, double br){
 	scale(d3->at(index), selRatioxx, N.totEvents, br);
 
 	scale(dNew->at(index), 1., N.totEvents, br);
+	scale(dAlpha->at(index), 1., N.totEvents, br);
+	scale(dBeta->at(index), 1., N.totEvents, br);
+	scale(dGamma->at(index), 1., N.totEvents, br);
 }
 
 double getNormalization(double a){
@@ -124,13 +127,10 @@ double getNormalization(double a){
 void rebin(int binNumber=0){
 	if(binNumber==0){
 		sig = (TH1D*)sig->Rebin(20, "sig_reb", 0);
-		cout <<  sig->GetMaximum() << endl;
 		sig->GetXaxis()->SetRange(sig->GetNbinsX()/5, sig->GetNbinsX());
-		cout <<  sig->GetMaximum() << endl;
 		double max = sig->GetMaximum();
-		cout << max << endl;
 		sig->GetXaxis()->SetRange();
-		cout <<  sig->GetMaximum() << endl;
+
 		double s;
 		double sum = 0;
 		double oldSum = 0;
@@ -183,6 +183,9 @@ void rebin(int binNumber=0){
 		d2->at(i) = (TH1D*)d2->at(i)->Rebin(nbins, TString(d2->at(i)->GetName()) + "_reb", bins);
 		d3->at(i) = (TH1D*)d3->at(i)->Rebin(nbins, TString(d3->at(i)->GetName()) + "_reb", bins);
 		dNew->at(i) = (TH1D*)dNew->at(i)->Rebin(nbins, TString(dNew->at(i)->GetName()) + "_reb", bins);
+		dAlpha->at(i)= (TH1D*)dAlpha->at(i)->Rebin(nbins, TString(dAlpha->at(i)->GetName()) + "_reb", bins);
+		dBeta->at(i) = (TH1D*)dBeta->at(i)->Rebin(nbins, TString(dBeta->at(i)->GetName()) + "_reb", bins);
+		dGamma->at(i) = (TH1D*)dGamma->at(i)->Rebin(nbins, TString(dGamma->at(i)->GetName()) + "_reb", bins);
 	}
 
 }
@@ -212,7 +215,6 @@ void minFct(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag){
 	if(par[2]==0) G = getNormalization(par[1]);
 	else G = par[0];
 
-	//printIntegrals(G, par[1]);
 	for(int i=0; i<=sig->GetNbinsX(); ++i){
 		if(sig->GetBinLowEdge(i+1)<0.005) continue;
 		b1 = 0;
@@ -258,58 +260,101 @@ void minFct2(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag)
 void minFctNew(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag){
 	double chi2 = 0.;
 	double M_i, D_i, m_i;
-	double N;
-	double a;
+	double N = par[0];
+	double a = par[1];
 	double a_i, b_i, g_i;
 	double sigma2;
 
 	for(int i=0; i<=sig->GetNbinsX(); ++i){
-		if(sig->GetBinLowEdge(i+1)<0.005) continue;
+		//if(sig->GetBinLowEdge(i+1)<0.005) continue;
 		M_i = 0;
+		a_i = 0;
+		b_i = 0;
+		g_i = 0;
 		for(int j=0; j<inputMCNbr; ++j){
 			M_i += dNew->at(j)->GetBinContent(i);
+			a_i += dAlpha->at(j)->GetBinContent(i);
+			b_i += dBeta->at(j)->GetBinContent(i);
+			g_i += dGamma->at(j)->GetBinContent(i);
 		}
 		D_i = sig->GetBinContent(i);
 
-		a_i = alphaH->GetBinContent(i);
-		b_i = betaH->GetBinContent(i);
-		g_i = gammaH->GetBinContent(i);
-
 		m_i = funNew(N, a, a_i, b_i, g_i);
 
+		//cout << D_i << " " << m_i << " " << sigma2 << endl;
 		sigma2 = D_i*D_i/M_i + D_i;
 		//totSigma = sigma*sigma + sigMC*sigMC;
 		if(D_i!=0) chi2 += pow(D_i-m_i, 2)/sigma2;
-
 	}
 
 	f = chi2;
 }
 
 void minFctROOT(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag){
-	double M_i, D_i, m_i;
-	double N;
-	double a;
-	double a_i, b_i, g_i;
+	double chi2 = 0.;
+	double b1, b2, b3, s;
+	double sigma, sig1, sig2, sig3, totSigma;
+	double G = par[0];
 
 	TH1D comp("comp", "comp", sig->GetNbinsX(), bins);
+	//TH1D sigcomp("sigcomp", "sigcomp", sig->GetNbinsX(), bins);
+
 	for(int i=0; i<=sig->GetNbinsX(); ++i){
-		if(sig->GetBinLowEdge(i+1)<0.005) continue;
+		//if(sig->GetBinLowEdge(i+1)<0.005) continue;
+		b1 = 0;
+		b2 = 0;
+		b3 = 0;
+		for(int j=0; j<inputMCNbr; ++j){
+			b1 += d1->at(j)->GetBinContent(i);
+			b2 += d2->at(j)->GetBinContent(i);
+			b3 += d3->at(j)->GetBinContent(i);
+			sig1 = d1->at(j)->GetBinError(i);
+			sig2 = d2->at(j)->GetBinError(i);
+			sig3 = d3->at(j)->GetBinError(i);
+		}
+		s = sig->GetBinContent(i);
+		sigma = sig->GetBinError(i);
+
+		totSigma = sigma*sigma + sig1*sig1 + sig2*sig2 + sig3*sig3;
+		comp.Fill(sig->GetBinCenter(i), fun(1, par[1], b1,b2,b3));
+		//sigcomp.Fill(sig->GetBinCenter(i), s);
+	}
+
+
+	f = sig->Chi2Test(&comp, "UW CHI2");
+}
+
+void minFctNewROOT(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag){
+	double chi2 = 0.;
+	double M_i, D_i, m_i;
+	double N = par[0];
+	double a = par[1];
+	double a_i, b_i, g_i;
+	double sigma2;
+
+	TH1D comp("comp", "comp", sig->GetNbinsX(), bins);
+
+	for(int i=0; i<=sig->GetNbinsX(); ++i){
+		//if(sig->GetBinLowEdge(i+1)<0.005) continue;
 		M_i = 0;
+		a_i = 0;
+		b_i = 0;
+		g_i = 0;
 		for(int j=0; j<inputMCNbr; ++j){
 			M_i += dNew->at(j)->GetBinContent(i);
+			a_i += dAlpha->at(j)->GetBinContent(i);
+			b_i += dBeta->at(j)->GetBinContent(i);
+			g_i += dGamma->at(j)->GetBinContent(i);
 		}
 		D_i = sig->GetBinContent(i);
 
-		a_i = alphaH->GetBinContent(i);
-		b_i = betaH->GetBinContent(i);
-		g_i = gammaH->GetBinContent(i);
+		m_i = funNew(1, a, a_i, b_i, g_i);
 
-		m_i = funNew(N, a, a_i, b_i, g_i);
 		comp.Fill(sig->GetBinCenter(i), m_i);
+		//cout << D_i << " " << m_i << " " << sigma2 << endl;
 	}
-	comp.Scale(N);
-	f = sig->Chi2Test(&comp, "UW CHI2 P");
+
+	f = sig->Chi2Test(&comp, "UW CHI2");
 }
 
 /***************************
@@ -362,6 +407,15 @@ void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index){
 		TH1D* xxxNew = new TH1D("dNew", "MC", BINS,0,MAX);
 		xxxNew->Sumw2();
 		dNew->push_back(xxxNew);
+		TH1D* xxxAlpha = new TH1D("dAlpha", "MC", BINS,0,MAX);
+		xxxAlpha->Sumw2();
+		dAlpha->push_back(xxxAlpha);
+		TH1D* xxxBeta = new TH1D("dBeta", "MC", BINS,0,MAX);
+		xxxBeta->Sumw2();
+		dBeta->push_back(xxxBeta);
+		TH1D* xxxGamma = new TH1D("dGamma", "MC", BINS,0,MAX);
+		xxxGamma->Sumw2();
+		dGamma->push_back(xxxGamma);
 	}
 
 	//Read events and fill histo
@@ -380,15 +434,15 @@ void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index){
 
 		x = pow(eventBrch->mee/Mpi0,2.);
 		xTrue = eventBrch->xTrue;
-		bweight = 1./(1.+2.*0.032*x+0.032*0.032*x*x);
+		bweight = 1./(1.+2.*0.032*xTrue+0.032*0.032*xTrue*xTrue);
 		mod = eventBrch->timestamp % divider;
 
 		weight = 1.;
 		dNew->at(index)->Fill(x, bweight*weight);
 
-		alphaH->Fill(x, 1/pow(1+0.032*xTrue, 2.));
-		betaH->Fill(x, xTrue/pow(1+0.032*xTrue, 2.));
-		gammaH->Fill(x, pow(xTrue/(1+0.032*xTrue), 2.));
+		dAlpha->at(index)->Fill(x, 1/pow(1+0.032*xTrue, 2.));
+		dBeta->at(index)->Fill(x, xTrue/pow(1+0.032*xTrue, 2.));
+		dGamma->at(index)->Fill(x, pow(xTrue/(1+0.032*xTrue), 2.));
 		if(mod==0 || mod==1 || mod==2){
 			//TODO to check
 			fitBrch.n1++;
@@ -433,7 +487,7 @@ int getInputDataFill(TFile *fd, TFile* fdout){
 
 	//Read event and fill histo
 	int i=0;
-	double x;
+	double x, xTrue;
 	double weight,bweight=1.;
 
 	double a = testA;
@@ -441,8 +495,9 @@ int getInputDataFill(TFile *fd, TFile* fdout){
 	for(i=0; i<NSig; i++){
 		t->GetEntry(i);
 		x = pow(eventBrch->mee/Mpi0,2.);
+		xTrue = eventBrch->xTrue;
 		weight = 1.;//+2.*a*x+a*a*x*x;
-		if(a!=0) bweight = (1.+2.*a*x+a*a*x*x)/(1.+2.*0.032*x+0.032*0.032*x*x);
+		if(a!=0) bweight = (1.+2.*a*xTrue+a*a*xTrue*xTrue)/(1.+2.*0.032*xTrue+0.032*0.032*xTrue*xTrue);
 		dSig->at(index)->Fill(x, weight*bweight);
 	}
 	fitBrch.selEvents += NSig;
@@ -476,14 +531,17 @@ void getInputMCGet(TFile *fd, double br, unsigned int index){
 	d2->push_back((TH1D*)xxx2->Clone());
 	d3->push_back((TH1D*)xxx3->Clone());
 	dNew->push_back((TH1D*)xxx4->Clone());
+	dAlpha->push_back((TH1D*)xxxA->Clone());
+	dBeta->push_back((TH1D*)xxxB->Clone());
+	dGamma->push_back((TH1D*)xxxG->Clone());
 	d1->at(index)->SetName(TString::Format("d1_%i", index));
 	d2->at(index)->SetName(TString::Format("d2_%i", index));
 	d3->at(index)->SetName(TString::Format("d3_%i", index));
 	dNew->at(index)->SetName(TString::Format("dNew_%i", index));
 
-	alphaH->Add(xxxA, 1.);
-	betaH->Add(xxxB, 1.);
-	gammaH->Add(xxxG, 1.);
+	dAlpha->at(index)->SetName(TString::Format("dAlpha_%i", index));
+	dBeta->at(index)->SetName(TString::Format("dBeta_%i", index));
+	dGamma->at(index)->SetName(TString::Format("dGamma_%i", index));
 
 	scaleMC(totFit, index, br);
 }
@@ -626,27 +684,16 @@ void prepareInputHisto(){
 	THStack *stdx = new THStack("stdx", "Stack FFx");
 	THStack *stdxx = new THStack("stdxx", "Stack FFxx");
 	THStack *stdNew = new THStack("stdNew", "Stack FFNew");
+	THStack *stdAlpha = new THStack("stdAlpha", "Stack Alpha");
+	THStack *stdBeta = new THStack("stdBeta", "Stack Beta");
+	THStack *stdGamma = new THStack("stdGamma", "Stack Gamma");
 	TLegend *leg1 = new TLegend(.75,0.6,0.98,0.82);
 	TLegend *legx = new TLegend(.75,0.6,0.98,0.82);
 	TLegend *legxx = new TLegend(.75,0.6,0.98,0.82);
 	TLegend *legNew = new TLegend(.75,0.6,0.98,0.82);
-
-	d1->at(0)->SetLineColor(gStyle->GetColorPalette(mcColors[0*3]));
-	d2->at(0)->SetLineColor(gStyle->GetColorPalette(mcColors[0*3+1]));
-	d3->at(0)->SetLineColor(gStyle->GetColorPalette(mcColors[0*3+2]));
-
-	d1->at(0)->SaveAs("d1.root");
-	d2->at(0)->SaveAs("d2.root");
-	d3->at(0)->SaveAs("d3.root");
-
-	alphaH->SetLineColor(gStyle->GetColorPalette(mcColors[0*3]));
-	betaH->SetLineColor(gStyle->GetColorPalette(mcColors[0*3+1]));
-	gammaH->SetLineColor(gStyle->GetColorPalette(mcColors[0*3+2]));
-
-	alphaH->SaveAs("alpha.root");
-	betaH->SaveAs("beta.root");
-	gammaH->SaveAs("gammma.root");
-
+	TLegend *legAlpha = new TLegend(.75,0.6,0.98,0.82);
+	TLegend *legBeta = new TLegend(.75,0.6,0.98,0.82);
+	TLegend *legGamma = new TLegend(.75,0.6,0.98,0.82);
 
 	//Color histos
 	for(int i=0; i<inputMCNbr; ++i){
@@ -654,14 +701,24 @@ void prepareInputHisto(){
 		d2->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3+1]));
 		d3->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3+2]));
 		dNew->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3]));
+		dAlpha->at(i)->SetLineColor(gStyle->GetColorPalette(mcColors[i*3]));
+		dBeta->at(i)->SetLineColor(gStyle->GetColorPalette(mcColors[i*3+1]));
+		dGamma->at(i)->SetLineColor(gStyle->GetColorPalette(mcColors[i*3+2]));
+
 		std1->Add((TH1D*)d1->at(i)->Clone());
 		stdx->Add((TH1D*)d2->at(i)->Clone());
 		stdxx->Add((TH1D*)d3->at(i)->Clone());
 		stdNew->Add((TH1D*)dNew->at(i)->Clone());
+		stdAlpha->Add((TH1D*)dAlpha->at(i)->Clone());
+		stdBeta->Add((TH1D*)dBeta->at(i)->Clone());
+		stdGamma->Add((TH1D*)dGamma->at(i)->Clone());
 		leg1->AddEntry(d1->at(i), mcLegendTitle[i]);
 		legx->AddEntry(d2->at(i), mcLegendTitle[i]);
 		legxx->AddEntry(d3->at(i), mcLegendTitle[i]);
 		legNew->AddEntry(dNew->at(i), mcLegendTitle[i]);
+		legAlpha->AddEntry(dAlpha->at(i), mcLegendTitle[i]);
+		legBeta->AddEntry(dBeta->at(i), mcLegendTitle[i]);
+		legGamma->AddEntry(dGamma->at(i), mcLegendTitle[i]);
 	}
 	sig->SetLineColor(kRed);
 
@@ -684,16 +741,18 @@ void prepareInputHisto(){
 	sig->DrawClone();
 	stdNew->Draw("HIST");
 	legNew->Draw();
-	c2->SaveAs("cInputsNew.root");
 
 	TCanvas *c3 = new TCanvas("cABG", "Alpha, Beta, gamma", 1600, 800);
 	c3->Divide(2,2);
 	c3->cd(1);
-	alphaH->Draw();
+	stdAlpha->Draw();
+	legAlpha->Draw();
 	c3->cd(2);
-	betaH->Draw();
+	stdBeta->Draw();
+	legBeta->Draw();
 	c3->cd(3);
-	gammaH->Draw();
+	stdGamma->Draw();
+	legGamma->Draw();
 
 }
 
@@ -864,7 +923,56 @@ double procedureROOT(fitResult& result){
 	minuit.mnparm(1, "a", 0.05, 0.001, 0, 0, flag);
 	minuit.mnparm(2, "fix", 1.0, 0, 0, 0, flag);
 	minuit.FixParameter(2);
+	minuit.FixParameter(0);
 	//minuit.FixParameter(0);
+
+	// Chi2: 1.
+	// -logl: 0.5
+	minuit.SetErrorDef(1);
+
+	args[0] = 100000;
+	minuit.mnexcm("MIGRAD", args,1,flag);
+
+	//Get MINUIT results
+	double gWeight, gWeightErr;
+	double a, aErr;
+	double fctMin;
+	double edm, errdef;
+	int nvpar,nparx,icstat;
+
+	minuit.GetParameter(0,gWeight, gWeightErr);
+	minuit.GetParameter(1,a, aErr);
+	minuit.mnstat(fctMin,edm,errdef,nvpar,nparx,icstat);
+
+	cout << fctMin << " " << edm << " " << errdef << " " << nvpar << " "<< nparx << " " << icstat << endl;
+	result.norm= 1;
+	//result.norm = getNormalization(a);
+	result.normErr = 0;
+	result.formFactor = a;
+	result.formFactorErr = aErr;
+	return fctMin;
+}
+
+double procedureNewROOT(fitResult& result){
+	//Initialize MINUIT
+
+	TMinuit minuit(2);
+	int flag;
+	double args[1];
+
+	minuit.SetFCN(minFctNewROOT);
+
+	args[0] = 0;
+	minuit.mnexcm("SET PRINTOUT", args,1,flag);
+	args[0] = 1;
+	minuit.mnexcm("SET ERROR", args,1,flag);
+	args[0] = 1;
+	minuit.mnexcm("SET STRATEGY", args,1,flag);
+	minuit.mnparm(0, "G", 1., 100, 0, 0, flag);
+	minuit.mnparm(1, "a", 0.05, 0.001, 0, 0, flag);
+	minuit.mnparm(2, "fix", 1.0, 0, 0, 0, flag);
+	minuit.FixParameter(2);
+	minuit.FixParameter(0);
 
 	// Chi2: 1.
 	// -logl: 0.5
@@ -918,9 +1026,9 @@ void fit_batch(TString inFile){
 	d3 = new vector<TH1D*>;
 	dNew = new vector<TH1D*>;
 	dSig = new vector<TH1D*>;
-	alphaH = new TH1D("alpha", "alpha", BINS,0,MAX);
-	betaH = new TH1D("beta", "beta", BINS,0,MAX);
-	gammaH = new TH1D("gamma", "gamma", BINS,0,MAX);
+	dAlpha = new vector<TH1D*>;
+	dBeta = new vector<TH1D*>;
+	dGamma = new vector<TH1D*>;
 
 	//sig = new TH1D("sig", "signal sample", BINS,0,MAX);
 
@@ -938,7 +1046,9 @@ double chi2pValue(double chi2, int ndof){
 	double step = 0.0001;
 	double currChi2=0;
 	double integral = 0;
+	//cout << currChi2 << " " << chi2 << endl;
 	while(currChi2<chi2){
+		cout << currChi2 << " " << chi2 << endl;
 		integral+=(1-TMath::Prob(currChi2, ndof))*step;
 		currChi2+=step;
 	}
@@ -988,9 +1098,9 @@ void fit_show(TString inFile){
 	d3 = new vector<TH1D*>;
 	dNew = new vector<TH1D*>;
 	dSig = new vector<TH1D*>;
-	alphaH = new TH1D("alpha", "alpha", BINS,0,MAX);
-	betaH = new TH1D("beta", "beta", BINS,0,MAX);
-	gammaH = new TH1D("gamma", "gamma", BINS,0,MAX);
+	dAlpha = new vector<TH1D*>;
+	dBeta = new vector<TH1D*>;
+	dGamma = new vector<TH1D*>;
 
 	sig = new TH1D("sig", "signal sample", BINS,0,MAX);
 
@@ -999,51 +1109,59 @@ void fit_show(TString inFile){
 
 	readFilesGet();
 
-	rebin(100);
+	rebin(0);
 
 	//Scale MC to Data
 	double totalMC = 0;
 	double totalMCNew = 0;
+	double totalGreek = 0;
 	for(int i=0; i<inputMCNbr; ++i){
 		//TODO to check
 		totalMC += d1->at(i)->Integral();// + d2->at(i)->Integral() + d3->at(i)->Integral();
 		//totalMC += d1->at(i)->Integral() + d2->at(i)->Integral() + d3->at(i)->Integral();
 		totalMCNew += dNew->at(i)->Integral();
+		totalGreek += dAlpha->at(i)->Integral();
 	}
 
 	double factor = ((double)(NSig))/totalMC;
 	double factorNew = ((double)(NSig))/totalMCNew;
+	double factorGreek = ((double)(NSig))/totalGreek;
 	//double factor = nsig/(d1->at(0)->Integral() + d2->at(0)->Integral() + d3->at(0)->Integral());
 	for(int i=0; i<inputMCNbr; ++i){
 		d1->at(i)->Scale(factor);
 		d2->at(i)->Scale(factor);
 		d3->at(i)->Scale(factor);
 		dNew->at(i)->Scale(factorNew);
+		dAlpha->at(i)->Scale(factorGreek);
+		dBeta->at(i)->Scale(factorGreek);
+		dGamma->at(i)->Scale(factorGreek);
 	}
 
 	prepareInputHisto();
 
+	double chi2Prob, chi2pv;
+	double chi2;
+
 	//Fit
-	fitResult result1;
-	double chi2 = procedure1(result1);
-	double chi2Prob = TMath::Prob(chi2, nbins-2);
-	double chi2pv = chi2pValue(chi2, nbins-2);
+	/*fitResult result1;
+	chi2 = procedure1(result1);
+	//double chi2Prob = TMath::Prob(chi2, nbins-2);
+	//double chi2pv = chi2pValue(chi2, nbins-2);
 
 	chi2Profile(result1, "1");
 
-	result1.formFactor = 0.032;
 	drawFitResult(result1, "1");
 
 	cout << "######## Procedure 1 result #########" << endl << "-------------------------------------" << endl;
 	cout << "Global normalization : " << result1.norm << "+-" << result1.normErr << endl;
 	cout << "Slope a : " << result1.formFactor << "+-" << result1.formFactorErr << endl;
-	cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
+	cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;*/
 
 	//Fit
 	/*fitResult resultROOT;
 	chi2 = procedureROOT(resultROOT);
-	chi2Prob = TMath::Prob(chi2, 138);
-	chi2pv = chi2pValue(chi2, 138);
+	//chi2Prob = TMath::Prob(chi2, 138);
+	//chi2pv = chi2pValue(chi2, 138);
 
 	chi2Profile(resultROOT, "ROOT");
 
@@ -1056,21 +1174,36 @@ void fit_show(TString inFile){
 
 	//Fit
 	fitResult resultNew;
-	/*chi2 = procedureNew(resultNew);
-	chi2Prob = TMath::Prob(chi2, 138);
-	chi2pv = chi2pValue(chi2, 138);
+	chi2 = procedureNew(resultNew);
+	//chi2Prob = TMath::Prob(chi2, 138);
+	//chi2pv = chi2pValue(chi2, 138);
 
-	chi2Profile(resultNew, "New");
+	//chi2Profile(resultNew, "New");
 
-	drawFitResult(resultNew, "New");
+	//drawFitResult(resultNew, "New");
 
 	cout << "######## Procedure New result #########" << endl << "-------------------------------------" << endl;
 	cout << "Global normalization : " << resultNew.norm << "+-" << resultNew.normErr << endl;
 	cout << "Slope a : " << resultNew.formFactor << "+-" << resultNew.formFactorErr << endl;
-	cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;*/
+	cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
 
-	tempFD->Close();
-	remove(tempFileName.Data());
+	//Fit
+	fitResult resultNewROOT;
+	chi2 = procedureNewROOT(resultNewROOT);
+	//chi2Prob = TMath::Prob(chi2, 138);
+	//chi2pv = chi2pValue(chi2, 138);
+
+	//chi2Profile(resultNew, "New");
+
+	//drawFitResult(resultNew, "New");
+
+	cout << "######## Procedure New ROOT result #########" << endl << "-------------------------------------" << endl;
+	cout << "Global normalization : " << resultNewROOT.norm << "+-" << resultNewROOT.normErr << endl;
+	cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
+	cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
+
+	//tempFD->Close();
+	//remove(tempFileName.Data());
 }
 
 int main(int argc, char **argv){
