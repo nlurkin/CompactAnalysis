@@ -712,6 +712,7 @@ int nico_pi0DalitzSelect(superBurst *sbur,superCmpEvent *sevt){
 			vCluster[goodClusterID]->energy*fullEvent.pGamma;
 	//Pt
 	pt = fullEvent.pTotal.Perp2(kaonMomentum);
+	fullEvent.pt2 = pt;
 
 	//Mee
 	vMass.push_back(Me);
