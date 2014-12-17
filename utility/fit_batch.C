@@ -129,10 +129,10 @@ double getNormalization(double a){
 
 void rebin(int binNumber=0){
 	if(binNumber==0){
-		sig = (TH1D*)sig->Rebin(20, "sig_reb", 0);
-		sig->GetXaxis()->SetRange(sig->GetNbinsX()/5, sig->GetNbinsX());
+		//sig = (TH1D*)sig->Rebin(20, "sig_reb", 0);
+		//sig->GetXaxis()->SetRange(sig->GetNbinsX()/5, sig->GetNbinsX());
 		double max = sig->GetMaximum();
-		sig->GetXaxis()->SetRange();
+		//sig->GetXaxis()->SetRange();
 
 		double s;
 		double sum = 0;
@@ -140,11 +140,12 @@ void rebin(int binNumber=0){
 		int j = 0;
 		double var = 0.01;
 
-		for(int i=0; i<sig->GetNbinsX()/5; i++){
-			bins[j] = sig->GetBinLowEdge(i+1);
-			++j;
-		}
-		for(int i=sig->GetNbinsX()/5; i<=sig->GetNbinsX(); ++i){
+		//for(int i=0; i<sig->GetNbinsX()/5; i++){
+		//	bins[j] = sig->GetBinLowEdge(i+1);
+		//	++j;
+		//}
+		//for(int i=sig->GetNbinsX()/5; i<=sig->GetNbinsX(); ++i){
+		for(int i=0; i<=sig->GetNbinsX(); ++i){
 			s = sig->GetBinContent(i);
 			oldSum = sum;
 			sum += s;
@@ -525,9 +526,9 @@ void getInputMCGet(TFile *fd, double br, unsigned int index){
 	TH1D* xxx2 = (TH1D*)fd->Get("d2");
 	TH1D* xxx3 = (TH1D*)fd->Get("d3");
 	TH1D* xxx4 = (TH1D*)fd->Get("dNew");
-	TH1D* xxxA = (TH1D*)fd->Get("alpha");
-	TH1D* xxxB = (TH1D*)fd->Get("beta");
-	TH1D* xxxG = (TH1D*)fd->Get("gamma");
+	TH1D* xxxA = (TH1D*)fd->Get("dAlpha");
+	TH1D* xxxB = (TH1D*)fd->Get("dBeta");
+	TH1D* xxxG = (TH1D*)fd->Get("dGamma");
 
 	tempFD->cd();
 	d1->push_back((TH1D*)xxx1->Clone());
@@ -583,6 +584,24 @@ TH1D* buildRatio(double G, double a, TString proc){
 		sum->Add(d1->at(i), 1.);
 		sum->Add(d2->at(i), G*2.*a);
 		sum->Add(d3->at(i), G*a*a);
+	}
+	sum->SetFillColor(8);
+
+	sum->Sumw2();
+	r->Sumw2();
+	r->Divide(sig, sum, 1, 1, "B");
+	delete sum;
+	return r;
+}
+
+TH1D* buildRatioNew(double G, double a, TString proc){
+	TH1D* sum = new TH1D("sum", "sum", nbins, bins);
+	TH1D* r = new TH1D(TString::Format("ratio%s", proc.Data()), TString::Format("ratio%s", proc.Data()), nbins, bins);
+
+	for(int i=0; i<inputMCNbr; ++i){
+		sum->Add(dAlpha->at(i), 1.);
+		sum->Add(dBeta->at(i), G*2.*a);
+		sum->Add(dGamma->at(i), G*a*a);
 	}
 	sum->SetFillColor(8);
 
@@ -659,24 +678,39 @@ void drawFitNew(const fitResult& result, TString proc){
 	double a = result.formFactor;
 
 	for(int i=0; i<inputMCNbr; ++i){
-		TH1D *dNew_c = (TH1D*)dNew->at(i)->Clone(TString::Format("dNew_c%s%i", proc.Data(), i));
-		leg->AddEntry(dNew_c, TString::Format("%s FF=x^{2}", mcLegendTitle[i].Data()));
-		dNew_c->Scale(gWeight*a*a);
-		stack->Add(dNew_c);
+		//TH1D *dNew_c = (TH1D*)dNew->at(i)->Clone(TString::Format("dNew_c%s%i", proc.Data(), i));
+		//leg->AddEntry(dNew_c, TString::Format("%s FF=x^{2}", mcLegendTitle[i].Data()));
+		//dNew_c->Scale(gWeight*a*a);
+		//stack->Add(dNew_c);
+		TH1D *dAlpha_c = (TH1D*)dAlpha->at(i)->Clone(TString::Format("dAlpha_c%s%i", proc.Data(), i));
+		leg->AddEntry(dAlpha_c, TString::Format("%s #alpha", mcLegendTitle[i].Data()));
+		dAlpha_c->Scale(gWeight);
+		stack->Add(dAlpha_c);
+		TH1D *dBeta_c = (TH1D*)dBeta->at(i)->Clone(TString::Format("dBeta_c%s%i", proc.Data(), i));
+		leg->AddEntry(dBeta_c, TString::Format("%s #beta", mcLegendTitle[i].Data()));
+		dBeta_c->Scale(gWeight*2.*a);
+		stack->Add(dBeta_c);
+		TH1D *dGamma_c = (TH1D*)dGamma->at(i)->Clone(TString::Format("dGamma_c%s%i", proc.Data(), i));
+		leg->AddEntry(dGamma_c, TString::Format("%s #gamma", mcLegendTitle[i].Data()));
+		dGamma_c->Scale(gWeight*a*a);
+		stack->Add(dGamma_c);
 	}
 
-	TH1D* ratio = buildRatio(gWeight,a, proc);
-	TF1 f("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0.01, 0.14);
+	TH1D* ratio = buildRatioNew(gWeight,a, proc);
+	TF1 f("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0., 1.);
 	f.SetLineColor(kRed);
 	c2->Divide(1,2);
 	c2->cd(1);
+	//sig->DrawClone("S E P");
 	stack->Draw("HIST");
 	sig->DrawClone("SAMES E P");
 	leg->Draw();
+	c2->cd(1)->SetLogx(true);
 	c2->cd(1)->SetLogy(true);
 	c2->cd(1)->SetGrid();
 	fitR->Draw();
 	c2->cd(2);
+	c2->cd(2)->SetLogx(true);
 	ratio->Fit("f", "R");
 	ratio->Draw("E P");
 	c2->cd(2)->SetGrid();
@@ -704,9 +738,9 @@ void prepareInputHisto(){
 		d2->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3+1]));
 		d3->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3+2]));
 		dNew->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3]));
-		dAlpha->at(i)->SetLineColor(gStyle->GetColorPalette(mcColors[i*3]));
-		dBeta->at(i)->SetLineColor(gStyle->GetColorPalette(mcColors[i*3+1]));
-		dGamma->at(i)->SetLineColor(gStyle->GetColorPalette(mcColors[i*3+2]));
+		dAlpha->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3]));
+		dBeta->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3+1]));
+		dGamma->at(i)->SetFillColor(gStyle->GetColorPalette(mcColors[i*3+2]));
 
 		std1->Add((TH1D*)d1->at(i)->Clone());
 		stdx->Add((TH1D*)d2->at(i)->Clone());
@@ -748,13 +782,13 @@ void prepareInputHisto(){
 	TCanvas *c3 = new TCanvas("cABG", "Alpha, Beta, gamma", 1600, 800);
 	c3->Divide(2,2);
 	c3->cd(1);
-	stdAlpha->Draw();
+	stdAlpha->Draw("HIST");
 	legAlpha->Draw();
 	c3->cd(2);
-	stdBeta->Draw();
+	stdBeta->Draw("HIST");
 	legBeta->Draw();
 	c3->cd(3);
-	stdGamma->Draw();
+	stdGamma->Draw("HIST");
 	legGamma->Draw();
 
 }
@@ -1183,7 +1217,7 @@ void fit_show(TString inFile){
 
 	//chi2Profile(resultNew, "New");
 
-	//drawFitResult(resultNew, "New");
+	drawFitNew(resultNew, "New");
 
 	cout << "######## Procedure New result #########" << endl << "-------------------------------------" << endl;
 	cout << "Global normalization : " << resultNew.norm << "+-" << resultNew.normErr << endl;

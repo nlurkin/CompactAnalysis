@@ -643,7 +643,7 @@ void combine_show(TString inFile, int maxPlots){
 	readFilesGet();
 
 	tempFD->cd();
-	/*doPlot(0, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
+	doPlot(0, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
 //	doPlot(1, "RDCH", "DCH Radius", leg, mcColors);
 //	doPlot(2, "RLKr", "LKr radius", leg, mcColors);
@@ -702,7 +702,7 @@ void combine_show(TString inFile, int maxPlots){
 	if(maxPlots--==0) return;
 	doPlot(28, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
 	if(maxPlots--==0) return;
-	*/
+
 	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);
 	if(maxPlots--==0) return;
 }
