@@ -268,7 +268,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, TObject *value, double we
 	
 	d->at(++i)->Fill(evt->pip->clusterEnergy, weight);
 
-	vMap->at(++iMap)->Fill(evt->x, evt->xTrue, weight);
+	vMap->at(++iMap)->Fill(evt->xTrue, evt->x, weight);
 }
 
 /*************************
@@ -462,13 +462,13 @@ void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* r
 	double binsY = data->GetYaxis()->GetNbins();
 
 	TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
-	pad1->SetBottomMargin(0); // Upper and lower plot are joined
+	pad1->SetBottomMargin(3);
 	pad1->SetGrid();
 	pad1->Draw();             // Draw the upper pad: pad1
 	pad1->cd();               // pad1 becomes the current pad
 	mc->Draw("HIST");               // Draw h1
 	data->Draw("SAME E P");         // Draw h2 on top of h1
-	mc->GetYaxis()->SetLabelSize(0.05);
+	//mc->GetYaxis()->SetLabelSize(0.05);
 	leg->Draw();
 
 
@@ -481,8 +481,8 @@ void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* r
 	pad2->cd();
 	ratio->SetStats(0);      // No statistics on lower plot
 	ratio->Draw("ep");
-	ratio->GetYaxis()->SetLabelSize(0.05);
 	ratio->SetMarkerColor(kRed);
+	ratio->GetYaxis()->SetRangeUser(0.5, 1.5);
 
 	// Y axis mc plot settings
 	mc->GetYaxis()->SetTitleSize(20);
@@ -560,7 +560,9 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
 	tempFD->cd();
 
-	THStack *hStack = new THStack(name, title);
+	TH2D *temp = (TH2D*)dMap->at(0).at(index)->Clone(name);
+	temp->SetTitle(title);
+	temp->Clear();
 
 	//Scale MC to Data
 	double totalMC = 0;
@@ -578,15 +580,16 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 
 	//Stack MC
 	for(unsigned int i=0; i<dMap->size();++i){
-		hStack->Add(dMap->at(i).at(index));
+		//hStack->Add(dMap->at(i).at(index));
+		temp->Add(dMap->at(i).at(index), 1);
 		dMap->at(i).at(index)->Write();
 	}
 
 	TCanvas *c1 = new TCanvas(TString::Format("c%li", iCanvas), name);
-	hStack->Draw("HIST");
+	temp->Draw("COLZ");
 	++iCanvas;
 
-	hStack->Write();
+	temp->Write();
 }
 
 /*****************************
@@ -640,8 +643,7 @@ void combine_show(TString inFile, int maxPlots){
 	readFilesGet();
 
 	tempFD->cd();
-	doPlot(0, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
-	cout << maxPlots << endl;
+	/*doPlot(0, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
 //	doPlot(1, "RDCH", "DCH Radius", leg, mcColors);
 //	doPlot(2, "RLKr", "LKr radius", leg, mcColors);
@@ -700,7 +702,7 @@ void combine_show(TString inFile, int maxPlots){
 	if(maxPlots--==0) return;
 	doPlot(28, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
 	if(maxPlots--==0) return;
-
+	*/
 	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);
 	if(maxPlots--==0) return;
 }
