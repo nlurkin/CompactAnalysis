@@ -291,141 +291,142 @@ void scaleMC(fitStruct N, int index, double br){
 /***************************
  * Input
  ****************************/
-void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index){
+namespace Input{
+	void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index){
 
-	//Get the TTree
-	//Input
-	pi0dEvent *eventBrch = new pi0dEvent();
-	TTree *t = (TTree*)fd->Get("event");
-	t->SetBranchAddress("pi0dEvent", &eventBrch);
+		//Get the TTree
+		//Input
+		pi0dEvent *eventBrch = new pi0dEvent();
+		TTree *t = (TTree*)fd->Get("event");
+		t->SetBranchAddress("pi0dEvent", &eventBrch);
 
-	//Set event nb
-	int nevt = t->GetEntries();
-	int totalChanEvents = ((TH1D*)fd->Get("Cuts"))->GetEntries();
-	int processedEvents = 0;
-	nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
+		//Set event nb
+		int nevt = t->GetEntries();
+		int totalChanEvents = ((TH1D*)fd->Get("Cuts"))->GetEntries();
+		int processedEvents = 0;
+		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
 
-	//Create histo
-	if(index == d1->size()){
-		vector<TH1D*> v;
-		vector<TH2D*> vMap;
-		addAllHisto(&v, &vMap, index+1);
-		d1->push_back(v);
-		dMap->push_back(vMap);
+		//Create histo
+		if(index == d1->size()){
+			vector<TH1D*> v;
+			vector<TH2D*> vMap;
+			addAllHisto(&v, &vMap, index+1);
+			d1->push_back(v);
+			dMap->push_back(vMap);
+		}
+
+		//Read events and fill histo
+		cout << "Filling " << nevt << endl;
+		double weight = 1.;
+		for(int i=0; i<nevt; ++i){
+			t->GetEntry(i);
+			if(!runIncluded(eventBrch->runNumber)) continue;
+			weight = applyWeights(eventBrch->runNumber);
+			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, weight);
+			processedEvents++;
+		}
+
+		if(processedEvents != t->GetEntries()){
+			double ratio = (double)processedEvents/(double)nevt;
+			totalChanEvents = totalChanEvents*ratio;
+		}
+		fitBrch.totEvents += totalChanEvents;
+		fitBrch.selEvents += nevt;
+
+		//scaleMC(nevt, totalChanEvents, index, br);
 	}
 
-	//Read events and fill histo
-	cout << "Filling " << nevt << endl;
-	double weight = 1.;
-	for(int i=0; i<nevt; ++i){
-		t->GetEntry(i);
-		if(!runIncluded(eventBrch->runNumber)) continue;
-		weight = applyWeights(eventBrch->runNumber);
-		fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, weight);
-		processedEvents++;
+	int getInputDataFill(TFile *fd, TFile* fdout){
+		//Input
+		pi0dEvent *eventBrch = new pi0dEvent();
+		TTree *t = (TTree*)fd->Get("event");
+		t->SetBranchAddress("pi0dEvent", &eventBrch);
+
+		// Set Number of events
+		int nevt = t->GetEntries();
+		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
+		int processedEvents = 0;
+
+		if(dSig->size()==0){
+			vector<TH1D*> v;
+			vector<TH2D*> vMap;
+			addAllHisto(&v, &vMap, 0);
+			dSig->push_back(v);
+			dSigMap->push_back(vMap);
+		}
+
+		//Read event and fill histo
+		int i=0;
+
+		cout << "Filling data " << nevt << endl;
+		for(i=0; i<nevt; i++){
+			t->GetEntry(i);
+			if(!runIncluded(eventBrch->runNumber)) continue;
+			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch);
+			processedEvents++;
+		}
+
+		fitBrch.selEvents += processedEvents;
+
+		return processedEvents;
 	}
 
-	if(processedEvents != t->GetEntries()){
-		double ratio = (double)processedEvents/(double)nevt;
-		totalChanEvents = totalChanEvents*ratio;
-	}
-	fitBrch.totEvents += totalChanEvents;
-	fitBrch.selEvents += nevt;
+	void getInputMCGet(TFile *fd, double br, unsigned int index){
+		fitStruct fitBrch, totFit;
+		TTree *t = (TTree*)fd->Get("fitStruct");
+		t->SetBranchAddress("fitStruct", &fitBrch);
 
-	//scaleMC(nevt, totalChanEvents, index, br);
+		initFitStruct(totFit);
+		sumTreeFitStruct(fitBrch, t, totFit);
+
+		//Set event nb
+		//int nevt = totFit.selEvents;
+		//int totalChanEvents = totFit.totEvents;
+
+		//Create histo
+		//index = d1->size();
+		if(index==d1->size()){
+			vector<TH1D*> v;
+			vector<TH2D*> vMap;
+			getAllHisto(fd, &v, &vMap);
+			d1->push_back(v);
+			dMap->push_back(vMap);
+		}
+		else{
+			getAllHisto(fd, &d1->at(index), &dMap->at(index));
+		}
+
+		scaleMC(totFit, index, br);
+	}
+
+	int getInputDataGet(TFile *fd){
+		fitStruct fitBrch, totFit;
+		TTree *t = (TTree*)fd->Get("fitStruct");
+		t->SetBranchAddress("fitStruct", &fitBrch);
+
+		initFitStruct(totFit);
+		sumTreeFitStruct(fitBrch, t, totFit);
+
+		//Set event nb
+		int nsig = totFit.selEvents;
+
+		//Create histo
+		//int index = dSig->size();
+		unsigned int index=0;
+		if(index == dSig->size()){
+			vector<TH1D*> v;
+			vector<TH2D*> vMap;
+			getAllHisto(fd, &v, &vMap);
+			dSig->push_back(v);
+			dSigMap->push_back(vMap);
+		}
+		else{
+			getAllHisto(fd, &dSig->at(index), &dSigMap->at(index));
+		}
+
+		return nsig;
+	}
 }
-
-int getInputDataFill(TFile *fd, TFile* fdout){
-	//Input
-	pi0dEvent *eventBrch = new pi0dEvent();
-	TTree *t = (TTree*)fd->Get("event");
-	t->SetBranchAddress("pi0dEvent", &eventBrch);
-
-	// Set Number of events
-	int nevt = t->GetEntries();
-	nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
-	int processedEvents = 0;
-
-	if(dSig->size()==0){
-		vector<TH1D*> v;
-		vector<TH2D*> vMap;
-		addAllHisto(&v, &vMap, 0);
-		dSig->push_back(v);
-		dSigMap->push_back(vMap);
-	}
-
-	//Read event and fill histo
-	int i=0;
-
-	cout << "Filling data " << nevt << endl;
-	for(i=0; i<nevt; i++){
-		t->GetEntry(i);
-		if(!runIncluded(eventBrch->runNumber)) continue;
-		fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch);
-		processedEvents++;
-	}
-
-	fitBrch.selEvents += processedEvents;
-
-	return processedEvents;
-}
-
-void getInputMCGet(TFile *fd, double br, unsigned int index){
-	fitStruct fitBrch, totFit;
-	TTree *t = (TTree*)fd->Get("fitStruct");
-	t->SetBranchAddress("fitStruct", &fitBrch);
-
-	initFitStruct(totFit);
-	sumTreeFitStruct(fitBrch, t, totFit);
-
-	//Set event nb
-	int nevt = totFit.selEvents;
-	int totalChanEvents = totFit.totEvents;
-
-	//Create histo
-	//index = d1->size();
-	if(index==d1->size()){
-		vector<TH1D*> v;
-		vector<TH2D*> vMap;
-		getAllHisto(fd, &v, &vMap);
-		d1->push_back(v);
-		dMap->push_back(vMap);
-	}
-	else{
-		getAllHisto(fd, &d1->at(index), &dMap->at(index));
-	}
-
-	scaleMC(totFit, index, br);
-}
-
-int getInputDataGet(TFile *fd){
-	fitStruct fitBrch, totFit;
-	TTree *t = (TTree*)fd->Get("fitStruct");
-	t->SetBranchAddress("fitStruct", &fitBrch);
-
-	initFitStruct(totFit);
-	sumTreeFitStruct(fitBrch, t, totFit);
-
-	//Set event nb
-	int nsig = totFit.selEvents;
-
-	//Create histo
-	//int index = dSig->size();
-	unsigned int index=0;
-	if(index == dSig->size()){
-		vector<TH1D*> v;
-		vector<TH2D*> vMap;
-		getAllHisto(fd, &v, &vMap);
-		dSig->push_back(v);
-		dSigMap->push_back(vMap);
-	}
-	else{
-		getAllHisto(fd, &dSig->at(index), &dSigMap->at(index));
-	}
-
-	return nsig;
-}
-
 /************************
  * Real job
  ************************/
@@ -454,12 +455,12 @@ TH1D* buildRatio(THStack* stack, TH1D* data, TString name){
 }
 
 void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* ratio){
-	double minx = data->GetXaxis()->GetXmin();
-	double maxx = data->GetXaxis()->GetXmax();
-	double binsX = data->GetXaxis()->GetNbins();
-	double miny = data->GetMinimum();
-	double maxy = data->GetMaximum();
-	double binsY = data->GetYaxis()->GetNbins();
+	//double minx = data->GetXaxis()->GetXmin();
+	//double maxx = data->GetXaxis()->GetXmax();
+	//double binsX = data->GetXaxis()->GetNbins();
+	//double miny = data->GetMinimum();
+	//double maxy = data->GetMaximum();
+	//double binsY = data->GetYaxis()->GetNbins();
 
 	TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
 	pad1->SetBottomMargin(3);
@@ -585,7 +586,7 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	TCanvas *c1 = new TCanvas(TString::Format("c%li", iCanvas), name);
+	new TCanvas(TString::Format("c%li", iCanvas), name);
 	temp->Draw("COLZ");
 	++iCanvas;
 

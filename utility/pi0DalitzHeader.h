@@ -103,12 +103,15 @@ void sighandler(int sig)
 void closeMCOutput(TFile *fdo, int index);
 void closeDataOutput(TFile *fdo, int index);
 void initNewOutput(TFile **fdo, TString fileName);
-void getInputMCFill(TFile *fd, TFile *fdo, double br, unsigned int index);
-int getInputDataFill(TFile *fd, TFile *fdo);
+
+namespace Input{
+	void getInputMCFill(TFile *fd, TFile *fdo, double br, unsigned int index);
+	int getInputDataFill(TFile *fd, TFile *fdo);
+	void getInputMCGet(TFile *fd, double br, unsigned int index);
+	int getInputDataGet(TFile *fd);
+}
 
 void initNewChannel();
-void getInputMCGet(TFile *fd, double br, unsigned int index);
-int getInputDataGet(TFile *fd);
 void scaleMC(fitStruct N, int index, double br);
 
 /************************
@@ -225,7 +228,7 @@ void readFilesFill(){
 
 		//Request the TTree reading function
 		cout << prevIndex << " " << brs[prevIndex] << " " << prevIndex << endl;
-		getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+		Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
 
 		//Close the input file
 		ffd->Close();
@@ -247,7 +250,7 @@ void readFilesFill(){
 		ffd = TFile::Open(dataFileNames[i]);
 
 		//Request the TTree reading function
-		getInputDataFill(ffd, fdo);
+		Input::getInputDataFill(ffd, fdo);
 
 		//Close input file
 		ffd->Close();
@@ -285,7 +288,7 @@ void readFilesGet(){
 		ffd = TFile::Open(mcOutputFiles[i]);
 
 		//Request the Histo reading function
-		getInputMCGet(ffd, brs[prevIndex], prevIndex);
+		Input::getInputMCGet(ffd, brs[prevIndex], prevIndex);
 		//cout << fitBrch.selEvents << " " << fitBrch.totEvents << endl;
 
 		//Close the input file
@@ -309,7 +312,7 @@ void readFilesGet(){
 		ffd = TFile::Open(dataOutputFiles[i]);
 
 		//Request the Histo reading function
-		getInputDataGet(ffd);
+		Input::getInputDataGet(ffd);
 
 		//Close input file
 		ffd->Close();
@@ -326,7 +329,7 @@ void loadWeights(TString fileName){
 		return;
 	}
 	fd.open(fileName.Data(), ios_base::in);
-	int burst =-1, mcNumber=-1, dataNumber=-1;
+	int burst =-1;//, mcNumber=-1, dataNumber=-1;
 	double ratio, val;
 	int i;
 	i = 0;
@@ -336,9 +339,9 @@ void loadWeights(TString fileName){
 	while(fd >> val){
 		if(i==0) burst = val;
 		else if(i==1) ratio = val;
-		else if(i==2) mcNumber = val;
+		//else if(i==2) mcNumber = val;
 		else if(i==3){
-			dataNumber = val;
+			//dataNumber = val;
 			sumRatio += ratio;
 			number++;
 			ratioMap.insert(std::pair<int, double>(burst, ratio));
