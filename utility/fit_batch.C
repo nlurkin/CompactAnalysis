@@ -261,6 +261,7 @@ namespace Fit{
 
 		TH1D *comp;
 		//if(par[2]==0) G = getNormalization(par[1]);
+		cout << par[2] << endl;
 		if (par[2] != 0) {
 			rootMethod = true;
 			comp = new TH1D("comp", "comp", sig->GetNbinsX(), bins);
@@ -268,8 +269,7 @@ namespace Fit{
 		G = par[0];
 
 		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
-			if (sig->GetBinLowEdge(i + 1) < 0.005)
-				continue;
+			//if (sig->GetBinLowEdge(i + 1) < 0.005) continue;
 			b1 = 0;
 			b2 = 0;
 			b3 = 0;
@@ -287,14 +287,17 @@ namespace Fit{
 			totSigma = sigma * sigma + sig1 * sig1 + sig2 * sig2 + sig3 * sig3;
 			//totSigma = fun(G, par[1], b1,b2,b3);
 
-			if (rootMethod)
+			if (rootMethod){
 				comp->Fill(sig->GetBinCenter(i), fun(1, par[1], b1, b2, b3));
+			}
 			else if (totSigma != 0)
 				chi2 += pow((s - fun(G, par[1], b1, b2, b3)), 2.) / totSigma;
 		}
 
-		if (rootMethod)
+		if (rootMethod){
 			f = sig->Chi2Test(comp, "UW CHI2");
+			delete comp;
+		}
 		else
 			f = chi2;
 	}
@@ -333,14 +336,17 @@ namespace Fit{
 			//cout << D_i << " " << m_i << " " << sigma2 << endl;
 			sigma2 = D_i * D_i / M_i + D_i;
 			//totSigma = sigma*sigma + sigMC*sigMC;
-			if (rootMethod)
+			if (rootMethod){
 				comp->Fill(sig->GetBinCenter(i), m_i);
+			}
 			else if (D_i != 0)
 				chi2 += pow(D_i - m_i, 2) / sigma2;
 		}
 
-		if (rootMethod)
-			sig->Chi2Test(comp, "UW CHI2");
+		if (rootMethod){
+			f = sig->Chi2Test(comp, "UW CHI2 P");
+			delete comp;
+		}
 		else
 			f = chi2;
 	}
@@ -614,8 +620,7 @@ namespace Display{
 		fitR->AddText("Fit result");
 		fitR->AddLine(0., 0.7, 1., 0.7);
 		fitR->AddText(Form("G = %f #pm %f", result.norm, result.normErr));
-		fitR->AddText(
-				Form("FF = %f #pm %f", result.formFactor, result.formFactorErr));
+		fitR->AddText(Form("FF = %f #pm %f", result.formFactor, result.formFactorErr));
 		fitR->SetTextAlign(12);
 
 		double gWeight = result.norm;
@@ -647,7 +652,7 @@ namespace Display{
 		}
 
 		TH1D* ratio = buildRatio(gWeight, a, proc);
-		TF1 f("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0.005, 1);
+		TF1 f("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0, 1);
 		f.SetLineColor(kRed);
 		c2->Divide(1, 2);
 		c2->cd(1);
@@ -672,34 +677,23 @@ namespace Display{
 		fitR->AddText("Fit result");
 		fitR->AddLine(0., 0.7, 1., 0.7);
 		fitR->AddText(Form("G = %f #pm %f", result.norm, result.normErr));
-		fitR->AddText(
-				Form("FF = %f #pm %f", result.formFactor, result.formFactorErr));
+		fitR->AddText(Form("FF = %f #pm %f", result.formFactor, result.formFactorErr));
 		fitR->SetTextAlign(12);
 
 		double gWeight = result.norm;
 		double a = result.formFactor;
 
 		for (int i = 0; i < inputMCNbr; ++i) {
-			//TH1D *dNew_c = (TH1D*)dNew->at(i)->Clone(TString::Format("dNew_c%s%i", proc.Data(), i));
-			//leg->AddEntry(dNew_c, TString::Format("%s FF=x^{2}", mcLegendTitle[i].Data()));
-			//dNew_c->Scale(gWeight*a*a);
-			//stack->Add(dNew_c);
-			TH1D *dAlpha_c = (TH1D*) dAlpha->at(i)->Clone(
-					TString::Format("dAlpha_c%s%i", proc.Data(), i));
-			leg->AddEntry(dAlpha_c,
-					TString::Format("%s #alpha", mcLegendTitle[i].Data()));
+			TH1D *dAlpha_c = (TH1D*) dAlpha->at(i)->Clone(TString::Format("dAlpha_c%s%i", proc.Data(), i));
+			leg->AddEntry(dAlpha_c,	TString::Format("%s #alpha", mcLegendTitle[i].Data()));
 			dAlpha_c->Scale(gWeight);
 			stack->Add(dAlpha_c);
-			TH1D *dBeta_c = (TH1D*) dBeta->at(i)->Clone(
-					TString::Format("dBeta_c%s%i", proc.Data(), i));
-			leg->AddEntry(dBeta_c,
-					TString::Format("%s #beta", mcLegendTitle[i].Data()));
+			TH1D *dBeta_c = (TH1D*) dBeta->at(i)->Clone( TString::Format("dBeta_c%s%i", proc.Data(), i));
+			leg->AddEntry(dBeta_c, TString::Format("%s #beta", mcLegendTitle[i].Data()));
 			dBeta_c->Scale(gWeight * 2. * a);
 			stack->Add(dBeta_c);
-			TH1D *dGamma_c = (TH1D*) dGamma->at(i)->Clone(
-					TString::Format("dGamma_c%s%i", proc.Data(), i));
-			leg->AddEntry(dGamma_c,
-					TString::Format("%s #gamma", mcLegendTitle[i].Data()));
+			TH1D *dGamma_c = (TH1D*) dGamma->at(i)->Clone( TString::Format("dGamma_c%s%i", proc.Data(), i));
+			leg->AddEntry(dGamma_c, TString::Format("%s #gamma", mcLegendTitle[i].Data()));
 			dGamma_c->Scale(gWeight * a * a);
 			stack->Add(dGamma_c);
 		}
@@ -711,13 +705,15 @@ namespace Display{
 		TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
 		pad1->SetBottomMargin(3);
 		pad1->SetGrid();
-		pad1->Draw();             // Draw the upper pad: pad1
-		pad1->cd();               // pad1 becomes the current pad
-		stack->Draw("HIST");               // Draw h1
-		sig->Draw("SAME E P");         // Draw h2 on top of h1
+		pad1->Draw();
+		pad1->cd();
+		sig->DrawClone("S E P");
+		stack->Draw("HIST SAME");
+		sig->DrawClone("SAMES E P");
 		leg->Draw();
 		fitR->Draw();
 		pad1->SetLogx(true);
+		pad1->SetLogy(true);
 		c2->cd();
 		TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
 		pad2->SetTopMargin(0);
@@ -732,9 +728,9 @@ namespace Display{
 		pad2->SetLogx(true);
 
 		// Y axis mc plot settings
-		stack->GetYaxis()->SetTitleSize(20);
-		stack->GetYaxis()->SetTitleFont(43);
-		stack->GetYaxis()->SetTitleOffset(1.55);
+		//stack->GetYaxis()->SetTitleSize(20);
+		//stack->GetYaxis()->SetTitleFont(43);
+		//stack->GetYaxis()->SetTitleOffset(1.55);
 
 		// Ratio plot (ratio) settings
 		ratio->SetTitle(""); // Remove the ratio title
@@ -991,71 +987,66 @@ void fit_show(TString inFile) {
 	Display::prepareInputHisto();
 
 	double chi2Prob, chi2pv;
-	double chi2;
+	double chi21, chi2ROOT, chi2New, chi2NewROOT;
 
 	//Fit
-	/*fitResult result1;
-	 chi2 = procedure1(result1);
-	 //double chi2Prob = TMath::Prob(chi2, nbins-2);
-	 //double chi2pv = chi2pValue(chi2, nbins-2);
+	fitResult result1;
+	chi21 = fitProcedure(result1, Fit::minFct, false);
+	//double chi2Prob = TMath::Prob(chi2, nbins-2);
+	//double chi2pv = chi2pValue(chi2, nbins-2);
 
-	 chi2Profile(result1, "1");
+	//chi2Profile(result1, "1");
 
-	 drawFitResult(result1, "1");
-
-	 cout << "######## Procedure 1 result #########" << endl << "-------------------------------------" << endl;
-	 cout << "Global normalization : " << result1.norm << "+-" << result1.normErr << endl;
-	 cout << "Slope a : " << result1.formFactor << "+-" << result1.formFactorErr << endl;
-	 cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;*/
 
 	//Fit
-	/*fitResult resultROOT;
-	 chi2 = procedureROOT(resultROOT);
-	 //chi2Prob = TMath::Prob(chi2, 138);
-	 //chi2pv = chi2pValue(chi2, 138);
+	fitResult resultROOT;
+	chi2ROOT = fitProcedure(resultROOT, Fit::minFct, true);
+	//chi2Prob = TMath::Prob(chi2, 138);
+	//chi2pv = chi2pValue(chi2, 138);
 
-	 chi2Profile(resultROOT, "ROOT");
+	//chi2Profile(resultROOT, "ROOT");
 
-	 drawFitResult(resultROOT, "ROOT");
-
-	 cout << "######## Procedure ROOT result #########" << endl << "-------------------------------------" << endl;
-	 cout << "Global normalization : " << resultROOT.norm << "+-" << resultROOT.normErr << endl;
-	 cout << "Slope a : " << resultROOT.formFactor << "+-" << resultROOT.formFactorErr << endl;
-	 cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;*/
 
 	//Fit
 	fitResult resultNew;
-	chi2 = fitProcedure(resultNew, Fit::minFctNew, false);
+	chi2New = fitProcedure(resultNew, Fit::minFctNew, false);
 	//chi2Prob = TMath::Prob(chi2, 138);
 	//chi2pv = chi2pValue(chi2, 138);
 
 	//chi2Profile(resultNew, "New");
-
-	Display::drawFitNew(resultNew, "New");
-
-	cout << "######## Procedure New result #########" << endl
-			<< "-------------------------------------" << endl;
-	cout << "Global normalization : " << resultNew.norm << "+-"
-			<< resultNew.normErr << endl;
-	cout << "Slope a : " << resultNew.formFactor << "+-"
-			<< resultNew.formFactorErr << endl;
-	cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : "
-			<< chi2pv << endl;
 
 	//Fit
-	//fitResult resultNewROOT;
-	//chi2 = procedureNewROOT(resultNewROOT);
+	fitResult resultNewROOT;
+	chi2NewROOT = fitProcedure(resultNewROOT, Fit::minFctNew, true);
 	//chi2Prob = TMath::Prob(chi2, 138);
 	//chi2pv = chi2pValue(chi2, 138);
 
 	//chi2Profile(resultNew, "New");
 
-	//drawFitResult(resultNew, "New");
+	Display::drawFitResult(result1, "1");
+	Display::drawFitResult(resultROOT, "ROOT");
+	Display::drawFitNew(resultNew, "New");
+	Display::drawFitNew(resultNewROOT, "NewROOT");
 
-	//cout << "######## Procedure New ROOT result #########" << endl << "-------------------------------------" << endl;
-	//cout << "Global normalization : " << resultNewROOT.norm << "+-" << resultNewROOT.normErr << endl;
-	//cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
-	//cout << "Chi2 : " << chi2 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
+	cout << "######## Procedure 1 result #########" << endl << "-------------------------------------" << endl;
+	cout << "Global normalization : " << result1.norm << "+-" << result1.normErr << endl;
+	cout << "Slope a : " << result1.formFactor << "+-" << result1.formFactorErr << endl;
+	cout << "Chi2 : " << chi21 << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
+
+	cout << "######## Procedure ROOT result #########" << endl << "-------------------------------------" << endl;
+	cout << "Global normalization : " << resultROOT.norm << "+-" << resultROOT.normErr << endl;
+	cout << "Slope a : " << resultROOT.formFactor << "+-" << resultROOT.formFactorErr << endl;
+	cout << "Chi2 : " << chi2ROOT << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
+
+	cout << "######## Procedure New result #########" << endl << "-------------------------------------" << endl;
+	cout << "Global normalization : " << resultNew.norm << "+-" << resultNew.normErr << endl;
+	cout << "Slope a : " << resultNew.formFactor << "+-" << resultNew.formFactorErr << endl;
+	cout << "Chi2 : " << chi2New << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
+
+	cout << "######## Procedure New ROOT result #########" << endl << "-------------------------------------" << endl;
+	cout << "Global normalization : " << resultNewROOT.norm << "+-" << resultNewROOT.normErr << endl;
+	cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
+	cout << "Chi2 : " << chi2NewROOT << " prob : " << chi2Prob << " p-value : " << chi2pv << endl;
 
 	//tempFD->Close();
 	//remove(tempFileName.Data());
