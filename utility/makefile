@@ -6,12 +6,18 @@ ROOTLIBS     := $(shell $(ROOTCONFIG) --libs) -lMinuit -lGeom -lTMVA -lMLP -lEG
 CFLAGS		= -O -Wall -fPIC -g3 
 CC		= g++
  
-all:	combine fit prepareWeights
+all:	combine fit prepareWeights make_bins
 
 combine.o: combine_batch.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 combine: combine.o style.o root
+	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
+
+make_bins.o: make_bins.C pi0DalitzHeader.h
+	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
+
+make_bins: make_bins.o style.o root
 	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
 
 fit.o: fit_batch.C pi0DalitzHeader.h
