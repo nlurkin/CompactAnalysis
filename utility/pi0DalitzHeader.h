@@ -229,12 +229,12 @@ void readFilesFill(){
 
 	TFile *fdo;
 
-	int fileNumber;
+	unsigned int fileNumber;
 
 	fileNumber = mcFileNames.size();
 
 	//Getting MC
-	for(int i=0; i<fileNumber; ++i){
+	for(unsigned int i=0; i<fileNumber; ++i){
 		//Do we have a new output file?
 		if(i>=mcIndexes.size()) newIndex = prevIndex;
 		else newIndex = mcIndexes[i];
@@ -269,7 +269,7 @@ void readFilesFill(){
 	cout << dataOutputFiles.size() << endl;
 	if(fileNumber>0) initNewOutput(&fdo, dataOutputFiles[0]);
 
-	for(int i=0; i<fileNumber; ++i){
+	for(unsigned int i=0; i<fileNumber; ++i){
 		++inputDataNbr;
 		//Open new input file
 		cout << dataFileNames[i] << endl;

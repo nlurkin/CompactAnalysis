@@ -989,14 +989,18 @@ void fit_show(TString inFile) {
 	dBeta = new vector<TH1D*>;
 	dGamma = new vector<TH1D*>;
 
-	sig = new TH1D("sig", "signal sample", BINS, 0, MAX);
-
 	//Get Input
 	readConfig(inFile);
 
+	if(!withEqualBins) sig = new TH1D("sig", "signal sample", BINS, 0, MAX);
+	else{
+		loadBins(bins, nbins);
+		sig = new TH1D("sig", "signal sample", nbins-1, bins);
+	}
+
 	readFilesGet();
 
-	rebin(0);
+	rebin(50);
 
 	//Scale MC to Data
 	double totalMC = 0;
