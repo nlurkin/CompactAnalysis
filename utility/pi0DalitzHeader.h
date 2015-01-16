@@ -69,6 +69,8 @@ vector<TString> dataFileNames;
 vector<int> mcIndexes;
 vector<TString> mcOutputFiles;
 vector<TString> dataOutputFiles;
+TString binsFileName;
+bool withEqualBins;
 
 TTree* fitTree;
 fitStruct fitBrch;
@@ -175,12 +177,32 @@ bool readConfig(TString confFile){
 		cout << tline << endl;
 		for(int i=0; i<tok->GetEntries(); ++i){
 			TString entry(((TObjString*)tok->At(i))->GetString());
-			if(key.CompareTo("mcfiles")==0) mcFileNames.push_back(entry);
+			if(key.CompareTo("mcfiles")==0){
+				if(entry.Contains(".root")) mcFileNames.push_back(entry);
+				else{
+					ifstream fd(entry);
+					TString fileName;
+					while(fd >> fileName){
+						mcFileNames.push_back(fileName);
+					}
+					fd.close();
+				}
+			}
 			else if(key.CompareTo("mcout")==0) mcOutputFiles.push_back(entry);
 			else if(key.CompareTo("brs")==0) brs.push_back(entry.Atof());
 			else if(key.CompareTo("mccolors")==0) mcColors.push_back(entry.Atoi());
 			else if(key.CompareTo("mclegends")==0) mcLegendTitle.push_back(entry);
-			else if(key.CompareTo("datafiles")==0) dataFileNames.push_back(entry);
+			else if(key.CompareTo("datafiles")==0){
+				if(entry.Contains(".root")) dataFileNames.push_back(entry);
+				else{
+					ifstream fd(entry);
+					TString fileName;
+					while(fd >> fileName){
+						dataFileNames.push_back(fileName);
+					}
+					fd.close();
+				}
+			}
 			else if(key.CompareTo("dataout")==0) dataOutputFiles.push_back(entry);
 			else if(key.CompareTo("datacolors")==0) dataColors.push_back(entry.Atoi());
 			else if(key.CompareTo("datalegends")==0) dataLegendTitle.push_back(entry);
@@ -188,6 +210,8 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("runstart")==0) runStart = entry.Atoi();
 			else if(key.CompareTo("runend")==0) runEnd = entry.Atoi();
 			else if(key.CompareTo("testA")==0) testA = entry.Atof();
+			else if(key.CompareTo("binsfile")==0) binsFileName = entry;
+			else if(key.CompareTo("equalbin")==0) withEqualBins = entry.CompareTo("true")==0 ? true : false;
 			delete tok->At(i);
 		}
 	}
@@ -201,23 +225,26 @@ void readFilesFill(){
 	vector<TFile*> fd;
 	TFile* ffd;
 	int prevIndex = -1;
+	int newIndex;
 
 	TFile *fdo;
 
-	int fileNumber;
+	unsigned int fileNumber;
 
 	fileNumber = mcFileNames.size();
 
 	//Getting MC
-	for(int i=0; i<fileNumber; ++i){
+	for(unsigned int i=0; i<fileNumber; ++i){
 		//Do we have a new output file?
-		if(prevIndex != mcIndexes[i]){
+		if(i>=mcIndexes.size()) newIndex = prevIndex;
+		else newIndex = mcIndexes[i];
+		if(prevIndex != newIndex){
 			//Need to close the previous one
 			if(prevIndex!=-1){
 				//scaleMC(fitBrch, prevIndex, brs[prevIndex]);
 				closeMCOutput(fdo, prevIndex);
 			}
-			prevIndex = mcIndexes[i];
+			prevIndex = newIndex;
 			++inputMCNbr;
 			initNewOutput(&fdo, mcOutputFiles[prevIndex]);
 		}
@@ -227,7 +254,6 @@ void readFilesFill(){
 		ffd = TFile::Open(mcFileNames[i]);
 
 		//Request the TTree reading function
-		cout << prevIndex << " " << brs[prevIndex] << " " << prevIndex << endl;
 		Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
 
 		//Close the input file
@@ -243,7 +269,7 @@ void readFilesFill(){
 	cout << dataOutputFiles.size() << endl;
 	if(fileNumber>0) initNewOutput(&fdo, dataOutputFiles[0]);
 
-	for(int i=0; i<fileNumber; ++i){
+	for(unsigned int i=0; i<fileNumber; ++i){
 		++inputDataNbr;
 		//Open new input file
 		cout << dataFileNames[i] << endl;
@@ -366,4 +392,15 @@ double applyWeights(int run){
 	}
 	double ratio = ratioMap[run];
 	return averageRatio / ratio;
+}
+
+void loadBins(double *bins, int& nbins){
+	ifstream fd(binsFileName);
+
+	double val;
+	nbins = 0;
+	while(fd >> val){
+		bins[nbins] = val;
+		nbins++;
+	}
 }

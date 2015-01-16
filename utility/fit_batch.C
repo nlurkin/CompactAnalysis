@@ -34,13 +34,14 @@ typedef struct fitResult_t {
 /*************************
  * Globals
  *************************/
-#define BINS 10000
+#define BINS 10000000
 #define MAX 1
 #define MAXEVENTS 0
 vector<TH1D*> *d1, *d2, *d3, *dSig, *dNew, *dAlpha, *dBeta, *dGamma;
 static TH1D *sig; //, *other;
 double Mpi0 = 0.1349766;
 static double bins[BINS];
+//static double equiBins[BINS];
 static int nbins;
 static double NSig;
 
@@ -137,6 +138,8 @@ void rebin(int binNumber = 0) {
 		double max = sig->GetMaximum();
 		//sig->GetXaxis()->SetRange();
 
+		cout << max << endl;
+		if(max<100) max = 100;
 		double s;
 		double sum = 0;
 		double oldSum = 0;
@@ -144,8 +147,8 @@ void rebin(int binNumber = 0) {
 		double var = 0.01;
 
 		//for(int i=0; i<sig->GetNbinsX()/5; i++){
-		//	bins[j] = sig->GetBinLowEdge(i+1);
-		//	++j;
+			//bins[j] = sig->GetBinLowEdge(i+1);
+			//++j;
 		//}
 		//for(int i=sig->GetNbinsX()/5; i<=sig->GetNbinsX(); ++i){
 		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
@@ -180,6 +183,7 @@ void rebin(int binNumber = 0) {
 		}
 		nbins = binNumber;
 	}
+
 
 	sig = (TH1D*) sig->Rebin(nbins, "sig_reb", bins);
 	for (int i = 0; i < inputMCNbr; ++i) {
@@ -391,27 +395,52 @@ namespace Input {
 		//Create histo
 		//int index = d1->size();
 		if (index == d1->size()) {
-			TH1D* xxx1 = new TH1D("d1", "sample 1", BINS, 0, MAX);
-			xxx1->Sumw2();
-			d1->push_back(xxx1);
-			TH1D* xxx2 = new TH1D("d2", "sample x", BINS, 0, MAX);
-			xxx2->Sumw2();
-			d2->push_back(xxx2);
-			TH1D* xxx3 = new TH1D("d3", "sample x^{2}", BINS, 0, MAX);
-			xxx3->Sumw2();
-			d3->push_back(xxx3);
-			TH1D* xxxNew = new TH1D("dNew", "MC", BINS, 0, MAX);
-			xxxNew->Sumw2();
-			dNew->push_back(xxxNew);
-			TH1D* xxxAlpha = new TH1D("dAlpha", "MC", BINS, 0, MAX);
-			xxxAlpha->Sumw2();
-			dAlpha->push_back(xxxAlpha);
-			TH1D* xxxBeta = new TH1D("dBeta", "MC", BINS, 0, MAX);
-			xxxBeta->Sumw2();
-			dBeta->push_back(xxxBeta);
-			TH1D* xxxGamma = new TH1D("dGamma", "MC", BINS, 0, MAX);
-			xxxGamma->Sumw2();
-			dGamma->push_back(xxxGamma);
+			if(!withEqualBins){
+				TH1D* xxx1 = new TH1D("d1", "sample 1", BINS, 0, MAX);
+				xxx1->Sumw2();
+				d1->push_back(xxx1);
+				TH1D* xxx2 = new TH1D("d2", "sample x", BINS, 0, MAX);
+				xxx2->Sumw2();
+				d2->push_back(xxx2);
+				TH1D* xxx3 = new TH1D("d3", "sample x^{2}", BINS, 0, MAX);
+				xxx3->Sumw2();
+				d3->push_back(xxx3);
+				TH1D* xxxNew = new TH1D("dNew", "MC", BINS, 0, MAX);
+				xxxNew->Sumw2();
+				dNew->push_back(xxxNew);
+				TH1D* xxxAlpha = new TH1D("dAlpha", "MC", BINS, 0, MAX);
+				xxxAlpha->Sumw2();
+				dAlpha->push_back(xxxAlpha);
+				TH1D* xxxBeta = new TH1D("dBeta", "MC", BINS, 0, MAX);
+				xxxBeta->Sumw2();
+				dBeta->push_back(xxxBeta);
+				TH1D* xxxGamma = new TH1D("dGamma", "MC", BINS, 0, MAX);
+				xxxGamma->Sumw2();
+				dGamma->push_back(xxxGamma);
+			}
+			else{
+				TH1D* xxx1 = new TH1D("d1", "sample 1", nbins-1, bins);
+				xxx1->Sumw2();
+				d1->push_back(xxx1);
+				TH1D* xxx2 = new TH1D("d2", "sample x", nbins-1, bins);
+				xxx2->Sumw2();
+				d2->push_back(xxx2);
+				TH1D* xxx3 = new TH1D("d3", "sample x^{2}", nbins-1, bins);
+				xxx3->Sumw2();
+				d3->push_back(xxx3);
+				TH1D* xxxNew = new TH1D("dNew", "MC", nbins-1, bins);
+				xxxNew->Sumw2();
+				dNew->push_back(xxxNew);
+				TH1D* xxxAlpha = new TH1D("dAlpha", "MC", nbins-1, bins);
+				xxxAlpha->Sumw2();
+				dAlpha->push_back(xxxAlpha);
+				TH1D* xxxBeta = new TH1D("dBeta", "MC", nbins-1, bins);
+				xxxBeta->Sumw2();
+				dBeta->push_back(xxxBeta);
+				TH1D* xxxGamma = new TH1D("dGamma", "MC", nbins-1, bins);
+				xxxGamma->Sumw2();
+				dGamma->push_back(xxxGamma);
+			}
 		}
 
 		//Read events and fill histo
@@ -438,7 +467,6 @@ namespace Input {
 
 			weight = 1.;
 			dNew->at(index)->Fill(x, bweight * weight);
-
 			dAlpha->at(index)->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
 			dBeta->at(index)->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
 			dGamma->at(index)->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
@@ -476,11 +504,20 @@ namespace Input {
 		NSig = nevt;
 
 		//Create histo
+
 		//int index = dSig->size();
 		int index = 0;
+		cout << "dsigsize " << dSig->size() << endl;
 		if (dSig->size() == 0) {
-			TH1D* xxx = new TH1D("sig", "signal sample", BINS, 0, MAX);
-			dSig->push_back(xxx);
+			cout << "ZithEqualBins " << withEqualBins << " " << true << " " << false << endl;
+			if(!withEqualBins){
+				TH1D* xxx = new TH1D("sig", "signal sample", BINS, 0, MAX);
+				dSig->push_back(xxx);
+			}
+			else{
+				TH1D* xxx = new TH1D("sig", "signal sample", nbins-1, bins);
+				dSig->push_back(xxx);
+			}
 		}
 
 		//Read event and fill histo
@@ -920,8 +957,11 @@ void fit_batch(TString inFile) {
 
 	//Get Input
 	loadWeights("/afs/cern.ch/user/n/nlurkin/Compact/pi0dalitz_weights.dat");
+
 	if (!readConfig(inFile))
 		return;
+
+	if(withEqualBins) loadBins(bins, nbins);
 
 	readFilesFill();
 
@@ -949,14 +989,18 @@ void fit_show(TString inFile) {
 	dBeta = new vector<TH1D*>;
 	dGamma = new vector<TH1D*>;
 
-	sig = new TH1D("sig", "signal sample", BINS, 0, MAX);
-
 	//Get Input
 	readConfig(inFile);
 
+	if(!withEqualBins) sig = new TH1D("sig", "signal sample", BINS, 0, MAX);
+	else{
+		loadBins(bins, nbins);
+		sig = new TH1D("sig", "signal sample", nbins-1, bins);
+	}
+
 	readFilesGet();
 
-	rebin(0);
+	rebin(50);
 
 	//Scale MC to Data
 	double totalMC = 0;
