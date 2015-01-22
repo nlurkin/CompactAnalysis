@@ -3,10 +3,10 @@ ROOTINCDIR   := $(shell $(ROOTCONFIG) --incdir)
 ROOTLIBS     := $(shell $(ROOTCONFIG) --libs) -lMinuit -lGeom -lTMVA -lMLP -lEG
 
 #COMPILER
-CFLAGS		= -O -Wall -fPIC -g3 
+CFLAGS		= -O -Wall -fPIC -g3 -std=c++11
 CC		= g++
  
-all:	combine fit prepareWeights make_bins
+all:	combine fit prepareWeights make_bins toyMC
 
 combine.o: combine_batch.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
@@ -18,6 +18,12 @@ make_bins.o: make_bins.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 make_bins: make_bins.o style.o root
+	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
+
+toyMC.o: toyMC.C pi0DalitzHeader.h
+	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
+
+toyMC: toyMC.o style.o root
 	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
 
 fit.o: fit_batch.C pi0DalitzHeader.h
