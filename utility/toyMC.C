@@ -8,6 +8,8 @@
 #include "pi0DalitzHeader.h"
 #include "../userinc/mystructs.h"
 #include <math.h>
+#include <TMinuit.h>
+#include <TMath.h>
 using namespace std;
 
 #define BINS 10000000
@@ -16,9 +18,19 @@ static double bins[BINS];
 static int nbins;
 static double NSig;
 vector<TH1D*> *d1, *d2, *d3, *dSig, *dNew, *dAlpha, *dBeta, *dGamma;
-static TH1D *sig, *toySig; //, *other;
+static TH1D *sig, *toySig, *modelDistrib; //, *other;
 TRandom3 r;
 
+
+/*************************
+ * Structs
+ *************************/
+typedef struct fitResult_t {
+	double norm;
+	double normErr;
+	double formFactor;
+	double formFactorErr;
+} fitResult;
 
 /***************************
  * Mandatory from header
@@ -141,6 +153,118 @@ void rebin(int binNumber = 0) {
 
 }
 
+/************************
+ * Fitting
+ ************************/
+
+namespace Fit{
+	double fun(double G, double a, double b1, double b2, double b3) {
+		return G * (b1 + 2. * a * b2 + a * a * b3);
+	}
+
+	double funNew(double G, double a, double a_i, double b_i, double g_i) {
+		return G * (a_i + 2. * a * b_i + a * a * g_i);
+	}
+
+	void minFct(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag) {
+		double chi2 = 0.;
+		double b1, b2, b3, s;
+		double sigma, sig1 = 0, sig2 = 0, sig3 = 0, totSigma;
+		double G;
+		bool rootMethod = false;
+
+		TH1D *comp;
+		//if(par[2]==0) G = getNormalization(par[1]);
+		if (par[2] != 0) {
+			rootMethod = true;
+			comp = new TH1D("comp", "comp", toySig->GetNbinsX(), bins);
+		}
+		G = par[0];
+
+		for (int i = 0; i <= toySig->GetNbinsX(); ++i) {
+			//if (sig->GetBinLowEdge(i + 1) < 0.005) continue;
+			b1 = 0;
+			b2 = 0;
+			b3 = 0;
+			for (int j = 0; j < inputMCNbr; ++j) {
+				b1 += d1->at(j)->GetBinContent(i);
+				b2 += d2->at(j)->GetBinContent(i);
+				b3 += d3->at(j)->GetBinContent(i);
+				sig1 = d1->at(j)->GetBinError(i);
+				sig2 = d2->at(j)->GetBinError(i);
+				sig3 = d3->at(j)->GetBinError(i);
+			}
+			s = toySig->GetBinContent(i);
+			sigma = toySig->GetBinError(i);
+
+			totSigma = sigma * sigma + sig1 * sig1 + sig2 * sig2 + sig3 * sig3;
+			//totSigma = fun(G, par[1], b1,b2,b3);
+
+			if (rootMethod){
+				comp->Fill(toySig->GetBinCenter(i), fun(1, par[1], b1, b2, b3));
+			}
+			else if (totSigma != 0){
+				chi2 += pow((s - fun(G, par[1], b1, b2, b3)), 2.) / totSigma;
+			}
+		}
+
+		if (rootMethod){
+			f = toySig->Chi2Test(comp, " CHI2");
+			delete comp;
+		}
+		else
+			f = chi2;
+	}
+
+	void minFctNew(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par,
+			Int_t flag) {
+		double chi2 = 0.;
+		double M_i, D_i, m_i;
+		double N = par[0];
+		double a = par[1];
+		double a_i, b_i, g_i;
+		double sigma2;
+		bool rootMethod = false;
+
+		TH1D *comp;
+		if (par[2] != 0) {
+			rootMethod = true;
+			comp = new TH1D("comp", "comp", toySig->GetNbinsX(), bins);
+		}
+		for (int i = 0; i <= toySig->GetNbinsX(); ++i) {
+			//if(sig->GetBinLowEdge(i+1)<0.005) continue;
+			M_i = 0;
+			a_i = 0;
+			b_i = 0;
+			g_i = 0;
+			for (int j = 0; j < inputMCNbr; ++j) {
+				M_i += dNew->at(j)->GetBinContent(i);
+				a_i += dAlpha->at(j)->GetBinContent(i);
+				b_i += dBeta->at(j)->GetBinContent(i);
+				g_i += dGamma->at(j)->GetBinContent(i);
+			}
+			D_i = toySig->GetBinContent(i);
+
+			m_i = funNew(N, a, a_i, b_i, g_i);
+
+			//cout << D_i << " " << m_i << " " << sigma2 << endl;
+			sigma2 = D_i * D_i / M_i + D_i;
+			//totSigma = sigma*sigma + sigMC*sigMC;
+			if (rootMethod){
+				comp->Fill(toySig->GetBinCenter(i), m_i);
+			}
+			else if (D_i != 0)
+				chi2 += pow(D_i - m_i, 2) / sigma2;
+		}
+
+		if (rootMethod){
+			f = toySig->Chi2Test(comp, " CHI2 P");
+			delete comp;
+		}
+		else
+			f = chi2;
+	}
+}
 
 /***************************
  * Input
@@ -217,6 +341,16 @@ namespace Input {
 		sig->Add(dSig->at(index), 1.);
 
 		return NSig;
+	}
+
+	void readModels(){
+		for(auto f : modelFiles){
+			cout << f << endl;
+			TFile *fd = TFile::Open(f, "READ");
+			TH1D* xxxA = (TH1D*) fd->Get("dAlpha");
+			modelDistrib->Add(xxxA, 1.);
+			fd->Close();
+		}
 	}
 }
 
@@ -300,8 +434,65 @@ namespace Display{
 		c3->cd(3);
 		stdGamma->Draw("HIST");
 		legGamma->Draw();
+		c3->cd(4);
 
 	}
+}
+
+/************************
+ * Fit procedure
+ ************************/
+
+double fitProcedure(fitResult& result,
+		void (*minimFct)(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par,
+				Int_t flag), bool useROOT) {
+	//Initialize MINUIT
+
+	TMinuit minuit(2);
+	int flag;
+	double args[1];
+	int fixParam = useROOT ? 1 : 0;
+	minuit.SetFCN(minimFct);
+
+	args[0] = 0;
+	minuit.mnexcm("SET PRINTOUT", args, 1, flag);
+	args[0] = 1;
+	minuit.mnexcm("SET ERROR", args, 1, flag);
+	args[0] = 1;
+	minuit.mnexcm("SET STRATEGY", args, 1, flag);
+	minuit.mnparm(0, "G", 1., 100, 0, 0, flag);
+	minuit.mnparm(1, "a", 0.05, 0.001, 0, 0, flag);
+	minuit.mnparm(2, "fix", fixParam, 0, 0, 0, flag);
+	minuit.FixParameter(2);
+	if (useROOT)
+		minuit.FixParameter(0);
+
+	// Chi2: 1.
+	// -logl: 0.5
+	minuit.SetErrorDef(1);
+
+	args[0] = 100000;
+	minuit.mnexcm("MIGRAD", args, 1, flag);
+
+	//Get MINUIT results
+	double gWeight, gWeightErr;
+	double a, aErr;
+	double fctMin;
+	double edm, errdef;
+	int nvpar, nparx, icstat;
+
+	minuit.GetParameter(0, gWeight, gWeightErr);
+	minuit.GetParameter(1, a, aErr);
+	minuit.mnstat(fctMin, edm, errdef, nvpar, nparx, icstat);
+
+	cout << fctMin << " " << edm << " " << errdef << " " << nvpar << " "
+			<< nparx << " " << icstat << endl;
+	result.norm = gWeight;
+	//result.norm = getNormalization(a);
+	result.normErr = gWeightErr;
+	result.formFactor = a;
+	result.formFactorErr = aErr;
+	return fctMin;
 }
 
 /************************
@@ -320,55 +511,139 @@ int getBin(double value){
 
 	return lower;
 }
+
+double initPdf(double x){
+	if(x<0.2) return 1.;
+	else if(x<0.5) return 0.2;
+	else return 0.01;
+}
 void genToy(TH1D *distrib, double a, int sampleSize){
-	r.SetSeed(0);
+	//r.SetSeed(0);
+	gRandom->SetSeed(0);
 
 	toySig->Reset();
+	toySig->Sumw2();
 
-
-	double vals[2];
-	double x, y;
-	double max = distrib->GetMaximum();
-	double binWidth;
-	int bin;
-	cout << max << endl;
+	double x;
 	for(int i=0; i<sampleSize;){
-		r.RndmArray(2, vals);
-		x = vals[0];
-		y = vals[1]*max;
+		//toySig->FillRandom(distrib, 10000);
+		//break;
+		//r.RndmArray(2, vals);
+		//x = vals[0];
+		//y = vals[1]*initPdf(vals[0]);
 		//if(x<0.1) y = vals[1]*max;
 		//else y = vals[1]*max/100;
 		//if
-		bin = x*(nbins+1);
+		//bin = x*(nbins+1);
 		//bin = getBin(x);
-		binWidth = distrib->GetBinLowEdge(bin+1)-distrib->GetBinLowEdge(bin);
+		//binWidth = distrib->GetBinLowEdge(bin+1)-distrib->GetBinLowEdge(bin);
 		//cout << "x=" << x << " bin=" << bin << " binVal=" << bins[bin] << " y=" << y << " binContent=" << distrib->GetBinContent(bin);
-		if(y<distrib->GetBinContent(bin)){
-			toySig->Fill(distrib->GetBinLowEdge(bin));
-			++i;
-			//cout << " ==> accept";
-		}
+		//if(vals[1]<distrib->GetBinContent(bin)/initPdf(x)){
+			//toySig->Fill(x);
+			//++i;
+			//cout << " ==> accept " << i;
+		//}
 		//cout << endl;
+		x = distrib->GetRandom();
+		toySig->Fill(x, 1.+2*a*x+a*a*x*x);
+		++i;
 	}
-	TCanvas *c = new TCanvas("ctoy" ,"ctoy");
+	/*TCanvas *c = new TCanvas("ctoy" ,"ctoy");
 	c->Divide(2,1);
 	c->cd(1);
 	distrib->Draw();
 	c->cd(2);
-	toySig->Draw();
+	toySig->Draw();*/
 }
 
-void startToy(){
-	TH1D* sourceDistrib;
+void startToy(double a, double testNumber){
+	modelDistrib->Scale(1/modelDistrib->Integral());
+	double chi2pv;
+	double chi21, chi2ROOT, chi2New, chi2NewROOT;
 
-	if(!withEqualBins) sourceDistrib = new TH1D("toySource", "Toy MC Source distribution", BINS, 0, MAX);
-	else sourceDistrib = new TH1D("toySource", "Toy MC Source distribution", nbins-1, bins);
+	double limit = .3;
+	TH1D* fitOld = new TH1D("fitOld", "fitOld", 200, -limit, limit);
+	TH1D* fitOldRoot = new TH1D("fitOldRoot", "fitOldRoot", 200, -limit, limit);
+	TH1D* fitNew = new TH1D("fitNew", "fitNew", 200, -limit, limit);
+	TH1D* fitNewRoot = new TH1D("fitNewRoot", "fitNewRoot", 200, -limit, limit);
 
-	for(auto alpha : *dAlpha){
-		sourceDistrib->Add(alpha, 1.);
+	TH1D* chiOld = new TH1D("chiOld", "chiOld", 200, 20, 200);
+	TH1D* chiOldRoot = new TH1D("chiOldRoot", "chiOldRoot", 200, 0, 200);
+	TH1D* chiNew = new TH1D("chiNew", "chiNew", 200, 20, 200);
+	TH1D* chiNewRoot = new TH1D("chiNewRoot", "chiNewRoot", 200, 0, 200);
+
+	for(int i=0; i<testNumber; ++i){
+		genToy(modelDistrib, a, sig->GetEntries());
+
+		//Fit
+		fitResult result1;
+		chi21 = fitProcedure(result1, Fit::minFct, false);
+		double chi2Prob1 = TMath::Prob(chi21, 50-2);
+
+		//Fit
+		fitResult resultROOT;
+		chi2ROOT = fitProcedure(resultROOT, Fit::minFct, true);
+		double chi2ProbROOT = TMath::Prob(chi2ROOT, 50-1);
+
+		//Fit
+		fitResult resultNew;
+		chi2New = fitProcedure(resultNew, Fit::minFctNew, false);
+		double chi2ProbNew = TMath::Prob(chi2New, 50-2);
+
+		//Fit
+		fitResult resultNewROOT;
+		chi2NewROOT = fitProcedure(resultNewROOT, Fit::minFctNew, true);
+		double chi2ProbNewROOT = TMath::Prob(chi2NewROOT, 50-1);
+
+		fitOld->Fill(result1.formFactor-a);
+		fitOldRoot->Fill(resultROOT.formFactor-a);
+		fitNew->Fill(resultNew.formFactor-a);
+		fitNewRoot->Fill(resultNewROOT.formFactor-a);
+
+		chiOld->Fill(chi21);
+		chiOldRoot->Fill(chi2ROOT);
+		chiNew->Fill(chi2New);
+		chiNewRoot->Fill(chi2NewROOT);
+		//cout << "######## Procedure 1 result #########" << endl << "-------------------------------------" << endl;
+		//cout << "Global normalization : " << result1.norm << "+-" << result1.normErr << endl;
+		//cout << "Slope a : " << result1.formFactor << "+-" << result1.formFactorErr << endl;
+		//cout << "Chi2 : " << chi21 << " prob : " << chi2Prob1 << " p-value : " << chi2pv << endl;
+
+		//cout << "######## Procedure ROOT result #########" << endl << "-------------------------------------" << endl;
+		//cout << "Global normalization : " << resultROOT.norm << "+-" << resultROOT.normErr << endl;
+		//cout << "Slope a : " << resultROOT.formFactor << "+-" << resultROOT.formFactorErr << endl;
+		//cout << "Chi2 : " << chi2ROOT << " prob : " << chi2ProbROOT << " p-value : " << chi2pv << endl;
+
+		//cout << "######## Procedure New result #########" << endl << "-------------------------------------" << endl;
+		//cout << "Global normalization : " << resultNew.norm << "+-" << resultNew.normErr << endl;
+		//cout << "Slope a : " << resultNew.formFactor << "+-" << resultNew.formFactorErr << endl;
+		//cout << "Chi2 : " << chi2New << " prob : " << chi2ProbNew << " p-value : " << chi2pv << endl;
+
+		//cout << "######## Procedure New ROOT result #########" << endl << "-------------------------------------" << endl;
+		//cout << "Global normalization : " << resultNewROOT.norm << "+-" << resultNewROOT.normErr << endl;
+		//cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
+		//cout << "Chi2 : " << chi2NewROOT << " prob : " << chi2ProbNewROOT << " p-value : " << chi2pv << endl;
 	}
 
-	genToy(sourceDistrib, 1., sig->GetEntries());
+	TCanvas *c = new TCanvas("cToyMCFit", "ToyMCFit");
+	c->Divide(4,2);
+	c->cd(1);
+	fitOld->Draw();
+	c->cd(2);
+	fitOldRoot->Draw();
+	c->cd(3);
+	fitNew->Draw();
+	c->cd(4);
+	fitNewRoot->Draw();
+	c->cd(5);
+	chiOld->Draw();
+	c->cd(6);
+	chiOldRoot->Draw();
+	c->cd(7);
+	chiNew->Draw();
+	c->cd(8);
+	chiNewRoot->Draw();
+
 }
 
 /************************
@@ -398,20 +673,19 @@ void toyMC(TString inFile) {
 	//Get Input
 	readConfig(inFile);
 
+	modelDistrib = new TH1D("toySource", "Toy MC Source distribution", BINS, 0, MAX);
+
+	if(withEqualBins) loadBins(bins, nbins);
+
 	if(!withEqualBins) sig = new TH1D("sig", "signal sample", BINS, 0, MAX);
-	else{
-		loadBins(bins, nbins);
-		sig = new TH1D("sig", "signal sample", nbins-1, bins);
-	}
-
-	readFilesGet();
-
-	//for(int i=0; i<nbins; ++i) cout << bins[i] <<  " ";
-	//cout << endl;
+	else sig = new TH1D("sig", "signal sample", nbins-1, bins);
 	if(!withEqualBins) toySig = new TH1D("toySig", "Toy MC Source signal", BINS, 0, MAX);
 	else toySig = new TH1D("toySig", "Toy MC Source signal", nbins-1, bins);
-	startToy();
 
+	readFilesGet();
+	Input::readModels();
+
+	cout << "Input MC Number " << inputMCNbr << endl;
 	rebin(50);
 
 	//Scale MC to Data
@@ -440,7 +714,15 @@ void toyMC(TString inFile) {
 		dGamma->at(i)->Scale(factorGreek);
 	}
 
-	//Display::prepareInputHisto();
+	Display::prepareInputHisto();
+
+	TCanvas *c = new TCanvas("toyGen", "toyGen");
+	c->Divide(2,1);
+	c->cd(1);
+	modelDistrib->Draw();
+	startToy(0.037, 1000);
+	c->cd(2);
+	toySig->Draw();
 }
 
 int main(int argc, char **argv) {
