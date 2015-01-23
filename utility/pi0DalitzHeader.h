@@ -69,6 +69,7 @@ vector<TString> dataFileNames;
 vector<int> mcIndexes;
 vector<TString> mcOutputFiles;
 vector<TString> dataOutputFiles;
+vector<TString> modelFiles;
 TString binsFileName;
 bool withEqualBins;
 
@@ -189,6 +190,7 @@ bool readConfig(TString confFile){
 				}
 			}
 			else if(key.CompareTo("mcout")==0) mcOutputFiles.push_back(entry);
+			else if(key.CompareTo("modelfiles")==0) modelFiles.push_back(entry);
 			else if(key.CompareTo("brs")==0) brs.push_back(entry.Atof());
 			else if(key.CompareTo("mccolors")==0) mcColors.push_back(entry.Atoi());
 			else if(key.CompareTo("mclegends")==0) mcLegendTitle.push_back(entry);
