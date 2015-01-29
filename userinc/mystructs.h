@@ -122,6 +122,7 @@ public:
 	mee(0),
 	mPi0(0),
 	mK(0){};
+
 	CorrectedCluster *gamma;
 	CorrectedTrack *ep, *em, *pip;
 	TVector3 pGamma;
@@ -141,6 +142,7 @@ public:
 	double meeTrue;
 	TVector3 epPTrue, emPTrue;
 	double epETrue, emETrue;
+	double pt2;
 
 	ClassDefNV(pi0dEvent, 1)
 };
