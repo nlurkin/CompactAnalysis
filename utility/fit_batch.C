@@ -177,7 +177,7 @@ void rebin(int binNumber = 0) {
 		bins[j] = sig->GetBinLowEdge(sig->GetNbinsX() + 1);
 		nbins = j;
 	} else {
-		int ratio = sig->GetNbinsX() / binNumber;
+		int ratio = ceil(sig->GetNbinsX() / (double)binNumber);
 		for (int i = 0; i <= binNumber; ++i) {
 			bins[i] = sig->GetBinLowEdge(i * ratio + 1);
 		}
@@ -618,8 +618,8 @@ namespace Display{
 
 		for (int i = 0; i < inputMCNbr; ++i) {
 			sum->Add(d1->at(i), 1.);
-			sum->Add(d2->at(i), G * 2. * a);
-			sum->Add(d3->at(i), G * a * a);
+			//sum->Add(d2->at(i), G * 2. * a);
+			//sum->Add(d3->at(i), G * a * a);
 		}
 		sum->SetFillColor(8);
 
@@ -637,8 +637,8 @@ namespace Display{
 
 		for (int i = 0; i < inputMCNbr; ++i) {
 			sum->Add(dAlpha->at(i), 1.);
-			sum->Add(dBeta->at(i), G * 2. * a);
-			sum->Add(dGamma->at(i), G * a * a);
+			//sum->Add(dBeta->at(i), G * 2. * a);
+			//sum->Add(dGamma->at(i), G * a * a);
 		}
 		sum->SetFillColor(8);
 
@@ -652,8 +652,9 @@ namespace Display{
 	void drawFitResult(const fitResult& result, TString proc) {
 		THStack *stack = new THStack("stack" + proc, "Fit Procedure " + proc);
 		TCanvas *c2 = new TCanvas("fit" + proc, "Procedure " + proc);
-		TLegend *leg = new TLegend(.78, 0.4, 0.98, 0.74);
-		TPaveText *fitR = new TPaveText(0.78, 0.23, 0.98, 0.39, "NDC BR");
+		TLegend *leg = new TLegend(.78, 0.6, 0.98, 0.94);
+		//TPaveText *fitR = new TPaveText(0.78, 0.43, 0.98, 0.59, "NDC BR");
+		TPaveText *fitR = new TPaveText(0.47, 0.78, 0.77, 0.94, "NDC BR");
 		fitR->AddText("Fit result");
 		fitR->AddLine(0., 0.7, 1., 0.7);
 		fitR->AddText(Form("G = %f #pm %f", result.norm, result.normErr));
@@ -689,11 +690,14 @@ namespace Display{
 		}
 
 		TH1D* ratio = buildRatio(gWeight, a, proc);
-		TF1 f("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0, 1);
-		f.SetLineColor(kRed);
+		TF1 *f = new TF1("f", "(1+[0]*2.0*x+[0]*[0]*x*x)", 0, 1);
+		f->SetLineColor(kRed);
+		//f->SetParameter(0, result.norm);
+		f->SetParameter(0, result.formFactor);
 		c2->Divide(1, 2);
 		c2->cd(1);
 		sig->DrawClone("S E P");
+		sig->GetXaxis()->SetTitle("x");
 		stack->Draw("HIST SAME");
 		sig->DrawClone("SAMES E P");
 		leg->Draw();
@@ -701,16 +705,20 @@ namespace Display{
 		c2->cd(1)->SetGrid();
 		fitR->Draw();
 		c2->cd(2);
-		ratio->Fit("f", "R");
+		//ratio->Fit("f", "R");
+		ratio->SetStats(false);
 		ratio->Draw("E P");
+		f->Draw("LSAME");
+		c2->cd(2)->SetLogx(true);
 		c2->cd(2)->SetGrid();
 	}
 
 	void drawFitNew(const fitResult& result, TString proc) {
 		THStack *stack = new THStack("stack" + proc, "Fit Procedure " + proc);
 		TCanvas *c2 = new TCanvas("fit" + proc, "Procedure " + proc);
-		TLegend *leg = new TLegend(.78, 0.4, 0.98, 0.74);
-		TPaveText *fitR = new TPaveText(0.78, 0.23, 0.98, 0.39, "NDC BR");
+		TLegend *leg = new TLegend(.78, 0.6, 0.98, 0.94);
+		//TPaveText *fitR = new TPaveText(0.78, 0.43, 0.98, 0.59, "NDC BR");
+		TPaveText *fitR = new TPaveText(0.47, 0.78, 0.77, 0.94, "NDC BR");
 		fitR->AddText("Fit result");
 		fitR->AddLine(0., 0.7, 1., 0.7);
 		fitR->AddText(Form("G = %f #pm %f", result.norm, result.normErr));
@@ -736,8 +744,10 @@ namespace Display{
 		}
 
 		TH1D* ratio = buildRatioNew(gWeight, a, proc);
-		TF1 f("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0., 1.);
-		f.SetLineColor(kRed);
+		TF1 *f = new TF1("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0., 1.);
+		f->SetParameter(0, result.norm);
+		f->SetParameter(1, result.formFactor);
+		f->SetLineColor(kRed);
 
 		TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
 		pad1->SetBottomMargin(3);
@@ -758,9 +768,10 @@ namespace Display{
 		pad2->SetGrid(); // vertical grid
 		pad2->Draw();
 		pad2->cd();
-		ratio->Fit("f", "R");
+		//ratio->Fit("f", "R");
 		//ratio->SetStats(0);      // No statistics on lower plot
 		ratio->Draw("ep");
+		f->Draw("LSAME");
 		ratio->SetMarkerColor(kRed);
 		pad2->SetLogx(true);
 
@@ -970,7 +981,7 @@ void fit_batch(TString inFile) {
 }
 
 void fit_show(TString inFile) {
-	int nbins = 100;
+	//int nbins = 100;
 	srand(time(NULL));
 	gStyle->SetOptFit(1);
 
@@ -1000,7 +1011,7 @@ void fit_show(TString inFile) {
 
 	readFilesGet();
 
-	rebin(50);
+	rebin(55);
 
 	//Scale MC to Data
 	double totalMC = 0;
@@ -1103,6 +1114,7 @@ int main(int argc, char **argv) {
 	}
 
 	setStyle();
+	gStyle->SetOptStat("11");
 
 	signal(SIGTERM, sighandler);
 	signal(SIGINT, sighandler);
