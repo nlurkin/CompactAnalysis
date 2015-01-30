@@ -59,28 +59,28 @@ void plotpt2(){
 	pt2Old->SetName("pt2Old");
 
 	//Points
-	pt2Old->SetPoint(0, 0.0001, 0.024681);
-	pt2Old->SetPoint(1, 0.0002, 0.033619);
-	pt2Old->SetPoint(2, 0.0003, 0.035015);
-	pt2Old->SetPoint(3, 0.0004, 0.036419);
-	pt2Old->SetPoint(4, 0.0005, 0.035884);
-	pt2Old->SetPoint(5, 0.0006, 0.035861);
-	pt2Old->SetPoint(6, 0.0007, 0.035496);
-	pt2Old->SetPoint(7, 0.0008, 0.035786);
-	pt2Old->SetPoint(8, 0.0009, 0.035620);
-	pt2Old->SetPoint(9, 0.0010, 0.035405);
+	pt2Old->SetPoint(0, 0.0001, 0.0286135);
+	pt2Old->SetPoint(1, 0.0002, 0.0347931);
+	pt2Old->SetPoint(2, 0.0003, 0.0361954);
+	pt2Old->SetPoint(3, 0.0004, 0.0374528);
+	pt2Old->SetPoint(4, 0.0005, 0.0369781);
+	pt2Old->SetPoint(5, 0.0006, 0.0368601);
+	pt2Old->SetPoint(6, 0.0007, 0.0366293);
+	pt2Old->SetPoint(7, 0.0008, 0.0367906);
+	pt2Old->SetPoint(8, 0.0009, 0.0365955);
+	pt2Old->SetPoint(9, 0.0010, 0.0363966);
 
 	//Errors
-	pt2Old->SetPointError(0, 0, 0.0109678);
-	pt2Old->SetPointError(1, 0, 0.0107274);
-	pt2Old->SetPointError(2, 0, 0.0106531);
-	pt2Old->SetPointError(3, 0, 0.0106226);
-	pt2Old->SetPointError(4, 0, 0.0106064);
-	pt2Old->SetPointError(5, 0, 0.0105968);
-	pt2Old->SetPointError(6, 0, 0.0105909);
-	pt2Old->SetPointError(7, 0, 0.0105868);
-	pt2Old->SetPointError(8, 0, 0.0105842);
-	pt2Old->SetPointError(9, 0, 0.0105821);
+	pt2Old->SetPointError(0, 0, 0.00991507);
+	pt2Old->SetPointError(1, 0, 0.00970435);
+	pt2Old->SetPointError(2, 0, 0.00964132);
+	pt2Old->SetPointError(3, 0, 0.00961543);
+	pt2Old->SetPointError(4, 0, 0.00960184);
+	pt2Old->SetPointError(5, 0, 0.00959285);
+	pt2Old->SetPointError(6, 0, 0.00958712);
+	pt2Old->SetPointError(7, 0, 0.00958306);
+	pt2Old->SetPointError(8, 0, 0.00958055);
+	pt2Old->SetPointError(9, 0, 0.00957824);
 
 	//Style
 	pt2Old->SetMarkerStyle(20);
@@ -91,32 +91,32 @@ void plotpt2(){
 
 	//Creation
 	TGraphErrors *pt2OldRoot = new TGraphErrors();
-	pt2Old->SetName("pt2OldRoot");
+	pt2OldRoot->SetName("pt2OldRoot");
 
 
 	//Points
-	pt2OldRoot->SetPoint(0, 0.00012, 0.0246773);
-	pt2OldRoot->SetPoint(1, 0.00022, 0.0335654);
-	pt2OldRoot->SetPoint(2, 0.00032, 0.0349375);
-	pt2OldRoot->SetPoint(3, 0.00042, 0.0363305);
-	pt2OldRoot->SetPoint(4, 0.00052, 0.0357917);
-	pt2OldRoot->SetPoint(5, 0.00062, 0.0357685);
-	pt2OldRoot->SetPoint(6, 0.00072, 0.0354012);
-	pt2OldRoot->SetPoint(7, 0.00082, 0.0356871);
-	pt2OldRoot->SetPoint(8, 0.00092, 0.0355217);
-	pt2OldRoot->SetPoint(9, 0.00102, 0.0353101);
+	pt2OldRoot->SetPoint(0, 0.00012, 0.0287722);
+	pt2OldRoot->SetPoint(1, 0.00022, 0.0347352);
+	pt2OldRoot->SetPoint(2, 0.00032, 0.0361261);
+	pt2OldRoot->SetPoint(3, 0.00042, 0.0373835);
+	pt2OldRoot->SetPoint(4, 0.00052, 0.0369145);
+	pt2OldRoot->SetPoint(5, 0.00062, 0.0367773);
+	pt2OldRoot->SetPoint(6, 0.00072, 0.036555);
+	pt2OldRoot->SetPoint(7, 0.00082, 0.0366951);
+	pt2OldRoot->SetPoint(8, 0.00092, 0.0364988);
+	pt2OldRoot->SetPoint(9, 0.00102, 0.0363005);
 
 	//Errors
-	pt2OldRoot->SetPointError(0, 0, 0.0137759);
-	pt2OldRoot->SetPointError(1, 0, 0.0134755);
-	pt2OldRoot->SetPointError(2, 0, 0.0133764);
-	pt2OldRoot->SetPointError(3, 0, 0.0133344);
-	pt2OldRoot->SetPointError(4, 0, 0.0133112);
-	pt2OldRoot->SetPointError(5, 0, 0.0132987);
-	pt2OldRoot->SetPointError(6, 0, 0.0132893);
-	pt2OldRoot->SetPointError(7, 0, 0.0132858);
-	pt2OldRoot->SetPointError(8, 0, 0.0132825);
-	pt2OldRoot->SetPointError(9, 0, 0.0132792);
+	pt2OldRoot->SetPointError(0, 0, 0.0123731);
+	pt2OldRoot->SetPointError(1, 0, 0.0121176);
+	pt2OldRoot->SetPointError(2, 0, 0.0120329);
+	pt2OldRoot->SetPointError(3, 0, 0.0119972);
+	pt2OldRoot->SetPointError(4, 0, 0.0119768);
+	pt2OldRoot->SetPointError(5, 0, 0.0119657);
+	pt2OldRoot->SetPointError(6, 0, 0.0119563);
+	pt2OldRoot->SetPointError(7, 0, 0.0119533);
+	pt2OldRoot->SetPointError(8, 0, 0.0119504);
+	pt2OldRoot->SetPointError(9, 0, 0.0119467);
 
 	//Style
 	pt2OldRoot->SetMarkerStyle(21);
@@ -127,32 +127,32 @@ void plotpt2(){
 
 	//Creation
 	TGraphErrors *pt2New = new TGraphErrors();
-	pt2Old->SetName("pt2New");
+	pt2New->SetName("pt2New");
 
 
 	//Points
-	pt2New->SetPoint(0, 0.00014, 0.0263395);
-	pt2New->SetPoint(1, 0.00024, 0.0349747);
-	pt2New->SetPoint(2, 0.00034, 0.0364357);
-	pt2New->SetPoint(3, 0.00044, 0.0377355);
-	pt2New->SetPoint(4, 0.00054, 0.0371447);
-	pt2New->SetPoint(5, 0.00064, 0.0370775);
-	pt2New->SetPoint(6, 0.00074, 0.036707);
-	pt2New->SetPoint(7, 0.00084, 0.0370406);
-	pt2New->SetPoint(8, 0.00094, 0.0368565);
-	pt2New->SetPoint(9, 0.00104, 0.0367007);
+	pt2New->SetPoint(0, 0.00014, 0.0302036);
+	pt2New->SetPoint(1, 0.00024, 0.0360711);
+	pt2New->SetPoint(2, 0.00034, 0.0375125);
+	pt2New->SetPoint(3, 0.00044, 0.0387164);
+	pt2New->SetPoint(4, 0.00054, 0.0381792);
+	pt2New->SetPoint(5, 0.00064, 0.0380455);
+	pt2New->SetPoint(6, 0.00074, 0.037758);
+	pt2New->SetPoint(7, 0.00084, 0.0379982);
+	pt2New->SetPoint(8, 0.00094, 0.0377905);
+	pt2New->SetPoint(9, 0.00104, 0.0376324);
 
 	//Errors
-	pt2New->SetPointError(0, 0, 0.0138228);
-	pt2New->SetPointError(1, 0, 0.0134967);
-	pt2New->SetPointError(2, 0, 0.0133997);
-	pt2New->SetPointError(3, 0, 0.0133588);
-	pt2New->SetPointError(4, 0, 0.0133362);
-	pt2New->SetPointError(5, 0, 0.0133233);
-	pt2New->SetPointError(6, 0, 0.0133156);
-	pt2New->SetPointError(7, 0, 0.013318);
-	pt2New->SetPointError(8, 0, 0.0133087);
-	pt2New->SetPointError(9, 0, 0.0133054);
+	pt2New->SetPointError(0, 0, 0.0124116);
+	pt2New->SetPointError(1, 0, 0.0121154);
+	pt2New->SetPointError(2, 0, 0.0120328);
+	pt2New->SetPointError(3, 0, 0.0119973);
+	pt2New->SetPointError(4, 0, 0.011978);
+	pt2New->SetPointError(5, 0, 0.011966);
+	pt2New->SetPointError(6, 0, 0.0119596);
+	pt2New->SetPointError(7, 0, 0.0119545);
+	pt2New->SetPointError(8, 0, 0.0119524);
+	pt2New->SetPointError(9, 0, 0.0119495);
 
 	//Style
 	pt2New->SetMarkerStyle(22);
@@ -162,38 +162,61 @@ void plotpt2(){
 
 	//Creation
 	TGraphErrors *pt2NewRoot = new TGraphErrors();
-	pt2Old->SetName("pt2NewRoot");
+	pt2NewRoot->SetName("pt2NewRoot");
 
 
 	//Points
-	pt2NewRoot->SetPoint(0, 0.00016, 0.0262831);
-	pt2NewRoot->SetPoint(1, 0.00026, 0.0349844);
-	pt2NewRoot->SetPoint(2, 0.00036, 0.0364254);
-	pt2NewRoot->SetPoint(3, 0.00046, 0.0377165);
-	pt2NewRoot->SetPoint(4, 0.00056, 0.0371151);
-	pt2NewRoot->SetPoint(5, 0.00066, 0.037052);
-	pt2NewRoot->SetPoint(6, 0.00076, 0.0366747);
-	pt2NewRoot->SetPoint(7, 0.00086, 0.0370075);
-	pt2NewRoot->SetPoint(8, 0.00096, 0.0368243);
-	pt2NewRoot->SetPoint(9, 0.00106, 0.0366688);
+	pt2NewRoot->SetPoint(0, 0.00016, 0.0302081);
+	pt2NewRoot->SetPoint(1, 0.00026, 0.0360564);
+	pt2NewRoot->SetPoint(2, 0.00036, 0.037487);
+	pt2NewRoot->SetPoint(3, 0.00046, 0.0386996);
+	pt2NewRoot->SetPoint(4, 0.00056, 0.038155);
+	pt2NewRoot->SetPoint(5, 0.00066, 0.0380121);
+	pt2NewRoot->SetPoint(6, 0.00076, 0.0377323);
+	pt2NewRoot->SetPoint(7, 0.00086, 0.0379581);
+	pt2NewRoot->SetPoint(8, 0.00096, 0.0377498);
+	pt2NewRoot->SetPoint(9, 0.00106, 0.0375866);
 
 	//Errors
-	pt2NewRoot->SetPointError(0, 0, 0.0137436);
-	pt2NewRoot->SetPointError(1, 0, 0.0134296);
-	pt2NewRoot->SetPointError(2, 0, 0.0133354);
-	pt2NewRoot->SetPointError(3, 0, 0.0132939);
-	pt2NewRoot->SetPointError(4, 0, 0.0132721);
-	pt2NewRoot->SetPointError(5, 0, 0.0132602);
-	pt2NewRoot->SetPointError(6, 0, 0.0132522);
-	pt2NewRoot->SetPointError(7, 0, 0.0132479);
-	pt2NewRoot->SetPointError(8, 0, 0.013246);
-	pt2NewRoot->SetPointError(9, 0, 0.0132423);
+	pt2NewRoot->SetPointError(0, 0, 0.012321);
+	pt2NewRoot->SetPointError(1, 0, 0.0120466);
+	pt2NewRoot->SetPointError(2, 0, 0.0119648);
+	pt2NewRoot->SetPointError(3, 0, 0.0119282);
+	pt2NewRoot->SetPointError(4, 0, 0.0119088);
+	pt2NewRoot->SetPointError(5, 0, 0.0118958);
+	pt2NewRoot->SetPointError(6, 0, 0.0118916);
+	pt2NewRoot->SetPointError(7, 0, 0.0118877);
+	pt2NewRoot->SetPointError(8, 0, 0.011886);
+	pt2NewRoot->SetPointError(9, 0, 0.0118828);
 
 	//Style
 	pt2NewRoot->SetMarkerStyle(23);
 	pt2NewRoot->SetMarkerColor(6);
 	pt2NewRoot->SetLineColor(6);
 	pt2NewRoot->SetFillStyle(0);
+
+	//Creation
+	TGraph *pt2Selected = new TGraph();
+	pt2Selected->SetName("pt2Selected");
+
+
+	//Points
+	pt2Selected->SetPoint(0, 0.0001, 952820);
+	pt2Selected->SetPoint(1, 0.0002, 1005159);
+	pt2Selected->SetPoint(2, 0.0003, 1020619);
+	pt2Selected->SetPoint(3, 0.0004, 1027590);
+	pt2Selected->SetPoint(4, 0.0005, 1031026);
+	pt2Selected->SetPoint(5, 0.0006, 1033011);
+	pt2Selected->SetPoint(6, 0.0007, 1034237);
+	pt2Selected->SetPoint(7, 0.0008, 1035008);
+	pt2Selected->SetPoint(8, 0.0009, 1035359);
+	pt2Selected->SetPoint(9, 0.0010, 1035927);
+
+	//Style
+	pt2Selected->SetMarkerStyle(20);
+	pt2Selected->SetMarkerColor(4);
+	pt2Selected->SetLineColor(4);
+	pt2Selected->SetFillStyle(0);
 
 	//Plotting
 	TCanvas *c = new TCanvas("plot");
@@ -215,6 +238,16 @@ void plotpt2(){
 	pt2New->Draw("SAME P");
 	pt2NewRoot->Draw("SAME P");
 	leg->Draw("LEP");
+
+	//Plotting
+	TCanvas *c = new TCanvas("Selected");
+	c->SetGrid(1, 1);
+
+	pt2Selected->SetTitle("Pt^{2} scan");
+	pt2Selected->GetXaxis()->SetTitle("Pt^{2} cut");
+	pt2Selected->GetYaxis()->SetTitle("Selected events");
+	pt2Selected->GetYaxis()->SetTitleOffset(1.5);
+	pt2Selected->Draw("APL");
 }
 
 void plotpi0mass(){
