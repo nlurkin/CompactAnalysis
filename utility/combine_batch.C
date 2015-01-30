@@ -635,8 +635,9 @@ void combine_show(TString inFile, int maxPlots){
 	dMap = new vector< vector<TH2D*> >;
 	dSig = new vector< vector<TH1D*> >;
 	dSigMap = new vector< vector<TH2D*> >;
-	TLegend *leg = new TLegend(.65,0.6,0.98,0.82);
-	leg->SetHeader("The Legend Title");
+	//TLegend *leg = new TLegend(.65,0.6,0.98,0.82);
+	TLegend *leg = new TLegend(.7,0.75,0.9,0.95);
+	//leg->SetHeader("The Legend Title");
 
 	//Get Input
 	readConfig(inFile);
@@ -693,13 +694,13 @@ void combine_show(TString inFile, int maxPlots){
 	if(maxPlots--==0) return;
 	doPlot(23, "pipPz", "Pi+ momentum Z", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(24, "pipVtxX", "Pi+ vertex X", leg, mcColors);
+	doPlot(24, "pipVtxX", "Vertex X", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(25, "pipVtxY", "Pi+ vertex Y", leg, mcColors);
+	doPlot(25, "pipVtxY", "Vertex Y", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(26, "pipVtxZ", "Pi+ vertex Z", leg, mcColors);
+	doPlot(26, "pipVtxZ", "Vertex Z", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(27, "pipCDA", "Pi+ CDA", leg, mcColors);
+	doPlot(27, "pipCDA", "CDA", leg, mcColors);
 	if(maxPlots--==0) return;
 	doPlot(28, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
 	if(maxPlots--==0) return;
