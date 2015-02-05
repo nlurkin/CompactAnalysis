@@ -129,8 +129,9 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("RDCH", index, v, 100, -75, 75);
 	addHisto("RLKr", index, v, 100, -75, 75);
 	addHisto("Zvtx", index, v, 100, 0, 350000);
-	addHisto("Pt2", index, v, 100, 0, 0.05);
+	addHisto("Pt2", index, v, 100, 0, 0.001);
 	addHisto("P", index, v, 100, 68, 80);
+	addHisto("Mpi0diff", index, v, 100, -0.01, 0.01);
 	
 	//Photon
 	addHisto("gEnergy", index, v, 60, 0, 60);
@@ -173,6 +174,7 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "Zvtx", ++i, v);
 	getHisto(fd, "Pt2", ++i, v);
 	getHisto(fd, "P", ++i, v);
+	getHisto(fd, "Mpi0diff", ++i, v);
 	
 	//Photon
 	getHisto(fd, "gEnergy", ++i, v);
@@ -218,9 +220,9 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, TObject *value, double we
 	++i;
 	++i;
 	++i;
-	//d->at(++i)->Fill(evt->pTotal.Perp2(), weight);
-	++i;
+	d->at(++i)->Fill(evt->pt2, weight);
 	d->at(++i)->Fill(evt->pTotal.Mag(), weight);
+	d->at(++i)->Fill(evt->mPi0-0.1349766, weight);
 	//Photon
 	d->at(++i)->Fill(evt->gamma->energy, weight);
 	d->at(++i)->Fill(evt->gamma->position.X(), weight);
@@ -448,8 +450,8 @@ TH1D* buildRatio(THStack* stack, TH1D* data, TString name){
 	r->SetMarkerColor(kRed);
 	//r->SetMaximum(r->GetMaximum()*1.1);
 	//r->SetMinimum(r->GetMinimum()*0.9);
-	r->SetMaximum(0.7);
-	r->SetMinimum(1.3);
+	//r->SetMaximum(0.7);
+	//r->SetMinimum(1.3);
 	delete sum;
 	return r;
 }
@@ -650,59 +652,61 @@ void combine_show(TString inFile, int maxPlots){
 //	doPlot(1, "RDCH", "DCH Radius", leg, mcColors);
 //	doPlot(2, "RLKr", "LKr radius", leg, mcColors);
 //	doPlot(3, "Zvtx", "Z Vertex", leg, mcColors);
-	//doPlot(4, "Pt", "Transverse momentum", leg, mcColors);
-	//if(maxPlots--==0) return;
+	doPlot(4, "Pt", "Squared transverse momentum", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(5, "P", "Total momentum", leg, mcColors);
 	if(maxPlots--==0) return;
+	doPlot(6, "Mpi0diff", "Reconstructed pi0 mass difference", leg, mcColors);
+	if(maxPlots--==0) return;
 
-	doPlot(6, "gEnergy", "Photon cluster energy", leg, mcColors);
+	doPlot(7, "gEnergy", "Photon cluster energy", leg, mcColors);
 	cout << maxPlots << endl;
 	if(maxPlots--==0) return;
-	doPlot(7, "gPositionX", "Photon cluster position X", leg, mcColors);
+	doPlot(8, "gPositionX", "Photon cluster position X", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(8, "gPositionY", "Photon cluster position Y", leg, mcColors);
+	doPlot(9, "gPositionY", "Photon cluster position Y", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(9, "gP", "Photon momentum", leg, mcColors);
-	if(maxPlots--==0) return;
-
-	doPlot(10, "ePMag", "e+/e- momentum", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(11, "ePx", "e+/e- momentum X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(12, "ePy", "e+/e- momentum Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(13, "ePz", "e+/e- momentum Z", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(14, "eVtxX", "e+/e- vertex X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(15, "eVtxY", "e+/e- vertex Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(16, "eVtxZ", "e+/e- vertex Z", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(17, "eCDA", "e+/e- CDA", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(18, "eEnergy", "e+/e- cluster energy", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(19, "mee", "e+/e- invariant mass", leg, mcColors);
+	doPlot(10, "gP", "Photon momentum", leg, mcColors);
 	if(maxPlots--==0) return;
 
-	doPlot(20, "pipPMag", "Pi+ momentum", leg, mcColors);
+	doPlot(11, "ePMag", "e+/e- momentum", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(21, "pipPx", "Pi+ momentum X", leg, mcColors);
+	doPlot(12, "ePx", "e+/e- momentum X", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(22, "pipPy", "Pi+ momentum Y", leg, mcColors);
+	doPlot(13, "ePy", "e+/e- momentum Y", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(23, "pipPz", "Pi+ momentum Z", leg, mcColors);
+	doPlot(14, "ePz", "e+/e- momentum Z", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(24, "pipVtxX", "Vertex X", leg, mcColors);
+	doPlot(15, "eVtxX", "e+/e- vertex X", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(25, "pipVtxY", "Vertex Y", leg, mcColors);
+	doPlot(16, "eVtxY", "e+/e- vertex Y", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(26, "pipVtxZ", "Vertex Z", leg, mcColors);
+	doPlot(17, "eVtxZ", "e+/e- vertex Z", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(27, "pipCDA", "CDA", leg, mcColors);
+	doPlot(18, "eCDA", "e+/e- CDA", leg, mcColors);
 	if(maxPlots--==0) return;
-	doPlot(28, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
+	doPlot(19, "eEnergy", "e+/e- cluster energy", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(20, "mee", "e+/e- invariant mass", leg, mcColors);
+	if(maxPlots--==0) return;
+
+	doPlot(21, "pipPMag", "Pi+ momentum", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(22, "pipPx", "Pi+ momentum X", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(23, "pipPy", "Pi+ momentum Y", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(24, "pipPz", "Pi+ momentum Z", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(25, "pipVtxX", "Vertex X", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(26, "pipVtxY", "Vertex Y", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(27, "pipVtxZ", "Vertex Z", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(28, "pipCDA", "CDA", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(29, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
 	if(maxPlots--==0) return;
 
 	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);

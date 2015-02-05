@@ -338,6 +338,7 @@ namespace Input {
 		dSig->push_back((TH1D*) xxx->Clone());
 		dSig->at(index)->SetName(TString::Format("sig_%i", index));
 
+		cout << dSig->at(index)->GetNbinsX() << " " << sig->GetNbinsX() << endl;
 		sig->Add(dSig->at(index), 1.);
 
 		return NSig;
@@ -556,12 +557,12 @@ void genToy(TH1D *distrib, double a, int sampleSize){
 	toySig->Draw();*/
 }
 
-void startToy(double a, double testNumber){
+void startToy(double a, double deltaA, double testNumber){
 	modelDistrib->Scale(1/modelDistrib->Integral());
 	double chi2pv;
 	double chi21, chi2ROOT, chi2New, chi2NewROOT;
 
-	double limit = .3;
+	double limit = 2;
 	TH1D* fitOld = new TH1D("fitOld", "fitOld", 200, -limit, limit);
 	TH1D* fitOldRoot = new TH1D("fitOldRoot", "fitOldRoot", 200, -limit, limit);
 	TH1D* fitNew = new TH1D("fitNew", "fitNew", 200, -limit, limit);
@@ -595,10 +596,10 @@ void startToy(double a, double testNumber){
 		chi2NewROOT = fitProcedure(resultNewROOT, Fit::minFctNew, true);
 		double chi2ProbNewROOT = TMath::Prob(chi2NewROOT, 50-1);
 
-		fitOld->Fill(result1.formFactor-a);
-		fitOldRoot->Fill(resultROOT.formFactor-a);
-		fitNew->Fill(resultNew.formFactor-a);
-		fitNewRoot->Fill(resultNewROOT.formFactor-a);
+		fitOld->Fill((result1.formFactor-a)/deltaA);
+		fitOldRoot->Fill((resultROOT.formFactor-a)/deltaA);
+		fitNew->Fill((resultNew.formFactor-a)/deltaA);
+		fitNewRoot->Fill((resultNewROOT.formFactor-a)/deltaA);
 
 		chiOld->Fill(chi21);
 		chiOldRoot->Fill(chi2ROOT);
@@ -720,7 +721,7 @@ void toyMC(TString inFile) {
 	c->Divide(2,1);
 	c->cd(1);
 	modelDistrib->Draw();
-	startToy(0.037, 1000);
+	startToy(0.037, 0.0011, 1000);
 	c->cd(2);
 	toySig->Draw();
 }

@@ -263,16 +263,17 @@ namespace Fit{
 		double G;
 		bool rootMethod = false;
 
-		TH1D *comp;
+		TH1D *comp, *sigComp;
 		//if(par[2]==0) G = getNormalization(par[1]);
 		if (par[2] != 0) {
 			rootMethod = true;
 			comp = new TH1D("comp", "comp", sig->GetNbinsX(), bins);
+			sigComp = new TH1D("sigcomp", "sigcomp", sig->GetNbinsX(), bins);
 		}
 		G = par[0];
 
 		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
-			//if (sig->GetBinLowEdge(i + 1) < 0.005) continue;
+			if (sig->GetBinLowEdge(i + 1) < 0.005) continue;
 			b1 = 0;
 			b2 = 0;
 			b3 = 0;
@@ -292,6 +293,7 @@ namespace Fit{
 
 			if (rootMethod){
 				comp->Fill(sig->GetBinCenter(i), fun(1, par[1], b1, b2, b3));
+				sigComp->SetBinContent(i, s);
 			}
 			else if (totSigma != 0){
 				chi2 += pow((s - fun(G, par[1], b1, b2, b3)), 2.) / totSigma;
@@ -299,8 +301,9 @@ namespace Fit{
 		}
 
 		if (rootMethod){
-			f = sig->Chi2Test(comp, "UW CHI2");
+			f = sigComp->Chi2Test(comp, "UW CHI2");
 			delete comp;
+			delete sigComp;
 		}
 		else
 			f = chi2;
@@ -316,13 +319,14 @@ namespace Fit{
 		double sigma2;
 		bool rootMethod = false;
 
-		TH1D *comp;
+		TH1D *comp, *sigComp;
 		if (par[2] != 0) {
 			rootMethod = true;
 			comp = new TH1D("comp", "comp", sig->GetNbinsX(), bins);
+			sigComp = new TH1D("sigcomp", "sigcomp", sig->GetNbinsX(), bins);
 		}
 		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
-			//if(sig->GetBinLowEdge(i+1)<0.005) continue;
+			if(sig->GetBinLowEdge(i+1)<0.005) continue;
 			M_i = 0;
 			a_i = 0;
 			b_i = 0;
@@ -342,14 +346,16 @@ namespace Fit{
 			//totSigma = sigma*sigma + sigMC*sigMC;
 			if (rootMethod){
 				comp->Fill(sig->GetBinCenter(i), m_i);
+				sigComp->SetBinContent(i, D_i);
 			}
 			else if (D_i != 0)
 				chi2 += pow(D_i - m_i, 2) / sigma2;
 		}
 
 		if (rootMethod){
-			f = sig->Chi2Test(comp, "UW CHI2 P");
+			f = sigComp->Chi2Test(comp, "UW CHI2 P");
 			delete comp;
+			delete sigComp;
 		}
 		else
 			f = chi2;
@@ -1008,10 +1014,10 @@ void fit_show(TString inFile) {
 		loadBins(bins, nbins);
 		sig = new TH1D("sig", "signal sample", nbins-1, bins);
 	}
-
+	cout << "Initial bins: " << nbins << endl;
 	readFilesGet();
 
-	rebin(55);
+	rebin(125);
 
 	//Scale MC to Data
 	double totalMC = 0;
@@ -1102,6 +1108,12 @@ void fit_show(TString inFile) {
 	cout << "Global normalization : " << resultNewROOT.norm << "+-" << resultNewROOT.normErr << endl;
 	cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
 	cout << "Chi2 : " << chi2NewROOT << " prob : " << chi2ProbNewROOT << " p-value : " << chi2pv << endl;
+
+	cout << endl << endl;
+	cout << result1.norm << ";" << result1.normErr << ";" << result1.formFactor << ";" << result1.formFactorErr << ";" << chi21 << ";" << chi2Prob1 << ";";
+   cout << resultROOT.norm << ";" << resultROOT.normErr << ";" << resultROOT.formFactor << ";" << resultROOT.formFactorErr << ";" << chi2ROOT << ";" << chi2ProbROOT << ";";
+	cout << resultNew.norm << ";" << resultNew.normErr << ";" << resultNew.formFactor << ";" << resultNew.formFactorErr << ";" << chi2New << ";" << chi2ProbNew << ";";
+	cout << resultNewROOT.norm << ";" << resultNewROOT.normErr << ";" << resultNewROOT.formFactor << ";" << resultNewROOT.formFactorErr << ";" << chi2NewROOT << ";" << chi2ProbNewROOT << endl;
 
 	//tempFD->Close();
 	//remove(tempFileName.Data());
