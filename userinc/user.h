@@ -6,6 +6,7 @@
 #include <iostream>
 #include "ana3pi.h"
 #include "TH1D.h"
+#include "exportClasses.h"
 using namespace std;
 
 #ifndef USER_HH
@@ -70,22 +71,26 @@ extern vector<eventID> badEventsList;	// List of events extracted
 /*
  * Containers for corrected tracks and clusters
  */
-extern vector<CorrectedTrack*> vtrack;
-extern vector<CorrectedCluster*> vCluster;
-extern vector<CorrectedCluster*> closeClusters;
+//extern vector<CorrectedTrack*> vtrack;
+//extern vector<CorrectedCluster*> vCluster;
+//extern vector<CorrectedCluster*> closeClusters;
 
 /*
  * Container for selected corrected tracks and clusters (exported to TTree)
  */
-extern vector<CorrectedTrack*> goodTracks;
-extern vector<CorrectedCluster*> assocClusters;
+//extern vector<CorrectedTrack*> goodTracks;
+//extern vector<CorrectedCluster*> assocClusters;
 extern bool cutsWord[19];
 
-extern pi0dEvent fullEvent;
+//extern pi0dEvent fullEvent;
 
 extern double Mpi0;
 extern double Mpic;
 extern double Me;
+
+extern ROOTRawEvent rawEvent;
+extern ROOTCorrectedEvent corrEvent;
+extern ROOTBurst rootBurst;
 
 
 /*
@@ -95,7 +100,7 @@ extern double Me;
 extern "C" int 	LKr_acc			(int,float,float,float);
 void 			GetCpdCellIndex	(double pos_x, double pos_y, int *cpd_index, int *cell_index);
 float 			correctedEP		(superCmpEvent* sevt, trak t, float &eOverP);
-float 			correctClusterE	(CorrectedCluster *c);
+float 			correctClusterE	(NPhysicsCluster *c);
 void 			loadEOPData		(superBurst *sbur);
 void 			defineBeamCharge(superBurst *sbur);
 
@@ -120,11 +125,11 @@ TH1D* gH(TString name);
 
 double		distance2D			(TVector3 v1, TVector3 v2);
 void 		propagateBefore		(float &x, float &y, float &z, float zplane, trak t);
-TVector3 	propagateBefore		(float zplane, CorrectedTrack *t);
-TVector3 	propagateCorrBefore	(float zplane, CorrectedTrack *t);
+TVector3 	propagateBefore		(float zplane, NPhysicsTrack t);
+TVector3 	propagateCorrBefore	(float zplane, NPhysicsTrack t);
 void 		propagateAfter		(float &x, float &y, float &z, float zplane, trak t);
-TVector3 	propagateAfter		(float zplane, CorrectedTrack *t);
-TVector3 	propagate			(float zplane, CorrectedTrack *t);
+TVector3 	propagateAfter		(float zplane, NPhysicsTrack t);
+TVector3 	propagate			(float zplane, NPhysicsTrack t);
 TVector3 	propagate			(float zplane, TVector3 pos, TVector3 p);
 
 double 	missMass2	(double m1, double m2, TVector3 p1, TVector3 p2);
@@ -134,14 +139,14 @@ double	invMass2	(vector<double> mass, vector<TVector3> p);
 bool 	isFilteredEvent	(int nrun, int nburst, int timestamp);
 
 //Corrections
-CorrectedTrack*				correctTrack	(superCmpEvent *sevt, trak t);
-vector<CorrectedTrack*> 	CreateTracks	(superCmpEvent *sevt);
-CorrectedCluster*			correctCluster	(cluster c);
-vector<CorrectedCluster*> 	CreateClusters	(superCmpEvent *sevt);
+NPhysicsTrack	correctTrack	(superCmpEvent *sevt, trak t);
+void			CreateTracks	(superCmpEvent *sevt);
+NPhysicsCluster	correctCluster	(cluster c);
+void		 	CreateClusters	(superCmpEvent *sevt);
 
 //Channel selects
 int nico_ke2Select(superBurst *sbur,superCmpEvent *sevt);
-int nico_pi0DalitzSelect(superBurst *sbur,superCmpEvent *sevt);
+int nico_pi0DalitzSelect();
 
 //Channel analysis
 int nico_pi0DalitzAna(superBurst *sbur,superCmpEvent *sevt);

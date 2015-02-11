@@ -4,6 +4,7 @@
 #include "TVector3.h"
 #include "mystructs.h"
 #include "TTree.h"
+#include "exportClasses.h"
 
 //Output
 FILE * fprt, *fprt2;
@@ -43,21 +44,25 @@ int periodKeep;
 vector<eventID> badEventsList;
 
 //containers for corrected tracks and clusters
-std::vector<CorrectedTrack*> vtrack;
-std::vector<CorrectedCluster*> vCluster;
-std::vector<CorrectedCluster*> closeClusters;
+//std::vector<CorrectedTrack*> vtrack;
+//std::vector<CorrectedCluster*> vCluster;
+//std::vector<CorrectedCluster*> closeClusters;
 
 //Container for selected corrected tracks and clusters (exported to TTree)
-std::vector<CorrectedTrack*> goodTracks;
-std::vector<CorrectedCluster*> assocClusters;
+//std::vector<CorrectedTrack*> goodTracks;
+//std::vector<CorrectedCluster*> assocClusters;
 bool cutsWord[19];
 
-pi0dEvent fullEvent;
+//pi0dEvent fullEvent;
 
 double Mpi0 = 0.1349766;
 double Mpic = 0.139570;
 //double Me = 0.000510998928;
 double Me = 0.00051099891;
+
+ROOTRawEvent rawEvent;
+ROOTCorrectedEvent corrEvent;
+ROOTBurst rootBurst;
 
 
 

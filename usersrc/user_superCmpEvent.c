@@ -20,19 +20,9 @@ using namespace std;
 void clearAll(){
 	int i = 0;
 
-	for(int i=0; i<vtrack.size();i++){
-		delete vtrack[i];
-	}
-	vtrack.clear();
-
-	for(int i=0; i<vCluster.size();i++){
-		delete vCluster[i];
-	}
-	vCluster.clear();
-
-	closeClusters.clear();
-	assocClusters.clear();
-	goodTracks.clear();
+	rawEvent.clear();
+	corrEvent.clear();
+	rootBurst.clear();
 }
 
 int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
@@ -64,8 +54,10 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 
 	// 1) Apply all corrections
 	if(dataOnly) user_lkrcalcor_SC(sbur,sevt,1);
-	vtrack = CreateTracks(sevt);
-	vCluster = CreateClusters(sevt);
+	rootBurst = sbur;
+	rawEvent = sevt;
+	CreateTracks(sevt);
+	CreateClusters(sevt);
 	//Do it later: depends on the detected beam charge
 	//kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
 	//kaonP = abcog_params.pkp*(1+abcog_params.beta);
@@ -73,10 +65,10 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 
 
 	if(channel==KE2){
-		passEvent = nico_ke2Select(sbur, sevt);
+		//passEvent = nico_ke2Select(sbur, sevt);
 	}
 	if(channel==PI0DALITZ){
-		passEvent = nico_pi0DalitzSelect(sbur, sevt);
+		passEvent = nico_pi0DalitzSelect();
 		if(passEvent==0) nico_pi0DalitzAna(sbur, sevt);
 	}
 

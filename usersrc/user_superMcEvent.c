@@ -23,23 +23,23 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 		//cout << "\t" << evt->part[i].type << endl;
 		//cout << evt->part[i].pvertex[2] << endl;
 		if(evt->part[i].type==64 && !ep){
-			fullEvent.epPTrue = TVector3(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3]).Unit();
-			fullEvent.epETrue = evt->part[i].p[0];
+			//fullEvent.epPTrue = TVector3(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3]).Unit();
+			//fullEvent.epETrue = evt->part[i].p[0];
 			ep = true;
 		}
 		if(evt->part[i].type==-64 && !em){
-			fullEvent.emPTrue = TVector3(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3]).Unit();
-			fullEvent.emETrue = evt->part[i].p[0];
+			//fullEvent.emPTrue = TVector3(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3]).Unit();
+			//fullEvent.emETrue = evt->part[i].p[0];
 			em = true;
 		}
 	}
-	vMass.push_back(Me);
-	vP.push_back(fullEvent.epPTrue*fullEvent.epETrue);
-	vMass.push_back(Me);
-	vP.push_back(fullEvent.emPTrue*fullEvent.emETrue);
+	//vMass.push_back(Me);
+	//vP.push_back(fullEvent.epPTrue*fullEvent.epETrue);
+	//vMass.push_back(Me);
+	//vP.push_back(fullEvent.emPTrue*fullEvent.emETrue);
 
-	fullEvent.meeTrue = sqrt(invMass2(vMass, vP));
-	fullEvent.xTrue = pow(fullEvent.meeTrue/Mpi0, 2.);
+	//fullEvent.meeTrue = sqrt(invMass2(vMass, vP));
+	//fullEvent.xTrue = pow(fullEvent.meeTrue/Mpi0, 2.);
 
 
 	user_superCmpEvent(sbur, &evt->scmpevt);

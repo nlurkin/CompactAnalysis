@@ -408,7 +408,7 @@ UCSRCS = user_init.c \
 			user_hyperCmpEvent.c\
 			nico_pi0dalitzSelection.c\
 			nico_pi0dalitzAna.c\
-			nico_ke2Selection.c\
+#			nico_ke2Selection.c\
 
 UCOBJS = $(UCSRCS:.c=.o)
 
@@ -447,7 +447,7 @@ compact: $(OBJS) $(UOBJS) $(UAOBJS)
 	$(OBJS:%=$(OBJDIR)/%) \
 	$(UOBJS:%=$(OBJDIR)/%) \
 	$(UAOBJS:%=$(OBJDIR)/%) \
-	$(LDIRS) $(LIBS) $(CERNLIBS) $(F77LIBS) $(LIBS) $(ROOTLIBS) -lmystructs -Lobj
+	$(LDIRS) $(LIBS) $(CERNLIBS) $(F77LIBS) $(LIBS) $(ROOTLIBS) -lmystructs -lexportClasses -Lobj
 
 clean:
 	$(RM) -r $(OBJDIR) $(DEPDIR)
@@ -631,12 +631,20 @@ FORCE:
 #
 
 
-root:obj/libmystructs.so
+root:obj/libmystructs.so obj/libexportClasses.so
 
 obj/libmystructs.so:usersrc/mystructs.c obj/Dict_mystructs.cpp
 	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/mystructs.c obj/Dict_mystructs.cpp -o obj/libmystructs.so
+
+obj/libexportClasses.so: usersrc/exportClasses.c obj/Dict_exportClasses.cpp
+	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/exportClasses.c obj/Dict_exportClasses.cpp -o obj/libexportClasses.so
 
 
 obj/Dict_mystructs.cpp: userinc/mystructs.h userinc/LinkDef_mystructs.h
 	@ [ ! -d $(OBJDIR) ] && $(MKDIR) $(OBJDIR) || true
 	rootcint -v -f obj/Dict_mystructs.cpp -c userinc/mystructs.h userinc/LinkDef_mystructs.h
+
+obj/Dict_exportClasses.cpp: userinc/exportClasses.h userinc/LinkDef_exportClasses.h
+	@ [ ! -d $(OBJDIR) ] && $(MKDIR) $(OBJDIR) || true
+	rootcint -v -f obj/Dict_exportClasses.cpp -c userinc/exportClasses.h userinc/LinkDef_exportClasses.h 
+	

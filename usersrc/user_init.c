@@ -6,11 +6,6 @@
 /*                                          RWM 20/6/97 */
 /********************************************************/
 
-/*
- * TODO : Electron ID Efficiency (Ke2 MC only)
- * TODO : Pb wall
- */
-
 #include "cmpio.h"
 #include "user.h"
 #include "reader.h"
@@ -74,24 +69,14 @@ double invMass2(vector<double> mass, vector<TVector3> p){
 		Energy.push_back(sqrt(pow(mass[i],2) + p[i].Mag2()));
 	}
 
-	//cout << "M " << printSTLvector<double>(mass) << endl;
-	//cout << "Energy " << printSTLvector<double>(Energy) << endl;
-	//cout << "P " << printSTLvector(p) << endl;
-
 	for(int i=0; i<p.size()-1; i++){
 		for(int j=i+1; j<p.size(); j++){
 			ESum += Energy[i]*Energy[j];
-			//cout << "E" << i << "E" << j << ": " << Energy[i]*Energy[j] << endl;
 			PSum += p[i].Dot(p[j]);
-			//cout << "P" << i << ".P" << j << ": " << p[i].Dot(p[j]) << endl;
 		}
 		MSum += pow(mass[i],2);
 	}
 	MSum += pow(mass[p.size()-1],2);
-
-	//cout << "MSum " << MSum << endl;
-	//cout << "ESum " << ESum << endl;
-	//cout << "PSum " << PSum << endl;
 
 	return MSum + 2*ESum - 2*PSum;
 }
@@ -274,23 +259,29 @@ void propagateBefore(float &x, float &y, float &z, float zplane, trak t){
 	y = t.by + t.bdydz*(zplane-Geom->DCH.bz);
 	z = zplane;
 }
-TVector3 propagateBefore(float zplane, CorrectedTrack *t){
-	return t->detBPos + t->unBMomentum*((zplane-t->detBPos.Z())/t->unBMomentum.Z());
+TVector3 propagateBefore(float zplane, NPhysicsTrack pt){
+	NTrak t = rawEvent.track[pt.trackID];
+	return t.bDetPos + t.bMomentum*((zplane-t.bDetPos.Z())/t.bMomentum.Z());
 }
-TVector3 propagateCorrBefore(float zplane, CorrectedTrack *t){
-	return t->detBPos + t->momentum*((zplane-t->detBPos.Z())/t->momentum.Z());
+TVector3 propagateCorrBefore(float zplane, NPhysicsTrack pt){
+	NTrak t = rawEvent.track[pt.trackID];
+	return t.bDetPos + pt.momentum*((zplane-t.bDetPos.Z())/pt.momentum.Z());
 }
 void propagateAfter(float &x, float &y, float &z, float zplane, trak t){
 	x = t.x + t.dxdz*(zplane-Geom->DCH.z);
 	y = t.y + t.dydz*(zplane-Geom->DCH.z);
 	z = zplane;
 }
-TVector3 propagateAfter(float zplane, CorrectedTrack *t){
-	return t->detPos + t->unMomentum*((zplane-t->detPos.Z())/t->unMomentum.Z());
+TVector3 propagateAfter(float zplane, NPhysicsTrack pt){
+	NTrak t = rawEvent.track[pt.trackID];
+	return t.aDetPos + t.aMomentum*((zplane-t.aDetPos.Z())/t.aMomentum.Z());
 }
-TVector3 propagate(float zplane, CorrectedTrack *t){
+TVector3 propagate(float zplane, NPhysicsTrack pt){
+	NTrak t = rawEvent.track[pt.trackID];
 	//Ou detBpos???
-	return t->middlePos + t->momentum*((zplane-t->middlePos.Z())/t->momentum.Z());
+	//return t->middlePos + pt.momentum*((zplane-t->middlePos.Z())/pt.momentum.Z());
+	//TODO FIXME
+	return TVector3();
 }
 TVector3 propagate(float zplane, TVector3 pos, TVector3 p){
 	return pos + p*((zplane-pos.Z())/p.Z());
@@ -411,14 +402,14 @@ float correctedEP(superCmpEvent* sevt, trak t, float &eOverP){
 
 	return e_track;
 }
-float correctClusterE(superCmpEvent *sevt, CorrectedCluster *c){
+float correctClusterE(superCmpEvent *sevt, NPhysicsCluster c){
 	int i, j, k;
 	int l, m, n;
 
 	float x,y;
 
-	x = c->position.X();
-	y = c->position.Y();
+	x = c.position.X();
+	y = c.position.Y();
 
 	// First find out to which cell is pointing the deflected track (define CPDindex and CELLindex)
 	// Of course, before you had to extrapolate the track to the LKR to get the track coordinates there
@@ -457,96 +448,91 @@ float correctClusterE(superCmpEvent *sevt, CorrectedCluster *c){
 	// Now that you know the cell hit by the track, correct the energy for the track cluster (is there is one associated to the track)
 	double e_cluster;          // momentum and energy of the track
 
-	e_cluster = sevt->cluster[c->clusterID].energy / EopCorr[CPDindex][CELLindex];  // Ke3 E/p correction for each cell
+	e_cluster = sevt->cluster[c.clusterID].energy / EopCorr[CPDindex][CELLindex];  // Ke3 E/p correction for each cell
 
 	return e_cluster;
 }
 
-CorrectedTrack *correctTrack(superCmpEvent *sevt, int i){
+NPhysicsTrack correctTrack(superCmpEvent *sevt, int i){
 	float eOverP;
 	trak t = sevt->track[i];
 	double pTrack = p_corr_ab(t.p,t.q);
 	double eTrack = correctedEP(sevt, t, eOverP);
 
-	CorrectedTrack *x = new CorrectedTrack;
-	x->trackID = i;
-	//x.energy pas encore
-	//x.momentum pas encore	-> done
-	x->pMag = pTrack;
-	//x.vertex pas encore -> done
-	//x.cda pas encore -. done
-	//x.middlePos pas encore -> done
-	x->detBPos = TVector3(t.bx, t.by, Geom->DCH.bz);
-	x->detPos = TVector3(t.x, t.y, Geom->DCH.z);
-	//x->t = t;
+	NPhysicsTrack x;
+
+	x.trackID = i;
+	x.p = pTrack;
+	x.E = eTrack;
 
 	if(t.iClus>=0){
-		if(dataOnly){
-			x->clusterEnergy = eTrack;
-		}
-		else{
-			x->clusterEnergy = sevt->cluster[t.iClus].energy;
-		}
+		x.clusterID = t.iClus;
 	}
 	else{
-		x->clusterEnergy = 0;
+		x.clusterID = -1;
 	}
-	x->unMomentum = TVector3(t.dxdz, t.dydz, 1).Unit();
-	//cout << "ddz " << t.dxdz << " " << t.dydz << endl;
-	//cout << "unMomentum " << printVector3(TVector3(t.dxdz, t.dydz, 1)) << endl;
-	//cout << "unMomentum.Unit " << printVector3(TVector3(t.dxdz, t.dydz, 1).Unit()) << endl;
-	//cout << "unMomentum " << printVector3(x->unMomentum) << endl;
-	x->unBMomentum = TVector3(t.bdxdz, t.bdydz, 1).Unit();
-	x->unPMag = t.p;
-	//x.V0 pas encore -> done
-	//x.unCda pas encore -> done
 
 	return x;
 }
-CorrectedCluster *correctCluster(superCmpEvent* sevt, int i){
+NPhysicsCluster correctCluster(superCmpEvent* sevt, int i){
 	cluster c = sevt->cluster[i];
-	CorrectedCluster *x = new CorrectedCluster;
+
+	NPhysicsCluster x;
+
 	double zsh, x1, y1;
 
-	x->clusterID = i;
-	//x->c = c;
-	x->unPosition = TVector3(c.x, c.y, Geom->Lkr.z);
+	x.clusterID = i;
 
 	if(dataOnly){
-		x->position.SetZ(Geom->Lkr.z + 16.5 + 4.3*log(c.energy));
+		x.position.SetZ(Geom->Lkr.z + 16.5 + 4.3*log(c.energy));
 		//x->position.SetZ(Geom->Lkr.z);
-		x->position.SetX((x->unPosition.X() + 0.136 + 0.87e-3*x->unPosition.Y()) * (1+(x->position.Z()-x->unPosition.Z())/10998.));
-		x->position.SetY((x->unPosition.Y() + 0.300 - 0.87e-3*x->unPosition.X()) * (1+(x->position.Z()-x->unPosition.Z())/10998.));
+		x.position.SetX((c.x + 0.136 + 0.87e-3*c.y) * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
+		x.position.SetY((c.y + 0.300 - 0.87e-3*c.x) * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
 
-		x->energy = correctClusterE(sevt, x);
+		x.E = correctClusterE(sevt, x);
 	}
 	else if(mcOnly){
-		x->position.SetZ(Geom->Lkr.z + 16.5 + 4.3*log(c.energy));
-		x->position.SetX((x->unPosition.X() - 0.013) * (1+(x->position.Z()-x->unPosition.Z())/10998.));
-		x->position.SetY(x->unPosition.Y() * (1+(x->position.Z()-x->unPosition.Z())/10998.));
+		x.position.SetZ(Geom->Lkr.z + 16.5 + 4.3*log(c.energy));
+		x.position.SetX((c.x - 0.013) * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
+		x.position.SetY(c.y * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
 
-		x->energy = c.energy;
+		x.E = c.energy;
 	}
 	return x;
 }
 
-vector<CorrectedTrack*> CreateTracks(superCmpEvent *sevt){
-	vector<CorrectedTrack*> vtracks;
-	CorrectedTrack *t;
+void CreateTracks(superCmpEvent *sevt){
 	for(int i=0; i<sevt->Ntrack; i++){
-		t = correctTrack(sevt, i);
-		vtracks.push_back(t);
+		NTrak x;
+		x.bdxdz = sevt->track[i].bdxdz;
+		x.bdydz = sevt->track[i].bdydz;
+		x.bDetPos = TVector3(sevt->track[i].bx, sevt->track[i].by, Geom->DCH.bz);
+		x.aDetPos = TVector3(sevt->track[i].x, sevt->track[i].y, Geom->DCH.z);
+		x.bMomentum = TVector3(x.bdxdz, x.bdydz, 1).Unit();
+		x.aMomentum = TVector3(sevt->track[i].dxdz, sevt->track[i].dydz, 1).Unit();
+		x.p = sevt->track[i].p;
+		x.q = sevt->track[i].q;
+		x.time = sevt->track[i].time;
+
+		NPhysicsTrack t = correctTrack(sevt, i);
+
+		rawEvent.track.push_back(x);
+		corrEvent.pTrack.push_back(t);
 	}
-	return vtracks;
 }
-vector<CorrectedCluster*> CreateClusters(superCmpEvent *sevt){
-	vector<CorrectedCluster*> vClusters;
-	CorrectedCluster *t;
+void CreateClusters(superCmpEvent *sevt){
 	for(int i=0; i<sevt->Ncluster; i++){
-		t = correctCluster(sevt, i);
-		vClusters.push_back(t);
+		NCluster x;
+		x.position = TVector3(sevt->cluster[i].x, sevt->cluster[i].y, Geom->Lkr.z);
+		x.E = sevt->cluster[i].energy;
+		x.dDeadCell = sevt->cluster[i].dDeadCell;
+		x.time = sevt->cluster[i].time;
+
+		NPhysicsCluster t = correctCluster(sevt, i);
+
+		rawEvent.cluster.push_back(x);
+		corrEvent.pCluster.push_back(t);
 	}
-	return vClusters;
 }
 
 const vector<string> tokenize(string s, const char delim) {
@@ -728,11 +714,11 @@ void printCuts(){
 int nico_ke2Init(){
 	/* WARNING: do not alter things before this line */
 	/*---------- Add user C code here ----------*/
-	goodTracks.clear();
-	assocClusters.clear();
+	//goodTracks.clear();
+	//assocClusters.clear();
 	outTree = new TTree("event", "Event");
-	outTree->Branch("goodTrack", "std::vector<CorrectedTrack>", &goodTracks, 64000, 1);
-	outTree->Branch("assocCluster", "std::vector<CorrectedCluster>", &assocClusters, 64000, 1);
+	//outTree->Branch("goodTrack", "std::vector<CorrectedTrack>", &goodTracks, 64000, 1);
+	//outTree->Branch("assocCluster", "std::vector<CorrectedCluster>", &assocClusters, 64000, 1);
 
 	new TH1D("Cuts", "Failed Cuts", 20, 0.5, 20.5);
 	new TH1D("CutsKe2", "Failed Ke2 Cuts", 20, 0.5, 20.5);
@@ -770,14 +756,16 @@ int nico_pi0DalitzInit(){
 	if(opts.count("ff")!=0) ffWeightType = atoi(opts["ff"].c_str());
 	else ffWeightType = -1;
 
-	goodTracks.clear();
-	assocClusters.clear();
+	rawEvent.clear();
+	corrEvent.clear();
 	outTree = new TTree("event", "Event");
-	outTree->Branch("goodTrack", "std::vector<CorrectedTrack*>", &goodTracks, 64000, 1);
+	//outTree->Branch("goodTrack", "std::vector<CorrectedTrack*>", &goodTracks, 64000, 1);
 	//outTree->Branch("assocCluster", "std::vector<CorrectedCluster*>", &assocClusters, 64000, 1);
 	//outTree->Branch("cutsWord", &cutsWord, "cutsWord[19]/O");
 
-	outTree->Branch("pi0dEvent" ,"pi0dEvent", &fullEvent);
+	outTree->Branch("pi0dBurst" ,"ROOTBurst", &rootBurst);
+	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
+	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
 
 	//Vertex
 	new TH1D("vertexN", "vertexN", 10, 0, 10); 			///
