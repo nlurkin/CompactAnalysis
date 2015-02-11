@@ -23,7 +23,7 @@ using namespace std;
  * Output
  */
 extern FILE *fprt, *fprt2;		// Pointers to output files (passing events, failing events)
-extern TTree *outTree;			// Output TTree
+extern TTree *outTree, *headerTree;			// Output TTree
 
 /*
  * CPD Cells things
@@ -91,7 +91,7 @@ extern double Me;
 extern ROOTRawEvent rawEvent;
 extern ROOTCorrectedEvent corrEvent;
 extern ROOTBurst rootBurst;
-
+extern ROOTFileHeader rootFileHeader;
 
 /*
  * Function declarations

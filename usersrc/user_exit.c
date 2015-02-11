@@ -19,6 +19,10 @@ int user_exit() {
 	/*---------- Add user C code here ----------*/
 	cout << endl;
 	if(outTree) outTree->Write();
+	if(headerTree){
+		headerTree->Fill();
+		headerTree->Write();
+	}
 	gFile->Write();
 	gFile->Purge();
 	gFile->Close();

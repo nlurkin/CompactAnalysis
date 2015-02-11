@@ -8,7 +8,7 @@
 
 //Output
 FILE * fprt, *fprt2;
-TTree *outTree;
+TTree *outTree, *headerTree;
 
 //CPD Cells things
 float CPDpos_leftDownCorner[256][2];      	// CPDpos_leftDownCorner[256CPDs][x,y]
@@ -63,6 +63,6 @@ double Me = 0.00051099891;
 ROOTRawEvent rawEvent;
 ROOTCorrectedEvent corrEvent;
 ROOTBurst rootBurst;
-
+ROOTFileHeader rootFileHeader;
 
 

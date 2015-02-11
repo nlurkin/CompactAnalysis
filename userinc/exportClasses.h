@@ -61,7 +61,7 @@ public:
 	ClassDefNV(NSuperTimeOffset, 1);
 };
 
-/*class NAbcog_params{
+class NAbcog_params{
 public:
 	NAbcog_params():
 		alpha(0), alpha_coeff(0), beta(0), beta_coeff(0), mkp(0), mkperr(0),
@@ -70,7 +70,7 @@ public:
 		pkdxdzp(0), pkdydzp(0), pkxoffp(0), pkyoffp(0), pkm(0),
 		pkdxdzm(0), pkdydzm(0), pkxoffm(0), pkyoffm(0){};
 
-	NAbcog_params(abcog_params_t &ref);
+	NAbcog_params& operator=(void *ref);
 public:
 	float alpha;
 	float alpha_coeff;
@@ -99,8 +99,9 @@ public:
 	float pkdydzm;
 	float pkxoffm;
 	float pkyoffm;
+
+	ClassDefNV(NAbcog_params, 1);
 };
-*/
 
 class NCluster : public TObject{
 public:
@@ -126,8 +127,6 @@ public:
 	int vtxID;
 	float time;
 	float p;
-	/*float bx;
-	float by;*/
 	float bdxdz;
 	float bdydz;
 	TVector3 bDetPos;
@@ -170,61 +169,12 @@ public:
 	unsigned int Nvtxtrack;
 	int charge;
 	float cda;
-	/*float x;
-	float y;
-	float z;*/
 	float chi2;
 	TVector3 position;
 	std::vector<NVtxTrack> vtxtrack;
 
 	ClassDefNV(NSCVertex, 1);
 };
-
-//class NDCHTrack{
-//	float pq;
-//	float p;
-//	float q;
-//	float perr;
-//	float chi2;
-//	float bx;
-//	float by;
-//	float bdxdz;
-//	float bdydz;
-//	float x;
-//	float y;
-//	float dxdz;
-//	float dydz;
-//	float time;
-//	float quality;
-//	float hodtime;
-//	int hodstatus;
-//	int nhits;
-//	unsigned int Nhit;
-//	float exhac;
-//	float eyhac;
-//	float ddeadcell;
-//	float sigxx;
-//	float sigyy;
-//
-//	float sigdxdx;
-//	float sigdydy;
-//	float sigxdx;
-//	float sigxy;
-//	float sigdxy;
-//	float sigxdy;
-//	float sigdxdy;
-//	float sigydy;
-//	int HitPattern;
-//	int efficiency[2];
-//	int spareInt[2];
-//	int spareFloat[2];
-//	int LKRclu;
-//	float EovP;
-//	float Espy;
-//	float muvTime;
-//	float anavar[20];
-//	int anaflag[5];
-//};
 
 class ROOTRawEvent : public TObject{
 public:
@@ -288,20 +238,38 @@ public:
 
 class ROOTBurst : public TObject{
 public:
-	ROOTBurst():nrun(-1), time(-1){};
+	ROOTBurst():isData(false), isMC(false), nrun(-1), time(-1){};
 
 	ROOTBurst& operator=(superBurst *ref);
 
 	void clear(){
+		isData = false;
+		isMC = false;
 		nrun = -1;
 		time = -1;
 	};
 public:
+	bool isData;
+	bool isMC;
 	int nrun;
 	int time;
 	NSuperTimeOffset tOffst;
+	NAbcog_params abcog_params;
 
 	ClassDefNV(ROOTBurst, 1);
+};
+
+class ROOTFileHeader: public TObject{
+public:
+	ROOTFileHeader():NProcessedEvents(0), NFailedEvents(0), NPassedEvents(0){};
+	~ROOTFileHeader(){};
+
+public:
+	int NProcessedEvents;
+	int NFailedEvents;
+	int NPassedEvents;
+
+	ClassDefNV(ROOTFileHeader, 1);
 };
 
 #endif

@@ -759,6 +759,7 @@ int nico_pi0DalitzInit(){
 	rawEvent.clear();
 	corrEvent.clear();
 	outTree = new TTree("event", "Event");
+	headerTree = new TTree("header", "Header");
 	//outTree->Branch("goodTrack", "std::vector<CorrectedTrack*>", &goodTracks, 64000, 1);
 	//outTree->Branch("assocCluster", "std::vector<CorrectedCluster*>", &assocClusters, 64000, 1);
 	//outTree->Branch("cutsWord", &cutsWord, "cutsWord[19]/O");
@@ -766,6 +767,7 @@ int nico_pi0DalitzInit(){
 	outTree->Branch("pi0dBurst" ,"ROOTBurst", &rootBurst);
 	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
 	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
+	headerTree->Branch("header" ,"ROOTFileHeader", &rootFileHeader);
 
 	//Vertex
 	new TH1D("vertexN", "vertexN", 10, 0, 10); 			///

@@ -56,8 +56,13 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	if(dataOnly) user_lkrcalcor_SC(sbur,sevt,1);
 	rootBurst = sbur;
 	rawEvent = sevt;
+	rootBurst.abcog_params = &abcog_params;
+	if(dataOnly) rootBurst.isData = true;
+	if(mcOnly) rootBurst.isMC = true;
 	CreateTracks(sevt);
 	CreateClusters(sevt);
+
+	rootFileHeader.NProcessedEvents++;
 	//Do it later: depends on the detected beam charge
 	//kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
 	//kaonP = abcog_params.pkp*(1+abcog_params.beta);
@@ -69,7 +74,11 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	}
 	if(channel==PI0DALITZ){
 		passEvent = nico_pi0DalitzSelect();
-		if(passEvent==0) nico_pi0DalitzAna(sbur, sevt);
+		if(passEvent==0){
+			nico_pi0DalitzAna(sbur, sevt);
+			rootFileHeader.NPassedEvents++;
+		}
+		else rootFileHeader.NFailedEvents++;
 	}
 
 	/*----------- End of user C code -----------*/

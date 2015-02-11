@@ -9,10 +9,12 @@ ClassImp(NCluster);
 ClassImp(NPhysicsCluster);
 ClassImp(NPhysicsTrack);
 ClassImp(NSuperTimeOffset);
+ClassImp(NAbcog_params);
 
 ClassImp(ROOTRawEvent);
 ClassImp(ROOTCorrectedEvent);
 ClassImp(ROOTBurst);
+ClassImp(ROOTFileHeader);
 //ClassImp(PhysicsEvent);
 
 NVtxTrack::NVtxTrack(vtxtracks &ref):
@@ -44,19 +46,38 @@ NSuperTimeOffset& NSuperTimeOffset::operator=(superTimeOffset &ref){
 	return *this;
 };
 
-/*NAbcog_params::NAbcog_params(abcog_params_t &ref):
-		alpha(ref.alpha), alpha_coeff(ref.alpha_coeff),	beta(ref.beta),
-		beta_coeff(ref.beta_coeff), mkp(ref.mkp), mkperr(ref.mkperr),
-		mkn(ref.mkn), mknerr(ref.mknerr), cogX1p(ref.cogX1p), cogY1p(ref.cogY1p),
-		cogX1n(ref.cogX1n), cogY1n(ref.cogY1n),	cogX4p(ref.cogX4p),
-		cogY4p(ref.cogY4p),	cogX4n(ref.cogX4n),	cogY4n(ref.cogY4n),
-		status(ref.status), pkp(ref.pkp), pkdxdzp(ref.pkdxdzp),
-		pkdydzp(ref.pkdydzp), pkxoffp(ref.pkxoffp),	pkyoffp(ref.pkyoffp),
-		pkm(ref.pkm), pkdxdzm(ref.pkdxdzm),	pkdydzm(ref.pkdydzm),
-		pkxoffm(ref.pkxoffm), pkyoffm(ref.pkyoffm)
+NAbcog_params& NAbcog_params::operator=(void *r)
 {
+	abcog_params_t *ref = (abcog_params_t*)r;
 
-};*/
+	alpha = ref->alpha;
+	alpha_coeff = ref->alpha_coeff;
+	beta = ref->beta;
+	beta_coeff = ref->beta_coeff;
+	mkp = ref->mkp;
+	mkperr = ref->mkperr;
+	mkn = ref->mkn;
+	mknerr = ref->mknerr;
+	cogX1p = ref->cogX1p;
+	cogY1p = ref->cogY1p;
+	cogX1n = ref->cogX1n;
+	cogY1n = ref->cogY1n;
+	cogX4p = ref->cogX4p;
+	cogY4p = ref->cogY4p;
+	cogX4n = ref->cogX4n;
+	cogY4n = ref->cogY4n;
+	status = ref->status;
+	pkp = ref->pkp;
+	pkdxdzp = ref->pkdxdzp;
+	pkdydzp = ref->pkdydzp;
+	pkxoffp = ref->pkxoffp;
+	pkyoffp = ref->pkyoffp;
+	pkm = ref->pkm;
+	pkdxdzm = ref->pkdxdzm;
+	pkdydzm = ref->pkdydzm;
+	pkxoffm = ref->pkxoffm;
+	pkyoffm = ref->pkyoffm;
+};
 
 ROOTRawEvent& ROOTRawEvent::operator=(superCmpEvent *ref){
 	clear();
