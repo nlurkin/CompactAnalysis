@@ -92,6 +92,7 @@ extern ROOTRawEvent rawEvent;
 extern ROOTCorrectedEvent corrEvent;
 extern ROOTBurst rootBurst;
 extern ROOTFileHeader rootFileHeader;
+extern NGeom rootGeom;
 
 /*
  * Function declarations
@@ -103,38 +104,6 @@ float 			correctedEP		(superCmpEvent* sevt, trak t, float &eOverP);
 float 			correctClusterE	(NPhysicsCluster *c);
 void 			loadEOPData		(superBurst *sbur);
 void 			defineBeamCharge(superBurst *sbur);
-
-//TVector related
-string 		printVector3		(TVector3 v);
-template<typename T>
-string printSTLvector(vector<T> v){
-	ostringstream ss;
-	typename vector<T>::iterator it;
-
-	ss << "Vector values :" << endl;
-	for(it=v.begin(); it!=v.end();it++){
-		ss << "\t" << (*it);
-		ss << endl;
-	}
-	ss << endl;
-	return ss.str();
-}
-string printSTLvector(vector<TVector3> v);
-
-TH1D* gH(TString name);
-
-double		distance2D			(TVector3 v1, TVector3 v2);
-void 		propagateBefore		(float &x, float &y, float &z, float zplane, trak t);
-TVector3 	propagateBefore		(float zplane, NPhysicsTrack t);
-TVector3 	propagateCorrBefore	(float zplane, NPhysicsTrack t);
-void 		propagateAfter		(float &x, float &y, float &z, float zplane, trak t);
-TVector3 	propagateAfter		(float zplane, NPhysicsTrack t);
-TVector3 	propagate			(float zplane, NPhysicsTrack t);
-TVector3 	propagate			(float zplane, TVector3 pos, TVector3 p);
-
-double 	missMass2	(double m1, double m2, TVector3 p1, TVector3 p2);
-double 	missMass2Man(double m1, double m2, float kp, float kdxdz, float kdydz, float ep, float edxdz, float edydz);
-double	invMass2	(vector<double> mass, vector<TVector3> p);
 
 bool 	isFilteredEvent	(int nrun, int nburst, int timestamp);
 

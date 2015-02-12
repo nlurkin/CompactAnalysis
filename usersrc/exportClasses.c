@@ -10,12 +10,16 @@ ClassImp(NPhysicsCluster);
 ClassImp(NPhysicsTrack);
 ClassImp(NSuperTimeOffset);
 ClassImp(NAbcog_params);
+ClassImp(NGeom);
 
 ClassImp(ROOTRawEvent);
 ClassImp(ROOTCorrectedEvent);
 ClassImp(ROOTBurst);
 ClassImp(ROOTFileHeader);
 //ClassImp(PhysicsEvent);
+
+ClassImp(NDCH);
+ClassImp(Nxyz);
 
 NVtxTrack::NVtxTrack(vtxtracks &ref):
 		iTrack(ref.iTrack), bdxdz(ref.bdxdz), bdydz(ref.bdydz)
@@ -77,6 +81,8 @@ NAbcog_params& NAbcog_params::operator=(void *r)
 	pkdydzm = ref->pkdydzm;
 	pkxoffm = ref->pkxoffm;
 	pkyoffm = ref->pkyoffm;
+
+	return *this;
 };
 
 ROOTRawEvent& ROOTRawEvent::operator=(superCmpEvent *ref){
@@ -135,4 +141,16 @@ NCluster::NCluster(cluster &ref):
 	E(ref.energy),
 	position(ref.x, ref.y, 0)
 {
+}
+
+
+NGeom& NGeom::operator=(GeomCompact *ref){
+	Dch[0].PosChamber.SetXYZ(ref->Dch[0].PosChamber.x, ref->Dch[0].PosChamber.y, ref->Dch[0].PosChamber.z);
+	Dch[1].PosChamber.SetXYZ(ref->Dch[1].PosChamber.x, ref->Dch[1].PosChamber.y, ref->Dch[1].PosChamber.z);
+	Dch[2].PosChamber.SetXYZ(ref->Dch[2].PosChamber.x, ref->Dch[2].PosChamber.y, ref->Dch[2].PosChamber.z);
+	Dch[3].PosChamber.SetXYZ(ref->Dch[3].PosChamber.x, ref->Dch[3].PosChamber.y, ref->Dch[3].PosChamber.z);
+
+	Lkr.SetXYZ(ref->Lkr.x, ref->Lkr.y, ref->Lkr.z);
+
+	return *this;
 }

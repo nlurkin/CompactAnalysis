@@ -15,6 +15,9 @@
 #pragma link C++ class NCluster;
 #pragma link C++ class NPhysicsCluster;
 #pragma link C++ class NAbcog_params;
+#pragma link C++ class NDCH;
+#pragma link C++ class Nxyz;
+#pragma link C++ class NGeom;
 #pragma link C++ class NPhysicsTrack;
 #pragma link C++ class NSuperTimeOffset;
 #pragma link C++ class vector<NSCVertex>;

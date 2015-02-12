@@ -57,8 +57,10 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	rootBurst = sbur;
 	rawEvent = sevt;
 	rootBurst.abcog_params = &abcog_params;
-	if(dataOnly) rootBurst.isData = true;
-	if(mcOnly) rootBurst.isMC = true;
+	rootGeom = Geom;
+	rootBurst.isData = dataOnly;
+	rootBurst.isMC = mcOnly;
+	rootBurst.pbWall = pbWall;
 	CreateTracks(sevt);
 	CreateClusters(sevt);
 
@@ -79,6 +81,8 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 			rootFileHeader.NPassedEvents++;
 		}
 		else rootFileHeader.NFailedEvents++;
+
+		outTree->Fill();
 	}
 
 	/*----------- End of user C code -----------*/

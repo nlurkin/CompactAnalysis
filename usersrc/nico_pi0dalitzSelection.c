@@ -15,6 +15,7 @@
 #include <iterator>
 #include <bitset>
 #include <iomanip>
+#include "funLib.h"
 using namespace std;
 
 #define FULLRUN false
@@ -179,6 +180,7 @@ int pi0d_failCut(int i){
 
 	fails->Fill(i, 1);
 	cutsWord[i] = false;
+	corrEvent.failedCond = i;
 	if(DEBUG_ || optDebug) cout << "Event is not passing selection" << endl;
 	if(!noOutput) fprintf(fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
 	return 0;
@@ -289,6 +291,8 @@ int nico_pi0DalitzSelect(){
 	corrEvent.weight = weight;
 
 	vertexTime = pi0d_getVertexTime(ivtx);
+	rawEvent.vtx[ivtx].time = vertexTime;
+	corrEvent.goodVertexID = ivtx;
 
 	gH("vertexZ")->Fill(rawEvent.vtx[ivtx].position.Z(), corrEvent.weight);
 	gH("vertexChi2")->Fill(rawEvent.vtx[ivtx].chi2, corrEvent.weight);
@@ -317,8 +321,8 @@ int nico_pi0DalitzSelect(){
 		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
 	}
 
-	outTree->FlushBaskets();
-	outTree->Fill();
+	//outTree->FlushBaskets();
+	//outTree->Fill();
 
 	pi0d_passSelection();
 	return 0;

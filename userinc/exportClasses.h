@@ -11,8 +11,11 @@ struct superCmpEvent;
 struct SCvertex;
 struct trak;
 struct cluster;
+struct GeomCompact;
 
-//##### COMPLETE
+//##########################
+//###   RawObjects
+//##########################
 class NVtxTrack : public TObject{
 public:
 	NVtxTrack(): iTrack(-1),bdxdz(0),bdydz(0){};
@@ -27,6 +30,89 @@ public:
 	ClassDefNV(NVtxTrack, 1);
 };
 
+class NCluster : public TObject{
+public:
+	NCluster():time(0), dDeadCell(0), E(0), lkr_acc(false){};
+	NCluster(cluster &ref);
+public:
+	float time;
+	float dDeadCell;
+	float E;
+	bool lkr_acc;
+	TVector3 position;
+
+	ClassDefNV(NCluster, 1);
+};
+
+class NTrak : public TObject{
+public:
+	NTrak():q(999), vtxID(-1), time(0), p(0), bdxdz(0), bdydz(0){};
+	NTrak(trak &ref);
+public:
+	int q;
+	int vtxID;
+	float time;
+	float p;
+	float bdxdz;
+	float bdydz;
+	TVector3 bDetPos;
+	TVector3 aDetPos;
+	TVector3 bMomentum;
+	TVector3 aMomentum;
+
+	ClassDefNV(NTrak, 1);
+};
+
+//##########################
+//###   Corrected objects
+//##########################
+class NPhysicsTrack : public TObject{
+public:
+	NPhysicsTrack():
+		trackID(-1), clusterID(-1), p(0), E(0), lkr_acc(false){};
+	~NPhysicsTrack(){};
+public:
+	int trackID;
+	int clusterID;
+	float p;
+	float E;
+	bool lkr_acc;
+	TVector3 momentum;
+
+	ClassDefNV(NPhysicsTrack, 1);
+};
+
+class NPhysicsCluster : public TObject{
+public:
+	NPhysicsCluster(): clusterID(-1), E(0){};
+	~NPhysicsCluster(){};
+public:
+	int clusterID;
+	float E;
+	TVector3 position;
+
+	ClassDefNV(NPhysicsCluster, 1);
+};
+
+class NSCVertex : public TObject{
+public:
+	NSCVertex():Nvtxtrack(0), charge(999), cda(0), chi2(-1), time(-1){};
+	NSCVertex(SCvertex &ref);
+public:
+	unsigned int Nvtxtrack;
+	int charge;
+	float cda;
+	float chi2;
+	float time;
+	TVector3 position;
+	std::vector<NVtxTrack> vtxtrack;
+
+	ClassDefNV(NSCVertex, 1);
+};
+
+//##########################
+//###   Databases
+//##########################
 class NSuperTimeOffset : public TObject{
 public:
 	NSuperTimeOffset():
@@ -103,78 +189,47 @@ public:
 	ClassDefNV(NAbcog_params, 1);
 };
 
-class NCluster : public TObject{
+class Nxyz : public TObject{
 public:
-	NCluster():time(0), dDeadCell(0), E(0){};
-	NCluster(cluster &ref);
-public:
-	float time;
-	float dDeadCell;
-	/*float x;
-	float y;*/
-	float E;
-	TVector3 position;
+	Nxyz(): x(0), y(0), z(0){};
+	~Nxyz(){};
 
-	ClassDefNV(NCluster, 1);
+	void SetXYZ(double x, double y, double z){
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+public:
+	double x, y, z;
+
+	ClassDefNV(Nxyz, 1);
 };
 
-class NTrak : public TObject{
+class NDCH : public TObject{
 public:
-	NTrak():q(999), vtxID(-1), time(0), p(0), bdxdz(0), bdydz(0){};
-	NTrak(trak &ref);
+	NDCH(){};
+	~NDCH(){};
 public:
-	int q;
-	int vtxID;
-	float time;
-	float p;
-	float bdxdz;
-	float bdydz;
-	TVector3 bDetPos;
-	TVector3 aDetPos;
-	TVector3 bMomentum;
-	TVector3 aMomentum;
+	Nxyz PosChamber;
 
-	ClassDefNV(NTrak, 1);
+	ClassDefNV(NDCH, 1);
 };
 
-class NPhysicsTrack : public TObject{
+class NGeom : public TObject{
 public:
-	NPhysicsTrack():
-		trackID(-1), clusterID(-1), p(0), E(0){};
-	~NPhysicsTrack(){};
-public:
-	int trackID;
-	int clusterID;
-	float p;
-	float E;
-	TVector3 momentum;
+	NGeom(){};
+	~ NGeom(){};
 
-	ClassDefNV(NPhysicsTrack, 1);
+	NGeom& operator=(GeomCompact *ref);
+public:
+	NDCH Dch[4];
+	Nxyz Lkr;
+	ClassDefNV(NGeom, 1);
 };
 
-class NPhysicsCluster : public TObject{
-public:
-	int clusterID;
-	float E;
-	TVector3 position;
-
-	ClassDefNV(NPhysicsCluster, 1);
-};
-
-class NSCVertex : public TObject{
-public:
-	NSCVertex():Nvtxtrack(0), charge(999), cda(0), chi2(-1){};
-	NSCVertex(SCvertex &ref);
-public:
-	unsigned int Nvtxtrack;
-	int charge;
-	float cda;
-	float chi2;
-	TVector3 position;
-	std::vector<NVtxTrack> vtxtrack;
-
-	ClassDefNV(NSCVertex, 1);
-};
+//##########################
+//###   Top nodes
+//##########################
 
 class ROOTRawEvent : public TObject{
 public:
@@ -210,10 +265,12 @@ public:
 class ROOTCorrectedEvent : public TObject{
 public:
 	ROOTCorrectedEvent():
-		weight(0){};
+		failedCond(-1), goodVertexID(-1), weight(0){};
 
 	void clear(){
 		weight = 0;
+		failedCond = -1;
+		goodVertexID = -1;
 
 		pTrack.clear();
 		pCluster.clear();
@@ -221,6 +278,8 @@ public:
 	};
 
 public:
+	int failedCond;
+	int goodVertexID;
 	float weight;
 
 	std::vector<NPhysicsTrack> pTrack;
@@ -238,19 +297,21 @@ public:
 
 class ROOTBurst : public TObject{
 public:
-	ROOTBurst():isData(false), isMC(false), nrun(-1), time(-1){};
+	ROOTBurst():isData(false), isMC(false), pbWall(false), nrun(-1), time(-1){};
 
 	ROOTBurst& operator=(superBurst *ref);
 
 	void clear(){
 		isData = false;
 		isMC = false;
+		pbWall = false;
 		nrun = -1;
 		time = -1;
 	};
 public:
 	bool isData;
 	bool isMC;
+	bool pbWall;
 	int nrun;
 	int time;
 	NSuperTimeOffset tOffst;

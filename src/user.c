@@ -64,5 +64,6 @@ ROOTRawEvent rawEvent;
 ROOTCorrectedEvent corrEvent;
 ROOTBurst rootBurst;
 ROOTFileHeader rootFileHeader;
+NGeom rootGeom;
 
 
