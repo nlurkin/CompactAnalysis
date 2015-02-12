@@ -99,19 +99,6 @@ extern NGeom rootGeom;
  */
 //compact
 extern "C" int 	LKr_acc			(int,float,float,float);
-void 			GetCpdCellIndex	(double pos_x, double pos_y, int *cpd_index, int *cell_index);
-float 			correctedEP		(superCmpEvent* sevt, trak t, float &eOverP);
-float 			correctClusterE	(NPhysicsCluster *c);
-void 			loadEOPData		(superBurst *sbur);
-void 			defineBeamCharge(superBurst *sbur);
-
-bool 	isFilteredEvent	(int nrun, int nburst, int timestamp);
-
-//Corrections
-NPhysicsTrack	correctTrack	(superCmpEvent *sevt, trak t);
-void			CreateTracks	(superCmpEvent *sevt);
-NPhysicsCluster	correctCluster	(cluster c);
-void		 	CreateClusters	(superCmpEvent *sevt);
 
 //Channel selects
 int nico_ke2Select(superBurst *sbur,superCmpEvent *sevt);

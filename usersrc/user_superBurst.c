@@ -11,6 +11,7 @@
 #include "cmpio.h"
 #include "user.h"
 #include "reader.h"
+#include "compactLib.h"
 
 int user_superBurst(superBurst *sbur) {
 	/* WARNING: do not alter things before this line */

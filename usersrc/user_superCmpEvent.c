@@ -14,6 +14,8 @@
 #include "reader.h"
 #include <iostream>
 #include <iomanip>
+#include "compactLib.h"
+#include "funLib.h"
 
 using namespace std;
 
