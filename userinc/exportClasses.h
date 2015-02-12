@@ -265,12 +265,16 @@ public:
 class ROOTCorrectedEvent : public TObject{
 public:
 	ROOTCorrectedEvent():
-		failedCond(-1), goodVertexID(-1), weight(0){};
+		failedCond(-1), goodVertexID(-1), weight(0), kaonP(0){};
 
 	void clear(){
 		weight = 0;
 		failedCond = -1;
 		goodVertexID = -1;
+
+		kaonP = 0;
+
+		kaonMomentum.SetXYZ(0,0,0);
 
 		pTrack.clear();
 		pCluster.clear();
@@ -281,6 +285,8 @@ public:
 	int failedCond;
 	int goodVertexID;
 	float weight;
+	float kaonP;
+	TVector3 kaonMomentum;
 
 	std::vector<NPhysicsTrack> pTrack;
 	std::vector<NPhysicsCluster> pCluster;

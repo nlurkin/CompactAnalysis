@@ -195,7 +195,6 @@ int nico_pi0DalitzSelect(){
 
 	double vertexTime;
 
-	double kaonP;
 	double weight = 1.;
 
 	if(optDebug) cout << endl;
@@ -225,11 +224,17 @@ int nico_pi0DalitzSelect(){
 
 	//corrEvent.zVtx = corrEvent.vtx[ivtx].z;
 
-	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) kaonP = abcog_params.pkp*(1+abcog_params.beta);
-	else kaonP = abcog_params.pkm*(1+abcog_params.beta);
+	if(rawEvent.vtx[ivtx].charge==1){
+		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
+		corrEvent.kaonP = abcog_params.pkp*(1+abcog_params.beta);
+	}
+	else{
+		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzm, abcog_params.pkdydzm, 1.).Unit();
+		corrEvent.kaonP = abcog_params.pkm*(1+abcog_params.beta);
+	}
 
 	if(rootBurst.isMC && false){
-		weight = 1 + rootBurst.alpha*pow(kaonP-74.,2);
+		weight = 1 + rootBurst.alpha*pow(corrEvent.kaonP-74.,2);
 	}
 	corrEvent.weight = weight;
 
