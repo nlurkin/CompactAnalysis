@@ -31,7 +31,7 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	/* WARNING: do not alter things before this line */
 	/*---------- Add user C code here ----------*/
 	//if(!eopLoaded) loadEOPData(sbur); Done in user_superBurst
-	if(periodKeep!= 0 && period!=periodKeep) return 0;
+	if(periodKeep!= 0 && rootBurst.period!=periodKeep) return 0;
 	if(iEvent==0) cout << "First event: ";
 	if(iEvent % outputMod == 0) cout << iEvent << " " << sbur->nrun << " " << sbur->time << " " << sevt->timeStamp << "                 \r";
 	//####### DEBUGGING
@@ -55,23 +55,15 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	clearAll();
 
 	// 1) Apply all corrections
-	if(dataOnly) user_lkrcalcor_SC(sbur,sevt,1);
+	if(rootBurst.isData) user_lkrcalcor_SC(sbur,sevt,1);
 	rootBurst = sbur;
 	rawEvent = sevt;
 	rootBurst.abcog_params = &abcog_params;
 	rootGeom = Geom;
-	rootBurst.isData = dataOnly;
-	rootBurst.isMC = mcOnly;
-	rootBurst.pbWall = pbWall;
 	CreateTracks(sevt);
 	CreateClusters(sevt);
 
 	rootFileHeader.NProcessedEvents++;
-	//Do it later: depends on the detected beam charge
-	//kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
-	//kaonP = abcog_params.pkp*(1+abcog_params.beta);
-
-
 
 	if(channel==KE2){
 		//passEvent = nico_ke2Select(sbur, sevt);
@@ -81,10 +73,13 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 		if(passEvent==0){
 			nico_pi0DalitzAna(sbur, sevt);
 			rootFileHeader.NPassedEvents++;
+			outTree->Fill();
 		}
-		else rootFileHeader.NFailedEvents++;
+		else{
+			rootFileHeader.NFailedEvents++;
+			if(exportAllEvents) outTree->Fill();
+		}
 
-		outTree->Fill();
 	}
 
 	/*----------- End of user C code -----------*/

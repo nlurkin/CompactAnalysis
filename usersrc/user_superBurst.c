@@ -17,15 +17,15 @@ int user_superBurst(superBurst *sbur) {
 	/* WARNING: do not alter things before this line */
 	/*---------- Add user C code here ----------*/
 	if(sbur->brtype==2){
-		mcOnly = true;
-		dataOnly = false;
+		rootBurst.isMC = true;
+		rootBurst.isData = false;
 	}
 	else if(sbur->brtype==1){
-		mcOnly = false;
-		dataOnly = true;
+		rootBurst.isMC = false;
+		rootBurst.isData = true;
 	}
 	sbur->BadB.Skip = 0; /* see user_superBurst.example.c to learn to use it */
-	if(		dataOnly && (
+	if(		rootBurst.isData && (
 			sbur->BadB.Phys != 0 ||
 			sbur->BadB.Dch != 0)
 	) sbur->BadB.Skip = 1;

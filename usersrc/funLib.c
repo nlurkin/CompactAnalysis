@@ -15,6 +15,10 @@
 #include "reader.h"
 #endif
 
+double Mpi0 = 0.1349766;
+double Mpic = 0.139570;
+double Me = 0.00051099891;
+
 std::string printVector3(TVector3 v){
 	std::ostringstream ss;
 	ss.precision(7);
@@ -298,3 +302,5 @@ bool isFilteredEvent(int nrun, int nburst, int timestamp){
 	}
 	return false;
 }
+
+

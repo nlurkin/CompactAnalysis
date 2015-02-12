@@ -297,7 +297,7 @@ public:
 
 class ROOTBurst : public TObject{
 public:
-	ROOTBurst():isData(false), isMC(false), pbWall(false), nrun(-1), time(-1){};
+	ROOTBurst():isData(false), isMC(false), pbWall(false), nrun(-1), time(-1), period(-1), beamCharge(-99), alpha(0){};
 
 	ROOTBurst& operator=(superBurst *ref);
 
@@ -307,6 +307,9 @@ public:
 		pbWall = false;
 		nrun = -1;
 		time = -1;
+		period = -1;
+		beamCharge = -99;
+		alpha = 0;
 	};
 public:
 	bool isData;
@@ -314,6 +317,9 @@ public:
 	bool pbWall;
 	int nrun;
 	int time;
+	int period;
+	int beamCharge;
+	double alpha;
 	NSuperTimeOffset tOffst;
 	NAbcog_params abcog_params;
 

@@ -536,6 +536,9 @@ int nico_ke2Select(superBurst *sbur,superCmpEvent *sevt) {
 	double MK = abcog_params.mkp;
 	double Me = 0.00051099891;
 
+	TVector3 kaonMomentum;
+	double kaonP;
+
 	//Histograms
 	TH1D *htimeDchOffset = (TH1D*)gDirectory->Get("timeDchOffset");
 	TH1D *hdeadCellDist = (TH1D*)gDirectory->Get("deadCellDist");

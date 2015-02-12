@@ -1,13 +1,7 @@
-#include <vector>
-#include "TVector3.h"
-#include <sstream>
 #include "mystructs.h"
 #include "TTree.h"
-#include <iostream>
 #include "ana3pi.h"
-#include "TH1D.h"
 #include "exportClasses.h"
-using namespace std;
 
 #ifndef USER_HH
 #define USER_HH
@@ -40,53 +34,26 @@ extern bool eopLoaded;								// Did we already load the eop data for the curren
  */
 extern int iEvent;						// Current event index
 extern char gString[200];				// Global string passed via CLI
-extern map<string,string> opts;			// Parsed options map
+extern std::map<std::string,std::string> opts;			// Parsed options map
 extern int channel;						// Selected channel
-extern bool mcOnly;						// For MC only actions
-extern bool dataOnly;					// For Data only actions
 extern bool optDebug;					// Activate debugging
-extern int ffWeightType;				// Type of form factor weight (MC only)
-										// 0:FF=1 , 1:FF=x, 2:FF=x^2
+extern bool exportAllEvents;			// Export all events. If false, export only events passing the cuts
 extern bool noOutput;					// Do not create output txt files
 extern int outputMod;					// Output events index every outputMod
 extern cutsValues cutsDefinition;		// Cuts values
+extern int periodKeep;					// Period number to keep
 
 /*
  * Kaon
  */
-extern TVector3 kaonMomentum;			// Kaon unit momentum
-extern double kaonP;					// Kaon momentum magnitude
-extern int beamCharge;					// Kaon charge
-extern bool noTestCharge;				// Beam charge not defined
 extern abcog_params_t abcog_params;		// Definition of abcog_params for eclipse indexer
-extern bool pbWall;						// Is the Pb wall present
-extern double alpha;					// alpha correction to mc kaon weight
-extern int period;						// Period number
-extern int periodKeep;					// Period number to keep
+
 /*
  * Event filtering
  */
-extern vector<eventID> badEventsList;	// List of events extracted
+extern std::vector<eventID> badEventsList;	// List of events extracted
 
-/*
- * Containers for corrected tracks and clusters
- */
-//extern vector<CorrectedTrack*> vtrack;
-//extern vector<CorrectedCluster*> vCluster;
-//extern vector<CorrectedCluster*> closeClusters;
-
-/*
- * Container for selected corrected tracks and clusters (exported to TTree)
- */
-//extern vector<CorrectedTrack*> goodTracks;
-//extern vector<CorrectedCluster*> assocClusters;
 extern bool cutsWord[19];
-
-//extern pi0dEvent fullEvent;
-
-extern double Mpi0;
-extern double Mpic;
-extern double Me;
 
 extern ROOTRawEvent rawEvent;
 extern ROOTCorrectedEvent corrEvent;

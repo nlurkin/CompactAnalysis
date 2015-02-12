@@ -62,9 +62,6 @@ int nico_ke2Init(){
 }
 
 int nico_pi0DalitzInit(){
-	if(opts.count("ff")!=0) ffWeightType = atoi(opts["ff"].c_str());
-	else ffWeightType = -1;
-
 	rawEvent.clear();
 	corrEvent.clear();
 	outTree = new TTree("event", "Event");
@@ -259,11 +256,11 @@ int user_init() {
 		cout << ">>>> prefix: Output file names to use (without extension)" << endl;
 		cout << ">>>> can: ke2 | pi0d" << endl;
 		cout << ">>>> debug: Activate debugging" << endl;
-		cout << ">>>> ff: Type of form factor (0=1, 1=x, 2=x^2)" << endl;
 		cout << ">>>> nooutput: Don't create output txt files" << endl;
 		cout << ">>>> period: keep only events from this period" << endl;
 		cout << ">>>> mod: print events index every mod events" << endl;
 		cout << ">>>> cuts: specify cuts file" << endl;
+		cout << ">>>> eall: export all event (not only the ones passing first cuts)" << endl;
 		cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
 		exit(0);
 	}
@@ -301,6 +298,9 @@ int user_init() {
 	if(opts.count("period")!=0) periodKeep = atoi(opts["period"].c_str());
 	else periodKeep = 0;
 
+	if(opts.count("eall")!=0) exportAllEvents = true;
+	else exportAllEvents = false;
+
 	string cutsFileName;
 	if(opts.count("cuts")!=0) cutsFileName = opts["cuts"];
 	else cutsFileName = "";
@@ -314,6 +314,7 @@ int user_init() {
 	if(periodKeep==0) cout << "Keeping period: All" << endl;
 	else cout << "Keeping period: " << periodKeep << endl;
 	if(noOutput) cout << "No file output requested" << endl;
+	if(exportAllEvents) cout << "Export all events requested" << endl;
 	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
 	cout << endl << endl;
 	if(channel==KE2) nico_ke2Init();

@@ -78,98 +78,93 @@ void loadEOPData(superBurst *sbur){
 }
 
 void defineBeamCharge(superBurst *sbur){
-	noTestCharge = false;
-	beamCharge = 0;
-	pbWall = false;
-
 	//P1	+-
 	if(sbur->nrun>=20114 && sbur->nrun<=20203){
-		pbWall = true;
-		period = 1;
+		rootBurst.pbWall = true;
+		rootBurst.period = 1;
 	}
 	//P2	+-
 	if(sbur->nrun>=20209 && sbur->nrun<=20285){
-		pbWall = true;
-		period = 2;
+		rootBurst.pbWall = true;
+		rootBurst.period = 2;
 	}
 	//P3	+-
 	if(sbur->nrun>=20286 && sbur->nrun<=20324){
-		pbWall = true;
-		period = 3;
+		rootBurst.pbWall = true;
+		rootBurst.period = 3;
 	}
 
 	//P4
 	if(sbur->nrun>=20332 && sbur->nrun<=20404){
-		pbWall = true;
-		beamCharge = +1;
-		period = 4;
+		rootBurst.pbWall = true;
+		rootBurst.beamCharge = +1;
+		rootBurst.period = 4;
 	}
 
 	//P4a	-/None
 	if(sbur->nrun>=20385 && sbur->nrun<=20386){
-		pbWall = true;
-		period = 4;
+		rootBurst.pbWall = true;
+		rootBurst.period = 4;
 	}
 	if(sbur->nrun==20385){
-		beamCharge = -1;
-		period = 4;
+		rootBurst.beamCharge = -1;
+		rootBurst.period = 4;
 	}
 
 	//P5	+
 	if(sbur->nrun>=20410 && sbur->nrun<=20485){
-		pbWall = false;
-		beamCharge = +1;
-		period = 5;
+		rootBurst.pbWall = false;
+		rootBurst.beamCharge = +1;
+		rootBurst.period = 5;
 	}
 
 	//P6	-/None
 	if(sbur->nrun>=20487 && sbur->nrun<=20531){
-		pbWall = false;
-		period = 6;
+		rootBurst.pbWall = false;
+		rootBurst.period = 6;
 	}
 	if(sbur->nrun>=20487 && sbur->nrun<=20521){
-		beamCharge = -1;
-		period = 6;
+		rootBurst.beamCharge = -1;
+		rootBurst.period = 6;
 	}
 	if(sbur->nrun>=20530 && sbur->nrun<=20531){
-		beamCharge = -1;
-		period = 6;
+		rootBurst.beamCharge = -1;
+		rootBurst.period = 6;
 	}
 	if(sbur->nrun==20525){
-		beamCharge = -1;
-		period = 6;
+		rootBurst.beamCharge = -1;
+		rootBurst.period = 6;
 	}
 
 	//P7	+
 	if(sbur->nrun>=20611 && sbur->nrun<=20695){
-		pbWall = false;
-		beamCharge = +1;
-		period = 7;
+		rootBurst.pbWall = false;
+		rootBurst.beamCharge = +1;
+		rootBurst.period = 7;
 	}
 
 	//P8a	+/-
 	if(sbur->nrun>=21082 && sbur->nrun<=21085){
-		pbWall = false;
-		period = 8;
+		rootBurst.pbWall = false;
+		rootBurst.period = 8;
 	}
 	//P8
 	if(sbur->nrun>=21088 && sbur->nrun<=21120){
-		pbWall = false;
-		period = 8;
-		beamCharge = -1;
+		rootBurst.pbWall = false;
+		rootBurst.period = 8;
+		rootBurst.beamCharge = -1;
 	}
 
 
-	if(mcOnly){
-		if(sbur->nrun>=20114 && sbur->nrun<=20133) alpha = 0;
-		if(sbur->nrun>=20154 && sbur->nrun<=20256) alpha = -0.05;
-		if(sbur->nrun>=20268 && sbur->nrun<=20303) alpha = -0.08;
-		if(sbur->nrun>=20304 && sbur->nrun<=20324) alpha = -0.02;
-		if(sbur->nrun>=20332 && sbur->nrun<=20371) alpha = 0.08;
-		if(sbur->nrun>=20387 && sbur->nrun<=20486) alpha = 0.07;
-		if(sbur->nrun>=20613 && sbur->nrun<=20695) alpha = 0.10;
+	if(rootBurst.isMC){
+		if(sbur->nrun>=20114 && sbur->nrun<=20133) rootBurst.alpha = 0;
+		if(sbur->nrun>=20154 && sbur->nrun<=20256) rootBurst.alpha = -0.05;
+		if(sbur->nrun>=20268 && sbur->nrun<=20303) rootBurst.alpha = -0.08;
+		if(sbur->nrun>=20304 && sbur->nrun<=20324) rootBurst.alpha = -0.02;
+		if(sbur->nrun>=20332 && sbur->nrun<=20371) rootBurst.alpha = 0.08;
+		if(sbur->nrun>=20387 && sbur->nrun<=20486) rootBurst.alpha = 0.07;
+		if(sbur->nrun>=20613 && sbur->nrun<=20695) rootBurst.alpha = 0.10;
 	}
-	if(beamCharge==0) noTestCharge=true;
 }
 
 void GetCpdCellIndex(double pos_x, double pos_y, int *cpd_index, int *cell_index)
@@ -351,7 +346,7 @@ NPhysicsTrack correctTrack(superCmpEvent *sevt, int i){
 
 	if(t.iClus>=0){
 		x.clusterID = t.iClus;
-		if(dataOnly) x.E = eTrack;
+		if(rootBurst.isData) x.E = eTrack;
 		else x.E = sevt->cluster[t.iClus].energy;
 	}
 	else{
@@ -370,7 +365,7 @@ NPhysicsCluster correctCluster(superCmpEvent* sevt, int i){
 
 	x.clusterID = i;
 
-	if(dataOnly){
+	if(rootBurst.isData){
 		x.position.SetZ(Geom->Lkr.z + 16.5 + 4.3*log(c.energy));
 		//x->position.SetZ(Geom->Lkr.z);
 		x.position.SetX((c.x + 0.136 + 0.87e-3*c.y) * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
@@ -378,7 +373,7 @@ NPhysicsCluster correctCluster(superCmpEvent* sevt, int i){
 
 		x.E = correctClusterE(sevt, x);
 	}
-	else if(mcOnly){
+	else if(rootBurst.isMC){
 		x.position.SetZ(Geom->Lkr.z + 16.5 + 4.3*log(c.energy));
 		x.position.SetX((c.x - 0.013) * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
 		x.position.SetY(c.y * (1+(x.position.Z()-Geom->Lkr.z)/10998.));
