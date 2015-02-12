@@ -20,6 +20,8 @@ ROOTCorrectedEvent corrEvent;
 ROOTBurst rootBurst;
 ROOTFileHeader rootFileHeader;
 NGeom rootGeom;
+ROOTPhysicsEvent rootPhysics;
+ROOTFileHeader outputFileHeader;
 
 //### Ptr for TTree
 ROOTRawEvent *rawEvent_ptr = &rawEvent;
@@ -27,9 +29,6 @@ ROOTCorrectedEvent *corrEvent_ptr = &corrEvent;
 ROOTBurst *rootBurst_ptr = &rootBurst;
 ROOTFileHeader *rootFileHeader_ptr = &rootFileHeader;
 NGeom *Geom = &rootGeom;
-
-TChain *inTree;
-TChain *headerTree;
 
 NAbcog_params abcog_params;
 
@@ -42,12 +41,17 @@ vector<eventID> badEventsList;
 int channel;
 int outputMod;
 int periodKeep;
+bool exportAllEvents;
 
 bool cutsWord[19];
 
 //### IO variables
 FILE* fprt, *fprt2;
-TTree *outTree;
+TTree *outTree, *outHeaderTree;
+TFile *outFile;
+
+TChain *inTree;
+TChain *headerTree;
 
 bool readFile(TString fName, bool isList){
 
@@ -77,6 +81,22 @@ bool readFile(TString fName, bool isList){
 	inTree->SetBranchAddress("corrEvent", &corrEvent_ptr);
 	headerTree->SetBranchAddress("header", &rootFileHeader_ptr);
 	inTree->SetBranchAddress("geom", &Geom);
+
+	return true;
+}
+
+bool openOutput(){
+	outTree = new TTree("event", "Event");
+	outHeaderTree = new TTree("header", "Header");
+
+	outTree->Branch("pi0dBurst" ,"ROOTBurst", &rootBurst);
+	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
+	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
+	outTree->Branch("geom" ,"NGeom", &rootGeom);
+
+
+	outTree->Branch("pi0dEvent" ,"ROOTPhysicsEvent", &rootPhysics);
+	outHeaderTree->Branch("header" ,"ROOTFileHeader", &outputFileHeader);
 
 	return true;
 }
@@ -360,6 +380,12 @@ int nico_pi0DalitzSelect(){
 		}
 	}
 
+	rootPhysics.em.P.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[emTrack]].momentum*corrEvent.pTrack[corrEvent.goodTracks[emTrack]].E, Me);
+	rootPhysics.ep.P.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[epTrack]].momentum*corrEvent.pTrack[corrEvent.goodTracks[epTrack]].E, Me);
+	rootPhysics.pip.P.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[piTrack]].momentum*corrEvent.pTrack[corrEvent.goodTracks[piTrack]].E, Mpic);
+	if(rawEvent.vtx[ivtx].charge==1) rootPhysics.kaon.P.SetVectM(corrEvent.kaonMomentum*corrEvent.kaonP, abcog_params.mkp);
+	else rootPhysics.kaon.P.SetVectM(corrEvent.kaonMomentum*corrEvent.kaonP, abcog_params.mkn);
+
 	// 8) Track combination veto
 	if(optDebug) cout << "~~~~ Cut 8 ~~~~" << endl;
 	badCombis = pi0d_trackCombinationVeto(piTrack);
@@ -383,8 +409,9 @@ int nico_pi0DalitzSelect(){
 
 	TVector3 pGamma = (corrEvent.pCluster[goodClusterID].position - rawEvent.vtx[rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[piTrack]].trackID].vtxID].position).Unit();
 
+	rootPhysics.gamma.P.SetVectM(pGamma*corrEvent.pCluster[goodClusterID].E, 0.0);
+
 	// 13) Photon candidate in LKr acceptance
-	//TODO check it's the good way
 	if(optDebug) cout << "~~~~ Cut 13 ~~~~" << endl;
 	lkrAcceptance = rawEvent.cluster[corrEvent.pCluster[goodClusterID].clusterID].lkr_acc;
 	if(optDebug) cout << "Mauro condition :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
@@ -470,114 +497,22 @@ int nico_pi0DalitzSelect(){
 	return 0;
 }
 
-int common_init(string filePrefix){
-	int runNum, burstNum, timestamp;
-	vector<eventID>::iterator it;
+bool newEvent(int i){
+	rootPhysics.clear();
 
-
-	string outRoot = "outfile.root";
-	string outFile = "compact.txt";
-	string outPass = "compactpass.txt";
-	if(filePrefix.find('~')!=string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
-	if(filePrefix.length()>0){
-		outRoot = filePrefix + ".root";
-		outFile = filePrefix + ".txt";
-		outPass = filePrefix + "pass.txt";
-	}
-
-	//Load badEvents list for debugging
+	if(periodKeep!= 0 && rootBurst.period!=periodKeep) return false;
+	if(i==0) cout << "First event: ";
+	if(i % outputMod == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r";
 	if(opts.count("filter")>0){
-		cout << ">>>> Filtering events from file " << opts["filter"] << endl;
-		FILE *badEvents = fopen(opts["filter"].c_str(), "r");
-		if(badEvents!=NULL){
-			while(fscanf(badEvents, "%i %i %i", &runNum, &burstNum, &timestamp) != EOF){
-				badEventsList.push_back(eventID(runNum, burstNum, timestamp));
-			}
-			fclose(badEvents);
-		}
-		else{
-			cout << "Unable to open filter file" << endl;
-		}
-		cout << "\t" << badEventsList.size() << " events in filter list" << endl;
-		for(it=badEventsList.begin(); it!=badEventsList.end();it++){
-			cout << "\t\t" << (*it).rnum << " " << (*it).bnum << " " << (*it).timestamp << endl;
-		}
+		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp)) return false;
 	}
+	if(i==0) cout << endl;
 
-	if(opts.count("nooutput")==0){
-		noOutput = false;
-		fprt=fopen(outFile.c_str(),"w");
-		fprt2=fopen(outPass.c_str(),"w");
-	}
-	else noOutput = true;
-
-	gFile = TFile::Open(outRoot.c_str(), "RECREATE");
-
-	return 0;
+	abcog_params = rootBurst.abcog_params;
+	return nico_pi0DalitzSelect();
 }
 
-void selectOptions(string s){
-	map<string,string>::iterator it;
-
-	opts = parseOptions(s);
-
-	cout << endl << ">>>>>>>>>>>>>>>>>>>>> Initialization" << endl;
-	if(opts.count("h")!=0){
-		cout << ">>>> Help " << endl;
-		cout << ">>>> Syntax: param=value:param=value" << endl;
-		cout << ">>>> List of parameters:" << endl;
-		cout << ">>>> h: This help" << endl;
-		cout << ">>>> prefix: Output file names to use (without extension)" << endl;
-		cout << ">>>> can: ke2 | pi0d" << endl;
-		cout << ">>>> debug: Activate debugging" << endl;
-		cout << ">>>> ff: Type of form factor (0=1, 1=x, 2=x^2)" << endl;
-		cout << ">>>> nooutput: Don't create output txt files" << endl;
-		cout << ">>>> period: keep only events from this period" << endl;
-		cout << ">>>> mod: print events index every mod events" << endl;
-		cout << ">>>> cuts: specify cuts file" << endl;
-		cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-		exit(0);
-	}
-	cout << ">>>> Received parameters:" << endl;
-	for(it=opts.begin(); it!=opts.end(); it++){
-		cout << "\t" << it->first << " = " << it->second << endl;
-	}
-
-	common_init(opts["prefix"]);
-	string chanName;
-
-	chanName = "Pi0Dalitz";
-
-	if(opts["mod"].length()!=0) outputMod = atoi(opts["mod"].c_str());
-	else outputMod = 1;
-
-	if(opts.count("debug")!=0) optDebug = true;
-	else optDebug = false;
-
-	if(opts.count("period")!=0) periodKeep = atoi(opts["period"].c_str());
-	else periodKeep = 0;
-
-	string cutsFileName;
-	if(opts.count("cuts")!=0) cutsFileName = opts["cuts"];
-	else cutsFileName = "";
-	parseCutsValues(cutsFileName);
-	printCuts();
-
-	cout << "Starting on channel: " << chanName << endl;
-	cout << "Output events every " << outputMod << " events" << endl;
-	if(cutsFileName.length()>0) cout << "Using cuts at: " << cutsFileName << endl;
-	cout << "Debugging activated: " << (optDebug==true ? "Yes" : "No") << endl;
-	if(periodKeep==0) cout << "Keeping period: All" << endl;
-	else cout << "Keeping period: " << periodKeep << endl;
-	if(noOutput) cout << "No file output requested" << endl;
-	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-	cout << endl << endl;
-}
 int main(int argc, char **argv){
-	optDebug = false;
-	noOutput = false;
-	outputMod = 10000;
-
 	int opt;
 	string optString;
 	int nevt = -1;
@@ -610,26 +545,32 @@ int main(int argc, char **argv){
 	inTree = new TChain("event");
 	headerTree = new TChain("header");
 
-	readFile(fileName, fileList);
+	if(!readFile(fileName, fileList)) return -1;
 
 	int oldFile = 0;
 
+
+	outputFileHeader.NPassedEvents = 0;
 	for(int i=0; i<inTree->GetEntries() && (nevt<0 || i<nevt ); ++i){
 		inTree->GetEntry(i);
 		if(oldFile!=inTree->GetFileNumber()){
 			oldFile = inTree->GetFileNumber();
 			headerTree->GetEntry(oldFile);
+			outputFileHeader.NProcessedEvents += rootFileHeader.NProcessedEvents;
+			outputFileHeader.NFailedEvents += rootFileHeader.NFailedEvents;
 		}
-		//if(periodKeep!= 0 && period!=periodKeep) return 0;
-		if(i==0) cout << "First event: ";
-		if(i % outputMod == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r";
-		if(opts.count("filter")>0){
-			if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp)) continue;
+		if(newEvent(i)){
+			outTree->Fill();
+			outputFileHeader.NPassedEvents++;
 		}
-		if(i==0) cout << endl;
-
-		abcog_params = rootBurst.abcog_params;
-		nico_pi0DalitzSelect();
+		else if(exportAllEvents) outTree->Fill();
 	}
 	cout << endl;
+
+	outTree->Write();
+	outHeaderTree->Fill();
+	outHeaderTree->Write();
+
+	outFile->Close();
+	return 0;
 }

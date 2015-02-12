@@ -2,24 +2,35 @@
 #include "TObject.h"
 #include "reader.h"
 
+//##########################
+//###   RawObjects
+//##########################
 ClassImp(NVtxTrack);
 ClassImp(NSCVertex);
 ClassImp(NTrak);
 ClassImp(NCluster);
+//##########################
+//###   PhysicsObjects
+//##########################
 ClassImp(NPhysicsCluster);
 ClassImp(NPhysicsTrack);
+//##########################
+//###   Database
+//##########################
 ClassImp(NSuperTimeOffset);
 ClassImp(NAbcog_params);
 ClassImp(NGeom);
+ClassImp(NDCH);
+ClassImp(Nxyz);
 
+//##########################
+//###   Top nodes
+//##########################
 ClassImp(ROOTRawEvent);
 ClassImp(ROOTCorrectedEvent);
 ClassImp(ROOTBurst);
 ClassImp(ROOTFileHeader);
-//ClassImp(PhysicsEvent);
-
-ClassImp(NDCH);
-ClassImp(Nxyz);
+ClassImp(ROOTPhysicsEvent);
 
 NVtxTrack::NVtxTrack(vtxtracks &ref):
 		iTrack(ref.iTrack), bdxdz(ref.bdxdz), bdydz(ref.bdydz)

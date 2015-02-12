@@ -1,8 +1,9 @@
-#include <vector>
-#include <TVector3.h>
-
 #ifndef __EXPORTCLASSES__
 #define __EXPORTCLASSES__
+
+#include <vector>
+#include <TVector3.h>
+#include <TLorentzVector.h>
 
 struct vtxtracks;
 struct superTimeOffset;
@@ -109,6 +110,21 @@ public:
 
 	ClassDefNV(NSCVertex, 1);
 };
+
+//##########################
+//###   Physics Objects
+//##########################
+class NRecoParticle : public TObject{
+public:
+	NRecoParticle(){};
+	~NRecoParticle(){};
+public:
+	TLorentzVector P;
+
+
+	ClassDefNV(NRecoParticle, 1);
+};
+
 
 //##########################
 //###   Databases
@@ -296,11 +312,6 @@ public:
 	ClassDefNV(ROOTCorrectedEvent, 1);
 };
 
-/*class PhysicsEvent : public TObject{
-
-	ClassDefNV(PhysicsEvent, 1);
-};*/
-
 class ROOTBurst : public TObject{
 public:
 	ROOTBurst():isData(false), isMC(false), pbWall(false), nrun(-1), time(-1), period(-1), beamCharge(-99), alpha(0){};
@@ -343,6 +354,19 @@ public:
 	int NPassedEvents;
 
 	ClassDefNV(ROOTFileHeader, 1);
+};
+
+class ROOTPhysicsEvent : public TObject{
+public:
+
+	void clear();
+public:
+	NRecoParticle ep;
+	NRecoParticle em;
+	NRecoParticle pip;
+	NRecoParticle kaon;
+	NRecoParticle gamma;
+	ClassDefNV(ROOTPhysicsEvent, 1);
 };
 
 #endif
