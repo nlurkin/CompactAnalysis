@@ -304,3 +304,158 @@ bool isFilteredEvent(int nrun, int nburst, int timestamp){
 }
 
 
+int selectOptions(std::string s){
+	std::map<std::string,std::string>::iterator it;
+
+	opts = parseOptions(s);
+
+	std::cout << std::endl << ">>>>>>>>>>>>>>>>>>>>> Initialization" << std::endl;
+	if(opts.count("h")!=0){
+		std::cout << ">>>> Help " << std::endl;
+		std::cout << ">>>> Syntax: param=value:param=value" << std::endl;
+		std::cout << ">>>> List of parameters:" << std::endl;
+		std::cout << ">>>> h: This help" << std::endl;
+		std::cout << ">>>> prefix: Output file names to use (without extension)" << std::endl;
+		std::cout << ">>>> can: ke2 | pi0d" << std::endl;
+		std::cout << ">>>> debug: Activate debugging" << std::endl;
+		std::cout << ">>>> nooutput: Don't create output txt files" << std::endl;
+		std::cout << ">>>> period: keep only events from this period" << std::endl;
+		std::cout << ">>>> mod: print events index every mod events" << std::endl;
+		std::cout << ">>>> cuts: specify cuts file" << std::endl;
+		std::cout << ">>>> eall: export all event (not only the ones passing first cuts)" << std::endl;
+		std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+		exit(0);
+	}
+	std::cout << ">>>> Received parameters:" << std::endl;
+	for(it=opts.begin(); it!=opts.end(); it++){
+		std::cout << "\t" << it->first << " = " << it->second << std::endl;
+	}
+
+	common_init(opts["prefix"]);
+	std::string chanName;
+
+	if(strcmp(opts["can"].c_str(), "ke2")==0){
+		channel=KE2;
+		chanName = "KE2";
+	}
+	else if(strcmp(opts["can"].c_str(), "pi0d")==0){
+		channel=PI0DALITZ;
+		chanName = "PI0Dalitz";
+	}
+	else if(strcmp(opts["can"].c_str(), "none")==0){
+		channel=NONE;
+		chanName = "None";
+	}
+	else if(opts["can"].length()==0){
+		channel=PI0DALITZ;
+		chanName = "Pi0Dalitz";
+	}
+
+	if(opts["mod"].length()!=0) outputMod = atoi(opts["mod"].c_str());
+	else outputMod = 1;
+
+	if(opts.count("debug")!=0) optDebug = true;
+	else optDebug = false;
+
+	if(opts.count("period")!=0) periodKeep = atoi(opts["period"].c_str());
+	else periodKeep = 0;
+
+	if(opts.count("eall")!=0) exportAllEvents = true;
+	else exportAllEvents = false;
+
+	std::string cutsFileName;
+	if(opts.count("cuts")!=0) cutsFileName = opts["cuts"];
+	else cutsFileName = "";
+	parseCutsValues(cutsFileName);
+	printCuts();
+
+	std::cout << "Starting on channel: " << chanName << std::endl;
+	std::cout << "Output events every " << outputMod << " events" << std::endl;
+	if(cutsFileName.length()>0) std::cout << "Using cuts at: " << cutsFileName << std::endl;
+	std::cout << "Debugging activated: " << (optDebug==true ? "Yes" : "No") << std::endl;
+	if(periodKeep==0) std::cout << "Keeping period: All" << std::endl;
+	else std::cout << "Keeping period: " << periodKeep << std::endl;
+	if(noOutput) std::cout << "No file output requested" << std::endl;
+	if(exportAllEvents) std::cout << "Export all events requested" << std::endl;
+	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+	std::cout << std::endl << std::endl;
+
+	return 0;
+}
+
+
+int common_init(string filePrefix){
+	int i, j, k;
+	int l, m, n;
+	int cpd, cell;
+
+	int runNum, burstNum, timestamp;
+	vector<eventID>::iterator it;
+
+
+
+	string outRoot = "outfile.root";
+	string outFile = "compact.txt";
+	string outPass = "compactpass.txt";
+	if(filePrefix.find('~')!=string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
+	if(filePrefix.length()>0){
+		outRoot = filePrefix + ".root";
+		outFile = filePrefix + ".txt";
+		outPass = filePrefix + "pass.txt";
+	}
+
+	eopLoaded = false;
+
+	CELLlength = 1.975;
+	CPDlength = 8 * CELLlength;
+
+	// Define the positions for CPDs and Cells and store them
+	for (i=0; i<16; i++)
+		for (j=0; j<16; j++)
+		{
+			k = i*16 + j;
+			CPDpos_leftDownCorner[k][0] = (-1)*(7-i)*CPDlength;  // LKr RF is left-handed  --> the x sign has to be changed !!!
+			CPDpos_leftDownCorner[k][1] = (7-j)*CPDlength;
+			//printf ("CPD %d: position left down corner = %.2f, \t%.2f\n", k, CPDpos_leftDownCorner[k][0], CPDpos_leftDownCorner[k][1]);
+
+			for (m=0; m<8; m++)
+				for (n=0; n<8; n++)
+				{
+					l = m*8 + n;
+					CELLpos_leftDownCorner[k][l][0] = CPDpos_leftDownCorner[k][0] - (7-m)*CELLlength;
+					CELLpos_leftDownCorner[k][l][1] = CPDpos_leftDownCorner[k][1] + (7-n)*CELLlength;
+					//printf ("CELL %d in CPD %d: position left down corner = %.2f, \t%.2f\n",
+					//      l, k, CELLpos_leftDownCorner[k][l][0], CELLpos_leftDownCorner[k][l][1]);
+				}
+		}
+
+	//Load badEvents list for debugging
+	if(opts.count("filter")>0){
+		cout << ">>>> Filtering events from file " << opts["filter"] << endl;
+		FILE *badEvents = fopen(opts["filter"].c_str(), "r");
+		if(badEvents!=NULL){
+			while(fscanf(badEvents, "%i %i %i", &runNum, &burstNum, &timestamp) != EOF){
+				badEventsList.push_back(eventID(runNum, burstNum, timestamp));
+			}
+			fclose(badEvents);
+		}
+		else{
+			cout << "Unable to open filter file" << endl;
+		}
+		cout << "\t" << badEventsList.size() << " events in filter list" << endl;
+		for(it=badEventsList.begin(); it!=badEventsList.end();it++){
+			cout << "\t\t" << (*it).rnum << " " << (*it).bnum << " " << (*it).timestamp << endl;
+		}
+	}
+
+	if(opts.count("nooutput")==0){
+		noOutput = false;
+		fprt=fopen(outFile.c_str(),"w");
+		fprt2=fopen(outPass.c_str(),"w");
+	}
+	else noOutput = true;
+
+	gFile = TFile::Open(outRoot.c_str(), "RECREATE");
+
+	return 0;
+}
