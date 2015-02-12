@@ -408,6 +408,8 @@ UCSRCS = user_init.c \
 			user_hyperCmpEvent.c\
 			nico_pi0dalitzSelection.c\
 			nico_pi0dalitzAna.c\
+			funLib.c\
+			compactLib.c\
 #			nico_ke2Selection.c\
 
 UCOBJS = $(UCSRCS:.c=.o)
