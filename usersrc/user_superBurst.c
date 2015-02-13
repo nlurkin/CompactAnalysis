@@ -14,6 +14,7 @@
 #include "compactLib.h"
 
 int user_superBurst(superBurst *sbur) {
+	rootBurst.clear();
 	/* WARNING: do not alter things before this line */
 	/*---------- Add user C code here ----------*/
 	if(sbur->brtype==2){

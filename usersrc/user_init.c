@@ -70,7 +70,7 @@ int nico_pi0DalitzInit(){
 	//outTree->Branch("assocCluster", "std::vector<CorrectedCluster*>", &assocClusters, 64000, 1);
 	//outTree->Branch("cutsWord", &cutsWord, "cutsWord[19]/O");
 
-	outTree->Branch("pi0dBurst" ,"ROOTBurst", &rootBurst);
+	outTree->Branch("rawBurst" ,"ROOTBurst", &rootBurst);
 	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
 	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
 	outTree->Branch("geom" ,"NGeom", &rootGeom);
