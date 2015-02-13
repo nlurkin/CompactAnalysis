@@ -56,7 +56,7 @@ std::map<std::string,std::string> parseOptions(std::string s);
 int selectOptions(std::string s);
 const std::vector<std::string> tokenize(std::string s, const char delim);
 bool isFilteredEvent(int nrun, int nburst, int timestamp);
-int common_init(string filePrefix);
+int common_init(std::string filePrefix);
 
 extern double Mpi0;
 extern double Mpic;

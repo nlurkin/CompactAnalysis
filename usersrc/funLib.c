@@ -9,6 +9,24 @@
 #include <cmath>
 
 #ifdef OUTSIDECOMPACT
+#include "mystructs.h"
+
+extern ROOTRawEvent rawEvent;
+extern bool optDebug;
+extern bool noOutput;
+extern cutsValues cutsDefinition;
+extern map<string,string> opts;
+extern vector<eventID> badEventsList;
+extern int channel;
+extern int outputMod;
+extern int periodKeep;
+extern bool exportAllEvents;
+
+extern FILE* fprt, *fprt2;
+
+#define KE2 1
+#define PI0DALITZ 2
+#define NONE 3
 
 #else
 #include "user.h"
@@ -81,11 +99,13 @@ double invMass2(std::vector<double> mass, std::vector<TVector3> p){
 	return MSum + 2*ESum - 2*PSum;
 }
 
+#ifndef OUTSIDECOMPACT
 void propagateBefore(float &x, float &y, float &z, float zplane, trak t){
 	x = t.bx + t.bdxdz*(zplane-Geom->DCH.bz);
 	y = t.by + t.bdydz*(zplane-Geom->DCH.bz);
 	z = zplane;
 }
+#endif
 TVector3 propagateBefore(float zplane, NPhysicsTrack pt){
 	NTrak t = rawEvent.track[pt.trackID];
 	return t.bDetPos + t.bMomentum*((zplane-t.bDetPos.Z())/t.bMomentum.Z());
@@ -94,11 +114,13 @@ TVector3 propagateCorrBefore(float zplane, NPhysicsTrack pt){
 	NTrak t = rawEvent.track[pt.trackID];
 	return t.bDetPos + pt.momentum*((zplane-t.bDetPos.Z())/pt.momentum.Z());
 }
+#ifndef OUTSIDECOMPACT
 void propagateAfter(float &x, float &y, float &z, float zplane, trak t){
 	x = t.x + t.dxdz*(zplane-Geom->DCH.z);
 	y = t.y + t.dydz*(zplane-Geom->DCH.z);
 	z = zplane;
 }
+#endif
 TVector3 propagateAfter(float zplane, NPhysicsTrack pt){
 	NTrak t = rawEvent.track[pt.trackID];
 	return t.aDetPos + t.aMomentum*((zplane-t.aDetPos.Z())/t.aMomentum.Z());
@@ -115,7 +137,7 @@ TVector3 propagate(float zplane, TVector3 pos, TVector3 p){
 }
 
 
-void parseCutsValues(string fileName){
+void parseCutsValues(std::string fileName){
 	//Initialize with default values
 	cutsDefinition.triggerMask = 0x400;
 	cutsDefinition.numVertex3 = 1;
@@ -275,7 +297,8 @@ std::map<std::string,std::string> parseOptions(std::string s){
 
 	for(it=options.begin(); it!=options.end(); it++){
 		keys = tokenize(*it, '=');
-		opts.insert(std::pair<std::string,std::string>(keys[0], keys[1]));
+		if(keys.size()!=2) cerr << "Bad option format: " << *it << endl;
+		else opts.insert(std::pair<std::string,std::string>(keys[0], keys[1]));
 	}
 
 	return opts;
@@ -384,26 +407,28 @@ int selectOptions(std::string s){
 }
 
 
-int common_init(string filePrefix){
+int common_init(std::string filePrefix){
+#ifndef OUTSIDECOMPACT
 	int i, j, k;
 	int l, m, n;
 	int cpd, cell;
-
+#endif
 	int runNum, burstNum, timestamp;
 	vector<eventID>::iterator it;
 
 
 
-	string outRoot = "outfile.root";
-	string outFile = "compact.txt";
-	string outPass = "compactpass.txt";
-	if(filePrefix.find('~')!=string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
+	std::string outRoot = "outfile.root";
+	std::string outFile = "compact.txt";
+	std::string outPass = "compactpass.txt";
+	if(filePrefix.find('~')!=std::string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
 	if(filePrefix.length()>0){
 		outRoot = filePrefix + ".root";
 		outFile = filePrefix + ".txt";
 		outPass = filePrefix + "pass.txt";
 	}
 
+#ifndef OUTSIDECOMPACT
 	eopLoaded = false;
 
 	CELLlength = 1.975;
@@ -428,10 +453,10 @@ int common_init(string filePrefix){
 					//      l, k, CELLpos_leftDownCorner[k][l][0], CELLpos_leftDownCorner[k][l][1]);
 				}
 		}
-
+#endif
 	//Load badEvents list for debugging
 	if(opts.count("filter")>0){
-		cout << ">>>> Filtering events from file " << opts["filter"] << endl;
+		std::cout << ">>>> Filtering events from file " << opts["filter"] << std::endl;
 		FILE *badEvents = fopen(opts["filter"].c_str(), "r");
 		if(badEvents!=NULL){
 			while(fscanf(badEvents, "%i %i %i", &runNum, &burstNum, &timestamp) != EOF){

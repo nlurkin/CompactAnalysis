@@ -9,10 +9,14 @@
 #pragma link C++ class ROOTCorrectedEvent;
 #pragma link C++ class ROOTBurst;
 #pragma link C++ class ROOTFileHeader;
+#pragma link C++ class ROOTPhysicsEvent;
+#pragma link C++ class ROOTMCEvent;
 #pragma link C++ class NVtxTrack;
 #pragma link C++ class NSCVertex;
 #pragma link C++ class NTrak;
 #pragma link C++ class NCluster;
+#pragma link C++ class NRecoParticle;
+#pragma link C++ class NMCParticle;
 #pragma link C++ class NPhysicsCluster;
 #pragma link C++ class NAbcog_params;
 #pragma link C++ class NDCH;

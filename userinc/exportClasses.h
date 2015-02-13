@@ -116,13 +116,38 @@ public:
 //##########################
 class NRecoParticle : public TObject{
 public:
-	NRecoParticle(){};
+	NRecoParticle(): pdgID(0), parentTrack(-1), parentCluster(-1){};
+	NRecoParticle(int id): pdgID(id), parentTrack(-1), parentCluster(-1){};
 	~NRecoParticle(){};
+
+	void clear(){
+		parentTrack = -1;
+		parentCluster = -1;
+		P.SetXYZM(0,0,0,0);
+	};
 public:
+	int pdgID;
+	int parentTrack;
+	int parentCluster;
 	TLorentzVector P;
 
-
 	ClassDefNV(NRecoParticle, 1);
+};
+
+class NMCParticle : public TObject{
+public:
+	NMCParticle(): pdgID(0){};
+	NMCParticle(int id): pdgID(id){};
+	~NMCParticle(){};
+
+	void clear(){
+		P.SetXYZM(0,0,0,0);
+	};
+public:
+	int pdgID;
+	TLorentzVector P;
+
+	ClassDefNV(NMCParticle, 1);
 };
 
 
@@ -320,7 +345,7 @@ public:
 
 	void clear(){
 		isData = false;
-		isMC = false;
+		this->isMC = false;
 		pbWall = false;
 		nrun = -1;
 		time = -1;
@@ -358,15 +383,48 @@ public:
 
 class ROOTPhysicsEvent : public TObject{
 public:
+	ROOTPhysicsEvent(): x(0), y(0), mee(0), pic(), ep(11), em(-11), gamma(22), pi0(111), kaon(){};
+	~ROOTPhysicsEvent(){};
 
-	void clear();
+	void clear(){
+		x = 0;
+		y = 0;
+		mee = 0;
+		pic.clear();
+		ep.clear();
+		em.clear();
+		gamma.clear();
+		pi0.clear();
+		kaon.clear();
+	};
 public:
+	double x,y;
+	double mee;
+	NRecoParticle pic;
 	NRecoParticle ep;
 	NRecoParticle em;
-	NRecoParticle pip;
-	NRecoParticle kaon;
 	NRecoParticle gamma;
+	NRecoParticle pi0;
+	NRecoParticle kaon;
+
 	ClassDefNV(ROOTPhysicsEvent, 1);
 };
 
+class ROOTMCEvent: public TObject{
+public:
+	ROOTMCEvent(): xTrue(-1), ep(11), em(-11){};
+	~ROOTMCEvent(){};
+
+	void clear(){
+		xTrue = -1;
+		ep.clear();
+		em.clear();
+	}
+public:
+	float xTrue;
+	NMCParticle ep;
+	NMCParticle em;
+
+	ClassDefNV(ROOTMCEvent, 1);
+};
 #endif

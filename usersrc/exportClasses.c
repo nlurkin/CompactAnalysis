@@ -10,10 +10,15 @@ ClassImp(NSCVertex);
 ClassImp(NTrak);
 ClassImp(NCluster);
 //##########################
-//###   PhysicsObjects
+//###   Corrected Objects
 //##########################
 ClassImp(NPhysicsCluster);
 ClassImp(NPhysicsTrack);
+//##########################
+//###   Physics Objects
+//##########################
+ClassImp(NRecoParticle);
+ClassImp(NMCParticle);
 //##########################
 //###   Database
 //##########################
@@ -31,6 +36,7 @@ ClassImp(ROOTCorrectedEvent);
 ClassImp(ROOTBurst);
 ClassImp(ROOTFileHeader);
 ClassImp(ROOTPhysicsEvent);
+ClassImp(ROOTMCEvent);
 
 NVtxTrack::NVtxTrack(vtxtracks &ref):
 		iTrack(ref.iTrack), bdxdz(ref.bdxdz), bdydz(ref.bdydz)
@@ -110,7 +116,6 @@ ROOTRawEvent& ROOTRawEvent::operator=(superCmpEvent *ref){
 }
 
 ROOTBurst& ROOTBurst::operator=(superBurst *ref){
-	clear();
 	nrun = ref->nrun;
 	time = ref->time;
 	tOffst = ref->tOffst;
@@ -123,6 +128,7 @@ NSCVertex::NSCVertex(SCvertex &ref):
 	charge(ref.charge),
 	cda(ref.cda),
 	chi2(ref.chi2),
+	time(0),
 	position(ref.x, ref.y, ref.z)
 {
 	for(unsigned int i=0; i<Nvtxtrack; ++i){
@@ -150,6 +156,7 @@ NCluster::NCluster(cluster &ref):
 	time(ref.time),
 	dDeadCell(ref.dDeadCell),
 	E(ref.energy),
+	lkr_acc(false),
 	position(ref.x, ref.y, 0)
 {
 }
