@@ -70,7 +70,7 @@ LINVER = -slc6
 #GFORTRAN needed on lxplus/lxbatch since CERNLIB is compiled with gfortran
 GFORLIBS = -L/usr/lib/gcc/x86_64-redhat-linux/4.4.4/32 -lgfortran
 #32 bit libshift library not linked to libshift.so, use the binary
-LIBSHIFT = -liowrapper -lXrdPosixPreload -lXrdPosix -L. $(shell ls /usr/lib/libshift.* | head -1)
+LIBSHIFT = -L/afs/cern.ch/na62/user/kmassri/compact/xrdlib -liowrapper -lXrdPosixPreload -lXrdPosix -L. $(shell ls /usr/lib/libshift.* | head -1)
 else
 ifeq ($(ISSLC5),1)
 LINVER = -slc5
