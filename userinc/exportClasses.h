@@ -116,13 +116,14 @@ public:
 //##########################
 class NRecoParticle : public TObject{
 public:
-	NRecoParticle(): pdgID(0), parentTrack(-1), parentCluster(-1){};
-	NRecoParticle(int id): pdgID(id), parentTrack(-1), parentCluster(-1){};
+	NRecoParticle(): pdgID(0), parentTrack(-1), parentCluster(-1), parentVertex(-1){};
+	NRecoParticle(int id): pdgID(id), parentTrack(-1), parentCluster(-1), parentVertex(-1){};
 	~NRecoParticle(){};
 
 	void clear(){
 		parentTrack = -1;
 		parentCluster = -1;
+		parentVertex = -1;
 		vertex.SetXYZ(0,0,0);
 		P.SetXYZM(0,0,0,0);
 	};
@@ -130,6 +131,7 @@ public:
 	int pdgID;
 	int parentTrack;
 	int parentCluster;
+	int parentVertex;
 	TVector3 vertex;
 	TLorentzVector P;
 
