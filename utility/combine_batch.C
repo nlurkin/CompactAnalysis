@@ -306,7 +306,7 @@ namespace Input{
 		ROOTMCEvent *mcEvent = 0;
 		TTree *t = (TTree*)fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
-		if(t->GetListOfBranches()->Contains("mc")) ROOTMCEvent *mcEvent = new ROOTMCEvent();
+		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);
@@ -360,9 +360,10 @@ namespace Input{
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
+
 		TTree *t = (TTree*)fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
-		if(t->GetListOfBranches()->Contains("mc")) ROOTMCEvent *mcEvent = new ROOTMCEvent();
+		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);

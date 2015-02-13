@@ -18,7 +18,7 @@
 #include <math.h>
 #include <TMath.h>
 #include <TGraph.h>
-#include "../userinc/mystructs.h"
+#include "../userinc/exportClasses.h"
 using namespace std;
 
 /*************************
@@ -369,14 +369,29 @@ namespace Input {
 	void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index) {
 		//Get the TTree
 		//Input
-		pi0dEvent *eventBrch = new pi0dEvent();
+		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+		ROOTBurst *burstBrch = new ROOTBurst();
+		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTFileHeader *headerBrch = new ROOTFileHeader();
+		ROOTMCEvent *mcEvent = 0;
+
 		TTree *t = (TTree*) fd->Get("event");
+		TTree *th = (TTree*)fd->Get("header");
+		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
+
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		t->SetBranchAddress("rawBurst", &burstBrch);
+		t->SetBranchAddress("rawEvent", &rawBrch);
+		th->SetBranchAddress("header", &headerBrch);
+		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
+
+		cout << "mc=" << mcEvent << endl;
 
 		tempFD->cd();
 		//Set event nb
+		th->GetEntry(0);
 		int nevt = t->GetEntries();
-		int totalChanEvents = ((TH1D*) fd->Get("Cuts"))->GetEntries();
+		int totalChanEvents = headerBrch->NProcessedEvents;
 		//int npart;
 		int divider;
 		if (MAXEVENTS > 0 && nevt > MAXEVENTS) {
@@ -451,7 +466,7 @@ namespace Input {
 
 		//Read events and fill histo
 		int i = 0;
-		double x, xTrue;
+		double x, xTrue=-1;
 		double bweight = 1.;
 		double weight;
 		int mod;
@@ -461,15 +476,15 @@ namespace Input {
 			t->GetEntry(i);
 			if ((i % 100) == 0)
 				cout << i << endl;
-			if (!runIncluded(eventBrch->runNumber))
+			if (!runIncluded(burstBrch->nrun))
 				continue;
-			weight = applyWeights(eventBrch->runNumber);
+			weight = applyWeights(burstBrch->nrun);
 
-			x = pow(eventBrch->mee / Mpi0, 2.);
-			xTrue = eventBrch->xTrue;
+			x = eventBrch->x;
+			if(mcEvent) xTrue = mcEvent->xTrue;
 			bweight = 1.
 					/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
-			mod = eventBrch->timestamp % divider;
+			mod = rawBrch->timeStamp % divider;
 
 			weight = 1.;
 			dNew->at(index)->Fill(x, bweight * weight);
@@ -497,9 +512,14 @@ namespace Input {
 
 	int getInputDataFill(TFile *fd, TFile* fdout) {
 		//Input
-		pi0dEvent *eventBrch = new pi0dEvent();
+		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+		ROOTMCEvent *mcEvent = 0;
+
 		TTree *t = (TTree*) fd->Get("event");
+		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
+
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 
 		tempFD->cd();
 
@@ -515,7 +535,7 @@ namespace Input {
 		int index = 0;
 		cout << "dsigsize " << dSig->size() << endl;
 		if (dSig->size() == 0) {
-			cout << "ZithEqualBins " << withEqualBins << " " << true << " " << false << endl;
+			cout << "WithEqualBins " << withEqualBins << " " << true << " " << false << endl;
 			if(!withEqualBins){
 				TH1D* xxx = new TH1D("sig", "signal sample", BINS, 0, MAX);
 				dSig->push_back(xxx);
@@ -528,15 +548,15 @@ namespace Input {
 
 		//Read event and fill histo
 		int i = 0;
-		double x, xTrue;
+		double x, xTrue=-1;
 		double weight, bweight = 1.;
 
 		double a = testA;
-		cout << "Filling data " << testA << endl;
+		cout << "Filling data " << testA << " with " << NSig << " events" << endl;
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
-			x = pow(eventBrch->mee / Mpi0, 2.);
-			xTrue = eventBrch->xTrue;
+			x = eventBrch->x;
+			if(mcEvent) xTrue = mcEvent->xTrue;
 			weight = 1.;	//+2.*a*x+a*a*x*x;
 			if (a != 0)
 				bweight = (1. + 2. * a * xTrue + a * a * xTrue * xTrue)
