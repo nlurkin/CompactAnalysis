@@ -30,12 +30,6 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	/* WARNING: do not alter things before this line */
 	/*---------- Add user C code here ----------*/
 
-	//Test MC
-	if(rootBurst.isMC && !mcBranched){
-		outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
-		mcBranched = true;
-	}
-
 	//if(!eopLoaded) loadEOPData(sbur); Done in user_superBurst
 	if(periodKeep!= 0 && rootBurst.period!=periodKeep) return 0;
 	if(iEvent==0) cout << "First event: ";

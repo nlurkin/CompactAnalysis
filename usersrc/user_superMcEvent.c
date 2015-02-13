@@ -18,6 +18,11 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 	vector<double> vMass;
 	vector<TVector3> vP;
 
+	//Test MC
+	if(!mcBranched){
+		outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
+		mcBranched = true;
+	}
 	rootMC.Clear();
 
 	bool ep = false;
