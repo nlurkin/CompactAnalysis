@@ -123,12 +123,14 @@ public:
 	void clear(){
 		parentTrack = -1;
 		parentCluster = -1;
+		vertex.SetXYZ(0,0,0);
 		P.SetXYZM(0,0,0,0);
 	};
 public:
 	int pdgID;
 	int parentTrack;
 	int parentCluster;
+	TVector3 vertex;
 	TLorentzVector P;
 
 	ClassDefNV(NRecoParticle, 1);
@@ -141,10 +143,12 @@ public:
 	~NMCParticle(){};
 
 	void clear(){
+		vertex.SetXYZ(0,0,0);
 		P.SetXYZM(0,0,0,0);
 	};
 public:
 	int pdgID;
+	TVector3 vertex;
 	TLorentzVector P;
 
 	ClassDefNV(NMCParticle, 1);

@@ -408,8 +408,11 @@ int nico_pi0DalitzSelect(){
 
 	//Create physics event from tracks
 	rootPhysics.em.parentTrack = corrEvent.goodTracks[emTrack];
+	rootPhysics.em.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 	rootPhysics.ep.parentTrack = corrEvent.goodTracks[epTrack];
+	rootPhysics.ep.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 	rootPhysics.pic.parentTrack = corrEvent.goodTracks[piTrack];
+	rootPhysics.pic.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 
 	rootPhysics.em.P.SetVectM(corrEvent.pTrack[rootPhysics.em.parentTrack].momentum*corrEvent.pTrack[rootPhysics.em.parentTrack].p, Me);
 	rootPhysics.ep.P.SetVectM(corrEvent.pTrack[rootPhysics.ep.parentTrack].momentum*corrEvent.pTrack[rootPhysics.ep.parentTrack].p, Me);
@@ -444,10 +447,10 @@ int nico_pi0DalitzSelect(){
 		return 0;
 	}
 
-	TVector3 pGamma = (corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[piTrack]].trackID].vtxID].position).Unit();
-
 	//Add cluster information to physics event
-	rootPhysics.gamma.P.SetVectM(pGamma*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
+	rootPhysics.gamma.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
+	rootPhysics.gamma.P.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rootPhysics.gamma.vertex).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
+	rootPhysics.pi0.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 	rootPhysics.pi0.P = rootPhysics.em.P + rootPhysics.ep.P + rootPhysics.gamma.P;
 	rootPhysics.kaon.P = rootPhysics.pic.P + rootPhysics.pi0.P;
 
