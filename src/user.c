@@ -32,11 +32,12 @@ int periodKeep;
 vector<eventID> badEventsList;
 
 bool cutsWord[19];
+bool mcBranched;
 
 ROOTRawEvent rawEvent;
 ROOTCorrectedEvent corrEvent;
 ROOTBurst rootBurst;
 ROOTFileHeader rootFileHeader;
 NGeom rootGeom;
-
+ROOTMCEvent rootMC;
 

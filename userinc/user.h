@@ -54,12 +54,14 @@ extern abcog_params_t abcog_params;		// Definition of abcog_params for eclipse i
 extern std::vector<eventID> badEventsList;	// List of events extracted
 
 extern bool cutsWord[19];
+extern bool mcBranched;
 
 extern ROOTRawEvent rawEvent;
 extern ROOTCorrectedEvent corrEvent;
 extern ROOTBurst rootBurst;
 extern ROOTFileHeader rootFileHeader;
 extern NGeom rootGeom;
+extern ROOTMCEvent rootMC;
 
 /*
  * Function declarations
