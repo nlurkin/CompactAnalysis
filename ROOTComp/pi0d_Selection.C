@@ -115,7 +115,7 @@ bool openOutput(){
 	outTree = new TTree("event", "Event");
 	outHeaderTree = new TTree("header", "Header");
 
-	outTree->Branch("pi0dBurst" ,"ROOTBurst", &rootBurst);
+	outTree->Branch("rawBurst" ,"ROOTBurst", &rootBurst);
 	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
 	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
 	outTree->Branch("geom" ,"NGeom", &rootGeom);
