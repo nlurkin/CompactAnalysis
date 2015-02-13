@@ -12,31 +12,31 @@ combine.o: combine_batch.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 combine: combine.o style.o root
-	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
+	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lexportClasses
 
 make_bins.o: make_bins.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 make_bins: make_bins.o style.o root
-	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
+	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lexportClasses
 
 toyMC.o: toyMC.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 toyMC: toyMC.o style.o root
-	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
+	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lexportClasses
 
 fit.o: fit_batch.C pi0DalitzHeader.h
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 fit: fit.o style.o  root
-	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lmystructs
+	@$(CC) -o $@ $< style.o $(ROOTLIBS) -L../obj -lexportClasses
 
 prepareWeights.o: prepareWeights.C
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
 
 prepareWeights: prepareWeights.o root
-	@$(CC) -o $@ $< $(ROOTLIBS)  -L../obj -lmystructs
+	@$(CC) -o $@ $< $(ROOTLIBS)  -L../obj -lexportClasses
 
 style.o: style.C
 	@$(CC) -o $@ -c $< $(CFLAGS) -I$(ROOTINCDIR)
@@ -58,4 +58,7 @@ cleanall:	clean
 clean: 
 	rm -f fit
 	rm -f combine
+	rm prepareWeights
+	rm make_bins
+	rm toyMC
 	rm -f *.o
