@@ -450,7 +450,9 @@ int selectOptions(std::string s){
 		std::cout << "\t" << it->first << " = " << it->second << std::endl;
 	}
 
-	common_init(opts["prefix"], opts["filter"], badEventsList, !noOutput, fprt, fprt2);
+	if(opts["nooutput"].length()!=0) noOutput = true;
+	else noOutput = false;
+	common_init(opts["prefix"], opts["filter"], badEventsList, !noOutput, &fprt, &fprt2);
 	std::string chanName;
 
 	if(strcmp(opts["can"].c_str(), "ke2")==0){

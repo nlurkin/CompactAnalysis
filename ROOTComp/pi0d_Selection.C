@@ -578,13 +578,13 @@ int main(int argc, char **argv){
 		("file,i", po::value<string>(), "input file name")
 		("list,l", po::value<string>(), "list of input files")
 		("prefix,p", po::value<string>(), "prefix for output files")
-		("debug,d", po::value<bool>(), "Activate verbose debugging")
+		("debug,d", po::value<bool>()->default_value(false), "Activate verbose debugging")
 		("filter,f", po::value<string>(), "Filter file")
-		("dooutput", po::value<bool>(), "Activate output text files")
-		("period", po::value<int>(), "Keep only events from specified period")
-		("mod,m", po::value<int>(), "Event number printing modulo")
+		("dooutput", po::value<bool>()->default_value(false), "Activate output text files")
+		("period", po::value<int>()->default_value(0), "Keep only events from specified period")
+		("mod,m", po::value<int>()->default_value(1), "Event number printing modulo")
 		("cuts,c", po::value<string>(), "Cuts file")
-		("eall,e", po::value<bool>(), "Export all events, even failed")
+		("eall,e", po::value<bool>()->default_value(false), "Export all events, even failed")
 	;
 
 	po::variables_map vm;
@@ -642,7 +642,7 @@ int main(int argc, char **argv){
 	}
 
 	//selectOptions(optString);
-	common_init(prefix, filterFile, parameters::badEventsList, options::doOutput, io_ptr::fprt, io_ptr::fprt2);
+	common_init(prefix, filterFile, parameters::badEventsList, options::doOutput, &io_ptr::fprt, &io_ptr::fprt2);
 
 	parseCutsValues("", parameters::cutsDefinition);
 	printCuts(parameters::cutsDefinition);

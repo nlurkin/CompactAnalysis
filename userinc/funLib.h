@@ -56,7 +56,7 @@ void printCuts(cutsValues &cutsDefinition);
 std::map<std::string,std::string> parseOptions(std::string s);
 const std::vector<std::string> tokenize(std::string s, const char delim);
 bool isFilteredEvent(int nrun, int nburst, int timestamp, vector<eventID> &badEventsList);
-int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList, bool doOutput, FILE *, FILE *);
+int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList, bool doOutput, FILE **, FILE **);
 
 extern double Mpi0;
 extern double Mpic;
