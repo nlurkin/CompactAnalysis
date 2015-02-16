@@ -147,7 +147,6 @@ int pi0d_failCut(int i){
 	TH1D *fails = (TH1D*)gDirectory->Get("Cuts");
 
 	fails->Fill(i, 1);
-	cutsWord[i] = false;
 	corrEvent.failedCond = i;
 	if(optDebug) cout << "Event is not passing selection" << endl;
 	if(!noOutput) fprintf(fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
@@ -199,7 +198,6 @@ int nico_pi0DalitzSelect(){
 
 	if(optDebug) cout << endl;
 
-	memset(&cutsWord, true, sizeof(bool)*19);
 	// 1) Trigger Q2xMBX(1VTX||2VTX||1TRK)
 	int triggerMask;
 	if(rootBurst.nrun<20209) triggerMask = 0x800;

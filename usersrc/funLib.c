@@ -40,10 +40,22 @@ double Me = 0.00051099891;
 
 std::string printVector3(TVector3 v){
 	std::ostringstream ss;
-	ss.precision(7);
-	ss << std::fixed;
-	ss << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " )";
+	ss << v;
 	return ss.str();
+}
+
+ostream& operator<<(ostream &s, TVector3 v){
+	s.precision(7);
+	s << std::fixed;
+	s << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " )";
+	return s;
+}
+
+ostream& operator<<(ostream &s, TLorentzVector v){
+	s.precision(7);
+	s << std::fixed;
+	s << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " , " << v.E() << " ) mass=" << v.M() << endl;
+	return s;
 }
 
 std::string printSTLvector(std::vector<TVector3> v){
@@ -84,12 +96,12 @@ double invMass2(std::vector<double> mass, std::vector<TVector3> p){
 	double PSum = 0;
 	double MSum = 0;
 
-	for(int i=0; i<p.size(); i++){
+	for(unsigned int i=0; i<p.size(); i++){
 		Energy.push_back(sqrt(pow(mass[i],2) + p[i].Mag2()));
 	}
 
-	for(int i=0; i<p.size()-1; i++){
-		for(int j=i+1; j<p.size(); j++){
+	for(unsigned int i=0; i<p.size()-1; i++){
+		for(unsigned int j=i+1; j<p.size(); j++){
 			ESum += Energy[i]*Energy[j];
 			PSum += p[i].Dot(p[j]);
 		}
@@ -345,6 +357,7 @@ int common_init(std::string filePrefix, std::string filterFile, vector<eventID> 
 	applyEOPData();
 #endif
 	//Load badEvents list for debugging
+	cout << "not empty " << !filterFile.empty() << endl;
 	if(!filterFile.empty()){
 		std::cout << ">>>> Filtering events from file " << filterFile << std::endl;
 		FILE *badEvents = fopen(filterFile.c_str(), "r");

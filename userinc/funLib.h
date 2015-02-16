@@ -19,6 +19,9 @@
 
 //TVector related
 std::string 		printVector3		(TVector3 v);
+ostream& operator<<(ostream &s, TVector3 v);
+ostream& operator<<(ostream &s, TLorentzVector v);
+
 template<typename T>
 std::string printSTLvector(std::vector<T> v){
 	std::ostringstream ss;

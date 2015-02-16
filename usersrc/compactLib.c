@@ -396,6 +396,7 @@ void CreateTracks(superCmpEvent *sevt){
 		x.p = sevt->track[i].p;
 		x.q = sevt->track[i].q;
 		x.time = sevt->track[i].time;
+		x.dDeadCell = sevt->track[i].dDeadCell;
 
 		NPhysicsTrack t = correctTrack(sevt, i);
 
