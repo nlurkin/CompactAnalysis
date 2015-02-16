@@ -12,6 +12,7 @@
 #include "exportClasses.h"
 #include <sstream>
 #include <map>
+#include "mystructs.h"
 
 #ifndef FUNLIB_H_
 #define FUNLIB_H_
@@ -49,14 +50,13 @@ double 	missMass2Man(double m1, double m2, float kp, float kdxdz, float kdydz, f
 double	invMass2	(std::vector<double> mass, std::vector<TVector3> p);
 
 
-void parseCutsValues(std::string fileName);
-void printCuts();
+void parseCutsValues(std::string fileName, cutsValues &cutsDefinition);
+void printCuts(cutsValues &cutsDefinition);
 
 std::map<std::string,std::string> parseOptions(std::string s);
-int selectOptions(std::string s);
 const std::vector<std::string> tokenize(std::string s, const char delim);
-bool isFilteredEvent(int nrun, int nburst, int timestamp);
-int common_init(std::string filePrefix);
+bool isFilteredEvent(int nrun, int nburst, int timestamp, vector<eventID> &badEventsList);
+int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList, bool doOutput, FILE *, FILE *);
 
 extern double Mpi0;
 extern double Mpic;

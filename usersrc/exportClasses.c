@@ -144,6 +144,7 @@ NTrak::NTrak(trak &ref):
 	p(ref.p),
 	bdxdz(ref.bdxdz),
 	bdydz(ref.bdydz),
+	dDeadCell(ref.dDeadCell),
 	bDetPos(ref.bx, ref.by, 0),
 	aDetPos(ref.x, ref.y, 0),
 	bMomentum(TVector3(ref.bdxdz, ref.bdydz, 1).Unit()),

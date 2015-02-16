@@ -13,6 +13,7 @@ using namespace std;
 #include <iomanip>
 #include <cstdlib>
 #include <fstream>
+#include <boost/program_options.hpp>
 
 ///### Objects
 ROOTRawEvent rawEvent;
@@ -25,36 +26,43 @@ ROOTPhysicsEvent rootPhysics;
 ROOTFileHeader outputFileHeader;
 
 //### Ptr for TTree
-ROOTRawEvent *rawEvent_ptr = &rawEvent;
-ROOTCorrectedEvent *corrEvent_ptr = &corrEvent;
-ROOTBurst *rootBurst_ptr = &rootBurst;
-ROOTFileHeader *rootFileHeader_ptr = &rootFileHeader;
-NGeom *Geom = &rootGeom;
-ROOTMCEvent *rootMC_ptr = &rootMC;
+namespace root_ptr{
+	ROOTRawEvent *rawEvent_ptr = &rawEvent;
+	ROOTCorrectedEvent *corrEvent_ptr = &corrEvent;
+	ROOTBurst *rootBurst_ptr = &rootBurst;
+	ROOTFileHeader *rootFileHeader_ptr = &rootFileHeader;
+	NGeom *Geom = &rootGeom;
+	ROOTMCEvent *rootMC_ptr = &rootMC;
+}
 
 NAbcog_params abcog_params;
 
 //### Global Options
-bool optDebug;
-bool noOutput;
-cutsValues cutsDefinition;
-map<string,string> opts;
-vector<eventID> badEventsList;
-int channel;
-int outputMod;
-int periodKeep;
-bool exportAllEvents;
+namespace options{
+	bool optDebug;
+	bool doOutput;
+	int outputModulo;
+	int periodKeep;
+	bool exportAllEvents;
+}
+
+namespace parameters{
+	cutsValues cutsDefinition;
+	vector<eventID> badEventsList;
+}
 
 bool cutsWord[19];
 bool mcBranched = false;
 
 //### IO variables
-FILE* fprt, *fprt2;
-TTree *outTree, *outHeaderTree;
-TFile *outFile;
+namespace io_ptr{
+	FILE* fprt, *fprt2;
+	TTree *outTree, *outHeaderTree;
+	TFile *outFile;
 
-TChain *inTree;
-TChain *headerTree;
+	TChain *inTree;
+	TChain *headerTree;
+}
 
 ostream& operator<<(ostream &s, TVector3 v){
 	s.precision(7);
@@ -88,22 +96,22 @@ bool readFile(TString fName, bool isList){
 			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
 				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
 			}
-			inTree->AddFile(inputFileName);
-			headerTree->AddFile(inputFileName);
+			io_ptr::inTree->AddFile(inputFileName);
+			io_ptr::headerTree->AddFile(inputFileName);
 		}
 	}
 	else{
-		inTree->AddFile(fName);
-		headerTree->AddFile(fName);
+		io_ptr::inTree->AddFile(fName);
+		io_ptr::headerTree->AddFile(fName);
 	}
 
-	inTree->SetBranchAddress("rawBurst", &rootBurst_ptr);
-	inTree->SetBranchAddress("rawEvent", &rawEvent_ptr);
-	inTree->SetBranchAddress("corrEvent", &corrEvent_ptr);
-	headerTree->SetBranchAddress("header", &rootFileHeader_ptr);
-	inTree->SetBranchAddress("geom", &Geom);
-	if(inTree->GetListOfBranches()->Contains("mc")){
-		inTree->SetBranchAddress("mc", &rootMC_ptr);
+	io_ptr::inTree->SetBranchAddress("rawBurst", &root_ptr::rootBurst_ptr);
+	io_ptr::inTree->SetBranchAddress("rawEvent", &root_ptr::rawEvent_ptr);
+	io_ptr::inTree->SetBranchAddress("corrEvent", &root_ptr::corrEvent_ptr);
+	io_ptr::headerTree->SetBranchAddress("header", &root_ptr::rootFileHeader_ptr);
+	io_ptr::inTree->SetBranchAddress("geom", &root_ptr::Geom);
+	if(io_ptr::inTree->GetListOfBranches()->Contains("mc")){
+		io_ptr::inTree->SetBranchAddress("mc", &root_ptr::rootMC_ptr);
 		mcBranched = true;
 	}
 
@@ -111,18 +119,18 @@ bool readFile(TString fName, bool isList){
 }
 
 bool openOutput(){
-	outFile = gFile;
-	outTree = new TTree("event", "Event");
-	outHeaderTree = new TTree("header", "Header");
+	io_ptr::outFile = gFile;
+	io_ptr::outTree = new TTree("event", "Event");
+	io_ptr::outHeaderTree = new TTree("header", "Header");
 
-	outTree->Branch("rawBurst" ,"ROOTBurst", &rootBurst);
-	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
-	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
-	outTree->Branch("geom" ,"NGeom", &rootGeom);
-	if(mcBranched) outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
+	io_ptr::outTree->Branch("rawBurst" ,"ROOTBurst", &rootBurst);
+	io_ptr::outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
+	io_ptr::outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
+	io_ptr::outTree->Branch("geom" ,"NGeom", &rootGeom);
+	if(mcBranched) io_ptr::outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
 
-	outTree->Branch("pi0dEvent" ,"ROOTPhysicsEvent", &rootPhysics);
-	outHeaderTree->Branch("header" ,"ROOTFileHeader", &outputFileHeader);
+	io_ptr::outTree->Branch("pi0dEvent" ,"ROOTPhysicsEvent", &rootPhysics);
+	io_ptr::outHeaderTree->Branch("header" ,"ROOTFileHeader", &outputFileHeader);
 
 	return true;
 }
@@ -132,39 +140,39 @@ int pi0d_tracksAcceptance(){
 	TVector3 propPos;
 	bool badTrack = false;
 	double radius;
-	TVector3 dch1(Geom->Dch[0].PosChamber.x,Geom->Dch[0].PosChamber.y,Geom->Dch[0].PosChamber.z);
-	TVector3 dch2(Geom->Dch[1].PosChamber.x,Geom->Dch[1].PosChamber.y,Geom->Dch[1].PosChamber.z);
-	TVector3 dch4(Geom->Dch[3].PosChamber.x,Geom->Dch[3].PosChamber.y,Geom->Dch[3].PosChamber.z);
+	TVector3 dch1(root_ptr::Geom->Dch[0].PosChamber.x,root_ptr::Geom->Dch[0].PosChamber.y,root_ptr::Geom->Dch[0].PosChamber.z);
+	TVector3 dch2(root_ptr::Geom->Dch[1].PosChamber.x,root_ptr::Geom->Dch[1].PosChamber.y,root_ptr::Geom->Dch[1].PosChamber.z);
+	TVector3 dch4(root_ptr::Geom->Dch[3].PosChamber.x,root_ptr::Geom->Dch[3].PosChamber.y,root_ptr::Geom->Dch[3].PosChamber.z);
 
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); ++i){
 		int iGoodTrack = corrEvent.goodTracks[i];
 		NPhysicsTrack t = corrEvent.pTrack[iGoodTrack];
 
-		propPos = propagateAfter(Geom->Lkr.z, t);
+		propPos = propagateAfter(root_ptr::Geom->Lkr.z, t);
 		lkrAcceptance = t.lkr_acc;
-		if(optDebug) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
+		if(options::optDebug) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
 		if(lkrAcceptance!=0) badTrack = true;
 
 		// Track position on LKr with Pb Wall
 		if(rootBurst.pbWall){
-			if(optDebug) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
+			if(options::optDebug) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
 		}
 
 
-		propPos = propagateCorrBefore(Geom->Dch[0].PosChamber.z, t);
+		propPos = propagateCorrBefore(root_ptr::Geom->Dch[0].PosChamber.z, t);
 		radius = distance2D(dch1, propPos);
-		if(optDebug) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
+		if(options::optDebug) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateCorrBefore(Geom->Dch[1].PosChamber.z, t);
+		propPos = propagateCorrBefore(root_ptr::Geom->Dch[1].PosChamber.z, t);
 		radius = distance2D(dch2, propPos);
-		if(optDebug) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
+		if(options::optDebug) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateAfter(Geom->Dch[3].PosChamber.z, t);
+		propPos = propagateAfter(root_ptr::Geom->Dch[3].PosChamber.z, t);
 		radius = distance2D(dch4, propPos);
-		if(optDebug) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
+		if(options::optDebug) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 	}
 
@@ -189,35 +197,35 @@ int pi0d_trackCombinationVeto(){
 			NPhysicsTrack t1 = corrEvent.pTrack[trackID1];
 			NPhysicsTrack t2 = corrEvent.pTrack[trackID2];
 			bad = false;
-			if(optDebug) cout << "\tTrying combination :\t" << i << " " << j << endl;
+			if(options::optDebug) cout << "\tTrying combination :\t" << i << " " << j << endl;
 
 			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(Geom->Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(Geom->Dch[0].PosChamber.z, t2);
+			propPos1 = propagateBefore(root_ptr::Geom->Dch[0].PosChamber.z, t1);
+			propPos2 = propagateBefore(root_ptr::Geom->Dch[0].PosChamber.z, t2);
 
 			RDCH1 = distance2D(propPos1, propPos2);
-			if(optDebug) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
+			if(options::optDebug) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
 			if(RDCH1<=2) bad = true;
 
 			// Track DCH times
 			// |t1-t2|<15
 			if(rootBurst.isData){
 				tDiff = fabs(rawEvent.track[t1.trackID].time - rawEvent.track[t2.trackID].time);
-				if(optDebug) cout << "\t\t|t_i-t_j| :\t" << tDiff << "\t >15: rejected" << endl;
+				if(options::optDebug) cout << "\t\t|t_i-t_j| :\t" << tDiff << "\t >15: rejected" << endl;
 				if(tDiff>=15) bad = true;
 			}
 
 			// Track separation in LKr plane >15
-			propPos1 = propagateAfter(Geom->Lkr.z, t1);
-			propPos2 = propagateAfter(Geom->Lkr.z, t2);
+			propPos1 = propagateAfter(root_ptr::Geom->Lkr.z, t1);
+			propPos2 = propagateAfter(root_ptr::Geom->Lkr.z, t2);
 
 			RLKr = distance2D(propPos1, propPos2);
 			if(trackID1==rootPhysics.pic.parentTrack || trackID2==rootPhysics.pic.parentTrack){
-				if(optDebug) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <50: rejected" << endl;
+				if(options::optDebug) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <50: rejected" << endl;
 				if(RLKr<=50) bad = true;
 			}
 			else{
-				if(optDebug) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
+				if(options::optDebug) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
 				if(RLKr<=20) bad = true;
 			}
 
@@ -236,11 +244,11 @@ int pi0d_identifyPi(int &piCandidate, bool &badElectron){
 
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); i++){
 		int goodTrackID = corrEvent.goodTracks[i];
-		if(optDebug) cout << "\tTrying track :\t\t" << i <<  endl;
+		if(options::optDebug) cout << "\tTrying track :\t\t" << i <<  endl;
 
 		eop = corrEvent.pTrack[goodTrackID].E/corrEvent.pTrack[goodTrackID].p;
 
-		if(optDebug) cout << "\tE over P :\t\t" << eop << "\t\t <0.85 : pi+ candidate; >1.15 : badElectron" <<  endl;
+		if(options::optDebug) cout << "\tE over P :\t\t" << eop << "\t\t <0.85 : pi+ candidate; >1.15 : badElectron" <<  endl;
 		if(eop<0.85){
 			piCandidatesNb++;
 			piCandidate = i;
@@ -264,61 +272,61 @@ int pi0d_goodClusters(){
 	if(rootBurst.isData) conditions = 6;
 	else conditions=5;
 
-	if(optDebug) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
-	if(optDebug) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
+	if(options::optDebug) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
+	if(options::optDebug) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
 
 	for(unsigned int i=0; i<corrEvent.pCluster.size(); i++){
 		NPhysicsCluster c = corrEvent.pCluster[i];
 		cond = 0;
 
-		if(optDebug) cout << "\tTrying cluster :\t" << i << endl;
+		if(options::optDebug) cout << "\tTrying cluster :\t" << i << endl;
 
 		if(rootBurst.pbWall){
-			if(optDebug) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
+			if(options::optDebug) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
 		}
-		if(optDebug) cout << "\tEnergy :\t" << c.E << endl;
+		if(options::optDebug) cout << "\tEnergy :\t" << c.E << endl;
 
 		NPhysicsTrack pi = corrEvent.pTrack[rootPhysics.pic.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[rootPhysics.ep.parentTrack];
 		NPhysicsTrack em = corrEvent.pTrack[rootPhysics.em.parentTrack];
 
 		// separation from pi impact point >30cm
-		propPos = propagateAfter(Geom->Lkr.z, pi);
+		propPos = propagateAfter(root_ptr::Geom->Lkr.z, pi);
 		distance = distance2D(propPos, c.position);
-		if(optDebug) cout << "\t\tR_LKr_pi :\t\t" << distance << "\t > 50 : ++" << endl;
+		if(options::optDebug) cout << "\t\tR_LKr_pi :\t\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
 
 		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(Geom->Lkr.z, ep);
+		propPos = propagateAfter(root_ptr::Geom->Lkr.z, ep);
 		distance = distance2D(propPos, c.position);
-		if(optDebug) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
+		if(options::optDebug) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
 		if(distance>20) cond++;
 
-		propPos = propagateAfter(Geom->Lkr.z, em);
+		propPos = propagateAfter(root_ptr::Geom->Lkr.z, em);
 		distance = distance2D(propPos, c.position);
-		if(optDebug) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
+		if(options::optDebug) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
 		if(distance>20) cond++;
 
 		// separation from undeflected e+ e- trajectories >20cm
-		propPos = propagate(Geom->Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
+		propPos = propagate(root_ptr::Geom->Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
-		if(optDebug) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
+		if(options::optDebug) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
 
-		propPos = propagate(Geom->Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
+		propPos = propagate(root_ptr::Geom->Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
-		if(optDebug) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
+		if(options::optDebug) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
 
 		// |t_g - t_vtx|<10ns
 		if(rootBurst.isData){
 			tDiff = fabs(rawEvent.cluster[c.clusterID].time - rawEvent.vtx[corrEvent.goodVertexID].time);
-			if(optDebug) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
+			if(options::optDebug) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
 			if(tDiff<10) cond++;
 		}
 
-		if(optDebug) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
+		if(options::optDebug) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
 		if(cond==conditions){
 			goodClusters++;
 			rootPhysics.gamma.parentCluster = i;
@@ -329,13 +337,13 @@ int pi0d_goodClusters(){
 
 int pi0d_failCut(int i){
 	cutsWord[i] = false;
-	if(optDebug) cout << "Event is not passing selection" << endl;
-	if(!noOutput) fprintf(fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
+	if(options::optDebug) cout << "Event is not passing selection" << endl;
+	if(options::doOutput) fprintf(io_ptr::fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
 	return 0;
 }
 void pi0d_passSelection(){
-	if(optDebug) cout << "Event is passing selection" << endl;
-	if(!noOutput) fprintf(fprt2, "%i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp);
+	if(options::optDebug) cout << "Event is passing selection" << endl;
+	if(options::doOutput) fprintf(io_ptr::fprt2, "%i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp);
 }
 
 int nico_pi0DalitzSelect(){
@@ -367,33 +375,33 @@ int nico_pi0DalitzSelect(){
 		pi0d_failCut(corrEvent.failedCond);
 		return -1;
 	}
-	if(optDebug) cout << endl;
+	if(options::optDebug) cout << endl;
 
 	// 6) Track DCH time
-	if(optDebug) cout << "~~~~ Cut 6 ~~~~" << endl;
+	if(options::optDebug) cout << "~~~~ Cut 6 ~~~~" << endl;
 	if(rootBurst.isData){
-		if(optDebug) cout << "|t_1| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch)>=cutsDefinition.maxTrackTime) {pi0d_failCut(6); return -1;}
-		if(optDebug) cout << "|t_2| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch)>=cutsDefinition.maxTrackTime) {pi0d_failCut(6); return -1;}
-		if(optDebug) cout << "|t_3| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch)>=cutsDefinition.maxTrackTime) {pi0d_failCut(6); return -1;}
+		if(options::optDebug) cout << "|t_1| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
+		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch)>=parameters::cutsDefinition.maxTrackTime) {pi0d_failCut(6); return -1;}
+		if(options::optDebug) cout << "|t_2| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
+		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch)>=parameters::cutsDefinition.maxTrackTime) {pi0d_failCut(6); return -1;}
+		if(options::optDebug) cout << "|t_3| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
+		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch)>=parameters::cutsDefinition.maxTrackTime) {pi0d_failCut(6); return -1;}
 	}
 	else{
-		if(optDebug) cout << "\tMC: Not applicable" << endl;
+		if(options::optDebug) cout << "\tMC: Not applicable" << endl;
 	}
 
 	// 7) Track acceptance veto
-	if(optDebug) cout << "~~~~ Cut 7 ~~~~" << endl;
+	if(options::optDebug) cout << "~~~~ Cut 7 ~~~~" << endl;
 	badAcceptance = pi0d_tracksAcceptance();
-	if(optDebug) cout << "Track acceptance :\t\t" << badAcceptance << "\t == " << true << ": rejected" << endl;
-	if(badAcceptance==cutsDefinition.boolBadTrack) {pi0d_failCut(7); return -1;}
+	if(options::optDebug) cout << "Track acceptance :\t\t" << badAcceptance << "\t == " << true << ": rejected" << endl;
+	if(badAcceptance==parameters::cutsDefinition.boolBadTrack) {pi0d_failCut(7); return -1;}
 
 	// 9) Identify candidates
-	if(optDebug) cout << "~~~~ Cut 9 ~~~~" << endl;
+	if(options::optDebug) cout << "~~~~ Cut 9 ~~~~" << endl;
 	piCandNb = pi0d_identifyPi(piTrack, badElectron);
-	if(optDebug) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
-	if(piCandNb!=cutsDefinition.numPiCandidates) {pi0d_failCut(9); return -1;}
+	if(options::optDebug) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
+	if(piCandNb!=parameters::cutsDefinition.numPiCandidates) {pi0d_failCut(9); return -1;}
 
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); i++){
 		if((int)i==piTrack) continue;
@@ -430,21 +438,21 @@ int nico_pi0DalitzSelect(){
 	}
 
 	// 8) Track combination veto
-	if(optDebug) cout << "~~~~ Cut 8 ~~~~" << endl;
+	if(options::optDebug) cout << "~~~~ Cut 8 ~~~~" << endl;
 	badCombis = pi0d_trackCombinationVeto();
-	if(optDebug) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
-	if(badCombis!=cutsDefinition.numBadTrackCombi) {pi0d_failCut(8); return -1;}
+	if(options::optDebug) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
+	if(badCombis!=parameters::cutsDefinition.numBadTrackCombi) {pi0d_failCut(8); return -1;}
 
 	// 10) Bad electron cluster
-	if(optDebug) cout << "~~~~ Cut 10 ~~~~" << endl;
-	if(optDebug) cout << "Bad electron tracks eop :\t" << badElectron << "\t == " << true << ": rejected" << endl;
-	if(badElectron==cutsDefinition.boolBadECandidates) {pi0d_failCut(10); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 10 ~~~~" << endl;
+	if(options::optDebug) cout << "Bad electron tracks eop :\t" << badElectron << "\t == " << true << ": rejected" << endl;
+	if(badElectron==parameters::cutsDefinition.boolBadECandidates) {pi0d_failCut(10); return -1;}
 
 	// 12) Exactly 1 good LKr cluster
-	if(optDebug) cout << "~~~~ Cut 12 ~~~~" << endl;
+	if(options::optDebug) cout << "~~~~ Cut 12 ~~~~" << endl;
 	goodClusters = pi0d_goodClusters();
-	if(optDebug) cout << "Good LKr clusters :\t\t" << goodClusters << "\t != 1 : rejected" << endl;
-	if(goodClusters!=cutsDefinition.numAddGoodCluster) {pi0d_failCut(12); return -1;}
+	if(options::optDebug) cout << "Good LKr clusters :\t\t" << goodClusters << "\t != 1 : rejected" << endl;
+	if(goodClusters!=parameters::cutsDefinition.numAddGoodCluster) {pi0d_failCut(12); return -1;}
 
 	if(rootPhysics.gamma.parentCluster==-1){
 		return 0;
@@ -460,36 +468,36 @@ int nico_pi0DalitzSelect(){
 	rootPhysics.kaon.P = rootPhysics.pic.P + rootPhysics.pi0.P;
 
 	// 13) Photon candidate in LKr acceptance
-	if(optDebug) cout << "~~~~ Cut 13 ~~~~" << endl;
+	if(options::optDebug) cout << "~~~~ Cut 13 ~~~~" << endl;
 	lkrAcceptance = rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].lkr_acc;
-	if(optDebug) cout << "Mauro condition :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
-	if(lkrAcceptance!=cutsDefinition.lkrAcceptance) {pi0d_failCut(13); return -1;}
+	if(options::optDebug) cout << "Mauro condition :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
+	if(lkrAcceptance!=parameters::cutsDefinition.lkrAcceptance) {pi0d_failCut(13); return -1;}
 
 	// 14) E_gamma>3GeV
-	if(optDebug) cout << "~~~~ Cut 14 ~~~~" << endl;
-	if(optDebug) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << rootPhysics.gamma.P.E() << "\t <= 3 : rejected" << endl;
-	if(rootPhysics.gamma.P.E()<=cutsDefinition.minGammaEnergy) {pi0d_failCut(14); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 14 ~~~~" << endl;
+	if(options::optDebug) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << rootPhysics.gamma.P.E() << "\t <= 3 : rejected" << endl;
+	if(rootPhysics.gamma.P.E()<=parameters::cutsDefinition.minGammaEnergy) {pi0d_failCut(14); return -1;}
 
 	// 15) D_deadcell>2cm
-	if(optDebug) cout << "~~~~ Cut 15 ~~~~" << endl;
-	if(optDebug) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 15 ~~~~" << endl;
+	if(options::optDebug) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=parameters::cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
 
-	if(optDebug) cout << "d_deadcell(pi) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+	if(options::optDebug) cout << "d_deadcell(pi) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell<=parameters::cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
 
-	if(optDebug) cout << "d_deadcell(ep) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+	if(options::optDebug) cout << "d_deadcell(ep) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell<=parameters::cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
 
-	if(optDebug) cout << "d_deadcell(em) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+	if(options::optDebug) cout << "d_deadcell(em) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell<=parameters::cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
 
 	// 16) Photon DCH1 intercept >13cm
-	if(optDebug) cout << "~~~~ Cut 16 ~~~~" << endl;
-	propPos = propagate(Geom->Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, rootPhysics.gamma.P.Vect());
+	if(options::optDebug) cout << "~~~~ Cut 16 ~~~~" << endl;
+	propPos = propagate(root_ptr::Geom->Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, rootPhysics.gamma.P.Vect());
 	radius = sqrt(pow(propPos.X(),2) + pow(propPos.Y(),2));
-	if(optDebug) cout << "R_gDCH1 :\t\t\t" << radius << "\t <= 13 : rejected" << endl;
-	if(radius<=cutsDefinition.minGammaDCHRadius) {pi0d_failCut(16); return -1;}
+	if(options::optDebug) cout << "R_gDCH1 :\t\t\t" << radius << "\t <= 13 : rejected" << endl;
+	if(radius<=parameters::cutsDefinition.minGammaDCHRadius) {pi0d_failCut(16); return -1;}
 
 	//Start Kinematic cuts
 	//Pt
@@ -501,34 +509,34 @@ int nico_pi0DalitzSelect(){
 	rootPhysics.y = 2.*(rootPhysics.em.P.E() - rootPhysics.ep.P.E())/(Mpi0*(1-rootPhysics.x));
 
 	// 11) Tracks momenta
-	if(optDebug) cout << "~~~~ Cut 11 ~~~~" << endl;
-	if(optDebug) cout << "p_pi :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p << "\t <5 || > 60 : rejected" << endl;
-	if(optDebug) cout << "p_e+ :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p << "\t <5 || > 60 : rejected" << endl;
-	if(optDebug) cout << "p_e- :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p << "\t <5 || > 60 : rejected" << endl;
-	if(corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p<=cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p>=cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return -1;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p<=cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p>=cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return -1;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p<=cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p>=cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 11 ~~~~" << endl;
+	if(options::optDebug) cout << "p_pi :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p << "\t <5 || > 60 : rejected" << endl;
+	if(options::optDebug) cout << "p_e+ :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p << "\t <5 || > 60 : rejected" << endl;
+	if(options::optDebug) cout << "p_e- :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p << "\t <5 || > 60 : rejected" << endl;
+	if(corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p<=parameters::cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p>=parameters::cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return -1;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p<=parameters::cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p>=parameters::cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return -1;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p<=parameters::cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p>=parameters::cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return -1;}
 
 	// 17) Total momentum 70<p<78
-	if(optDebug) cout << "~~~~ Cut 17 ~~~~" << endl;
-	if(optDebug) cout << "p_pieeg :\t\t\t" << rootPhysics.kaon.P.Vect().Mag() << "\t <70 || >78 : rejected" << endl;
-	if(rootPhysics.kaon.P.Vect().Mag()<cutsDefinition.minTotalMomentum || rootPhysics.kaon.P.Vect().Mag()>cutsDefinition.maxTotalMomentum) {pi0d_failCut(17); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 17 ~~~~" << endl;
+	if(options::optDebug) cout << "p_pieeg :\t\t\t" << rootPhysics.kaon.P.Vect().Mag() << "\t <70 || >78 : rejected" << endl;
+	if(rootPhysics.kaon.P.Vect().Mag()<parameters::cutsDefinition.minTotalMomentum || rootPhysics.kaon.P.Vect().Mag()>parameters::cutsDefinition.maxTotalMomentum) {pi0d_failCut(17); return -1;}
 
 	// 18) Transverse momentum^2 < 5E-4
-	if(optDebug) cout << "~~~~ Cut 18 ~~~~" << endl;
-	if(optDebug) cout << "P_t^2 :\t\t" << pt << "\t >= " << cutsDefinition.maxPt << " : rejected" << endl;
-	if(pt>=cutsDefinition.maxPt) {pi0d_failCut(18); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 18 ~~~~" << endl;
+	if(options::optDebug) cout << "P_t^2 :\t\t" << pt << "\t >= " << parameters::cutsDefinition.maxPt << " : rejected" << endl;
+	if(pt>=parameters::cutsDefinition.maxPt) {pi0d_failCut(18); return -1;}
 
 	// 19) |M_eeg - M_pi0|<8 MeV
-	if(optDebug) cout << "~~~~ Cut 19 ~~~~" << endl;
-	if(optDebug) cout << "M_ee :\t\t" << rootPhysics.mee << endl;
-	if(optDebug) cout << "|M_eeg - M_pi0| :\t\t" << fabs(rootPhysics.pi0.P.M()-Mpi0) << "\t >= 0.008 : rejected" << endl;
-	if(fabs(rootPhysics.pi0.P.M()-Mpi0)>=cutsDefinition.maxPi0MassDiff) {pi0d_failCut(19); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 19 ~~~~" << endl;
+	if(options::optDebug) cout << "M_ee :\t\t" << rootPhysics.mee << endl;
+	if(options::optDebug) cout << "|M_eeg - M_pi0| :\t\t" << fabs(rootPhysics.pi0.P.M()-Mpi0) << "\t >= 0.008 : rejected" << endl;
+	if(fabs(rootPhysics.pi0.P.M()-Mpi0)>=parameters::cutsDefinition.maxPi0MassDiff) {pi0d_failCut(19); return -1;}
 
 	// 20) 0.475 < M_pieeg < 0.510
-	if(optDebug) cout << "~~~~ Cut 20 ~~~~" << endl;
-	if(optDebug) cout << "M_pieeg :\t\t" << rootPhysics.kaon.P.M() << "\t <0.475 || >0.510: rejected" << endl;
-	if(rootPhysics.kaon.P.M()<cutsDefinition.minKaonMassDiff || rootPhysics.kaon.P.M()>cutsDefinition.maxKaonMassDiff) {pi0d_failCut(20); return -1;}
+	if(options::optDebug) cout << "~~~~ Cut 20 ~~~~" << endl;
+	if(options::optDebug) cout << "M_pieeg :\t\t" << rootPhysics.kaon.P.M() << "\t <0.475 || >0.510: rejected" << endl;
+	if(rootPhysics.kaon.P.M()<parameters::cutsDefinition.minKaonMassDiff || rootPhysics.kaon.P.M()>parameters::cutsDefinition.maxKaonMassDiff) {pi0d_failCut(20); return -1;}
 
 	pi0d_passSelection();
 	return 0;
@@ -537,11 +545,11 @@ int nico_pi0DalitzSelect(){
 bool newEvent(int i, int &nevt){
 	rootPhysics.clear();
 
-	if(periodKeep!= 0 && rootBurst.period!=periodKeep) return false;
+	if(options::periodKeep!= 0 && rootBurst.period!=options::periodKeep) return false;
 	if(i==0) cout << "First event: ";
-	if(i % outputMod == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r";
-	if(opts.count("filter")>0){
-		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp)) return false;
+	if(i % options::outputModulo == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r";
+	if(parameters::badEventsList.size()>0){
+		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, parameters::badEventsList)) return false;
 	}
 	if(i==0) cout << endl;
 
@@ -551,36 +559,107 @@ bool newEvent(int i, int &nevt){
 }
 
 int main(int argc, char **argv){
-	int opt;
-	string optString;
+	namespace po = boost::program_options;
+
+	//Options variables
 	int nevt = -1;
 	bool fileList = false;
-	TString fileName;
+	string fileName;
+	string optString;
+	string prefix;
+	string cutsFile;
+	string filterFile;
 
-	while ((opt = getopt(argc, argv, "s:n:l:i:")) != -1) {
-		switch (opt) {
-		case 's':
-			optString = optarg;
-			break;
-		case 'n':
-			nevt = TString(optarg).Atoi();
-			break;
-		case 'l':
-			fileName = optarg;
-			fileList = true;
-			break;
-		case 'i':
-			fileName = optarg;
-			break;
-		}
+	// Declare the supported options.
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("help,h", "produce help message")
+		("nevt,n", po::value<int>(), "max number of events")
+		("file,i", po::value<string>(), "input file name")
+		("list,l", po::value<string>(), "list of input files")
+		("prefix,p", po::value<string>(), "prefix for output files")
+		("debug,d", po::value<bool>(), "Activate verbose debugging")
+		("filter,f", po::value<string>(), "Filter file")
+		("dooutput", po::value<bool>(), "Activate output text files")
+		("period", po::value<int>(), "Keep only events from specified period")
+		("mod,m", po::value<int>(), "Event number printing modulo")
+		("cuts,c", po::value<string>(), "Cuts file")
+		("eall,e", po::value<bool>(), "Export all events, even failed")
+	;
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);
+
+	if (vm.count("help")) {
+	    cout << desc << "\n";
+	    return 1;
 	}
 
-	selectOptions(optString);
+	std::cout << ">>>> Received parameters:" << std::endl;
+	for(const auto &it : vm){
+		cout << "\t" << it.first << " = ";
+		auto& value = it.second.value();
+		if (auto v = boost::any_cast<int>(&value))
+			std::cout << *v;
+		else if (auto v = boost::any_cast<bool>(&value))
+			std::cout << *v;
+		else if (auto v = boost::any_cast<std::string>(&value))
+			std::cout << *v;
+		else if (auto v = boost::any_cast<TString>(&value))
+			std::cout << *v;
+		else
+			std::cout << "**cast error**";
+		cout << endl;
+	}
 
-	parseCutsValues("");
-	printCuts();
-	inTree = new TChain("event");
-	headerTree = new TChain("header");
+	if (vm.count("nevt")) nevt = vm["nevt"].as<int>();
+
+	/// String options
+	if (vm.count("prefix")) prefix = vm["prefix"].as<string>();
+	if (vm.count("debug")) options::optDebug = vm["debug"].as<bool>();
+	if (vm.count("period")) options::periodKeep = vm["period"].as<int>();
+	if (vm.count("dooutput")) options::doOutput = vm["dooutput"].as<bool>();
+	if (vm.count("mod")) options::outputModulo = vm["mod"].as<int>();
+	if (vm.count("cuts")) cutsFile = vm["cuts"].as<string>();
+	if (vm.count("eall")) options::exportAllEvents = vm["eall"].as<bool>();
+
+	/// Input (one of them mandatory)
+	if (vm.count("list") and vm.count("file")){
+		cerr << "Cannot specify both an input file and an input list at the same time" << endl;
+		return -1;
+	}
+	else if(!vm.count("list") and !vm.count("file")){
+		cerr << "Must specify either an input file or an input list" << endl;
+		return -1;
+	}
+	else{
+		if (vm.count("list")){
+			fileList = true;
+			fileName = vm["list"].as<string>();
+		}
+		if (vm.count("file")) fileName = vm["file"].as<string>();
+	}
+
+	//selectOptions(optString);
+	common_init(prefix, filterFile, parameters::badEventsList, options::doOutput, io_ptr::fprt, io_ptr::fprt2);
+
+	parseCutsValues("", parameters::cutsDefinition);
+	printCuts(parameters::cutsDefinition);
+
+
+	std::cout << "Output events every " << options::outputModulo << " events" << std::endl;
+	if(!cutsFile.empty()) std::cout << "Using cuts at: " << cutsFile << std::endl;
+	std::cout << "Debugging activated: " << (options::optDebug==true ? "Yes" : "No") << std::endl;
+	if(options::periodKeep==0) std::cout << "Keeping period: All" << std::endl;
+	else std::cout << "Keeping period: " << options::periodKeep << std::endl;
+	if(options::doOutput) std::cout << "Text output files requested" << std::endl;
+	if(options::exportAllEvents) std::cout << "Export all events requested" << std::endl;
+	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+	std::cout << std::endl << std::endl;
+
+	io_ptr::inTree = new TChain("event");
+	io_ptr::headerTree = new TChain("header");
 
 	if(!readFile(fileName, fileList)) return -1;
 	openOutput();
@@ -590,23 +669,23 @@ int main(int argc, char **argv){
 
 
 	outputFileHeader.NPassedEvents = 0;
-	cout << "Entries in the tree: " << inTree->GetEntries() << endl;
-	for(int i=0; i<inTree->GetEntries() && (nevt<0 || nevent<nevt ); ++i){
-		inTree->GetEntry(i);
-		if(oldFile!=inTree->GetCurrentFile()->GetName()){
-			oldFile = inTree->GetCurrentFile()->GetName();
+	cout << "Entries in the tree: " << io_ptr::inTree->GetEntries() << endl;
+	for(int i=0; i<io_ptr::inTree->GetEntries() && (nevt<0 || nevent<nevt ); ++i){
+		io_ptr::inTree->GetEntry(i);
+		if(oldFile!=io_ptr::inTree->GetCurrentFile()->GetName()){
+			oldFile = io_ptr::inTree->GetCurrentFile()->GetName();
 			++currFile;
-			headerTree->GetEntry(currFile);
+			io_ptr::headerTree->GetEntry(currFile);
 			outputFileHeader.NProcessedEvents += rootFileHeader.NProcessedEvents;
 			outputFileHeader.NFailedEvents += rootFileHeader.NFailedEvents;
 		}
 		if(newEvent(i, nevent)){
-			outTree->Fill();
+			io_ptr::outTree->Fill();
 			outputFileHeader.NPassedEvents++;
 		}
 		else{
 			outputFileHeader.NFailedEvents++;
-			if(exportAllEvents) outTree->Fill();
+			if(options::exportAllEvents) io_ptr::outTree->Fill();
 		}
 	}
 	cout << endl;
@@ -615,10 +694,10 @@ int main(int argc, char **argv){
 	cout << outputFileHeader.NFailedEvents << endl;
 	cout << outputFileHeader.NPassedEvents << endl;
 
-	outTree->Write();
-	outHeaderTree->Fill();
-	outHeaderTree->Write();
+	io_ptr::outTree->Write();
+	io_ptr::outHeaderTree->Fill();
+	io_ptr::outHeaderTree->Write();
 
-	outFile->Close();
+	io_ptr::outFile->Close();
 	return 0;
 }

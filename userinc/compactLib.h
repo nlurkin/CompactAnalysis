@@ -19,6 +19,7 @@
  */
 
 void loadEOPData(superBurst *sbur);
+void applyEOPData();
 
 void defineBeamCharge(superBurst *sbur);
 
@@ -33,5 +34,7 @@ NPhysicsCluster correctCluster(superCmpEvent* sevt, int i);
 
 void CreateTracks(superCmpEvent *sevt);
 void CreateClusters(superCmpEvent *sevt);
+
+int selectOptions(std::string s);
 
 #endif /* COMPACTLIB_H_ */

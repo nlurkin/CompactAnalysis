@@ -47,7 +47,7 @@ public:
 
 class NTrak : public TObject{
 public:
-	NTrak():q(999), vtxID(-1), time(0), p(0), bdxdz(0), bdydz(0){};
+	NTrak():q(999), vtxID(-1), time(0), p(0), bdxdz(0), bdydz(0), dDeadCell(0){};
 	NTrak(trak &ref);
 public:
 	int q;
@@ -56,6 +56,7 @@ public:
 	float p;
 	float bdxdz;
 	float bdydz;
+	float dDeadCell;
 	TVector3 bDetPos;
 	TVector3 aDetPos;
 	TVector3 bMomentum;
