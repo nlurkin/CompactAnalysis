@@ -475,6 +475,15 @@ int nico_pi0DalitzSelect(){
 	if(optDebug) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
 	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
 
+	if(optDebug) cout << "d_deadcell(pi) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+
+	if(optDebug) cout << "d_deadcell(ep) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+
+	if(optDebug) cout << "d_deadcell(em) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell<=cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return -1;}
+
 	// 16) Photon DCH1 intercept >13cm
 	if(optDebug) cout << "~~~~ Cut 16 ~~~~" << endl;
 	propPos = propagate(Geom->Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, rootPhysics.gamma.P.Vect());
