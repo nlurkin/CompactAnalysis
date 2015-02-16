@@ -15,6 +15,8 @@ using namespace std;
 #include <fstream>
 #include <boost/program_options.hpp>
 
+#include "CompactImport.h"
+
 ///### Objects
 ROOTRawEvent rawEvent;
 ROOTCorrectedEvent corrEvent;
@@ -24,16 +26,6 @@ NGeom rootGeom;
 ROOTMCEvent rootMC;
 ROOTPhysicsEvent rootPhysics;
 ROOTFileHeader outputFileHeader;
-
-//### Ptr for TTree
-namespace root_ptr{
-	ROOTRawEvent *rawEvent_ptr = &rawEvent;
-	ROOTCorrectedEvent *corrEvent_ptr = &corrEvent;
-	ROOTBurst *rootBurst_ptr = &rootBurst;
-	ROOTFileHeader *rootFileHeader_ptr = &rootFileHeader;
-	NGeom *Geom = &rootGeom;
-	ROOTMCEvent *rootMC_ptr = &rootMC;
-}
 
 NAbcog_params abcog_params;
 
@@ -49,73 +41,14 @@ namespace options{
 namespace parameters{
 	cutsValues cutsDefinition;
 	vector<eventID> badEventsList;
+	bool mcBranched = false;
 }
-
-bool cutsWord[19];
-bool mcBranched = false;
 
 //### IO variables
 namespace io_ptr{
 	FILE* fprt, *fprt2;
 	TTree *outTree, *outHeaderTree;
 	TFile *outFile;
-
-	TChain *inTree;
-	TChain *headerTree;
-}
-
-ostream& operator<<(ostream &s, TVector3 v){
-	s.precision(7);
-	s << std::fixed;
-	s << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " )";
-	return s;
-}
-
-ostream& operator<<(ostream &s, TLorentzVector v){
-	s.precision(7);
-	s << std::fixed;
-	s << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " , " << v.E() << " ) mass=" << v.M() << endl;
-	return s;
-}
-
-bool readFile(TString fName, bool isList){
-
-	if(isList){
-		if(fName.Contains(".root")){
-			cerr << "ROOT file cannot be a list" << endl;
-			return false;
-		}
-		TString inputFileName;
-		ifstream inputList(fName.Data());
-		while(inputFileName.ReadLine(inputList)){
-			if(inputFileName.Contains("/castor/") && !inputFileName.Contains("root://castorpublic.cern.ch//")){
-								TString svcClass = getenv("STAGE_SVCCLASS");
-								if(svcClass=="") svcClass="na62";
-					inputFileName = "root://castorpublic.cern.ch//"+inputFileName+"?svcClass="+svcClass;
-			}
-			if(inputFileName.Contains("/eos/") && !inputFileName.Contains("root://eosna62.cern.ch//")){
-				inputFileName = "root://eosna62.cern.ch//"+inputFileName;
-			}
-			io_ptr::inTree->AddFile(inputFileName);
-			io_ptr::headerTree->AddFile(inputFileName);
-		}
-	}
-	else{
-		io_ptr::inTree->AddFile(fName);
-		io_ptr::headerTree->AddFile(fName);
-	}
-
-	io_ptr::inTree->SetBranchAddress("rawBurst", &root_ptr::rootBurst_ptr);
-	io_ptr::inTree->SetBranchAddress("rawEvent", &root_ptr::rawEvent_ptr);
-	io_ptr::inTree->SetBranchAddress("corrEvent", &root_ptr::corrEvent_ptr);
-	io_ptr::headerTree->SetBranchAddress("header", &root_ptr::rootFileHeader_ptr);
-	io_ptr::inTree->SetBranchAddress("geom", &root_ptr::Geom);
-	if(io_ptr::inTree->GetListOfBranches()->Contains("mc")){
-		io_ptr::inTree->SetBranchAddress("mc", &root_ptr::rootMC_ptr);
-		mcBranched = true;
-	}
-
-	return true;
 }
 
 bool openOutput(){
@@ -127,7 +60,7 @@ bool openOutput(){
 	io_ptr::outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
 	io_ptr::outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
 	io_ptr::outTree->Branch("geom" ,"NGeom", &rootGeom);
-	if(mcBranched) io_ptr::outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
+	if(parameters::mcBranched) io_ptr::outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
 
 	io_ptr::outTree->Branch("pi0dEvent" ,"ROOTPhysicsEvent", &rootPhysics);
 	io_ptr::outHeaderTree->Branch("header" ,"ROOTFileHeader", &outputFileHeader);
@@ -140,15 +73,15 @@ int pi0d_tracksAcceptance(){
 	TVector3 propPos;
 	bool badTrack = false;
 	double radius;
-	TVector3 dch1(root_ptr::Geom->Dch[0].PosChamber.x,root_ptr::Geom->Dch[0].PosChamber.y,root_ptr::Geom->Dch[0].PosChamber.z);
-	TVector3 dch2(root_ptr::Geom->Dch[1].PosChamber.x,root_ptr::Geom->Dch[1].PosChamber.y,root_ptr::Geom->Dch[1].PosChamber.z);
-	TVector3 dch4(root_ptr::Geom->Dch[3].PosChamber.x,root_ptr::Geom->Dch[3].PosChamber.y,root_ptr::Geom->Dch[3].PosChamber.z);
+	TVector3 dch1(rootGeom.Dch[0].PosChamber.x,rootGeom.Dch[0].PosChamber.y,rootGeom.Dch[0].PosChamber.z);
+	TVector3 dch2(rootGeom.Dch[1].PosChamber.x,rootGeom.Dch[1].PosChamber.y,rootGeom.Dch[1].PosChamber.z);
+	TVector3 dch4(rootGeom.Dch[3].PosChamber.x,rootGeom.Dch[3].PosChamber.y,rootGeom.Dch[3].PosChamber.z);
 
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); ++i){
 		int iGoodTrack = corrEvent.goodTracks[i];
 		NPhysicsTrack t = corrEvent.pTrack[iGoodTrack];
 
-		propPos = propagateAfter(root_ptr::Geom->Lkr.z, t);
+		propPos = propagateAfter(rootGeom.Lkr.z, t);
 		lkrAcceptance = t.lkr_acc;
 		if(options::optDebug) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
 		if(lkrAcceptance!=0) badTrack = true;
@@ -160,17 +93,17 @@ int pi0d_tracksAcceptance(){
 		}
 
 
-		propPos = propagateCorrBefore(root_ptr::Geom->Dch[0].PosChamber.z, t);
+		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
 		radius = distance2D(dch1, propPos);
 		if(options::optDebug) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateCorrBefore(root_ptr::Geom->Dch[1].PosChamber.z, t);
+		propPos = propagateCorrBefore(rootGeom.Dch[1].PosChamber.z, t);
 		radius = distance2D(dch2, propPos);
 		if(options::optDebug) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateAfter(root_ptr::Geom->Dch[3].PosChamber.z, t);
+		propPos = propagateAfter(rootGeom.Dch[3].PosChamber.z, t);
 		radius = distance2D(dch4, propPos);
 		if(options::optDebug) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
@@ -200,8 +133,8 @@ int pi0d_trackCombinationVeto(){
 			if(options::optDebug) cout << "\tTrying combination :\t" << i << " " << j << endl;
 
 			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(root_ptr::Geom->Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(root_ptr::Geom->Dch[0].PosChamber.z, t2);
+			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1);
+			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2);
 
 			RDCH1 = distance2D(propPos1, propPos2);
 			if(options::optDebug) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
@@ -216,8 +149,8 @@ int pi0d_trackCombinationVeto(){
 			}
 
 			// Track separation in LKr plane >15
-			propPos1 = propagateAfter(root_ptr::Geom->Lkr.z, t1);
-			propPos2 = propagateAfter(root_ptr::Geom->Lkr.z, t2);
+			propPos1 = propagateAfter(rootGeom.Lkr.z, t1);
+			propPos2 = propagateAfter(rootGeom.Lkr.z, t2);
 
 			RLKr = distance2D(propPos1, propPos2);
 			if(trackID1==rootPhysics.pic.parentTrack || trackID2==rootPhysics.pic.parentTrack){
@@ -292,29 +225,29 @@ int pi0d_goodClusters(){
 		NPhysicsTrack em = corrEvent.pTrack[rootPhysics.em.parentTrack];
 
 		// separation from pi impact point >30cm
-		propPos = propagateAfter(root_ptr::Geom->Lkr.z, pi);
+		propPos = propagateAfter(rootGeom.Lkr.z, pi);
 		distance = distance2D(propPos, c.position);
 		if(options::optDebug) cout << "\t\tR_LKr_pi :\t\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
 
 		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(root_ptr::Geom->Lkr.z, ep);
+		propPos = propagateAfter(rootGeom.Lkr.z, ep);
 		distance = distance2D(propPos, c.position);
 		if(options::optDebug) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
 		if(distance>20) cond++;
 
-		propPos = propagateAfter(root_ptr::Geom->Lkr.z, em);
+		propPos = propagateAfter(rootGeom.Lkr.z, em);
 		distance = distance2D(propPos, c.position);
 		if(options::optDebug) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
 		if(distance>20) cond++;
 
 		// separation from undeflected e+ e- trajectories >20cm
-		propPos = propagate(root_ptr::Geom->Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
+		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
 		if(options::optDebug) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
 
-		propPos = propagate(root_ptr::Geom->Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
+		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
 		if(options::optDebug) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
@@ -336,7 +269,7 @@ int pi0d_goodClusters(){
 }
 
 int pi0d_failCut(int i){
-	cutsWord[i] = false;
+	corrEvent.failedCond = i;
 	if(options::optDebug) cout << "Event is not passing selection" << endl;
 	if(options::doOutput) fprintf(io_ptr::fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
 	return 0;
@@ -494,7 +427,7 @@ int nico_pi0DalitzSelect(){
 
 	// 16) Photon DCH1 intercept >13cm
 	if(options::optDebug) cout << "~~~~ Cut 16 ~~~~" << endl;
-	propPos = propagate(root_ptr::Geom->Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, rootPhysics.gamma.P.Vect());
+	propPos = propagate(rootGeom.Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, rootPhysics.gamma.P.Vect());
 	radius = sqrt(pow(propPos.X(),2) + pow(propPos.Y(),2));
 	if(options::optDebug) cout << "R_gDCH1 :\t\t\t" << radius << "\t <= 13 : rejected" << endl;
 	if(radius<=parameters::cutsDefinition.minGammaDCHRadius) {pi0d_failCut(16); return -1;}
@@ -623,6 +556,7 @@ int main(int argc, char **argv){
 	if (vm.count("mod")) options::outputModulo = vm["mod"].as<int>();
 	if (vm.count("cuts")) cutsFile = vm["cuts"].as<string>();
 	if (vm.count("eall")) options::exportAllEvents = vm["eall"].as<bool>();
+	if (vm.count("filter")) filterFile = vm["filter"].as<string>();
 
 	/// Input (one of them mandatory)
 	if (vm.count("list") and vm.count("file")){
@@ -642,6 +576,7 @@ int main(int argc, char **argv){
 	}
 
 	//selectOptions(optString);
+	cout << filterFile << endl;
 	common_init(prefix, filterFile, parameters::badEventsList, options::doOutput, &io_ptr::fprt, &io_ptr::fprt2);
 
 	parseCutsValues("", parameters::cutsDefinition);
@@ -658,10 +593,9 @@ int main(int argc, char **argv){
 	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 	std::cout << std::endl << std::endl;
 
-	io_ptr::inTree = new TChain("event");
-	io_ptr::headerTree = new TChain("header");
-
-	if(!readFile(fileName, fileList)) return -1;
+	CompactImport input;
+	input.associateTrees(rawEvent, corrEvent, rootBurst, rootFileHeader, rootGeom, rootMC);
+	if(!input.readInput(fileName, fileList)) return -1;
 	openOutput();
 	TString oldFile = "";
 	int currFile = -1;
@@ -669,16 +603,8 @@ int main(int argc, char **argv){
 
 
 	outputFileHeader.NPassedEvents = 0;
-	cout << "Entries in the tree: " << io_ptr::inTree->GetEntries() << endl;
-	for(int i=0; i<io_ptr::inTree->GetEntries() && (nevt<0 || nevent<nevt ); ++i){
-		io_ptr::inTree->GetEntry(i);
-		if(oldFile!=io_ptr::inTree->GetCurrentFile()->GetName()){
-			oldFile = io_ptr::inTree->GetCurrentFile()->GetName();
-			++currFile;
-			io_ptr::headerTree->GetEntry(currFile);
-			outputFileHeader.NProcessedEvents += rootFileHeader.NProcessedEvents;
-			outputFileHeader.NFailedEvents += rootFileHeader.NFailedEvents;
-		}
+	cout << "Entries in the tree: " << input.getNEvents() << endl;
+	for(int i=input.firstEvent(outputFileHeader); !input.eof() && (nevt<0 || nevent<nevt ); i = input.nextEvent(outputFileHeader)){
 		if(newEvent(i, nevent)){
 			io_ptr::outTree->Fill();
 			outputFileHeader.NPassedEvents++;
