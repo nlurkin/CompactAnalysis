@@ -8,7 +8,7 @@
 #include <TLegend.h>
 #include <THStack.h>
 #include <TCanvas.h>
-#include "../userinc/mystructs.h"
+#include "../userinc/exportClasses.h"
 #include <TGaxis.h>
 using namespace std;
 
@@ -208,69 +208,69 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "xMap", ++iMap, vMap);
 }
 
-void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, TObject *value, double weight=1.){
-	pi0dEvent *evt = (pi0dEvent*)value;
+void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvent, ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, double weight=1.){
+	//ROOTPhysicsEvent *evt = (ROOTPhysicsEvent*)value;
 	int i=-1;
 	int iMap=-1;
 
-	d->at(++i)->Fill(evt->mK, weight);
+	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 	//d->at(++i)->Fill(evt->, weight);
 	//d->at(++i)->Fill(evt->mK, weight);
 	//d->at(++i)->Fill(evt->zVtx, weight);
 	++i;
 	++i;
 	++i;
-	d->at(++i)->Fill(evt->pt2, weight);
-	d->at(++i)->Fill(evt->pTotal.Mag(), weight);
-	d->at(++i)->Fill(evt->mPi0-0.1349766, weight);
+	d->at(++i)->Fill(evt->kaon.P.Perp2(corrEvent->kaonMomentum), weight);
+	d->at(++i)->Fill(evt->kaon.P.Vect().Mag(), weight);
+	d->at(++i)->Fill(evt->pi0.P.M()-0.1349766, weight);
 	//Photon
-	d->at(++i)->Fill(evt->gamma->energy, weight);
-	d->at(++i)->Fill(evt->gamma->position.X(), weight);
-	d->at(++i)->Fill(evt->gamma->position.Y(), weight);
-	d->at(++i)->Fill(evt->pGamma.Mag(), weight);
+	d->at(++i)->Fill(evt->gamma.P.E(), weight);
+	d->at(++i)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.X(), weight);
+	d->at(++i)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.Y(), weight);
+	d->at(++i)->Fill(evt->gamma.P.Vect().Mag(), weight);
 	
 	//e+/e-
-	d->at(++i)->Fill(evt->em->pMag, weight);
-	d->at(i)->Fill(evt->ep->pMag, weight);
+	d->at(++i)->Fill(evt->em.P.Vect().Mag(), weight);
+	d->at(i)->Fill(evt->ep.P.Vect().Mag(), weight);
 	
-	d->at(++i)->Fill(evt->ep->momentum.X(), weight);
-	d->at(i)->Fill(evt->em->momentum.X(), weight);
-	d->at(++i)->Fill(evt->ep->momentum.Y(), weight);
-	d->at(i)->Fill(evt->em->momentum.Y(), weight);
-	d->at(++i)->Fill(evt->ep->momentum.Z(), weight);
-	d->at(i)->Fill(evt->em->momentum.Z(), weight);
+	d->at(++i)->Fill(evt->ep.P.Vect().Unit().X(), weight);
+	d->at(i)->Fill(evt->em.P.Vect().Unit().X(), weight);
+	d->at(++i)->Fill(evt->ep.P.Vect().Unit().Y(), weight);
+	d->at(i)->Fill(evt->em.P.Vect().Unit().Y(), weight);
+	d->at(++i)->Fill(evt->ep.P.Vect().Unit().Z(), weight);
+	d->at(i)->Fill(evt->em.P.Vect().Unit().Z(), weight);
 	
-	d->at(++i)->Fill(evt->ep->vertex.X(), weight);
-	d->at(i)->Fill(evt->em->vertex.X(), weight);
-	d->at(++i)->Fill(evt->ep->vertex.Y(), weight);
-	d->at(i)->Fill(evt->em->vertex.Y(), weight);
-	d->at(++i)->Fill(evt->ep->vertex.Z(), weight);
-	d->at(i)->Fill(evt->em->vertex.Z(), weight);
+	d->at(++i)->Fill(evt->ep.vertex.X(), weight);
+	d->at(i)->Fill(evt->em.vertex.X(), weight);
+	d->at(++i)->Fill(evt->ep.vertex.Y(), weight);
+	d->at(i)->Fill(evt->em.vertex.Y(), weight);
+	d->at(++i)->Fill(evt->ep.vertex.Z(), weight);
+	d->at(i)->Fill(evt->em.vertex.Z(), weight);
 	
-	d->at(++i)->Fill(evt->ep->cda, weight);
-	d->at(i)->Fill(evt->em->cda, weight);
+	d->at(++i)->Fill(rawEvent->vtx[evt->ep.parentVertex].cda, weight);
+	d->at(i)->Fill(rawEvent->vtx[evt->em.parentVertex].cda, weight);
 	
-	d->at(++i)->Fill(evt->ep->clusterEnergy, weight);
-	d->at(i)->Fill(evt->em->clusterEnergy, weight);
+	d->at(++i)->Fill(corrEvent->pCluster[evt->ep.parentCluster].E, weight);
+	d->at(i)->Fill(corrEvent->pCluster[evt->ep.parentCluster].E, weight);
 	
 	d->at(++i)->Fill(evt->mee, weight);
 	
 	//pi+
-	d->at(++i)->Fill(evt->pip->pMag, weight);
+	d->at(++i)->Fill(evt->pic.P.Vect().Mag(), weight);
 	
-	d->at(++i)->Fill(evt->pip->momentum.X(), weight);
-	d->at(++i)->Fill(evt->pip->momentum.Y(), weight);
-	d->at(++i)->Fill(evt->pip->momentum.Z(), weight);
+	d->at(++i)->Fill(evt->pic.P.Vect().Unit().X(), weight);
+	d->at(++i)->Fill(evt->pic.P.Vect().Unit().Y(), weight);
+	d->at(++i)->Fill(evt->pic.P.Vect().Unit().Z(), weight);
 	
-	d->at(++i)->Fill(evt->pip->vertex.X(), weight);
-	d->at(++i)->Fill(evt->pip->vertex.Y(), weight);
-	d->at(++i)->Fill(evt->pip->vertex.Z(), weight);
+	d->at(++i)->Fill(evt->pic.vertex.X(), weight);
+	d->at(++i)->Fill(evt->pic.vertex.Y(), weight);
+	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
 	
-	d->at(++i)->Fill(evt->pip->cda, weight);
+	d->at(++i)->Fill(rawEvent->vtx[evt->pic.parentVertex].cda, weight);
 	
-	d->at(++i)->Fill(evt->pip->clusterEnergy, weight);
+	d->at(++i)->Fill(corrEvent->pCluster[evt->pic.parentCluster].E, weight);
 
-	vMap->at(++iMap)->Fill(evt->xTrue, evt->x, weight);
+	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
 }
 
 /*************************
@@ -298,13 +298,27 @@ namespace Input{
 
 		//Get the TTree
 		//Input
-		pi0dEvent *eventBrch = new pi0dEvent();
+		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+		ROOTBurst *burstBrch = new ROOTBurst();
+		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+		ROOTFileHeader *headerBrch = new ROOTFileHeader();
+		ROOTMCEvent *mcEvent = 0;
 		TTree *t = (TTree*)fd->Get("event");
-		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		TTree *th = (TTree*)fd->Get("header");
+		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 
+		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		t->SetBranchAddress("rawBurst", &burstBrch);
+		t->SetBranchAddress("rawEvent", &rawBrch);
+		t->SetBranchAddress("corrEvent", &corrBrch);
+		th->SetBranchAddress("header", &headerBrch);
+		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
+
+		th->GetEntry(0);
 		//Set event nb
 		int nevt = t->GetEntries();
-		int totalChanEvents = ((TH1D*)fd->Get("Cuts"))->GetEntries();
+		int totalChanEvents = headerBrch->NProcessedEvents;
 		int processedEvents = 0;
 		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
 
@@ -322,9 +336,9 @@ namespace Input{
 		double weight = 1.;
 		for(int i=0; i<nevt; ++i){
 			t->GetEntry(i);
-			if(!runIncluded(eventBrch->runNumber)) continue;
-			weight = applyWeights(eventBrch->runNumber);
-			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, weight);
+			if(!runIncluded(burstBrch->nrun)) continue;
+			weight = applyWeights(burstBrch->nrun);
+			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, rawBrch, corrBrch, mcEvent, weight);
 			processedEvents++;
 		}
 
@@ -340,9 +354,23 @@ namespace Input{
 
 	int getInputDataFill(TFile *fd, TFile* fdout){
 		//Input
-		pi0dEvent *eventBrch = new pi0dEvent();
+		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+		ROOTBurst *burstBrch = new ROOTBurst();
+		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+		ROOTFileHeader *headerBrch = new ROOTFileHeader();
+		ROOTMCEvent *mcEvent = 0;
+
 		TTree *t = (TTree*)fd->Get("event");
+		TTree *th = (TTree*)fd->Get("header");
+		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
+
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		t->SetBranchAddress("rawBurst", &burstBrch);
+		t->SetBranchAddress("rawEvent", &rawBrch);
+		t->SetBranchAddress("corrEvent", &corrBrch);
+		th->SetBranchAddress("header", &headerBrch);
+		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 
 		// Set Number of events
 		int nevt = t->GetEntries();
@@ -363,8 +391,8 @@ namespace Input{
 		cout << "Filling data " << nevt << endl;
 		for(i=0; i<nevt; i++){
 			t->GetEntry(i);
-			if(!runIncluded(eventBrch->runNumber)) continue;
-			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch);
+			if(!runIncluded(burstBrch->nrun)) continue;
+			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch, rawBrch, corrBrch, mcEvent);
 			processedEvents++;
 		}
 

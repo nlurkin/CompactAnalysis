@@ -31,7 +31,7 @@ int nico_pi0DalitzAna(superBurst *sbur,superCmpEvent *sevt){
 	//sel_nVertices->Add(nVertices);
 	//sel_DCH1Rad->Add(DCH1Rad);
 
-	double x = pow(fullEvent.mee/Mpi0,2);
+	//double x = pow(fullEvent.mee/Mpi0,2);
 	double weight=1.;
 	/*if(mcOnly){
 		if(ffWeightType!=-1) weight /= (1+0.032*x);

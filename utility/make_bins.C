@@ -25,7 +25,7 @@
 #include <math.h>
 #include <TMath.h>
 #include <TGraph.h>
-#include "../userinc/mystructs.h"
+#include "../userinc/exportClasses.h"
 using namespace std;
 
 #define BINS 10000000
@@ -67,7 +67,7 @@ namespace Input {
 
 	int getInputDataFill(TFile *fd, TFile* fdout) {
 		//Input
-		pi0dEvent *eventBrch = new pi0dEvent();
+		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		TTree *t = (TTree*) fd->Get("event");
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 
@@ -86,7 +86,7 @@ namespace Input {
 		cout << "Filling data " << endl;
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
-			x = pow(eventBrch->mee / Mpi0, 2.);
+			x = eventBrch->x;
 
 			setVals.insert(x);
 		}

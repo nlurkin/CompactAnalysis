@@ -15,66 +15,35 @@
 #include <iterator>
 #include <bitset>
 #include <iomanip>
+#include "funLib.h"
 using namespace std;
 
-#define FULLRUN false
-#if FULLRUN
-#define FAILCUT(i) pi0d_failCut(sbur,sevt,i);
-#else
-#define FAILCUT(i) {pi0d_failCut(sbur,sevt,i); return -1;}
-#endif
-
-#define DEBUG_ALL false
-
-#define DEBUG_1 DEBUG_ALL || false
-#define DEBUG_2 DEBUG_ALL || false
-#define DEBUG_3 DEBUG_ALL || false
-#define DEBUG_4 DEBUG_ALL || false
-#define DEBUG_5 DEBUG_ALL || false
-#define DEBUG_6 DEBUG_ALL || false
-#define DEBUG_7 DEBUG_ALL || false
-#define DEBUG_8 DEBUG_ALL || false
-#define DEBUG_9 DEBUG_ALL || false
-#define DEBUG_10 DEBUG_ALL || false
-#define DEBUG_11 DEBUG_ALL || false
-#define DEBUG_12 DEBUG_ALL || false
-#define DEBUG_13 DEBUG_ALL || false
-#define DEBUG_14 DEBUG_ALL || false
-#define DEBUG_15 DEBUG_ALL || false
-#define DEBUG_16 DEBUG_ALL || false
-#define DEBUG_17 DEBUG_ALL || false
-#define DEBUG_18 DEBUG_ALL || false
-#define DEBUG_19 DEBUG_ALL || false
-#define DEBUG_20 DEBUG_ALL || false
-
-#define DEBUG_ DEBUG_1 || DEBUG_2 || DEBUG_3 || DEBUG_4 || DEBUG_5 || DEBUG_6 || DEBUG_7 || DEBUG_8 || DEBUG_9 || DEBUG_10 ||  DEBUG_11 || DEBUG_12 || DEBUG_13 || DEBUG_15 || DEBUG_16
-
-double pi0d_getVertexTime(superCmpEvent *sevt, int ivtx){
+double pi0d_getVertexTime(int ivtx){
 	double mean = 0;
 
-	for(int i=0; i<sevt->vtx[ivtx].Nvtxtrack; i++){
-		mean += sevt->track[vtrack[sevt->vtx[ivtx].vtxtrack[i].iTrack]->trackID].time;
+	for(int i=0; i<rawEvent.vtx[ivtx].Nvtxtrack; i++){
+		mean += rawEvent.track[corrEvent.pTrack[rawEvent.vtx[ivtx].vtxtrack[i].iTrack].trackID].time;
 	}
 
-	return mean/(double)sevt->vtx[ivtx].Nvtxtrack;
+	return mean/(double)rawEvent.vtx[ivtx].Nvtxtrack;
 }
 
-int pi0d_countVtx3Tracks(superBurst *sbur, superCmpEvent *sevt, int &ivtx){
+int pi0d_countVtx3Tracks(int &ivtx){
 	int vtxNb = 0;
 	//int totalCharge;
 
 
-	gH("vertexN")->Fill(sevt->Nvtx, fullEvent.weight);
+	gH("vertexN")->Fill(rawEvent.Nvtx, corrEvent.weight);
 
-	if(DEBUG_2 || optDebug) cout << "Total Number of vertices :\t" << sevt->Nvtx << " ==1" << endl;
-	if(sevt->Nvtx!=1) return sevt->Nvtx;
-	for(int i=0; i<sevt->Nvtx; i++){
-		if(DEBUG_2 || optDebug) cout << "\tTrying vertex :\t\t" << i << endl;
-		if(DEBUG_2 || optDebug) cout << "\tNumber of tracks:\t" << sevt->vtx[i].Nvtxtrack << endl;
-		gH("trackN")->Fill(sevt->vtx[i].Nvtxtrack, fullEvent.weight);
-		if(sevt->vtx[i].Nvtxtrack==3){
-			if(DEBUG_2 || optDebug) cout << "\tTotal charge :\t" << sevt->vtx[i].charge << endl;
-			if(sevt->vtx[i].charge==beamCharge || noTestCharge){
+	if(optDebug) cout << "Total Number of vertices :\t" << rawEvent.Nvtx << " ==1" << endl;
+	if(rawEvent.Nvtx!=1) return rawEvent.Nvtx;
+	for(int i=0; i<rawEvent.Nvtx; i++){
+		if(optDebug) cout << "\tTrying vertex :\t\t" << i << endl;
+		if(optDebug) cout << "\tNumber of tracks:\t" << rawEvent.vtx[i].Nvtxtrack << endl;
+		gH("trackN")->Fill(rawEvent.vtx[i].Nvtxtrack, corrEvent.weight);
+		if(rawEvent.vtx[i].Nvtxtrack==3){
+			if(optDebug) cout << "\tTotal charge :\t" << rawEvent.vtx[i].charge << endl;
+			if(rawEvent.vtx[i].charge==rootBurst.beamCharge || rootBurst.beamCharge==-99){
 				vtxNb++;
 				ivtx = i;
 			}
@@ -84,9 +53,7 @@ int pi0d_countVtx3Tracks(superBurst *sbur, superCmpEvent *sevt, int &ivtx){
 	return vtxNb;
 }
 
-int pi0d_extraTrackVeto(superBurst *sbur, superCmpEvent *sevt, int ivtx, double vertexTime){
-	CorrectedTrack *t;
-	vector<CorrectedTrack*>::iterator it;
+int pi0d_extraTrackVeto(int ivtx, double vertexTime){
 
 	int extra = 0;
 	int extraCond = 0;
@@ -102,76 +69,51 @@ int pi0d_extraTrackVeto(superBurst *sbur, superCmpEvent *sevt, int ivtx, double 
 	int conditions;
 	int vtxIndex = 0;
 
-	if(dataOnly) conditions=5;
+	if(rootBurst.isData) conditions=5;
 	else conditions=4;
 
-	if(DEBUG_5 || optDebug) cout << "Vertex tracks are :\t\t" << sevt->vtx[ivtx].vtxtrack[0].iTrack << " " << sevt->vtx[ivtx].vtxtrack[1].iTrack << " " << sevt->vtx[ivtx].vtxtrack[2].iTrack << endl;
+	if(optDebug) cout << "Vertex tracks are :\t\t" << rawEvent.vtx[ivtx].vtxtrack[0].iTrack << " " << rawEvent.vtx[ivtx].vtxtrack[1].iTrack << " " << rawEvent.vtx[ivtx].vtxtrack[2].iTrack << endl;
 
-	for(int i=0; i<vtrack.size(); i++){
-		t = vtrack[i];
+	for(int i=0; i<corrEvent.pTrack.size(); i++){
+		NPhysicsTrack &pt = corrEvent.pTrack[i];
+		NTrak &t = rawEvent.track[pt.trackID];
 		extraCond = 0;
 
-		//Blue field correction
-		//vertex[0] = sevt->vtx[ivtx].x;
-		//vertex[1] = sevt->vtx[ivtx].y;
-		//vertex[2] = sevt->vtx[ivtx].z;
-		//blue_1trk(vertex, i+1, &corrdxdz, &corrdydz, sevt);
-
-		//t->momentum = TVector3(corrdxdz, corrdydz, 1.).Unit();
-		//t->corrdxdz = corrdxdz;
-		//t->corrdydz = corrdydz;
-
 		//Is it one of the vertex track?
-		if(DEBUG_5 || optDebug) cout << "\tTrying track :\t\t" << i << "\t\t not vertex track: ++" <<  endl;
+		if(optDebug) cout << "\tTrying track :\t\t" << i << "\t\t not vertex track: ++" <<  endl;
 
-		if( (sevt->vtx[ivtx].vtxtrack[0].iTrack==i) ||
-				(sevt->vtx[ivtx].vtxtrack[1].iTrack==i) ||
-				(sevt->vtx[ivtx].vtxtrack[2].iTrack==i)){
+		if( (rawEvent.vtx[ivtx].vtxtrack[0].iTrack==i) ||
+				(rawEvent.vtx[ivtx].vtxtrack[1].iTrack==i) ||
+				(rawEvent.vtx[ivtx].vtxtrack[2].iTrack==i)){
 
-			t->cda = sevt->vtx[ivtx].cda;
-			t->vertex = TVector3(sevt->vtx[ivtx].x, sevt->vtx[ivtx].y, sevt->vtx[ivtx].z);
+			t.vtxID = ivtx;
 
+			if(rawEvent.vtx[ivtx].vtxtrack[0].iTrack==i) vtxIndex=0;
+			else if(rawEvent.vtx[ivtx].vtxtrack[1].iTrack==i) vtxIndex=1;
+			else if(rawEvent.vtx[ivtx].vtxtrack[2].iTrack==i) vtxIndex=2;
 
-			if(sevt->vtx[ivtx].vtxtrack[0].iTrack==i) vtxIndex=0;
-			else if(sevt->vtx[ivtx].vtxtrack[1].iTrack==i) vtxIndex=1;
-			else if(sevt->vtx[ivtx].vtxtrack[2].iTrack==i) vtxIndex=2;
-			t->corrdxdz = sevt->vtx[ivtx].vtxtrack[vtxIndex].bdxdz;
-			t->corrdydz = sevt->vtx[ivtx].vtxtrack[vtxIndex].bdydz;
-			t->momentum = TVector3(t->corrdxdz, t->corrdydz, 1).Unit();
+			pt.momentum = TVector3(rawEvent.vtx[ivtx].vtxtrack[vtxIndex].bdxdz, rawEvent.vtx[ivtx].vtxtrack[vtxIndex].bdydz, 1).Unit();
 
-			//cout << "Blue field \t" << corrdxdz << "\t " << corrdydz << endl;
-			//cout << "Vertex \t" << t->corrdxdz << "\t " << t->corrdydz << endl;
-
-			goodTracks.push_back(t);
+			corrEvent.goodTracks.push_back(i);
 		}
 		else{
 			extraCond++;
 		}
 
 		// |t-t_vtx|<20ns
-		if(dataOnly){
-			gH("trackVertexTime")->Fill(sevt->track[t->trackID].time - vertexTime, fullEvent.weight);
-			tDiff = fabs(sevt->track[t->trackID].time - vertexTime);
-			if(DEBUG_5 || optDebug) cout << "\t\t|t-t_vtx| :\t" << tDiff << "\t\t <20: ++" << endl;
+		if(rootBurst.isData){
+			gH("trackVertexTime")->Fill(rawEvent.track[pt.trackID].time - vertexTime, corrEvent.weight);
+			tDiff = fabs(rawEvent.track[pt.trackID].time - vertexTime);
+			if(optDebug) cout << "\t\t|t-t_vtx| :\t" << tDiff << "\t\t <20: ++" << endl;
 			if(tDiff<20) extraCond++;
 		}
 
 		// p<74GeV/c
-		gH("trackP")->Fill(t->pMag, fullEvent.weight);
-		if(DEBUG_5 || optDebug) cout << "\t\tp :\t\t" << t->pMag << "\t\t <74: ++" << endl;
-		if(DEBUG_5 || optDebug) cout << "\t\tq :\t\t" << sevt->track[t->trackID].q << "\t\t <74: ++" << endl;
-		if(t->pMag<74) extraCond++;
+		gH("trackP")->Fill(pt.p, corrEvent.weight);
+		if(optDebug) cout << "\t\tp :\t\t" << pt.p << "\t\t <74: ++" << endl;
+		if(optDebug) cout << "\t\tq :\t\t" << rawEvent.track[pt.trackID].q << "\t\t <74: ++" << endl;
+		if(pt.p<74) extraCond++;
 
-
-		//TODO Do I correct for Blue field here
-		// cda to z axis
-		//wrt K axis
-		/*p1[0] = abcog_params.pkxoffp;
-		p1[1] = abcog_params.pkyoffp;
-		p1[2] = 0;
-		v1[0] = abcog_params.pkdxdzp;
-		v1[1] = abcog_params.pkdydzp;
-		v1[2] = 1;*/
 		//wrt to z axis
 		p1[0] = 0;
 		p1[1] = 0;
@@ -180,619 +122,152 @@ int pi0d_extraTrackVeto(superBurst *sbur, superCmpEvent *sevt, int ivtx, double 
 		v1[1] = 0;
 		v1[2] = 1;
 
-		p2[0] = t->detBPos.X();
-		p2[1] = t->detBPos.Y();
+		p2[0] = t.bDetPos.X();
+		p2[1] = t.bDetPos.Y();
 		p2[2] = Geom->DCH.bz;
-		v2[0] = sevt->track[t->trackID].bdxdz;
-		v2[1] = sevt->track[t->trackID].bdydz;
+		v2[0] = rawEvent.track[pt.trackID].bdxdz;
+		v2[1] = rawEvent.track[pt.trackID].bdydz;
 		v2[2] = 1;
 		closestApproach(p1, p2, v1, v2, &dmin, vertex);
 		// -2000<z<9000
-		if(DEBUG_5 || optDebug) cout << "\t\tZ_vtx :\t\t" << vertex[2] << "\t\t >-2000 || <9000: ++" << endl;
+		if(optDebug) cout << "\t\tZ_vtx :\t\t" << vertex[2] << "\t\t >-2000 || <9000: ++" << endl;
 		if(vertex[2]>-2000 && vertex[2]<9000) extraCond++;
 
 		// cda<10cm
-		if(DEBUG_5 || optDebug) cout << "\t\tCDA :\t\t" << dmin << "\t\t <10: ++" << endl;
+		if(optDebug) cout << "\t\tCDA :\t\t" << dmin << "\t\t <10: ++" << endl;
 		if(dmin<10) extraCond++;
 
-		if(DEBUG_5 || optDebug) cout << "\tExtraCond :\t\t" << extraCond << "\t ==" << conditions << ": extra" << endl;
+		if(optDebug) cout << "\tExtraCond :\t\t" << extraCond << "\t ==" << conditions << ": extra" << endl;
 		if(extraCond==conditions) extra++;
-
-
-		// LKr Acceptance
-
 	}
-
 	return extra;
 }
 
-int pi0d_tracksAcceptance(superBurst *sbur){
-	bool lkrAcceptance;
-	TVector3 propPos;
-	bool badTrack = false;
-	double radius;
-	TVector3 dch1(Geom->Dch[0].PosChamber.x,Geom->Dch[0].PosChamber.y,Geom->Dch[0].PosChamber.z);
-	TVector3 dch2(Geom->Dch[1].PosChamber.x,Geom->Dch[1].PosChamber.y,Geom->Dch[1].PosChamber.z);
-	TVector3 dch4(Geom->Dch[3].PosChamber.x,Geom->Dch[3].PosChamber.y,Geom->Dch[3].PosChamber.z);
-
-	for(int i=0; i<goodTracks.size(); ++i){
-		propPos = propagateAfter(Geom->Lkr.z, goodTracks[i]);
-		lkrAcceptance = LKr_acc(sbur->nrun, propPos.X(), propPos.Y(), 8);
-		gH("trackLKrRadius")->Fill(distance2D(TVector3(0,0,0), propPos), fullEvent.weight);
-		if(DEBUG_7 || optDebug) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
-		if(lkrAcceptance!=0) badTrack = true;
-
-		// Track position on LKr with Pb Wall
-		if(pbWall){
-			if(DEBUG_8 || optDebug) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
-			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
-		}
-
-
-		propPos = propagateCorrBefore(Geom->Dch[0].PosChamber.z, goodTracks[i]);
-		radius = distance2D(dch1, propPos);
-		gH("trackDCH1Radius")->Fill(radius, fullEvent.weight);
-		if(DEBUG_7 || optDebug) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
-		if(radius<12 || radius>110) badTrack = true;
-
-		propPos = propagateCorrBefore(Geom->Dch[1].PosChamber.z, goodTracks[i]);
-		radius = distance2D(dch2, propPos);
-		gH("trackDCH2Radius")->Fill(radius, fullEvent.weight);
-		if(DEBUG_7 || optDebug) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
-		if(radius<12 || radius>110) badTrack = true;
-
-		propPos = propagateAfter(Geom->Dch[3].PosChamber.z, goodTracks[i]);
-		radius = distance2D(dch4, propPos);
-		gH("trackDCH4Radius")->Fill(radius, fullEvent.weight);
-		if(DEBUG_7 || optDebug) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
-		if(radius<12 || radius>110) badTrack = true;
-	}
-
-	return badTrack;
-}
-
-int pi0d_trackCombinationVeto(superBurst *sbur, superCmpEvent *sevt, int piTrack){
-	int ntracks = 3;
-	CorrectedTrack *t1, *t2;
-
-	TVector3 propPos1, propPos2;
-	double RDCH1, RLKr;
-	double tDiff;
-
-	bool bad = false;
-
-	int badCombis = 0;
-	int totalCharge = 0;
-
-	for(int i=0; i<ntracks-1; i++){
-		for(int j=i+1; j<ntracks; j++){
-			bad = false;
-			if(DEBUG_8 || optDebug) cout << "\tTrying combination :\t" << i << " " << j << endl;
-
-			t1 = goodTracks[i];
-			t2 = goodTracks[j];
-
-			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(Geom->Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(Geom->Dch[0].PosChamber.z, t2);
-
-			RDCH1 = distance2D(propPos1, propPos2);
-			gH("track_ij_DCH1")->Fill(RDCH1, fullEvent.weight);
-			if(DEBUG_8 || optDebug) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
-			if(RDCH1<=2) bad = true;
-
-			// Track DCH times
-			// |t1-t2|<15
-			if(dataOnly){
-				tDiff = fabs(sevt->track[t1->trackID].time - sevt->track[t2->trackID].time);
-				gH("trackTrackTime")->Fill(tDiff, fullEvent.weight);
-				if(DEBUG_8 || optDebug) cout << "\t\t|t_i-t_j| :\t" << tDiff << "\t >15: rejected" << endl;
-				if(tDiff>=15) bad = true;
-			}
-
-			// Track separation in LKr plane >15
-			propPos1 = propagateAfter(Geom->Lkr.z, t1);
-			propPos2 = propagateAfter(Geom->Lkr.z, t2);
-
-			RLKr = distance2D(propPos1, propPos2);
-			if(i==piTrack || j==piTrack){
-				gH("track_epi_LKr")->Fill(RLKr, fullEvent.weight);
-				if(DEBUG_8 || optDebug) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <50: rejected" << endl;
-				if(RLKr<=50) bad = true;
-			}
-			else{
-				gH("track_ee_LKr")->Fill(RLKr, fullEvent.weight);
-				if(DEBUG_8 || optDebug) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
-				if(RLKr<=20) bad = true;
-			}
-
-			if(bad) badCombis++;
-		}
-	}
-
-	return badCombis;
-}
-
-int pi0d_identifyPi(superBurst *sbur, superCmpEvent *sevt, int &piCandidate, bool &badElectron){
-	double eop;
-
-	int piCandidatesNb = 0;
-	badElectron = false;
-
-	for(int i=0; i<goodTracks.size(); i++){
-		if(DEBUG_9 || optDebug) cout << "\tTrying track :\t\t" << i <<  endl;
-
-		eop = goodTracks[i]->clusterEnergy/goodTracks[i]->pMag;
-
-		gH("trackEOP")->Fill(eop, fullEvent.weight);
-		if(DEBUG_9 || optDebug) cout << "\tE over P :\t\t" << eop << "\t\t <0.85 : pi+ candidate; >1.15 : badElectron" <<  endl;
-		if(eop<0.85){
-			piCandidatesNb++;
-			piCandidate = i;
-		}
-		else if(eop>1.15) badElectron = true;
-	}
-
-	return piCandidatesNb;
-}
-
-int pi0d_goodClusters(superBurst *sbur, superCmpEvent *sevt, int piTrack, int epTrack, int emTrack, int ivtx, int &goodClusterID, double vertexTime){
-	CorrectedCluster *c;
-	TVector3 propPos;
-	double distance;
-	double tDiff;
-
-	int cond;
-	int goodClusters = 0;
-
-	int conditions;
-
-	if(dataOnly) conditions = 6;
-	else conditions=5;
-	//if(mcOnly) conditions++;
-
-	if(DEBUG_12 || optDebug) cout << "\tNumber of vclusters :\t" << vCluster.size() << endl;
-	if(DEBUG_12 || optDebug) cout << "\tNumber of clusters :\t" << sevt->Ncluster << endl;
-
-	gH("clusterN")->Fill(vCluster.size(), fullEvent.weight);
-	for(int i=0; i<vCluster.size(); i++){
-		c = vCluster[i];
-		cond = 0;
-
-		gH("clusterX")->Fill(c->position.X(), fullEvent.weight);
-		gH("clusterY")->Fill(c->position.Y(), fullEvent.weight);
-		gH("clusterRadius")->Fill(distance2D(TVector3(0,0,0), c->position), fullEvent.weight);
-
-		if(DEBUG_12 || optDebug) cout << "\tTrying cluster :\t" << i << endl;
-
-		if(pbWall){
-			if(DEBUG_12 || optDebug) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c->position.Y() << " < -11.850 : reject" << endl;
-			if(c->position.Y()>-33.575 && c->position.Y() < -11.850) continue;
-		}
-		if(DEBUG_12 || optDebug) cout << "\tEnergy :\t" << c->energy << endl;
-		//cout << printVector3(c->position) << endl;
-		//cout << printVector3(goodTracks[epTrack].unMomentum) << endl;
-		//cout << printVector3(goodTracks[epTrack].momentum) << endl;
-		//cout << printVector3(goodTracks[epTrack].detPos) << endl;
-		//cout << printVector3(goodTracks[epTrack].detBPos) << endl;
-		//cout << printVector3(goodTracks[epTrack].vertex) << endl;
-		//cout << printVector3(goodTracks[epTrack].middlePos) << endl;
-		//cout << goodTracks[epTrack].t.x << " " << goodTracks[epTrack].t.y << endl;
-		//cout << goodTracks[epTrack].t.dxdz << " " << goodTracks[epTrack].t.dydz << endl;
-		//double x = goodTracks[epTrack].t.dxdz*(Geom->Lkr.z-Geom->DCH.z) + goodTracks[epTrack].t.x;
-		//double y = goodTracks[epTrack].t.dydz*(Geom->Lkr.z-Geom->DCH.z) + goodTracks[epTrack].t.y;
-		//cout << x << " " << y << endl;
-		//cout << printVector3(goodTracks[emTrack].unMomentum) << endl;
-		//cout << printVector3(goodTracks[emTrack].momentum) << endl;
-		// separation from pi impact point >30cm
-		propPos = propagateAfter(Geom->Lkr.z, goodTracks[piTrack]);
-		distance = distance2D(propPos, c->position);
-		gH("clusterDPi")->Fill(distance, fullEvent.weight);
-		if(DEBUG_12 || optDebug) cout << "\t\tR_LKr_pi :\t\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>50) cond++;
-
-		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(Geom->Lkr.z, goodTracks[epTrack]);
-		//cout << printVector3(propPos) << endl;
-		distance = distance2D(propPos, c->position);
-		gH("clusterDep")->Fill(distance, fullEvent.weight);
-		if(DEBUG_12 || optDebug) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
-
-		propPos = propagateAfter(Geom->Lkr.z, goodTracks[emTrack]);
-		distance = distance2D(propPos, c->position);
-		gH("clusterDem")->Fill(distance, fullEvent.weight);
-		if(DEBUG_12 || optDebug) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
-
-		// separation from undeflected e+ e- trajectories >20cm
-		//propPos = propagateCorrBefore(c->position.Z(), goodTracks[epTrack]);
-		propPos = propagate(Geom->Lkr.z, goodTracks[epTrack]->detBPos, goodTracks[epTrack]->unBMomentum);
-		distance = distance2D(propPos, c->position);
-		gH("clusterDUnep")->Fill(distance, fullEvent.weight);
-		if(DEBUG_12 || optDebug) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>50) cond++;
-
-		//propPos = propagateCorrBefore(c->position.Z(), goodTracks[emTrack]);
-		propPos = propagate(Geom->Lkr.z, goodTracks[emTrack]->detBPos, goodTracks[emTrack]->unBMomentum);
-		distance = distance2D(propPos, c->position);
-		gH("clusterDUnem")->Fill(distance, fullEvent.weight);
-		if(DEBUG_12 || optDebug) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>50) cond++;
-
-		// |t_g - t_vtx|<10ns
-		if(dataOnly){
-			tDiff = fabs(sevt->cluster[c->clusterID].time - vertexTime);
-			gH("clusterVertexTime")->Fill(tDiff, fullEvent.weight);
-			if(DEBUG_12 || optDebug) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
-			if(tDiff<10) cond++;
-		}
-
-		if(DEBUG_12 || optDebug) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
-		if(cond==conditions){
-			goodClusters++;
-			goodClusterID = i;
-		}
-	}
-	return goodClusters;
-}
-
-int pi0d_failCut(superBurst *sbur, superCmpEvent *sevt, int i){
+int pi0d_failCut(int i){
 	TH1D *fails = (TH1D*)gDirectory->Get("Cuts");
 
 	fails->Fill(i, 1);
 	cutsWord[i] = false;
-	if(DEBUG_ || optDebug) cout << "Event is not passing selection" << endl;
-	if(!noOutput) fprintf(fprt, "%i %i %i %i\n", sbur->nrun, sbur->time, sevt->timeStamp, i);
+	corrEvent.failedCond = i;
+	if(optDebug) cout << "Event is not passing selection" << endl;
+	if(!noOutput) fprintf(fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
 	return 0;
 }
-void pi0d_passSelection(superBurst *sbur, superCmpEvent *sevt){
-	if(DEBUG_ || optDebug) cout << "Event is passing selection" << endl;
-	if(!noOutput) fprintf(fprt2, "%i %i %i\n", sbur->nrun, sbur->time, sevt->timeStamp);
+void pi0d_passSelection(){
+	if(optDebug) cout << "Event is passing selection" << endl;
+	if(!noOutput) fprintf(fprt2, "%i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp);
 }
 
-int nico_pi0DalitzFilter(superBurst *sbur,superCmpEvent *sevt){
-	int i = 0;
+int nico_pi0DalitzFilter(){
+/*	int i = 0;
 	double eop;
 	int eTracks = 0;
 	CorrectedTrack *t;
 
 	// 1) Trigger Q2xMBX(1VTX||2VTX||1TRK)
-	if((sevt->trigWord & 0x400) ==0) return 1;
+	if((corrEvent.trigWord & 0x400) ==0) return 1;
 
 	// 2) 1 vertex that is a 3-track vertex
-	if(sevt->Nvtx!=1) return 1;
-	if(sevt->vtx[i].Nvtxtrack!=3) return 1;
+	if(corrEvent.Nvtx!=1) return 1;
+	if(corrEvent.vtx[i].Nvtxtrack!=3) return 1;
 
 	// 9) 2 tracks with E/p > 0.5
-	t = vtrack[sevt->vtx[i].vtxtrack[0].iTrack];
+	t = vtrack[corrEvent.vtx[i].vtxtrack[0].iTrack];
 	eop = t->clusterEnergy/t->pMag;
 	if(eop>0.5) eTracks++;
 
-	t = vtrack[sevt->vtx[i].vtxtrack[1].iTrack];
+	t = vtrack[corrEvent.vtx[i].vtxtrack[1].iTrack];
 	eop = t->clusterEnergy/t->pMag;
 	if(eop>0.5) eTracks++;
-	t = vtrack[sevt->vtx[i].vtxtrack[2].iTrack];
+	t = vtrack[corrEvent.vtx[i].vtxtrack[2].iTrack];
 	eop = t->clusterEnergy/t->pMag;
 	if(eop>0.5) eTracks++;
 
 	if(eTracks<2) return 1;
-
+*/
 	return -1;
 }
 
-int nico_pi0DalitzSelect(superBurst *sbur,superCmpEvent *sevt){
+int nico_pi0DalitzSelect(){
 	int vtxNb = 0;
 	int ivtx = -1;
 	int extraTracks = 0;
 
 	double vertexTime;
-	bool badAcceptance;
 
-	int badCombis=0;
-	int piTrack = -1;
-	int epTrack = -1;
-	int emTrack = -1;
+	double weight = 1.;
 
-	int piCandNb;
-	bool badElectron;
-
-	int goodClusters;
-	int goodClusterID=-1;
-
-	int lkrAcceptance;
-
-	TVector3 propPos;
-	double radius;
-
-	double pt;
-
-	vector<double> vMass;
-	vector<TVector3> vP;
-
-	fullEvent.runNumber = sbur->nrun;
-	fullEvent.burstNumber = sbur->time;
-	fullEvent.timestamp = sevt->timeStamp;
-
-	if(DEBUG_ || optDebug) cout << endl;
+	if(optDebug) cout << endl;
 
 	memset(&cutsWord, true, sizeof(bool)*19);
 	// 1) Trigger Q2xMBX(1VTX||2VTX||1TRK)
 	int triggerMask;
-	if(sbur->nrun<20209) triggerMask = 0x800;
+	if(rootBurst.nrun<20209) triggerMask = 0x800;
 	else triggerMask = cutsDefinition.triggerMask;
 
-	if(DEBUG_1 || optDebug) cout << "~~~~ Cut 1 ~~~~" << endl;
-	bitset<32> triggBit(sevt->trigWord);
+	if(optDebug) cout << "~~~~ Cut 1 ~~~~" << endl;
+	bitset<32> triggBit(rawEvent.trigWord);
 	bitset<32> triggMask(triggerMask);
-	bitset<32> comb(sevt->trigWord & triggerMask);
-	if(DEBUG_1 || optDebug) cout << "Word :\t " << triggBit << endl;
-	if(DEBUG_1 || optDebug) cout << "Mask :\t " << triggMask << endl;
-	if(DEBUG_1 || optDebug) cout << "comb :\t " << comb << endl;
-	if(DEBUG_1 || optDebug) cout << "L2 Trigger word :\t " << hex << (sevt->trigWord & triggerMask) << dec << "\t == 0: rejected" << endl;
-	if(dataOnly && ((sevt->trigWord & triggerMask) ==0)) FAILCUT(1)
+	bitset<32> comb(rawEvent.trigWord & triggerMask);
+	if(optDebug) cout << "Word :\t " << triggBit << endl;
+	if(optDebug) cout << "Mask :\t " << triggMask << endl;
+	if(optDebug) cout << "comb :\t " << comb << endl;
+	if(optDebug) cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << endl;
+	if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return -1;}
 
 	// 2) Exactly one 3-track vertex with correct charge
-	if(DEBUG_2 || optDebug) cout << "~~~~ Cut 2 ~~~~" << endl;
-	vtxNb = pi0d_countVtx3Tracks(sbur,sevt,ivtx);
-	if(DEBUG_2 || optDebug) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
-	if(vtxNb!=cutsDefinition.numVertex3) FAILCUT(2)
+	if(optDebug) cout << "~~~~ Cut 2 ~~~~" << endl;
+	vtxNb = pi0d_countVtx3Tracks(ivtx);
+	if(optDebug) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
+	if(vtxNb!=cutsDefinition.numVertex3) {pi0d_failCut(2); return -1;}
+	corrEvent.goodVertexID = ivtx;
 
-	fullEvent.zVtx = sevt->vtx[ivtx].z;
+	//corrEvent.zVtx = corrEvent.vtx[ivtx].z;
 
-	if(sevt->vtx[ivtx].charge==1){
-		kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
-		kaonP = abcog_params.pkp*(1+abcog_params.beta);
+	if(rawEvent.vtx[ivtx].charge==1){
+		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
+		corrEvent.kaonP = abcog_params.pkp*(1+abcog_params.beta);
 	}
 	else{
-		kaonMomentum = TVector3(abcog_params.pkdxdzm, abcog_params.pkdydzm, 1.).Unit();
-		kaonP = abcog_params.pkm*(1+abcog_params.beta);
+		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzm, abcog_params.pkdydzm, 1.).Unit();
+		corrEvent.kaonP = abcog_params.pkm*(1+abcog_params.beta);
 	}
 
-	double weight = 1.;
-	if(mcOnly && false){
-		weight = 1 + alpha*pow(kaonP-74.,2);
+	if(rootBurst.isMC && false){
+		weight = 1 + rootBurst.alpha*pow(corrEvent.kaonP-74.,2);
 	}
-	fullEvent.weight = weight;
+	corrEvent.weight = weight;
 
-	vertexTime = pi0d_getVertexTime(sevt, ivtx);
+	vertexTime = pi0d_getVertexTime(corrEvent.goodVertexID);
+	rawEvent.vtx[corrEvent.goodVertexID].time = vertexTime;
 
-	gH("vertexZ")->Fill(sevt->vtx[ivtx].z, fullEvent.weight);
-	gH("vertexChi2")->Fill(sevt->vtx[ivtx].chi2, fullEvent.weight);
-	gH("vertexQ")->Fill(sevt->vtx[ivtx].charge, fullEvent.weight);
+	gH("vertexZ")->Fill(rawEvent.vtx[corrEvent.goodVertexID].position.Z(), corrEvent.weight);
+	gH("vertexChi2")->Fill(rawEvent.vtx[corrEvent.goodVertexID].chi2, corrEvent.weight);
+	gH("vertexQ")->Fill(rawEvent.vtx[corrEvent.goodVertexID].charge, corrEvent.weight);
 
 	// 3) Vertex position -18m<Z_vtx<90m
-	if(DEBUG_3 || optDebug) cout << "~~~~ Cut 3 ~~~~" << endl;
-	if(DEBUG_3 || optDebug) cout << "vertex Z :\t\t\t" << sevt->vtx[ivtx].z << "\t <-1800 || >9000 : rejected" << endl;
-	if(sevt->vtx[ivtx].z<=cutsDefinition.minZVertex || sevt->vtx[ivtx].z>=cutsDefinition.maxZVertex) FAILCUT(3)
+	if(optDebug) cout << "~~~~ Cut 3 ~~~~" << endl;
+	if(optDebug) cout << "vertex Z :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].position.Z() << "\t <-1800 || >9000 : rejected" << endl;
+	if(rawEvent.vtx[corrEvent.goodVertexID].position.Z()<=cutsDefinition.minZVertex || rawEvent.vtx[corrEvent.goodVertexID].position.Z()>=cutsDefinition.maxZVertex) {pi0d_failCut(3); return -1;}
 
 
 	// 4) Vertex quality chi2<25
-	if(DEBUG_4 || optDebug) cout << "~~~~ Cut 4 ~~~~" << endl;
-	if(DEBUG_4 || optDebug) cout << "vertex chi2 :\t\t\t" << sevt->vtx[ivtx].chi2 << "\t\t > 25: rejected" << endl;
-	if(sevt->vtx[ivtx].chi2>=cutsDefinition.maxChi2Vertex) FAILCUT(4)
+	if(optDebug) cout << "~~~~ Cut 4 ~~~~" << endl;
+	if(optDebug) cout << "vertex chi2 :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].chi2 << "\t\t > 25: rejected" << endl;
+	if(rawEvent.vtx[corrEvent.goodVertexID].chi2>=cutsDefinition.maxChi2Vertex) {pi0d_failCut(4); return -1;}
 
 	// 5) No extra track
-	if(DEBUG_5 || optDebug) cout << "~~~~ Cut 5 ~~~~" << endl;
-	extraTracks = pi0d_extraTrackVeto(sbur,sevt,ivtx, vertexTime);
-	if(DEBUG_5 || optDebug) cout << "Extra tracks :\t\t\t" << extraTracks << "\t > 0 : rejected" << endl;
-	if(extraTracks>cutsDefinition.maxExtraTracks) FAILCUT(5)
+	if(optDebug) cout << "~~~~ Cut 5 ~~~~" << endl;
+	extraTracks = pi0d_extraTrackVeto(corrEvent.goodVertexID, vertexTime);
+	if(optDebug) cout << "Extra tracks :\t\t\t" << extraTracks << "\t > 0 : rejected" << endl;
+	if(extraTracks>cutsDefinition.maxExtraTracks) {pi0d_failCut(5); return -1;}
 
-	if(dataOnly){
-		gH("trackDCHTime")->Fill(fabs(sevt->track[goodTracks[0]->trackID].time - sbur->tOffst.Dch), fullEvent.weight);
-		gH("trackDCHTime")->Fill(fabs(sevt->track[goodTracks[1]->trackID].time - sbur->tOffst.Dch), fullEvent.weight);
-		gH("trackDCHTime")->Fill(fabs(sevt->track[goodTracks[2]->trackID].time - sbur->tOffst.Dch), fullEvent.weight);
+	if(rootBurst.isData){
+		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
+		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
+		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
 	}
 
-	// 6) Track DCH time
-	if(DEBUG_6 || optDebug) cout << "~~~~ Cut 6 ~~~~" << endl;
-	if(dataOnly){
-		if(DEBUG_6 || optDebug) cout << "|t_1| :\t\t\t\t" << fabs(sevt->track[goodTracks[0]->trackID].time - sbur->tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(sevt->track[goodTracks[0]->trackID].time - sbur->tOffst.Dch)>=cutsDefinition.maxTrackTime) FAILCUT(6)
-		if(DEBUG_6 || optDebug) cout << "|t_2| :\t\t\t\t" << fabs(sevt->track[goodTracks[1]->trackID].time - sbur->tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(sevt->track[goodTracks[1]->trackID].time - sbur->tOffst.Dch)>=cutsDefinition.maxTrackTime) FAILCUT(6)
-		if(DEBUG_6 || optDebug) cout << "|t_3| :\t\t\t\t" << fabs(sevt->track[goodTracks[2]->trackID].time - sbur->tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(sevt->track[goodTracks[2]->trackID].time - sbur->tOffst.Dch)>=cutsDefinition.maxTrackTime) FAILCUT(6)
-	}
-	else{
-		if(DEBUG_6 || optDebug) cout << "\tMC: Not applicable" << endl;
-	}
-
-	// 7) Track acceptance veto
-	if(DEBUG_7 || optDebug) cout << "~~~~ Cut 7 ~~~~" << endl;
-	badAcceptance = pi0d_tracksAcceptance(sbur);
-	if(DEBUG_7 || optDebug) cout << "Track acceptance :\t\t" << badAcceptance << "\t == " << true << ": rejected" << endl;
-	if(badAcceptance==cutsDefinition.boolBadTrack) FAILCUT(7)
-
-	// 9) Identify candidates
-	if(DEBUG_9 || optDebug) cout << "~~~~ Cut 9 ~~~~" << endl;
-	piCandNb = pi0d_identifyPi(sbur, sevt, piTrack, badElectron);
-	if(DEBUG_9 || optDebug) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
-	if(piCandNb!=cutsDefinition.numPiCandidates) FAILCUT(9)
-
-	for(int i=0; i<goodTracks.size(); i++){
-		if(i==piTrack) continue;
-
-		if(sevt->track[goodTracks[i]->trackID].q==+1 && epTrack==-1) epTrack=i;
-		else if(sevt->track[goodTracks[i]->trackID].q==-1 && emTrack==-1) emTrack=i;
-		else{
-			if(epTrack==-1) epTrack=i;
-			if(emTrack==-1) emTrack=i;
-		}
-	}
-
-	// 8) Track combination veto
-	if(DEBUG_8 || optDebug) cout << "~~~~ Cut 8 ~~~~" << endl;
-	badCombis = pi0d_trackCombinationVeto(sbur,sevt, piTrack);
-	if(DEBUG_8 || optDebug) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
-	if(badCombis!=cutsDefinition.numBadTrackCombi) FAILCUT(8)
-
-
-					//if(piTrack==-1 || epTrack==-1 || emTrack==-1)
-		//FILCUT(9)
-
-
-
-	fullEvent.em = goodTracks[emTrack];
-	fullEvent.ep = goodTracks[epTrack];
-	fullEvent.pip= goodTracks[piTrack];
-
-	// 10) Bad electron cluster
-	if(DEBUG_10 || optDebug) cout << "~~~~ Cut 10 ~~~~" << endl;
-	if(DEBUG_10 || optDebug) cout << "Bad electron tracks eop :\t" << badElectron << "\t == " << true << ": rejected" << endl;
-	if(badElectron==cutsDefinition.boolBadECandidates) FAILCUT(10)
-
-	// 12) Exactly 1 good LKr cluster
-	if(DEBUG_12 || optDebug) cout << "~~~~ Cut 12 ~~~~" << endl;
-	goodClusters = pi0d_goodClusters(sbur, sevt, piTrack, epTrack, emTrack, ivtx, goodClusterID, vertexTime);
-	gH("clusterGoodN")->Fill(goodClusters, fullEvent.weight);
-	if(DEBUG_12 || optDebug) cout << "Good LKr clusters :\t\t" << goodClusters << "\t != 1 : rejected" << endl;
-	if(goodClusters!=cutsDefinition.numAddGoodCluster) FAILCUT(12)
-
-	fullEvent.gamma = vCluster[goodClusterID];
-
-	if(goodClusterID==-1){ //Automatically fails all subsequent cuts
-		//pi0d_failCut(sbur,sevt,12);
-		//pi0d_failCut(sbur,sevt,13);
-		//pi0d_failCut(sbur,sevt,14);
-		//pi0d_failCut(sbur,sevt,15);
-		//pi0d_failCut(sbur,sevt,16);
-		//pi0d_failCut(sbur,sevt,17);
-		//pi0d_failCut(sbur,sevt,18);
-		//pi0d_failCut(sbur,sevt,19);
-		//outTree->Fill();
-		return 0;
-	}
-	fullEvent.pGamma = (vCluster[goodClusterID]->position - goodTracks[piTrack]->vertex).Unit();
-	gH("gammaEnergy")->Fill(vCluster[goodClusterID]->energy, fullEvent.weight);
-	gH("gammaX")->Fill(vCluster[goodClusterID]->position.X(), fullEvent.weight);
-	gH("gammaY")->Fill(vCluster[goodClusterID]->position.Y(), fullEvent.weight);
-	gH("gammaRadius")->Fill(distance2D(TVector3(0,0,0), vCluster[goodClusterID]->position), fullEvent.weight);
-	gH("gammaDeadCell")->Fill(sevt->cluster[vCluster[goodClusterID]->clusterID].dDeadCell, fullEvent.weight);
-
-
-	// 13) Photon candidate in LKr acceptance
-	//TODO check it's the good way
-	if(DEBUG_13 || optDebug) cout << "~~~~ Cut 13 ~~~~" << endl;
-	//propPos = propagate(Geom->Lkr.z, vCluster[goodClusterID]->position, photonMomentum);
-	//lkrAcceptance = LKr_acc(sbur->nrun, vCluster[goodClusterID]->position.X(), vCluster[goodClusterID]->position.Y(), 8);
-	lkrAcceptance = LKr_acc(sbur->nrun, sevt->cluster[vCluster[goodClusterID]->clusterID].x, sevt->cluster[vCluster[goodClusterID]->clusterID].y, 8);
-	//lkrAcceptance = LKr_acc(sbur->nrun, propPos.X(), propPos.Y(), 8);
-	if(DEBUG_13 || optDebug) cout << "Mauro condition :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
-	if(lkrAcceptance!=cutsDefinition.lkrAcceptance) FAILCUT(13)
-
-	// 14) E_gamma>3GeV
-	if(DEBUG_14 || optDebug) cout << "~~~~ Cut 14 ~~~~" << endl;
-	if(DEBUG_14 || optDebug) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << vCluster[goodClusterID]->energy << "\t <= 3 : rejected" << endl;
-	if(vCluster[goodClusterID]->energy<=cutsDefinition.minGammaEnergy) FAILCUT(14)
-
-	// 15) D_deadcell>2cm
-	if(DEBUG_15 || optDebug) cout << "~~~~ Cut 15 ~~~~" << endl;
-	if(DEBUG_15 || optDebug) cout << "d_deadcell :\t\t\t" << sevt->cluster[vCluster[goodClusterID]->clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(sevt->cluster[vCluster[goodClusterID]->clusterID].dDeadCell<=cutsDefinition.minDeadCellDist) FAILCUT(15)
-
-	//cout << printVector3(goodTracks[piTrack].vertex) << endl;
-	//cout << printVector3(vCluster[goodClusterID]->position) << endl;
-	//cout << printVector3(vCluster[goodClusterID]->energy*photonMomentum) << endl;
-
-	// 16) Photon DCH1 intercept >13cm
-	if(DEBUG_16 || optDebug) cout << "~~~~ Cut 16 ~~~~" << endl;
-	propPos = propagate(Geom->Dch[0].PosChamber.z, vCluster[goodClusterID]->position, fullEvent.pGamma);
-	//radius = sqrt(pow(propPos.X()-Geom->Dch[0].PosChamber.x,2) + pow(propPos.Y()-Geom->Dch[0].PosChamber.y,2));
-	radius = sqrt(pow(propPos.X(),2) + pow(propPos.Y(),2));
-	gH("gammaDCH1Radius")->Fill(radius, fullEvent.weight);
-	if(DEBUG_16 || optDebug) cout << "R_gDCH1 :\t\t\t" << radius << "\t <= 13 : rejected" << endl;
-	if(radius<=cutsDefinition.minGammaDCHRadius) FAILCUT(16)
-
-	//Start Kinematic cuts
-	//Total P
-	fullEvent.pTotal = goodTracks[piTrack]->pMag*goodTracks[piTrack]->momentum +
-			goodTracks[emTrack]->pMag*goodTracks[emTrack]->momentum +
-			goodTracks[epTrack]->pMag*goodTracks[epTrack]->momentum +
-			vCluster[goodClusterID]->energy*fullEvent.pGamma;
-	//Pt
-	pt = fullEvent.pTotal.Perp2(kaonMomentum);
-	fullEvent.pt2 = pt;
-
-	//Mee
-	vMass.push_back(Me);
-	vP.push_back(goodTracks[epTrack]->pMag*goodTracks[epTrack]->momentum);
-	vMass.push_back(Me);
-	vP.push_back(goodTracks[emTrack]->pMag*goodTracks[emTrack]->momentum);
-	fullEvent.mee = sqrt(invMass2(vMass, vP));
-	fullEvent.x = pow(fullEvent.mee/Mpi0, 2.);
-
-	//Meeg
-	vMass.push_back(0.0);
-	vP.push_back(vCluster[goodClusterID]->energy*fullEvent.pGamma);
-	fullEvent.mPi0 = sqrt(invMass2(vMass, vP));
-
-	//Mpieeg
-	vMass.push_back(Mpic);
-	vP.push_back(goodTracks[piTrack]->pMag*goodTracks[piTrack]->momentum);
-	fullEvent.mK = sqrt(invMass2(vMass, vP));
-
-	gH("bkinKP")->Fill(kaonMomentum.Mag(), fullEvent.weight);
-	gH("bkinPiP")->Fill(goodTracks[piTrack]->pMag, fullEvent.weight);
-	gH("bkinemP")->Fill(goodTracks[emTrack]->pMag, fullEvent.weight);
-	gH("bkinepP")->Fill(goodTracks[epTrack]->pMag, fullEvent.weight);
-	gH("bkinGammaP")->Fill((vCluster[goodClusterID]->energy*fullEvent.pGamma).Mag(), fullEvent.weight);
-
-	gH("bkinMee")->Fill(fullEvent.mee, fullEvent.weight);
-	gH("bkinx")->Fill(fullEvent.mee/Mpi0, fullEvent.weight);
-	gH("bkinMeeg")->Fill(fullEvent.mPi0, fullEvent.weight);
-	gH("bkinMeegDiff")->Fill(fullEvent.mPi0-Mpi0, fullEvent.weight);
-	gH("bkinMeegpi")->Fill(fullEvent.mK, fullEvent.weight);
-
-	gH("bkinPTot")->Fill(fullEvent.pTotal.Mag(), fullEvent.weight);
-	gH("bkinPt2")->Fill(pt, fullEvent.weight);
-
-	// 11) Tracks momenta
-	if(DEBUG_11 || optDebug) cout << "~~~~ Cut 11 ~~~~" << endl;
-	if(DEBUG_11 || optDebug) cout << "p_pi :\t\t\t\t" << goodTracks[piTrack]->pMag << "\t <5 || > 60 : rejected" << endl;
-	if(DEBUG_11 || optDebug) cout << "p_e+ :\t\t\t\t" << goodTracks[epTrack]->pMag << "\t <5 || > 60 : rejected" << endl;
-	if(DEBUG_11 || optDebug) cout << "p_e- :\t\t\t\t" << goodTracks[emTrack]->pMag << "\t <5 || > 60 : rejected" << endl;
-	if(goodTracks[piTrack]->pMag<=cutsDefinition.minTrackMomentum || goodTracks[piTrack]->pMag>=cutsDefinition.maxTrackMomentum) FAILCUT(11)
-	if(goodTracks[epTrack]->pMag<=cutsDefinition.minTrackMomentum || goodTracks[epTrack]->pMag>=cutsDefinition.maxTrackMomentum) FAILCUT(11)
-	if(goodTracks[emTrack]->pMag<=cutsDefinition.minTrackMomentum || goodTracks[emTrack]->pMag>=cutsDefinition.maxTrackMomentum) FAILCUT(11)
-
-	// 17) Total momentum 70<p<78
-	if(DEBUG_17 || optDebug) cout << "~~~~ Cut 17 ~~~~" << endl;
-	if(DEBUG_17 || optDebug) cout << "p_pieeg :\t\t\t" << fullEvent.pTotal.Mag() << "\t <70 || >78 : rejected" << endl;
-	if(fullEvent.pTotal.Mag()<cutsDefinition.minTotalMomentum || fullEvent.pTotal.Mag()>cutsDefinition.maxTotalMomentum) FAILCUT(17)
-
-	// 18) Transverse momentum^2 < 5E-4
-	if(DEBUG_18 || optDebug) cout << "~~~~ Cut 18 ~~~~" << endl;
-	if(DEBUG_18 || optDebug) cout << "P_t^2 :\t\t" << pt << "\t >= " << cutsDefinition.maxPt << " : rejected" << endl;
-	if(pt>=cutsDefinition.maxPt) FAILCUT(18)
-
-	// 19) |M_eeg - M_pi0|<8 MeV
-	if(DEBUG_19 || optDebug) cout << "~~~~ Cut 19 ~~~~" << endl;
-	if(DEBUG_19 || optDebug) cout << "M_ee :\t\t" << fullEvent.mee << endl;
-	if(DEBUG_19 || optDebug) cout << "|M_eeg - M_pi0| :\t\t" << fabs(fullEvent.mPi0-Mpi0) << "\t >= 0.008 : rejected" << endl;
-	if(fabs(fullEvent.mPi0-Mpi0)>=cutsDefinition.maxPi0MassDiff) FAILCUT(19)
-
-	// 20) 0.475 < M_pieeg < 0.510
-	if(DEBUG_20 || optDebug) cout << "~~~~ Cut 20 ~~~~" << endl;
-	if(DEBUG_20 || optDebug) cout << "M_pieeg :\t\t" << fullEvent.mK << "\t <0.475 || >0.510: rejected" << endl;
-	if(fullEvent.mK<cutsDefinition.minKaonMassDiff || fullEvent.mK>cutsDefinition.maxKaonMassDiff) FAILCUT(20)
-	gH("akinKP")->Fill(kaonMomentum.Mag(), fullEvent.weight);
-	gH("akinPiP")->Fill(goodTracks[piTrack]->pMag, fullEvent.weight);
-	gH("akinemP")->Fill(goodTracks[emTrack]->pMag, fullEvent.weight);
-	gH("akinepP")->Fill(goodTracks[epTrack]->pMag, fullEvent.weight);
-	gH("akinGammaP")->Fill((vCluster[goodClusterID]->energy*fullEvent.pGamma).Mag(), fullEvent.weight);
-
-	gH("akinMee")->Fill(fullEvent.mee, fullEvent.weight);
-	gH("akinx")->Fill(pow(fullEvent.mee/Mpi0,2), fullEvent.weight);
-	gH("akinMeeg")->Fill(fullEvent.mPi0, fullEvent.weight);
-	gH("akinMeegDiff")->Fill(fullEvent.mPi0-Mpi0, fullEvent.weight);
-	gH("akinMeegpi")->Fill(fullEvent.mK, fullEvent.weight);
-
-	gH("akinPTot")->Fill(fullEvent.pTotal.Mag(), fullEvent.weight);
-	gH("akinPt2")->Fill(pt, fullEvent.weight);
-	outTree->FlushBaskets();
-	outTree->Fill();
-
-	pi0d_passSelection(sbur, sevt);
+	pi0d_passSelection();
 	return 0;
 }

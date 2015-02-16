@@ -11,44 +11,41 @@
 #include "user.h"
 #include "reader.h"  /* to get procedure calls for fortran routines */
 #include "F77_ana.h" /* mapping of fortran common blocks for analysis routines */
+#include "funLib.h"
 
 int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 /* WARNING: do not alter things before this line */
 	vector<double> vMass;
 	vector<TVector3> vP;
 
+	//Test MC
+	if(!mcBranched){
+		outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
+		mcBranched = true;
+	}
+	rootMC.Clear();
+
 	bool ep = false;
 	bool em = false;
 	for(int i=0; i<= evt->Npart; i++){
-		//cout << "\t" << evt->part[i].type << endl;
-		//cout << evt->part[i].pvertex[2] << endl;
 		if(evt->part[i].type==64 && !ep){
-			fullEvent.epPTrue = TVector3(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3]).Unit();
-			fullEvent.epETrue = evt->part[i].p[0];
+			rootMC.ep.P.SetXYZT(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3], evt->part[i].p[0]);
+			rootMC.ep.vertex.SetXYZ(evt->part[i].pvertex[0], evt->part[i].pvertex[1], evt->part[i].pvertex[2]);
 			ep = true;
 		}
 		if(evt->part[i].type==-64 && !em){
-			fullEvent.emPTrue = TVector3(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3]).Unit();
-			fullEvent.emETrue = evt->part[i].p[0];
+			rootMC.em.P.SetXYZT(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3], evt->part[i].p[0]);
+			rootMC.em.vertex.SetXYZ(evt->part[i].pvertex[0], evt->part[i].pvertex[1], evt->part[i].pvertex[2]);
 			em = true;
 		}
 	}
-	vMass.push_back(Me);
-	vP.push_back(fullEvent.epPTrue*fullEvent.epETrue);
-	vMass.push_back(Me);
-	vP.push_back(fullEvent.emPTrue*fullEvent.emETrue);
-
-	fullEvent.meeTrue = sqrt(invMass2(vMass, vP));
-	fullEvent.xTrue = pow(fullEvent.meeTrue/Mpi0, 2.);
+	rootMC.xTrue = pow((rootMC.em.P+rootMC.ep.P).M()/Mpi0, 2.);
 
 
+	rootBurst.isData = false;
+	rootBurst.isMC = true;
 	user_superCmpEvent(sbur, &evt->scmpevt);
 
-	/*if(fullEvent.ep){
-		cout << fullEvent.mee << " " << fullEvent.meeTrue << endl;
-		cout << printVector3(fullEvent.ep->momentum) << " " << printVector3(fullEvent.epPTrue) << endl;
-		cout << printVector3(fullEvent.em->momentum) << " " << printVector3(fullEvent.emPTrue) << endl;
-	}*/
 /*---------- Add user C code here ----------*/
   /*static int nuserevt=0;
 

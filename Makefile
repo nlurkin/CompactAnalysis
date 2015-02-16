@@ -70,7 +70,7 @@ LINVER = -slc6
 #GFORTRAN needed on lxplus/lxbatch since CERNLIB is compiled with gfortran
 GFORLIBS = -L/usr/lib/gcc/x86_64-redhat-linux/4.4.4/32 -lgfortran
 #32 bit libshift library not linked to libshift.so, use the binary
-LIBSHIFT = -liowrapper -lXrdPosixPreload -lXrdPosix -L. $(shell ls /usr/lib/libshift.* | head -1)
+LIBSHIFT = -L/afs/cern.ch/na62/user/kmassri/compact/xrdlib -liowrapper -lXrdPosixPreload -lXrdPosix -L. $(shell ls /usr/lib/libshift.* | head -1)
 else
 ifeq ($(ISSLC5),1)
 LINVER = -slc5
@@ -408,7 +408,9 @@ UCSRCS = user_init.c \
 			user_hyperCmpEvent.c\
 			nico_pi0dalitzSelection.c\
 			nico_pi0dalitzAna.c\
-			nico_ke2Selection.c\
+			funLib.c\
+			compactLib.c\
+#			nico_ke2Selection.c\
 
 UCOBJS = $(UCSRCS:.c=.o)
 
@@ -447,7 +449,7 @@ compact: $(OBJS) $(UOBJS) $(UAOBJS)
 	$(OBJS:%=$(OBJDIR)/%) \
 	$(UOBJS:%=$(OBJDIR)/%) \
 	$(UAOBJS:%=$(OBJDIR)/%) \
-	$(LDIRS) $(LIBS) $(CERNLIBS) $(F77LIBS) $(LIBS) $(ROOTLIBS) -lmystructs -Lobj
+	$(LDIRS) $(LIBS) $(CERNLIBS) $(F77LIBS) $(LIBS) $(ROOTLIBS) -lmystructs -lexportClasses -Lobj
 
 clean:
 	$(RM) -r $(OBJDIR) $(DEPDIR)
@@ -631,12 +633,20 @@ FORCE:
 #
 
 
-root:obj/libmystructs.so
+root:obj/libmystructs.so obj/libexportClasses.so
 
 obj/libmystructs.so:usersrc/mystructs.c obj/Dict_mystructs.cpp
 	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/mystructs.c obj/Dict_mystructs.cpp -o obj/libmystructs.so
+
+obj/libexportClasses.so: usersrc/exportClasses.c obj/Dict_exportClasses.cpp
+	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/exportClasses.c obj/Dict_exportClasses.cpp -o obj/libexportClasses.so
 
 
 obj/Dict_mystructs.cpp: userinc/mystructs.h userinc/LinkDef_mystructs.h
 	@ [ ! -d $(OBJDIR) ] && $(MKDIR) $(OBJDIR) || true
 	rootcint -v -f obj/Dict_mystructs.cpp -c userinc/mystructs.h userinc/LinkDef_mystructs.h
+
+obj/Dict_exportClasses.cpp: userinc/exportClasses.h userinc/LinkDef_exportClasses.h
+	@ [ ! -d $(OBJDIR) ] && $(MKDIR) $(OBJDIR) || true
+	rootcint -v -f obj/Dict_exportClasses.cpp -c userinc/exportClasses.h userinc/LinkDef_exportClasses.h 
+	

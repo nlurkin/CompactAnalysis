@@ -15,7 +15,7 @@
 #include <vector>
 #include <TPaveText.h>
 #include <fstream>
-#include "../userinc/mystructs.h"
+#include "../userinc/exportClasses.h"
 using namespace std;
 
 map<int, double> mcRunMap, dataRunMap;
@@ -64,15 +64,15 @@ void buildRunMap(TFile *fd, map<int,double> &runMap){
 	//Get the TTree
 	//Input
 	TTree *t = (TTree*)fd->Get("event");
-	pi0dEvent *eventBrch = new pi0dEvent();
-	t->SetBranchAddress("pi0dEvent", &eventBrch);
+	ROOTBurst *burstBrch = new ROOTBurst();
+	t->SetBranchAddress("rawBurst", &burstBrch);
 
 	int nevt = t->GetEntries();
 	cout << nevt << endl;
 	for(int i=0; i< nevt; ++i){
 		t->GetEntry(i);
-		if(runMap.count(eventBrch->runNumber)>0) runMap[eventBrch->runNumber] += 1;
-		else runMap.insert(make_pair(eventBrch->runNumber, 1.));
+		if(runMap.count(burstBrch->nrun)>0) runMap[burstBrch->nrun] += 1;
+		else runMap.insert(make_pair(burstBrch->nrun, 1.));
 	}
 }
 
