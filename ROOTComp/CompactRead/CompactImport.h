@@ -17,6 +17,7 @@ class ROOTBurst;
 class ROOTFileHeader;
 class NGeom;
 class ROOTMCEvent;
+class ROOTOutput;
 
 class CompactImport {
 public:
@@ -32,13 +33,20 @@ public:
 	int firstEvent(ROOTFileHeader &outputHeader);
 	bool eof();
 
-	void associateTrees(ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent, ROOTBurst &rootBurst, ROOTFileHeader &rootFileHeader, NGeom &rootGeom, ROOTMCEvent &rootMC);
+	void associateTrees(ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent,
+			ROOTBurst &rootBurst, ROOTFileHeader &rootFileHeader,
+			NGeom &rootGeom, ROOTMCEvent &rootMC);
+
+	bool getHasMC() {
+		return hasMC;
+	}
+	;
 private:
 	int currentEvent;
 	int currentFile;
 	int nEvents;
 	int nFiles;
-	bool mcBranched;
+	bool hasMC;
 	TString currentFileName;
 	TChain *inTree;
 	TChain *headerTree;

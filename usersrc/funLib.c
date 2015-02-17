@@ -11,7 +11,7 @@
 #ifdef OUTSIDECOMPACT
 #include "mystructs.h"
 
-extern ROOTRawEvent rawEvent;
+extern ROOTRawEvent &rawEvent;
 extern bool optDebug;
 extern bool noOutput;
 extern cutsValues cutsDefinition;
@@ -135,7 +135,7 @@ void propagateAfter(float &x, float &y, float &z, float zplane, trak t){
 }
 #endif
 TVector3 propagateAfter(float zplane, NPhysicsTrack pt){
-	NTrak t = rawEvent.track[pt.trackID];
+	NTrak &t = rawEvent.track[pt.trackID];
 	return t.aDetPos + t.aMomentum*((zplane-t.aDetPos.Z())/t.aMomentum.Z());
 }
 TVector3 propagate(float zplane, NPhysicsTrack pt){

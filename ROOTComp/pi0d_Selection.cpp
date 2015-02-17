@@ -15,24 +15,25 @@ using namespace std;
 #include <fstream>
 #include <boost/program_options.hpp>
 
-#include "CompactImport.h"
+#include "CompactIO.h"
+
+CompactIO io;
 
 ///### Objects
-ROOTRawEvent rawEvent;
-ROOTCorrectedEvent corrEvent;
-ROOTBurst rootBurst;
-ROOTFileHeader rootFileHeader;
-NGeom rootGeom;
-ROOTMCEvent rootMC;
-ROOTPhysicsEvent rootPhysics;
-ROOTFileHeader outputFileHeader;
+ROOTRawEvent &rawEvent = io.getRawEvent();
+ROOTCorrectedEvent &corrEvent = io.getCorrEvent();
+ROOTBurst &rootBurst = io.getRootBurst();
+ROOTFileHeader &rootFileHeader = io.getInputFileHeader();
+NGeom &rootGeom = io.getRootGeom();
+ROOTMCEvent &rootMC = io.getRootMc();
+ROOTPhysicsEvent &rootPhysics = io.getRootPhysics();
+ROOTFileHeader &outputFileHeader = io.getOutputFileHeader();
 
 NAbcog_params abcog_params;
 
 //### Global Options
 namespace options{
 	bool optDebug;
-	bool doOutput;
 	int outputModulo;
 	int periodKeep;
 	bool exportAllEvents;
@@ -41,31 +42,6 @@ namespace options{
 namespace parameters{
 	cutsValues cutsDefinition;
 	vector<eventID> badEventsList;
-	bool mcBranched = false;
-}
-
-//### IO variables
-namespace io_ptr{
-	FILE* fprt, *fprt2;
-	TTree *outTree, *outHeaderTree;
-	TFile *outFile;
-}
-
-bool openOutput(){
-	io_ptr::outFile = gFile;
-	io_ptr::outTree = new TTree("event", "Event");
-	io_ptr::outHeaderTree = new TTree("header", "Header");
-
-	io_ptr::outTree->Branch("rawBurst" ,"ROOTBurst", &rootBurst);
-	io_ptr::outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
-	io_ptr::outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
-	io_ptr::outTree->Branch("geom" ,"NGeom", &rootGeom);
-	if(parameters::mcBranched) io_ptr::outTree->Branch("mc" ,"ROOTMCEvent", &rootMC);
-
-	io_ptr::outTree->Branch("pi0dEvent" ,"ROOTPhysicsEvent", &rootPhysics);
-	io_ptr::outHeaderTree->Branch("header" ,"ROOTFileHeader", &outputFileHeader);
-
-	return true;
 }
 
 int pi0d_tracksAcceptance(){
@@ -91,7 +67,6 @@ int pi0d_tracksAcceptance(){
 			if(options::optDebug) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
 		}
-
 
 		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
 		radius = distance2D(dch1, propPos);
@@ -271,12 +246,12 @@ int pi0d_goodClusters(){
 int pi0d_failCut(int i){
 	corrEvent.failedCond = i;
 	if(options::optDebug) cout << "Event is not passing selection" << endl;
-	if(options::doOutput) fprintf(io_ptr::fprt, "%i %i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, i);
+	if(io.getDoOutput()) io.output.f1() << rootBurst.nrun << rootBurst.time << rawEvent.timeStamp << i << endl;
 	return 0;
 }
 void pi0d_passSelection(){
 	if(options::optDebug) cout << "Event is passing selection" << endl;
-	if(options::doOutput) fprintf(io_ptr::fprt2, "%i %i %i\n", rootBurst.nrun, rootBurst.time, rawEvent.timeStamp);
+	if(io.getDoOutput()) io.output.f2() << rootBurst.nrun << rootBurst.time << rawEvent.timeStamp << endl;
 }
 
 int nico_pi0DalitzSelect(){
@@ -496,10 +471,7 @@ int main(int argc, char **argv){
 
 	//Options variables
 	int nevt = -1;
-	bool fileList = false;
-	string fileName;
 	string optString;
-	string prefix;
 	string cutsFile;
 	string filterFile;
 
@@ -549,10 +521,10 @@ int main(int argc, char **argv){
 	if (vm.count("nevt")) nevt = vm["nevt"].as<int>();
 
 	/// String options
-	if (vm.count("prefix")) prefix = vm["prefix"].as<string>();
+	if (vm.count("prefix")) io.setOutputPrefix(vm["prefix"].as<string>());
 	if (vm.count("debug")) options::optDebug = vm["debug"].as<bool>();
 	if (vm.count("period")) options::periodKeep = vm["period"].as<int>();
-	if (vm.count("dooutput")) options::doOutput = vm["dooutput"].as<bool>();
+	if (vm.count("dooutput")) io.setDoOutput(vm["dooutput"].as<bool>());
 	if (vm.count("mod")) options::outputModulo = vm["mod"].as<int>();
 	if (vm.count("cuts")) cutsFile = vm["cuts"].as<string>();
 	if (vm.count("eall")) options::exportAllEvents = vm["eall"].as<bool>();
@@ -569,15 +541,14 @@ int main(int argc, char **argv){
 	}
 	else{
 		if (vm.count("list")){
-			fileList = true;
-			fileName = vm["list"].as<string>();
+			io.setIsInputList(true);
+			io.setInputFileName(vm["list"].as<string>());
 		}
-		if (vm.count("file")) fileName = vm["file"].as<string>();
+		if (vm.count("file")) io.setInputFileName(vm["file"].as<string>());
 	}
 
 	//selectOptions(optString);
-	cout << filterFile << endl;
-	common_init(prefix, filterFile, parameters::badEventsList, options::doOutput, &io_ptr::fprt, &io_ptr::fprt2);
+	common_init(io.getOutputPrefix(), filterFile, parameters::badEventsList);
 
 	parseCutsValues("", parameters::cutsDefinition);
 	printCuts(parameters::cutsDefinition);
@@ -588,30 +559,25 @@ int main(int argc, char **argv){
 	std::cout << "Debugging activated: " << (options::optDebug==true ? "Yes" : "No") << std::endl;
 	if(options::periodKeep==0) std::cout << "Keeping period: All" << std::endl;
 	else std::cout << "Keeping period: " << options::periodKeep << std::endl;
-	if(options::doOutput) std::cout << "Text output files requested" << std::endl;
+	if(io.getDoOutput()) std::cout << "Text output files requested" << std::endl;
 	if(options::exportAllEvents) std::cout << "Export all events requested" << std::endl;
 	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 	std::cout << std::endl << std::endl;
 
-	CompactImport input;
-	input.associateTrees(rawEvent, corrEvent, rootBurst, rootFileHeader, rootGeom, rootMC);
-	if(!input.readInput(fileName, fileList)) return -1;
-	openOutput();
-	TString oldFile = "";
-	int currFile = -1;
+	io.openAll();
+
 	int nevent = 0;
 
-
 	outputFileHeader.NPassedEvents = 0;
-	cout << "Entries in the tree: " << input.getNEvents() << endl;
-	for(int i=input.firstEvent(outputFileHeader); !input.eof() && (nevt<0 || nevent<nevt ); i = input.nextEvent(outputFileHeader)){
+	cout << "Entries in the tree: " << io.input.getNEvents() << endl;
+	for(int i=io.input.firstEvent(outputFileHeader); !io.input.eof() && (nevt<0 || nevent<nevt ); i = io.input.nextEvent(outputFileHeader)){
 		if(newEvent(i, nevent)){
-			io_ptr::outTree->Fill();
+			io.output.fill();
 			outputFileHeader.NPassedEvents++;
 		}
 		else{
 			outputFileHeader.NFailedEvents++;
-			if(options::exportAllEvents) io_ptr::outTree->Fill();
+			if(options::exportAllEvents) io.output.fill();
 		}
 	}
 	cout << endl;
@@ -620,10 +586,6 @@ int main(int argc, char **argv){
 	cout << outputFileHeader.NFailedEvents << endl;
 	cout << outputFileHeader.NPassedEvents << endl;
 
-	io_ptr::outTree->Write();
-	io_ptr::outHeaderTree->Fill();
-	io_ptr::outHeaderTree->Write();
-
-	io_ptr::outFile->Close();
+	io.closeAll();
 	return 0;
 }
