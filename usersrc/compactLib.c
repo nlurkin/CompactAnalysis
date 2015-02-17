@@ -8,6 +8,7 @@
 #include "compactLib.h"
 #include <string>
 #include "funLib.h"
+#include <TFile.h>
 
 
 void loadEOPData(superBurst *sbur){
@@ -543,4 +544,45 @@ void openOutput(string outFile, string outPass){
 		fprt=fopen(outFile.c_str(),"w");
 		fprt2=fopen(outPass.c_str(),"w");
 	}
+}
+
+int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList){
+	int runNum, burstNum, timestamp;
+	vector<eventID>::iterator it;
+
+	std::string outRoot = "outfile.root";
+	std::string outFile = "compact.txt";
+	std::string outPass = "compactpass.txt";
+	if(filePrefix.find('~')!=std::string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
+	if(filePrefix.length()>0){
+		outRoot = filePrefix + ".root";
+		outFile = filePrefix + ".txt";
+		outPass = filePrefix + "pass.txt";
+	}
+
+	applyEOPData();
+	openOutput(outFile, outPass);
+
+	//Load badEvents list for debugging
+	if(!filterFile.empty()){
+		std::cout << ">>>> Filtering events from file " << filterFile << std::endl;
+		FILE *badEvents = fopen(filterFile.c_str(), "r");
+		if(badEvents!=NULL){
+			while(fscanf(badEvents, "%i %i %i", &runNum, &burstNum, &timestamp) != EOF){
+				badEventsList.push_back(eventID(runNum, burstNum, timestamp));
+			}
+			fclose(badEvents);
+		}
+		else{
+			cout << "Unable to open filter file" << endl;
+		}
+		cout << "\t" << badEventsList.size() << " events in filter list" << endl;
+		for(it=badEventsList.begin(); it!=badEventsList.end();it++){
+			cout << "\t\t" << (*it).rnum << " " << (*it).bnum << " " << (*it).timestamp << endl;
+		}
+	}
+
+	gFile = TFile::Open(outRoot.c_str(), "RECREATE");
+
+	return 0;
 }

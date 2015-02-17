@@ -37,5 +37,6 @@ void CreateTracks(superCmpEvent *sevt);
 void CreateClusters(superCmpEvent *sevt);
 
 int selectOptions(std::string s);
+int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList);
 
 #endif /* COMPACTLIB_H_ */

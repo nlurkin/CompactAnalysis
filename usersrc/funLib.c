@@ -328,8 +328,8 @@ const std::vector<std::string> tokenize(std::string s, const char delim) {
 	return tokens;
 }
 
-bool isFilteredEvent(int nrun, int nburst, int timestamp, vector<eventID> &badEventsList){
-	std::vector<eventID>::iterator it;
+bool isFilteredEvent(int nrun, int nburst, int timestamp, const vector<eventID> &badEventsList){
+	std::vector<eventID>::const_iterator it;
 
 	for(it=badEventsList.begin(); it!= badEventsList.end(); it++){
 		if( (nrun==(*it).rnum || (*it).rnum==0)
@@ -339,45 +339,3 @@ bool isFilteredEvent(int nrun, int nburst, int timestamp, vector<eventID> &badEv
 	return false;
 }
 
-int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList){
-	int runNum, burstNum, timestamp;
-	vector<eventID>::iterator it;
-
-	std::string outRoot = "outfile.root";
-	std::string outFile = "compact.txt";
-	std::string outPass = "compactpass.txt";
-	if(filePrefix.find('~')!=std::string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
-	if(filePrefix.length()>0){
-		outRoot = filePrefix + ".root";
-		outFile = filePrefix + ".txt";
-		outPass = filePrefix + "pass.txt";
-	}
-
-#ifndef OUTSIDECOMPACT
-	applyEOPData();
-	openOutput(outFile, outPass);
-#endif
-	//Load badEvents list for debugging
-	cout << "not empty " << !filterFile.empty() << endl;
-	if(!filterFile.empty()){
-		std::cout << ">>>> Filtering events from file " << filterFile << std::endl;
-		FILE *badEvents = fopen(filterFile.c_str(), "r");
-		if(badEvents!=NULL){
-			while(fscanf(badEvents, "%i %i %i", &runNum, &burstNum, &timestamp) != EOF){
-				badEventsList.push_back(eventID(runNum, burstNum, timestamp));
-			}
-			fclose(badEvents);
-		}
-		else{
-			cout << "Unable to open filter file" << endl;
-		}
-		cout << "\t" << badEventsList.size() << " events in filter list" << endl;
-		for(it=badEventsList.begin(); it!=badEventsList.end();it++){
-			cout << "\t\t" << (*it).rnum << " " << (*it).bnum << " " << (*it).timestamp << endl;
-		}
-	}
-
-	gFile = TFile::Open(outRoot.c_str(), "RECREATE");
-
-	return 0;
-}
