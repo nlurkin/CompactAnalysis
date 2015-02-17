@@ -633,13 +633,16 @@ FORCE:
 #
 
 
-root:obj/libmystructs.so obj/libexportClasses.so
+root:obj/libmystructs.so obj/libexportClasses.so obj/libfunLib.so
 
 obj/libmystructs.so:usersrc/mystructs.c obj/Dict_mystructs.cpp
 	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/mystructs.c obj/Dict_mystructs.cpp -o obj/libmystructs.so
 
 obj/libexportClasses.so: usersrc/exportClasses.c obj/Dict_exportClasses.cpp
 	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/exportClasses.c obj/Dict_exportClasses.cpp -o obj/libexportClasses.so
+
+obj/libfunLib.so: usersrc/funLib.c userinc/funLib.h
+	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) -DOUTSIDECOMPACT=1 usersrc/funLib.c userinc/funLib.h -o obj/libfunLib.so
 
 
 obj/Dict_mystructs.cpp: userinc/mystructs.h userinc/LinkDef_mystructs.h

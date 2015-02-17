@@ -45,8 +45,8 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	if(run!=-1){
 		if(!((sbur->nrun==run) && (sbur->time==burst) && (sevt->timeStamp==event)))return 0;
 	}
-	if(opts.count("filter")>0){
-		if(!isFilteredEvent(sbur->nrun, sbur->time, sevt->timeStamp)) return 0;
+	if(!opts["filter"].empty()){
+		if(!isFilteredEvent(sbur->nrun, sbur->time, sevt->timeStamp, badEventsList)) return 0;
 	}
 	if(iEvent==0) cout << endl;
 

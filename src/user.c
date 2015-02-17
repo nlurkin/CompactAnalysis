@@ -31,7 +31,6 @@ int periodKeep;
 //Event filtering
 vector<eventID> badEventsList;
 
-bool cutsWord[19];
 bool mcBranched;
 
 ROOTRawEvent rawEvent;

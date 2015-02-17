@@ -11,7 +11,7 @@
 #ifdef OUTSIDECOMPACT
 #include "mystructs.h"
 
-extern ROOTRawEvent rawEvent;
+extern ROOTRawEvent &rawEvent;
 extern bool optDebug;
 extern bool noOutput;
 extern cutsValues cutsDefinition;
@@ -31,6 +31,7 @@ extern FILE* fprt, *fprt2;
 #else
 #include "user.h"
 #include "reader.h"
+#include "compactLib.h"
 #endif
 
 double Mpi0 = 0.1349766;
@@ -39,10 +40,22 @@ double Me = 0.00051099891;
 
 std::string printVector3(TVector3 v){
 	std::ostringstream ss;
-	ss.precision(7);
-	ss << std::fixed;
-	ss << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " )";
+	ss << v;
 	return ss.str();
+}
+
+ostream& operator<<(ostream &s, TVector3 v){
+	s.precision(7);
+	s << std::fixed;
+	s << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " )";
+	return s;
+}
+
+ostream& operator<<(ostream &s, TLorentzVector v){
+	s.precision(7);
+	s << std::fixed;
+	s << "( " << v.X() << " , " << v.Y() << " , " << v.Z() << " , " << v.E() << " ) mass=" << v.M() << endl;
+	return s;
 }
 
 std::string printSTLvector(std::vector<TVector3> v){
@@ -83,12 +96,12 @@ double invMass2(std::vector<double> mass, std::vector<TVector3> p){
 	double PSum = 0;
 	double MSum = 0;
 
-	for(int i=0; i<p.size(); i++){
+	for(unsigned int i=0; i<p.size(); i++){
 		Energy.push_back(sqrt(pow(mass[i],2) + p[i].Mag2()));
 	}
 
-	for(int i=0; i<p.size()-1; i++){
-		for(int j=i+1; j<p.size(); j++){
+	for(unsigned int i=0; i<p.size()-1; i++){
+		for(unsigned int j=i+1; j<p.size(); j++){
 			ESum += Energy[i]*Energy[j];
 			PSum += p[i].Dot(p[j]);
 		}
@@ -122,7 +135,7 @@ void propagateAfter(float &x, float &y, float &z, float zplane, trak t){
 }
 #endif
 TVector3 propagateAfter(float zplane, NPhysicsTrack pt){
-	NTrak t = rawEvent.track[pt.trackID];
+	NTrak &t = rawEvent.track[pt.trackID];
 	return t.aDetPos + t.aMomentum*((zplane-t.aDetPos.Z())/t.aMomentum.Z());
 }
 TVector3 propagate(float zplane, NPhysicsTrack pt){
@@ -137,7 +150,7 @@ TVector3 propagate(float zplane, TVector3 pos, TVector3 p){
 }
 
 
-void parseCutsValues(std::string fileName){
+void parseCutsValues(std::string fileName, cutsValues &cutsDefinition){
 	//Initialize with default values
 	cutsDefinition.triggerMask = 0x400;
 	cutsDefinition.numVertex3 = 1;
@@ -257,7 +270,7 @@ void parseCutsValues(std::string fileName){
 	}
 }
 
-void printCuts(){
+void printCuts(cutsValues &cutsDefinition){
 	cout << "Cuts definition" << endl;
 	cout << "---------------" << endl;
 	cout << "triggerMask\t\t--> " << cutsDefinition.triggerMask << endl;
@@ -315,8 +328,8 @@ const std::vector<std::string> tokenize(std::string s, const char delim) {
 	return tokens;
 }
 
-bool isFilteredEvent(int nrun, int nburst, int timestamp){
-	std::vector<eventID>::iterator it;
+bool isFilteredEvent(int nrun, int nburst, int timestamp, const vector<eventID> &badEventsList){
+	std::vector<eventID>::const_iterator it;
 
 	for(it=badEventsList.begin(); it!= badEventsList.end(); it++){
 		if( (nrun==(*it).rnum || (*it).rnum==0)
@@ -326,161 +339,3 @@ bool isFilteredEvent(int nrun, int nburst, int timestamp){
 	return false;
 }
 
-
-int selectOptions(std::string s){
-	std::map<std::string,std::string>::iterator it;
-
-	opts = parseOptions(s);
-
-	std::cout << std::endl << ">>>>>>>>>>>>>>>>>>>>> Initialization" << std::endl;
-	if(opts.count("h")!=0){
-		std::cout << ">>>> Help " << std::endl;
-		std::cout << ">>>> Syntax: param=value:param=value" << std::endl;
-		std::cout << ">>>> List of parameters:" << std::endl;
-		std::cout << ">>>> h: This help" << std::endl;
-		std::cout << ">>>> prefix: Output file names to use (without extension)" << std::endl;
-		std::cout << ">>>> can: ke2 | pi0d" << std::endl;
-		std::cout << ">>>> debug: Activate debugging" << std::endl;
-		std::cout << ">>>> nooutput: Don't create output txt files" << std::endl;
-		std::cout << ">>>> period: keep only events from this period" << std::endl;
-		std::cout << ">>>> mod: print events index every mod events" << std::endl;
-		std::cout << ">>>> cuts: specify cuts file" << std::endl;
-		std::cout << ">>>> eall: export all event (not only the ones passing first cuts)" << std::endl;
-		std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-		exit(0);
-	}
-	std::cout << ">>>> Received parameters:" << std::endl;
-	for(it=opts.begin(); it!=opts.end(); it++){
-		std::cout << "\t" << it->first << " = " << it->second << std::endl;
-	}
-
-	common_init(opts["prefix"]);
-	std::string chanName;
-
-	if(strcmp(opts["can"].c_str(), "ke2")==0){
-		channel=KE2;
-		chanName = "KE2";
-	}
-	else if(strcmp(opts["can"].c_str(), "pi0d")==0){
-		channel=PI0DALITZ;
-		chanName = "PI0Dalitz";
-	}
-	else if(strcmp(opts["can"].c_str(), "none")==0){
-		channel=NONE;
-		chanName = "None";
-	}
-	else if(opts["can"].length()==0){
-		channel=PI0DALITZ;
-		chanName = "Pi0Dalitz";
-	}
-
-	if(opts["mod"].length()!=0) outputMod = atoi(opts["mod"].c_str());
-	else outputMod = 1;
-
-	if(opts.count("debug")!=0) optDebug = true;
-	else optDebug = false;
-
-	if(opts.count("period")!=0) periodKeep = atoi(opts["period"].c_str());
-	else periodKeep = 0;
-
-	if(opts.count("eall")!=0) exportAllEvents = true;
-	else exportAllEvents = false;
-
-	std::string cutsFileName;
-	if(opts.count("cuts")!=0) cutsFileName = opts["cuts"];
-	else cutsFileName = "";
-	parseCutsValues(cutsFileName);
-	printCuts();
-
-	std::cout << "Starting on channel: " << chanName << std::endl;
-	std::cout << "Output events every " << outputMod << " events" << std::endl;
-	if(cutsFileName.length()>0) std::cout << "Using cuts at: " << cutsFileName << std::endl;
-	std::cout << "Debugging activated: " << (optDebug==true ? "Yes" : "No") << std::endl;
-	if(periodKeep==0) std::cout << "Keeping period: All" << std::endl;
-	else std::cout << "Keeping period: " << periodKeep << std::endl;
-	if(noOutput) std::cout << "No file output requested" << std::endl;
-	if(exportAllEvents) std::cout << "Export all events requested" << std::endl;
-	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-	std::cout << std::endl << std::endl;
-
-	return 0;
-}
-
-
-int common_init(std::string filePrefix){
-#ifndef OUTSIDECOMPACT
-	int i, j, k;
-	int l, m, n;
-	int cpd, cell;
-#endif
-	int runNum, burstNum, timestamp;
-	vector<eventID>::iterator it;
-
-
-
-	std::string outRoot = "outfile.root";
-	std::string outFile = "compact.txt";
-	std::string outPass = "compactpass.txt";
-	if(filePrefix.find('~')!=std::string::npos) filePrefix=filePrefix.replace(filePrefix.find('~'), 1, string("/afs/cern.ch/user/n/nlurkin"));
-	if(filePrefix.length()>0){
-		outRoot = filePrefix + ".root";
-		outFile = filePrefix + ".txt";
-		outPass = filePrefix + "pass.txt";
-	}
-
-#ifndef OUTSIDECOMPACT
-	eopLoaded = false;
-
-	CELLlength = 1.975;
-	CPDlength = 8 * CELLlength;
-
-	// Define the positions for CPDs and Cells and store them
-	for (i=0; i<16; i++)
-		for (j=0; j<16; j++)
-		{
-			k = i*16 + j;
-			CPDpos_leftDownCorner[k][0] = (-1)*(7-i)*CPDlength;  // LKr RF is left-handed  --> the x sign has to be changed !!!
-			CPDpos_leftDownCorner[k][1] = (7-j)*CPDlength;
-			//printf ("CPD %d: position left down corner = %.2f, \t%.2f\n", k, CPDpos_leftDownCorner[k][0], CPDpos_leftDownCorner[k][1]);
-
-			for (m=0; m<8; m++)
-				for (n=0; n<8; n++)
-				{
-					l = m*8 + n;
-					CELLpos_leftDownCorner[k][l][0] = CPDpos_leftDownCorner[k][0] - (7-m)*CELLlength;
-					CELLpos_leftDownCorner[k][l][1] = CPDpos_leftDownCorner[k][1] + (7-n)*CELLlength;
-					//printf ("CELL %d in CPD %d: position left down corner = %.2f, \t%.2f\n",
-					//      l, k, CELLpos_leftDownCorner[k][l][0], CELLpos_leftDownCorner[k][l][1]);
-				}
-		}
-#endif
-	//Load badEvents list for debugging
-	if(opts.count("filter")>0){
-		std::cout << ">>>> Filtering events from file " << opts["filter"] << std::endl;
-		FILE *badEvents = fopen(opts["filter"].c_str(), "r");
-		if(badEvents!=NULL){
-			while(fscanf(badEvents, "%i %i %i", &runNum, &burstNum, &timestamp) != EOF){
-				badEventsList.push_back(eventID(runNum, burstNum, timestamp));
-			}
-			fclose(badEvents);
-		}
-		else{
-			cout << "Unable to open filter file" << endl;
-		}
-		cout << "\t" << badEventsList.size() << " events in filter list" << endl;
-		for(it=badEventsList.begin(); it!=badEventsList.end();it++){
-			cout << "\t\t" << (*it).rnum << " " << (*it).bnum << " " << (*it).timestamp << endl;
-		}
-	}
-
-	if(opts.count("nooutput")==0){
-		noOutput = false;
-		fprt=fopen(outFile.c_str(),"w");
-		fprt2=fopen(outPass.c_str(),"w");
-	}
-	else noOutput = true;
-
-	gFile = TFile::Open(outRoot.c_str(), "RECREATE");
-
-	return 0;
-}
