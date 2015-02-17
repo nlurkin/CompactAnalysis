@@ -73,7 +73,7 @@ int nico_pi0DalitzInit(){
 	outTree->Branch("rawBurst" ,"ROOTBurst", &rootBurst);
 	outTree->Branch("rawEvent" ,"ROOTRawEvent", &rawEvent);
 	outTree->Branch("corrEvent" ,"ROOTCorrectedEvent", &corrEvent);
-	outTree->Branch("geom" ,"NGeom", &rootGeom);
+	headerTree->Branch("geom" ,"NGeom", &rootGeom);
 	headerTree->Branch("header" ,"ROOTFileHeader", &rootFileHeader);
 
 	//Vertex
