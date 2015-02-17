@@ -29,3 +29,4 @@ bool CompactIO::closeAll() {
 	output.close();
 	return true;
 }
+

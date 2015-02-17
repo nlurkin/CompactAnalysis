@@ -11,6 +11,7 @@
 // Local includes
 #include "ROOTOutput.h"
 #include "CompactImport.h"
+#include "ScanCuts.h"
 
 class CompactIO {
 public:
@@ -119,6 +120,7 @@ public:
 public:
 	CompactImport input;
 	ROOTOutput output;
+	ScanCuts cutsDefinition;
 
 private:
 	bool isInputList;
