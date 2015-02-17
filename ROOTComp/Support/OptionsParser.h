@@ -48,12 +48,17 @@ public:
 		return maxEvents;
 	}
 
+	bool isDoScan() const {
+		return doScan;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
 	int outputModulo;
 	int periodKeep;
 	bool exportAllEvents;
+	bool doScan;
 	po::options_description desc;
 	std::string optString;
 	std::string cutsFile;
