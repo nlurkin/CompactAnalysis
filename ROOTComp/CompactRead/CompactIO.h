@@ -51,7 +51,7 @@ public:
 		this->corrEvent = corrEvent;
 	}
 
-	bool getDoOutput() const {
+	bool isDoOutput() const {
 		return doOutput;
 	}
 

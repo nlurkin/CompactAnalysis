@@ -36,6 +36,11 @@ public:
 	}
 	;
 private:
+	std::string generateROOTName();
+	std::string generatePassName();
+	std::string generateFailName();
+	std::string expandPrefix();
+
 	std::string prefix;
 	std::ofstream fprt, fprt2;
 	TTree *outTree, *outHeaderTree;

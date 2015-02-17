@@ -25,7 +25,7 @@ bool ROOTOutput::openOutput(bool doMC, bool doOutput, ROOTBurst &rootBurst,
 		ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent, NGeom &rootGeom,
 		ROOTMCEvent &rootMC, ROOTPhysicsEvent &rootPhysics,
 		ROOTFileHeader &outputFileHeader) {
-	outFile = gFile;
+	outFile = TFile::Open(generateROOTName().c_str(), "RECREATE");
 	outTree = new TTree("event", "Event");
 	outHeaderTree = new TTree("header", "Header");
 
@@ -40,8 +40,8 @@ bool ROOTOutput::openOutput(bool doMC, bool doOutput, ROOTBurst &rootBurst,
 	outHeaderTree->Branch("header", "ROOTFileHeader", &outputFileHeader);
 
 	if (doOutput) {
-		fprt.open((prefix + ".txt").c_str(), ofstream::out);
-		fprt2.open((prefix + "pass.txt").c_str(), ofstream::out);
+		fprt.open(generateFailName().c_str(), ofstream::out);
+		fprt2.open(generatePassName().c_str(), ofstream::out);
 	}
 	return true;
 }
@@ -60,4 +60,22 @@ void ROOTOutput::close() {
 			outFile->Close();
 		}
 	}
+}
+
+std::string ROOTOutput::generateROOTName() {
+	return expandPrefix() + ".root";
+}
+
+std::string ROOTOutput::generatePassName() {
+	return expandPrefix() + "pass.txt";
+}
+
+std::string ROOTOutput::generateFailName() {
+	return expandPrefix() + ".txt";
+}
+
+std::string ROOTOutput::expandPrefix() {
+	if(prefix.find('~')!=std::string::npos) prefix=prefix.replace(prefix.find('~'), 1, std::string("/afs/cern.ch/user/n/nlurkin"));
+
+	return prefix;
 }
