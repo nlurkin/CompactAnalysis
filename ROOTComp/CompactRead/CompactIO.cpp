@@ -5,15 +5,13 @@
  *      Author: ncl
  */
 
+//Local includes
 #include "CompactIO.h"
 
-CompactIO::CompactIO() {
-	// TODO Auto-generated constructor stub
-
+CompactIO::CompactIO(): isInputList(false), doOutput(false) {
 }
 
 CompactIO::~CompactIO() {
-	// TODO Auto-generated destructor stub
 }
 
 bool CompactIO::openAll() {

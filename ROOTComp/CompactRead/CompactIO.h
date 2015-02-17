@@ -8,6 +8,7 @@
 #ifndef COMPACTIO_H_
 #define COMPACTIO_H_
 
+// Local includes
 #include "ROOTOutput.h"
 #include "CompactImport.h"
 

@@ -1,26 +1,20 @@
 #define OUTSIDECOMPACT
 
-#include "exportClasses.h"
-#include "mystructs.h"
+/// Compact includes
 #include "funLib.h"
-#include <iostream>
+
+/// Std include
+#include <iomanip>
 using namespace std;
 
-#include <TDirectory.h>
-#include <TChain.h>
-#include <cmath>
-#include <TFile.h>
-#include <iomanip>
-#include <cstdlib>
-#include <fstream>
-
+// Local includes
 #include "CompactIO.h"
 #include "OptionsParser.h"
 
 CompactIO io;
 OptionsParser options;
 
-///### Objects
+///### TTree objects
 ROOTRawEvent &rawEvent = io.getRawEvent();
 ROOTCorrectedEvent &corrEvent = io.getCorrEvent();
 ROOTBurst &rootBurst = io.getRootBurst();
@@ -30,9 +24,12 @@ ROOTMCEvent &rootMC = io.getRootMc();
 ROOTPhysicsEvent &rootPhysics = io.getRootPhysics();
 ROOTFileHeader &outputFileHeader = io.getOutputFileHeader();
 
+// ### Database objects
 NAbcog_params abcog_params;
 cutsValues cutsDefinition;
 
+
+//Selection
 int pi0d_tracksAcceptance(){
 	bool lkrAcceptance;
 	TVector3 propPos;

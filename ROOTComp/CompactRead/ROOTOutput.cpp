@@ -5,19 +5,20 @@
  *      Author: ncl
  */
 
-#include "ROOTOutput.h"
+// ROOT includes
 #include <TFile.h>
 #include <TTree.h>
-#include "exportClasses.h"
-#include <iostream>
 
-ROOTOutput::ROOTOutput() {
-	// TODO Auto-generated constructor stub
+// Local includes
+#include "ROOTOutput.h"
+
+
+ROOTOutput::ROOTOutput() :
+		prefix("output"), outTree(nullptr), outHeaderTree(nullptr), outFile(nullptr) {
 
 }
 
 ROOTOutput::~ROOTOutput() {
-	// TODO Auto-generated destructor stub
 	close();
 }
 
@@ -75,7 +76,9 @@ std::string ROOTOutput::generateFailName() {
 }
 
 std::string ROOTOutput::expandPrefix() {
-	if(prefix.find('~')!=std::string::npos) prefix=prefix.replace(prefix.find('~'), 1, std::string("/afs/cern.ch/user/n/nlurkin"));
+	if (prefix.find('~') != std::string::npos)
+		prefix = prefix.replace(prefix.find('~'), 1,
+				std::string("/afs/cern.ch/user/n/nlurkin"));
 
 	return prefix;
 }

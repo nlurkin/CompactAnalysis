@@ -5,13 +5,19 @@
  *      Author: ncl
  */
 
-#include "CompactImport.h"
-#include <iostream>
-#include <TChain.h>
-#include <fstream>
+// Compact includes
 #include "exportClasses.h"
+
+// Std includes
+#include <iostream>
+#include <fstream>
+
+// ROOT includes
+#include <TChain.h>
 #include <TFile.h>
-#include "ROOTOutput.h"
+
+// Local includes
+#include "CompactImport.h"
 
 CompactImport::CompactImport() :
 		currentEvent(-1), currentFile(-1), nEvents(0), nFiles(0), hasMC(false), currentFileName(), inTree(

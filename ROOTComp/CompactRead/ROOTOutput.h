@@ -8,8 +8,13 @@
 #ifndef ROOTOUTPUT_H_
 #define ROOTOUTPUT_H_
 
-#include <fstream>
+// Compact includes
 #include "exportClasses.h"
+
+// Std includes
+#include <fstream>
+
+// Local includes
 #include "CompactImport.h"
 
 class TTree;
