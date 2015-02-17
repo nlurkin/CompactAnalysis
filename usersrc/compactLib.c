@@ -453,7 +453,7 @@ int selectOptions(std::string s){
 
 	if(opts["nooutput"].length()!=0) noOutput = true;
 	else noOutput = false;
-	common_init(opts["prefix"], opts["filter"], badEventsList, !noOutput, &fprt, &fprt2);
+	common_init(opts["prefix"], opts["filter"], badEventsList);
 	std::string chanName;
 
 	if(strcmp(opts["can"].c_str(), "ke2")==0){
@@ -535,4 +535,12 @@ void applyEOPData(){
 					//      l, k, CELLpos_leftDownCorner[k][l][0], CELLpos_leftDownCorner[k][l][1]);
 				}
 		}
+}
+
+
+void openOutput(string outFile, string outPass){
+	if(!noOutput){
+		fprt=fopen(outFile.c_str(),"w");
+		fprt2=fopen(outPass.c_str(),"w");
+	}
 }

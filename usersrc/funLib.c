@@ -339,7 +339,7 @@ bool isFilteredEvent(int nrun, int nburst, int timestamp, vector<eventID> &badEv
 	return false;
 }
 
-int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList, bool doOutput, FILE **fprt, FILE **fprt2){
+int common_init(std::string filePrefix, std::string filterFile, vector<eventID> &badEventsList){
 	int runNum, burstNum, timestamp;
 	vector<eventID>::iterator it;
 
@@ -355,6 +355,7 @@ int common_init(std::string filePrefix, std::string filterFile, vector<eventID> 
 
 #ifndef OUTSIDECOMPACT
 	applyEOPData();
+	openOutput(outFile, outPass);
 #endif
 	//Load badEvents list for debugging
 	cout << "not empty " << !filterFile.empty() << endl;
@@ -374,11 +375,6 @@ int common_init(std::string filePrefix, std::string filterFile, vector<eventID> 
 		for(it=badEventsList.begin(); it!=badEventsList.end();it++){
 			cout << "\t\t" << (*it).rnum << " " << (*it).bnum << " " << (*it).timestamp << endl;
 		}
-	}
-
-	if(doOutput){
-		*fprt=fopen(outFile.c_str(),"w");
-		*fprt2=fopen(outPass.c_str(),"w");
 	}
 
 	gFile = TFile::Open(outRoot.c_str(), "RECREATE");

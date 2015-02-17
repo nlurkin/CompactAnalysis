@@ -20,6 +20,7 @@
 
 void loadEOPData(superBurst *sbur);
 void applyEOPData();
+void openOutput(string outFile, string outPass);
 
 void defineBeamCharge(superBurst *sbur);
 
