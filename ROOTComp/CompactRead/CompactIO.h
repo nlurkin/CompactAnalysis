@@ -11,13 +11,14 @@
 // Local includes
 #include "ROOTOutput.h"
 #include "CompactImport.h"
+#include "ScanCuts.h"
 
 class CompactIO {
 public:
 	CompactIO();
 	virtual ~CompactIO();
 
-	bool openAll();
+	bool openAll(bool doScan);
 	bool closeAll();
 
 	const std::string& getInputFileName() const {
@@ -119,8 +120,11 @@ public:
 public:
 	CompactImport input;
 	ROOTOutput output;
+	ScanCuts cutsDefinition;
 
 private:
+	void fillCutsList();
+
 	bool isInputList;
 	bool doOutput;
 	std::string inputFileName;

@@ -11,10 +11,15 @@
 
 // Local includes
 #include "ROOTOutput.h"
+#include "ScanCuts.h"
 
+
+#ifdef __MAKECINT__
+#pragma link C++ class vector<bool>+;
+#endif
 
 ROOTOutput::ROOTOutput() :
-		prefix("output"), outTree(nullptr), outHeaderTree(nullptr), outFile(nullptr) {
+		prefix("output"), outTree(nullptr), outHeaderTree(nullptr), outCuts(nullptr), outFile(nullptr) {
 
 }
 
@@ -22,10 +27,10 @@ ROOTOutput::~ROOTOutput() {
 	close();
 }
 
-bool ROOTOutput::openOutput(bool doMC, bool doOutput, ROOTBurst &rootBurst,
+bool ROOTOutput::openOutput(bool doMC, bool doOutput, bool doScan, ROOTBurst &rootBurst,
 		ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent, NGeom &rootGeom,
 		ROOTMCEvent &rootMC, ROOTPhysicsEvent &rootPhysics,
-		ROOTFileHeader &outputFileHeader) {
+		ROOTFileHeader &outputFileHeader, ScanCuts &cutsDefinition) {
 	outFile = TFile::Open(generateROOTName().c_str(), "RECREATE");
 	outTree = new TTree("event", "Event");
 	outHeaderTree = new TTree("header", "Header");
@@ -44,11 +49,21 @@ bool ROOTOutput::openOutput(bool doMC, bool doOutput, ROOTBurst &rootBurst,
 		fprt.open(generateFailName().c_str(), ofstream::out);
 		fprt2.open(generatePassName().c_str(), ofstream::out);
 	}
+	if(doScan) {
+		outCuts = new TTree("cutsDefinition", "CutsDefinition");
+		outCuts->Branch("lists", "ScanCuts", &cutsDefinition);
+		outTree->Branch("cutsResult", &scanPass);
+	}
 	return true;
 }
 
-void ROOTOutput::fill() {
+void ROOTOutput::fillEvent() {
 	outTree->Fill();
+}
+
+void ROOTOutput::fillCuts() {
+	if(!outCuts) return;
+	outCuts->Fill();
 }
 
 void ROOTOutput::close() {
@@ -57,6 +72,7 @@ void ROOTOutput::close() {
 			outTree->Write();
 			outHeaderTree->Fill();
 			outHeaderTree->Write();
+			if(outCuts) outCuts->Write();
 
 			outFile->Close();
 		}
