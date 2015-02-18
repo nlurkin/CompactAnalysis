@@ -228,11 +228,11 @@ int pi0d_goodClusters(){
 	return goodClusters;
 }
 
-int pi0d_failCut(int i){
-	corrEvent.failedCond = i;
-	if(options.isOptDebug()) cout << "Event is not passing selection" << endl;
+bool pi0d_failCut(int i){
+	if(!options.isDoScan())corrEvent.failedCond = i;
+	if(options.isOptDebug()) cout << "Event is not passing selection " << i << endl;
 	if(io.isDoOutput()) io.output.f1() << rootBurst.nrun << rootBurst.time << rawEvent.timeStamp << i << endl;
-	return 0;
+	return false;
 }
 void pi0d_passSelection(){
 	if(options.isOptDebug()) cout << "Event is passing selection" << endl;
@@ -432,7 +432,7 @@ bool nico_pi0DalitzSelect(){
 	if(rootPhysics.kaon.P.M()<io.cutsDefinition.minKaonMassDiff || rootPhysics.kaon.P.M()>io.cutsDefinition.maxKaonMassDiff) {pi0d_failCut(20); return false;}
 
 	pi0d_passSelection();
-	return 0;
+	return true;
 }
 
 bool newEvent(int i, int &nevt){
@@ -448,30 +448,35 @@ bool newEvent(int i, int &nevt){
 
 	++nevt;
 	abcog_params = rootBurst.abcog_params;
-	if(io.cutsDefinition.getNLists()==1) return nico_pi0DalitzSelect(); // Normal thing
+	if(!options.isDoScan()) return nico_pi0DalitzSelect(); // Normal thing
 	else{
 		bool result;
 		bool defaultResult = false;
-		for(int i=io.cutsDefinition.loadList(0); i< io.cutsDefinition.getNLists(); i=io.cutsDefinition.loadNextList()){
+		bool globalResult = false;
+		io.output.resetResult();
+		for(int i=io.cutsDefinition.loadList(0); i!=-1; i=io.cutsDefinition.loadNextList()){
 			result = nico_pi0DalitzSelect();
+			io.output.newResult(result);
+			globalResult |= result;
 			if(i==io.cutsDefinition.getDefaultIndex()) defaultResult = result;
 		}
-
-		return defaultResult;
+		corrEvent.failedCond = defaultResult;
+		return globalResult;
 	}
 }
 
 int main(int argc, char **argv){
 	options.parse(argc, argv, io);
 
-	io.cutsDefinition.addParseCutsFile("", true);
+	if(options.isDoScan()) io.cutsDefinition.generateLists(options.getScan());
+	if(!io.cutsDefinition.addParseCutsFile(options.getCutsFile())) return -1;
 	io.cutsDefinition.print();
 	if(!options.isDoScan()) io.cutsDefinition.loadDefault(); // No scan, load the default values
 
 	options.printSummary(io);
 	options.parseFilter();
 
-	io.openAll();
+	io.openAll(options.isDoScan());
 
 	int nevent = 0;
 
@@ -479,19 +484,19 @@ int main(int argc, char **argv){
 	cout << "Entries in the tree: " << io.input.getNEvents() << endl;
 	for(int i=io.input.firstEvent(outputFileHeader); !io.input.eof() && (options.getMaxEvents()<0 || nevent<options.getMaxEvents() ); i = io.input.nextEvent(outputFileHeader)){
 		if(newEvent(i, nevent)){
-			io.output.fill();
+			io.output.fillEvent();
 			outputFileHeader.NPassedEvents++;
 		}
 		else{
 			outputFileHeader.NFailedEvents++;
-			if(options.isExportAllEvents()) io.output.fill();
+			if(options.isExportAllEvents()) io.output.fillEvent();
 		}
 	}
-	cout << endl;
+	cout << endl << endl;
 
-	cout << outputFileHeader.NProcessedEvents << endl;
-	cout << outputFileHeader.NFailedEvents << endl;
-	cout << outputFileHeader.NPassedEvents << endl;
+	cout << "Processed events ->\t" << outputFileHeader.NProcessedEvents << endl;
+	cout << "Failed events    ->\t" << outputFileHeader.NFailedEvents << endl;
+	cout << "Passed events    ->\t" << outputFileHeader.NPassedEvents << endl;
 
 	io.closeAll();
 	return 0;

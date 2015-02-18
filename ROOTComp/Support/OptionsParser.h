@@ -52,6 +52,14 @@ public:
 		return doScan;
 	}
 
+	const std::string& getCutsFile() const {
+		return cutsFile;
+	}
+
+	int getScan() const {
+		return nScan;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -59,6 +67,7 @@ private:
 	int periodKeep;
 	bool exportAllEvents;
 	bool doScan;
+	int nScan;
 	po::options_description desc;
 	std::string optString;
 	std::string cutsFile;

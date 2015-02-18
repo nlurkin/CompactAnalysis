@@ -18,7 +18,7 @@ public:
 	CompactIO();
 	virtual ~CompactIO();
 
-	bool openAll();
+	bool openAll(bool doScan);
 	bool closeAll();
 
 	const std::string& getInputFileName() const {
@@ -123,6 +123,8 @@ public:
 	ScanCuts cutsDefinition;
 
 private:
+	void fillCutsList();
+
 	bool isInputList;
 	bool doOutput;
 	std::string inputFileName;

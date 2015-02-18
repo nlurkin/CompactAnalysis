@@ -19,27 +19,30 @@
 
 class TTree;
 class TFile;
+class ScanCuts;
 
 class ROOTOutput {
 public:
 	ROOTOutput();
 	virtual ~ROOTOutput();
 
-	bool openOutput(bool doMC, bool doOutput, ROOTBurst &rootBurst,
+	bool openOutput(bool doMC, bool doOutput, bool doScan, ROOTBurst &rootBurst,
 			ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent,
 			NGeom &rootGeom, ROOTMCEvent &rootMC, ROOTPhysicsEvent &rootPhysics,
-			ROOTFileHeader &outputFileHeader);
-	void fill();
+			ROOTFileHeader &outputFileHeader, ScanCuts &cutsDefinition);
+	void fillEvent();
+	void fillCuts();
 	void close();
 
 	std::ofstream& f1() {
 		return fprt;
-	}
-	;
+	};
 	std::ofstream& f2() {
 		return fprt;
-	}
-	;
+	};
+
+	void newResult(bool pass){ scanPass.push_back(pass);};
+	void resetResult(){ scanPass.clear();};
 private:
 	std::string generateROOTName();
 	std::string generatePassName();
@@ -48,8 +51,9 @@ private:
 
 	std::string prefix;
 	std::ofstream fprt, fprt2;
-	TTree *outTree, *outHeaderTree;
+	TTree *outTree, *outHeaderTree, *outCuts;
 	TFile *outFile;
+	std::vector<bool> scanPass;
 };
 
 #endif /* ROOTOUTPUT_H_ */

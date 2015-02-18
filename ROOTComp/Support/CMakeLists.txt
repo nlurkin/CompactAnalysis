@@ -5,4 +5,6 @@ endif()
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/CompactRead)
 include_directories(${PROJECT_SOURCE_DIR}/Support)
-add_library(Support OptionsParser.h OptionsParser.cpp ScanCuts.h ScanCuts.cpp)
+
+ROOT_GENERATE_DICTIONARY(ScanCuts.h LinkDef.h ScanCuts_DICT.cc "${ROOT_INCLUDE_DIR};${CMAKE_CURRENT_SOURCE_DIR};${PROJECT_SOURCE_DIR}/../userinc")
+add_library(Support OptionsParser.h OptionsParser.cpp ScanCuts.h ScanCuts.cpp ScanCuts_DICT.cc)

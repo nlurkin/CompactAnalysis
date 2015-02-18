@@ -9,7 +9,7 @@
 #include "CompactIO.h"
 
 OptionsParser::OptionsParser() :
-		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false), desc("Allowed options") {
+		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false), doScan(false), nScan(0), desc("Allowed options") {
 	// Declare the supported options.
 	desc.add_options()("help,h", "produce help message")("nevt,n", po::value<int>(), "max number of events")
 			("file,i",po::value<std::string>(), "input file name")
@@ -21,7 +21,7 @@ OptionsParser::OptionsParser() :
 			("period", po::value<int>()->default_value(0), "Keep only events from specified period")
 			("mod,m", po::value<int>()->default_value(1), "Event number printing modulo")
 			("cuts,c", po::value<std::string>(), "Cuts file")
-			("scan", po::value<bool>()->default_value(false), "Do a scan")
+			("scan", po::value<int>()->default_value(0), "Do a scan with n values")
 			("eall,e", po::value<bool>()->default_value(false), "Export all events, even failed");
 }
 
@@ -74,8 +74,10 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 		cutsFile = vm["cuts"].as<std::string>();
 	if (vm.count("eall"))
 		exportAllEvents = vm["eall"].as<bool>();
-	if (vm.count("scan"))
-			doScan = vm["scan"].as<bool>();
+	if (vm.count("scan")){
+			nScan = vm["scan"].as<int>();
+			doScan = nScan > 0;
+	}
 	if (vm.count("filter"))
 		filterFile = vm["filter"].as<std::string>();
 

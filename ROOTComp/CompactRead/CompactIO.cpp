@@ -14,14 +14,16 @@ CompactIO::CompactIO(): isInputList(false), doOutput(false) {
 CompactIO::~CompactIO() {
 }
 
-bool CompactIO::openAll() {
+bool CompactIO::openAll(bool doScan) {
 	input.associateTrees(rawEvent, corrEvent, rootBurst, inputFileHeader,
 			rootGeom, rootMC);
 	if (!input.readInput(inputFileName, isInputList))
 		return false;
-	output.openOutput(input.getHasMC(), doOutput, rootBurst, rawEvent,
-			corrEvent, rootGeom, rootMC, rootPhysics, outputFileHeader);
+	output.openOutput(input.getHasMC(), doOutput, doScan, rootBurst, rawEvent,
+			corrEvent, rootGeom, rootMC, rootPhysics, outputFileHeader, cutsDefinition);
 
+
+	if(doScan) fillCutsList();
 	return true;
 }
 
@@ -30,3 +32,8 @@ bool CompactIO::closeAll() {
 	return true;
 }
 
+void CompactIO::fillCutsList() {
+	for(int i=cutsDefinition.loadList(0); i!=-1; i=cutsDefinition.loadNextList()){
+		output.fillCuts();
+	}
+}
