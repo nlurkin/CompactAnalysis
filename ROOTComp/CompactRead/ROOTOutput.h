@@ -38,7 +38,7 @@ public:
 		return fprt;
 	};
 	std::ofstream& f2() {
-		return fprt;
+		return fprt2;
 	};
 
 	void newResult(bool pass){ scanPass.push_back(pass);};

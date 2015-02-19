@@ -231,12 +231,12 @@ int pi0d_goodClusters(){
 bool pi0d_failCut(int i){
 	if(!options.isDoScan())corrEvent.failedCond = i;
 	if(options.isOptDebug()) cout << "Event is not passing selection " << i << endl;
-	if(io.isDoOutput()) io.output.f1() << rootBurst.nrun << rootBurst.time << rawEvent.timeStamp << i << endl;
+	if(io.isDoOutput()) io.output.f1() << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << " " << i << endl;
 	return false;
 }
 void pi0d_passSelection(){
 	if(options.isOptDebug()) cout << "Event is passing selection" << endl;
-	if(io.isDoOutput()) io.output.f2() << rootBurst.nrun << rootBurst.time << rawEvent.timeStamp << endl;
+	if(io.isDoOutput()) io.output.f2() << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
 }
 
 bool nico_pi0DalitzSelect(){
@@ -266,7 +266,7 @@ bool nico_pi0DalitzSelect(){
 	if(corrEvent.failedCond>=0) {
 		outputFileHeader.NFailedEvents--;
 		pi0d_failCut(corrEvent.failedCond);
-		return -1;
+		return false;
 	}
 	if(options.isOptDebug()) cout << endl;
 
@@ -440,7 +440,7 @@ bool newEvent(int i, int &nevt){
 
 	if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
 	if(i==0) cout << "First event: ";
-	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r";
+	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
 	if(options.getBadEventsList().size()>0){
 		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, options.getBadEventsList())) return false;
 	}
