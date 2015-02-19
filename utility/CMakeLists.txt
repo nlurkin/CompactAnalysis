@@ -15,6 +15,9 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/../userinc)
 link_directories(${PROJECT_SOURCE_DIR}/../obj)
 
+include_directories(${PROJECT_SOURCE_DIR}/../bin/includes)
+link_directories(${PROJECT_SOURCE_DIR}/../bin/lib)
+
 include_directories(common)
 add_subdirectory(common)
 
@@ -25,7 +28,7 @@ add_executable(prepareWeights batch/prepareWeights.cpp)
 add_executable(toyMC batch/toyMC.cpp)
 
 target_link_libraries(combine common exportClasses ${ROOT_LIBRARIES})
-target_link_libraries(fit common exportClasses ${ROOT_LIBRARIES} Minuit)
+target_link_libraries(fit common exportClasses Support ${ROOT_LIBRARIES} Minuit)
 target_link_libraries(make_bins common exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(prepareWeights common exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(toyMC common exportClasses ${ROOT_LIBRARIES} Minuit) 

@@ -85,6 +85,8 @@ double averageRatio;
 
 double testA = 0.;
 
+int scanID = -1;
+
 /*************************
  * Signal handling
  *************************/
@@ -214,6 +216,7 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("testA")==0) testA = entry.Atof();
 			else if(key.CompareTo("binsfile")==0) binsFileName = entry;
 			else if(key.CompareTo("equalbin")==0) withEqualBins = entry.CompareTo("true")==0 ? true : false;
+			else if(key.CompareTo("scanid")==0) scanID = entry.Atoi();
 			delete tok->At(i);
 		}
 	}

@@ -18,7 +18,8 @@
 #include <math.h>
 #include <TMath.h>
 #include <TGraph.h>
-#include "../userinc/exportClasses.h"
+#include "exportClasses.h"
+#include "ScanCuts.h"
 using namespace std;
 
 /*************************
@@ -374,16 +375,29 @@ namespace Input {
 		ROOTRawEvent *rawBrch = new ROOTRawEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
+		vector<bool> *cutsPass = 0;
+		ScanCuts *cutsLists = 0;
 
 		TTree *t = (TTree*) fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
+		TTree *tc = (TTree*)fd->Get("cutsDefinition");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
+		if(t->GetListOfBranches()->Contains("cutsResult")){
+			cutsPass = new vector<bool>;
+			cutsLists = new ScanCuts();
+		}
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);
 		t->SetBranchAddress("rawEvent", &rawBrch);
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
+		if(cutsPass){
+			t->SetBranchAddress("cutsResult", &cutsPass);
+			tc->SetBranchAddress("lists", &cutsLists);
+			tc->GetEntry(0);
+			if(scanID==-1) scanID = cutsLists->getDefaultIndex();
+		}
 
 		cout << "mc=" << mcEvent << endl;
 
@@ -474,8 +488,14 @@ namespace Input {
 		cout << "Filling " << nevt << endl;
 		for (; i < nevt; ++i) {
 			t->GetEntry(i);
+			if(cutsPass){
+				if(!cutsPass->at(scanID)){
+					fitBrch.selEvents--;
+					continue;
+				}
+			}
 			if ((i % 100) == 0)
-				cout << i << endl;
+				cout << i << "/" << nevt << "\r" << endl;
 			if (!runIncluded(burstBrch->nrun))
 				continue;
 			weight = applyWeights(burstBrch->nrun);
@@ -514,12 +534,21 @@ namespace Input {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTMCEvent *mcEvent = 0;
+		vector<bool> *cutsPass = 0;
+		ScanCuts *cutsLists = 0;
 
 		TTree *t = (TTree*) fd->Get("event");
+		TTree *tc = (TTree*)fd->Get("cutsDefinition");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
+		if(cutsPass){
+			t->SetBranchAddress("cutsResult", &cutsPass);
+			tc->SetBranchAddress("lists", &cutsLists);
+			tc->GetEntry(0);
+			if(scanID==-1) scanID = cutsLists->getDefaultIndex();
+		}
 
 		tempFD->cd();
 
@@ -555,6 +584,13 @@ namespace Input {
 		cout << "Filling data " << testA << " with " << NSig << " events" << endl;
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
+			if(cutsPass){
+				if(!cutsPass->at(scanID)){
+					continue;
+				}
+			}
+			if ((i % 100) == 0) cout << i << "/" << nevt << "\r" << endl;
+			fitBrch.selEvents++;
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;
 			weight = 1.;	//+2.*a*x+a*a*x*x;
@@ -563,8 +599,7 @@ namespace Input {
 						/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
 			dSig->at(index)->Fill(x, weight * bweight);
 		}
-		fitBrch.selEvents += NSig;
-		return NSig;
+		return fitBrch.selEvents;
 	}
 
 	void getInputMCGet(TFile *fd, double br, unsigned int index) {
