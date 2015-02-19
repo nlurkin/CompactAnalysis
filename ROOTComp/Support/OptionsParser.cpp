@@ -61,7 +61,7 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 
 	/// String options
 	if (vm.count("prefix"))
-		io.setOutputPrefix(vm["prefix"].as<std::string>());
+		io.output.setPrefix(vm["prefix"].as<std::string>());
 	if (vm.count("debug"))
 		optDebug = vm["debug"].as<bool>();
 	if (vm.count("period"))

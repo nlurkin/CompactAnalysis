@@ -42,7 +42,14 @@ public:
 	};
 
 	void newResult(bool pass){ scanPass.push_back(pass);};
-	void resetResult(){ scanPass.clear();};
+	void resetResult() {
+		scanPass.clear();
+	}
+	void setPrefix(const std::string& prefix) {
+		this->prefix = prefix;
+	}
+
+	;
 private:
 	std::string generateROOTName();
 	std::string generatePassName();

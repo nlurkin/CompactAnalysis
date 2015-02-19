@@ -13,6 +13,8 @@
 #include "ROOTOutput.h"
 #include "ScanCuts.h"
 
+#include <iostream>
+
 
 #ifdef __MAKECINT__
 #pragma link C++ class vector<bool>+;
@@ -95,6 +97,5 @@ std::string ROOTOutput::expandPrefix() {
 	if (prefix.find('~') != std::string::npos)
 		prefix = prefix.replace(prefix.find('~'), 1,
 				std::string("/afs/cern.ch/user/n/nlurkin"));
-
 	return prefix;
 }

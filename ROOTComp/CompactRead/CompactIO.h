@@ -12,6 +12,7 @@
 #include "ROOTOutput.h"
 #include "CompactImport.h"
 #include "ScanCuts.h"
+#include <iostream>
 
 class CompactIO {
 public:
@@ -27,14 +28,6 @@ public:
 
 	void setInputFileName(const std::string& inputFileName) {
 		this->inputFileName = inputFileName;
-	}
-
-	const std::string& getOutputPrefix() const {
-		return outputPrefix;
-	}
-
-	void setOutputPrefix(const std::string& outputPrefix) {
-		this->outputPrefix = outputPrefix;
 	}
 
 	bool isIsInputList() const {
@@ -128,7 +121,6 @@ private:
 	bool isInputList;
 	bool doOutput;
 	std::string inputFileName;
-	std::string outputPrefix;
 	ROOTBurst rootBurst;
 	ROOTRawEvent rawEvent;
 	ROOTCorrectedEvent corrEvent;
