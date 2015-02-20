@@ -28,9 +28,14 @@ include_directories(CompactRead)
 include_directories(Support)
 
 add_executable(pi0d_selection pi0d_Selection.cpp)
+add_executable(alt_id pid.cpp)
 
 target_link_libraries(pi0d_selection CompactRead Support) #Own
 target_link_libraries(pi0d_selection exportClasses funLib) #Compact
 target_link_libraries(pi0d_selection ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
 
-install(TARGETS pi0d_selection DESTINATION .)
+target_link_libraries(alt_id CompactRead Support) #Own
+target_link_libraries(alt_id exportClasses funLib) #Compact
+target_link_libraries(alt_id ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
+
+install(TARGETS pi0d_selection alt_id DESTINATION .)

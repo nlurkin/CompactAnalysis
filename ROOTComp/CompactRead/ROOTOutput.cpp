@@ -40,12 +40,12 @@ bool ROOTOutput::openOutput(bool doMC, bool doOutput, bool doScan, ROOTBurst &ro
 	outTree->Branch("rawBurst", "ROOTBurst", &rootBurst);
 	outTree->Branch("rawEvent", "ROOTRawEvent", &rawEvent);
 	outTree->Branch("corrEvent", "ROOTCorrectedEvent", &corrEvent);
-	outTree->Branch("geom", "NGeom", &rootGeom);
 	if (doMC)
 		outTree->Branch("mc", "ROOTMCEvent", &rootMC);
 
 	outTree->Branch("pi0dEvent", "ROOTPhysicsEvent", &rootPhysics);
 	outHeaderTree->Branch("header", "ROOTFileHeader", &outputFileHeader);
+	outHeaderTree->Branch("geom", "NGeom", &rootGeom);
 
 	if (doOutput) {
 		fprt.open(generateFailName().c_str(), ofstream::out);
