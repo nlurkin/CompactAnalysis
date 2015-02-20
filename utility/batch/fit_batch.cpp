@@ -46,6 +46,8 @@ static double bins[BINS];
 static int nbins;
 static double NSig;
 
+int nmc[2];
+
 namespace Fit{void minFct(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag);}
 
 /***************************
@@ -397,6 +399,9 @@ namespace Input {
 			tc->SetBranchAddress("lists", &cutsLists);
 			tc->GetEntry(0);
 			if(scanID==-1) scanID = cutsLists->getDefaultIndex();
+
+			tc->GetEntry(scanID);
+			cutsLists->Cuts::print();
 		}
 
 		cout << "mc=" << mcEvent << endl;
@@ -540,6 +545,10 @@ namespace Input {
 		TTree *t = (TTree*) fd->Get("event");
 		TTree *tc = (TTree*)fd->Get("cutsDefinition");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
+		if(t->GetListOfBranches()->Contains("cutsResult")){
+			cutsPass = new vector<bool>;
+			cutsLists = new ScanCuts();
+		}
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
@@ -548,6 +557,9 @@ namespace Input {
 			tc->SetBranchAddress("lists", &cutsLists);
 			tc->GetEntry(0);
 			if(scanID==-1) scanID = cutsLists->getDefaultIndex();
+
+			tc->GetEntry(scanID);
+			cutsLists->Cuts::print();
 		}
 
 		tempFD->cd();
@@ -609,6 +621,8 @@ namespace Input {
 
 		initFitStruct(totFit);
 		sumTreeFitStruct(fitBrch, t, totFit);
+
+		nmc[index] = totFit.selEvents;
 
 		//Set event nb
 		//int nevt = totFit.selEvents;
@@ -1166,9 +1180,11 @@ void fit_show(TString inFile) {
 
 	cout << endl << endl;
 	cout << result1.norm << ";" << result1.normErr << ";" << result1.formFactor << ";" << result1.formFactorErr << ";" << chi21 << ";" << chi2Prob1 << ";";
-   cout << resultROOT.norm << ";" << resultROOT.normErr << ";" << resultROOT.formFactor << ";" << resultROOT.formFactorErr << ";" << chi2ROOT << ";" << chi2ProbROOT << ";";
+	cout << resultROOT.norm << ";" << resultROOT.normErr << ";" << resultROOT.formFactor << ";" << resultROOT.formFactorErr << ";" << chi2ROOT << ";" << chi2ProbROOT << ";";
 	cout << resultNew.norm << ";" << resultNew.normErr << ";" << resultNew.formFactor << ";" << resultNew.formFactorErr << ";" << chi2New << ";" << chi2ProbNew << ";";
-	cout << resultNewROOT.norm << ";" << resultNewROOT.normErr << ";" << resultNewROOT.formFactor << ";" << resultNewROOT.formFactorErr << ";" << chi2NewROOT << ";" << chi2ProbNewROOT << endl;
+	cout << resultNewROOT.norm << ";" << resultNewROOT.normErr << ";" << resultNewROOT.formFactor << ";" << resultNewROOT.formFactorErr << ";" << chi2NewROOT << ";" << chi2ProbNewROOT << ";";
+	cout << NSig << ";" << nmc[0] << ";" << nmc[1] << endl;
+
 
 	//tempFD->Close();
 	//remove(tempFileName.Data());
