@@ -39,6 +39,9 @@ Cuts::Cuts(){
 	maxPi0MassDiff = 0.008;
 	minKaonMassDiff = 0.475;
 	maxKaonMassDiff = 0.510;
+
+	pid_pi0Diff = 0.030;
+	pid_kDiff = 0.04;
 }
 
 void Cuts::print(){
@@ -67,7 +70,9 @@ void Cuts::print(){
 	std::cout << "maxPt\t\t\t--> " << maxPt << std::endl;
 	std::cout << "maxPi0MassDiff\t\t--> " << maxPi0MassDiff << std::endl;
 	std::cout << "minKaonMassDiff\t\t--> " << minKaonMassDiff << std::endl;
-	std::cout << "maxKaonMassDiff\t\t--> " << maxKaonMassDiff << std::endl << std::endl;
+	std::cout << "maxKaonMassDiff\t\t--> " << maxKaonMassDiff << std::endl;
+	std::cout << "pid_pi0Diff\t\t--> " << pid_pi0Diff << std::endl;
+	std::cout << "pid_kDiff\t\t--> " << pid_kDiff << std::endl << std::endl;
 }
 
 ScanCuts::ScanCuts(): defaultIndex(-1), currentList(-1){
@@ -219,6 +224,12 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			}
 			else if(name.compare("maxKaonMassDiff")==0){
 				cutsLists[id].maxKaonMassDiff = atof(value.c_str());
+			}
+			else if(name.compare("pid_pi0Diff")==0){
+				cutsLists[id].pid_pi0Diff = atof(value.c_str());
+			}
+			else if(name.compare("pid_kDiff")==0){
+				cutsLists[id].pid_kDiff = atof(value.c_str());
 			}
 			else{
 				std::cout << "No known " << name << " cut parameter " << value << std::endl;

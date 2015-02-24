@@ -39,6 +39,8 @@ public:
 	double maxPi0MassDiff;
 	double minKaonMassDiff;
 	double maxKaonMassDiff;
+	double pid_pi0Diff;
+	double pid_kDiff;
 
 	ClassDefNV(Cuts, 1)
 };
