@@ -40,7 +40,17 @@ TH1D mkFalse = TH1D("mkFalse", "mkFalse", 100, 0, 1);
 TH2D meeepiFalse = TH2D("meeepiFalse", "meeepiFalse", 100, 0, 1, 100, 0, 1);
 TH2D meekFalse = TH2D("meekFalse", "meekFalse", 100, 0, 1, 100, 0, 1);
 
+TH1D meeDiffTrue = TH1D("meeDiffTrue", "meeDiffTrue", 1000, -1, 1);
+TH1D mkDiffTrue = TH1D("mkDiffTrue", "mkDiffTrue", 1000, -1, 1);
+
+TH1D meeDiffFalse = TH1D("meeDiffFalse", "meeDiffFalse", 1000, -1, 1);
+TH1D mkDiffFalse = TH1D("mkDiffFalse", "mkDiffFalse", 1000, -1, 1);
+
+
 TH1D nPiCandidates = TH1D("nPiCandidates", "nPiCandidates", 20, 0, 20);
+TH1D nPiCandidatesNew = TH1D("nPiCandidatesNew", "nPiCandidatesNew", 20, 0, 20);
+
+TH1D nBeamSign = TH1D("nBeamSign", "nBeamSign", 20, 0, 20);
 
 struct alt_pid_res{
 	int good=0, bad=0;
@@ -141,89 +151,132 @@ int pi0d_identifyPi(int &piCandidate, bool &badElectron){
 	return piCandidatesNb;
 }
 
-int pid(int &piCandidate){
-	TLorentzVector t1ep, t1em, t1pi;
-	TLorentzVector t2ep, t2em, t2pi;
-	TLorentzVector t3ep, t3em, t3pi;
-	TLorentzVector ee1, ee2, ee3;
-	TLorentzVector k1, k2, k3;
+int pid(int &piCandidate, TLorentzVector &gamma){
+	TLorentzVector tem;
+	TLorentzVector t1ep, t1pi;
+	TLorentzVector t2ep, t2pi;
+	TLorentzVector ee1, ee2;
+	TLorentzVector k1, k2;
 
-	//Try ee=01, pi=2
-	t1em.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Me);
-	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Me);
-	t1pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Mpic);
-	ee1 = t1em+t1ep;
+	int goodTrack1, goodTrack2;
+
+	int nCandidates = 0;
+
+	int nNegative = 0;
+	int vtxCharge = rawEvent.vtx[corrEvent.goodVertexID].charge;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 1;
+		goodTrack2 = 2;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Me);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 2;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Me);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 1;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Me);
+		nNegative++;
+	}
+
+	nBeamSign.Fill(nNegative);
+	if(nNegative!=1) return 0;
+
+	//Try e = goodTrack1, pi = goodTrack2
+	//cout << endl << corrEvent.pTrack.size() << " " << corrEvent.goodTracks.size() << " " << goodTrack1 << " " << goodTrack2 << endl;
+	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
+	t1pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Mpic);
+	ee1 = tem+t1ep+gamma;
 	k1 = ee1+t1pi;
 
-	//Try ee=02, pi=1
-	t2em.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Me);
-	t2pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Mpic);
-	t2ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Me);
-	ee2 = t2em+t2ep;
+	//Try e = goodTrack2, pi = goodTrack1
+	t2pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Mpic);
+	t2ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
+	ee2 = tem+t2ep+gamma;
 	k2 = ee2+t2pi;
 
-	//Try ee=12, pi=0
-	t3pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Mpic);
-	t3em.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Me);
-	t3ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Me);
-	ee3 = t3em+t3ep;
-	k3 = ee3+t3pi;
+	double Mk;
+	double diffpi01, diffpi02;
+	double diffk1, diffk2;
+	double diff1, diff2;
 
+	diffpi01 = fabs(ee1.M()-Mpi0);
+	diffpi02 = fabs(ee2.M()-Mpi0);
+
+	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = abcog_params.mkp;
+	else Mk = abcog_params.mkn;
+
+	diffk1 = fabs(k1.M()-Mk);
+	diffk2 = fabs(k2.M()-Mk);
+
+	diffk1 = 0;
+	diffk2 = 0;
+
+	diff1 = diffpi01;// + diffk1;
+	diff2 = diffpi02;// + diffk2;
+
+	double pi0DiffLimit = io.cutsDefinition.pid_pi0Diff;
+	double kDiffLimit = io.cutsDefinition.pid_kDiff;
 	//take the smallest ee mass as the ep em, the other is pi
-	if(ee1.M()<ee2.M() && ee1.M()<ee3.M()) piCandidate = 2;
-	else if(ee2.M()<ee1.M() && ee2.M()<ee3.M()) piCandidate = 1;
-	else if(ee3.M()<ee2.M() && ee3.M()<ee1.M()) piCandidate = 0;
+	if(ee1.M()<(Mpi0+pi0DiffLimit) && k1.M()<(Mk+kDiffLimit)){
+		nCandidates++;
+		piCandidate = goodTrack2;
+	}
+	if(ee2.M()<(Mpi0+pi0DiffLimit) && k2.M()<(Mk+kDiffLimit)){
+		nCandidates++;
+		piCandidate = goodTrack1;
+	}
+
+	/*if(diff1<diff2 && diff1<diff3) piCandidate = 2;
+	else if(diff2<diff1 && diff2<diff3) piCandidate = 1;
+	else if(diff3<diff2 && diff3<diff1) piCandidate = 0;*/
 
 	if(!flBad){
 		//Good MC association, fill the plots
-		if(pic==2){
+		if(pic==goodTrack2){
 			meeTrue.Fill(ee1.M());
 			mkTrue.Fill(k1.M());
-			meeepiTrue.Fill(ee1.M(), (t1ep+t1pi).M());
-			meeepiTrue.Fill(ee1.M(), (t1em+t1pi).M());
+			meeepiTrue.Fill(ee1.M(), (tem+t1pi).M());
 			meekTrue.Fill(ee1.M(), k1.M());
-		}
-		else{
-			meeFalse.Fill(ee1.M());
-			mkFalse.Fill(k1.M());
-			meeepiFalse.Fill(ee1.M(), (t1em+t1pi).M());
-			meeepiFalse.Fill(ee1.M(), (t1ep+t1pi).M());
-			meekFalse.Fill(ee1.M(), k1.M());
-		}
-		if(pic==1){
-			meeTrue.Fill(ee2.M());
-			mkTrue.Fill(k2.M());
-			meeepiTrue.Fill(ee2.M(), (t2ep+t2pi).M());
-			meeepiTrue.Fill(ee2.M(), (t2em+t2pi).M());
-			meekTrue.Fill(ee2.M(), k2.M());
-		}
-		else{
+
+			meeDiffTrue.Fill(ee1.M()-Mpi0);
+			mkDiffTrue.Fill(k1.M()-Mk);
+
 			meeFalse.Fill(ee2.M());
 			mkFalse.Fill(k2.M());
-			meeepiFalse.Fill(ee2.M(), (t2em+t2pi).M());
-			meeepiFalse.Fill(ee2.M(), (t2ep+t2pi).M());
+			meeepiFalse.Fill(ee2.M(), (tem+t2pi).M());
 			meekFalse.Fill(ee2.M(), k2.M());
+
+			meeDiffFalse.Fill(ee2.M()-Mpi0);
+			mkDiffFalse.Fill(k2.M()-Mk);
 		}
-		if(pic==0){
-			meeTrue.Fill(ee3.M());
-			mkTrue.Fill(k3.M());
-			meeepiTrue.Fill(ee3.M(), (t3ep+t3pi).M());
-			meeepiTrue.Fill(ee3.M(), (t3em+t3pi).M());
-			meekTrue.Fill(ee3.M(), k3.M());
-		}
-		else{
-			meeFalse.Fill(ee3.M());
-			mkFalse.Fill(k3.M());
-			meeepiFalse.Fill(ee3.M(), (t3em+t3pi).M());
-			meeepiFalse.Fill(ee3.M(), (t3ep+t3pi).M());
-			meekFalse.Fill(ee3.M(), k3.M());
+		else if(pic==goodTrack1){
+			meeTrue.Fill(ee2.M());
+			mkTrue.Fill(k2.M());
+			meeepiTrue.Fill(ee2.M(), (tem+t2pi).M());
+			meekTrue.Fill(ee2.M(), k2.M());
+
+			meeDiffTrue.Fill(ee2.M()-Mpi0);
+			mkDiffTrue.Fill(k2.M()-Mk);
+
+			meeFalse.Fill(ee1.M());
+			mkFalse.Fill(k1.M());
+			meeepiFalse.Fill(ee1.M(), (tem+t1pi).M());
+			meekFalse.Fill(ee1.M(), k1.M());
+
+			meeDiffFalse.Fill(ee1.M()-Mpi0);
+			mkDiffFalse.Fill(k1.M()-Mk);
 		}
 
 		//Count correct id
-		if(piCandidate==pic) pid_res.correctIDNew++;
+		if(nCandidates==1 && piCandidate==pic) pid_res.correctIDNew++;
 	}
 
-	return piCandidate!=-1 ? 1 : 0;
+	return nCandidates;
 }
 
 int pi0d_tracksAcceptance(){
@@ -326,7 +379,83 @@ int pi0d_trackCombinationVeto(){
 	return badCombis;
 }
 
-int pi0d_goodClusters(){
+int pi0d_goodClusters_loose(){
+	TVector3 propPos;
+	double distance;
+	double tDiff;
+
+	int cond;
+	int goodClusters = 0;
+
+	int conditions;
+
+	if(rootBurst.isData) conditions = 4;
+	else conditions=3;
+
+	if(options.isOptDebug()) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
+	if(options.isOptDebug()) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
+
+	for(unsigned int i=0; i<corrEvent.pCluster.size(); i++){
+		NPhysicsCluster c = corrEvent.pCluster[i];
+		cond = 0;
+
+		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
+
+		if(rootBurst.pbWall){
+			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
+			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
+		}
+		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
+
+		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
+		NPhysicsTrack t2 = corrEvent.pTrack[corrEvent.goodTracks[1]];
+		NPhysicsTrack t3 = corrEvent.pTrack[corrEvent.goodTracks[2]];
+
+		// separation from pi impact point >30cm
+		propPos = propagateAfter(rootGeom.Lkr.z, t1);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tR_LKr_1 :\t\t" << distance << "\t > 20 : ++" << endl;
+		if(distance>20) cond++;
+
+		// separation from e+ e- impact point >10cm
+		propPos = propagateAfter(rootGeom.Lkr.z, t2);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 : ++" << endl;
+		if(distance>20) cond++;
+
+		propPos = propagateAfter(rootGeom.Lkr.z, t3);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 : ++" << endl;
+		if(distance>20) cond++;
+
+		// separation from undeflected e+ e- trajectories >20cm
+		/*propPos = propagate(rootGeom.Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
+		if(distance>50) cond++;
+
+		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
+		if(distance>50) cond++;*/
+
+		// |t_g - t_vtx|<10ns
+		if(rootBurst.isData){
+			tDiff = fabs(rawEvent.cluster[c.clusterID].time - rawEvent.vtx[corrEvent.goodVertexID].time);
+			if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
+			if(tDiff<10) cond++;
+		}
+
+		if(options.isOptDebug()) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
+		if(cond==conditions){
+			goodClusters++;
+			rootPhysics.gamma.parentCluster = i;
+		}
+	}
+	return goodClusters;
+}
+
+int pi0d_goodClusters_tight(){
 	TVector3 propPos;
 	double distance;
 	double tDiff;
@@ -471,10 +600,19 @@ bool nico_pi0DalitzSelect(){
 	if(badCombis!=io.cutsDefinition.numBadTrackCombi) {pi0d_failCut(8); return false;}
 
 
+	// 12) Exactly 1 good LKr cluster (loose)
+	if(options.isOptDebug()) cout << "~~~~ Cut 12 ~~~~" << endl;
+	goodClusters = pi0d_goodClusters_loose();
+	if(options.isOptDebug()) cout << "Good LKr clusters :\t\t" << goodClusters << "\t != 1 : rejected" << endl;
+	if(goodClusters!=io.cutsDefinition.numAddGoodCluster) {pi0d_failCut(12); return false;}
+
+	if(rootPhysics.gamma.parentCluster==-1){
+		return 0;
+	}
 
 
-
-
+	TLorentzVector tempGamma;
+	tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rootPhysics.gamma.vertex).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
 
 
 	flBad = false;
@@ -488,12 +626,14 @@ bool nico_pi0DalitzSelect(){
 	// 9) Identify candidates
 	if(options.isOptDebug()) cout << "~~~~ Cut 9 ~~~~" << endl;
 	pid_res.tested++;
-	piCandNb = pid(piTrack);
-	if(piCandNb) pid_res.nSelectedNew++;
+	piCandNb = pid(piTrack, tempGamma);
+	if(piCandNb==1) pid_res.nSelectedNew++;
+	nPiCandidatesNew.Fill(piCandNb);
+	badElectron = false;
 	piCandNb = pi0d_identifyPi(piTrack, badElectron);
 	if(piCandNb==1 && !badElectron) pid_res.nSelectedOld++;
 	nPiCandidates.Fill(piCandNb);
-	return true;
+	//return true;
 	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
 	if(piCandNb!=io.cutsDefinition.numPiCandidates) {pi0d_failCut(9); return false;}
 
@@ -519,6 +659,7 @@ bool nico_pi0DalitzSelect(){
 	rootPhysics.pic.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 	rootPhysics.pic.parentVertex = corrEvent.goodVertexID;
 
+
 	rootPhysics.em.P.SetVectM(corrEvent.pTrack[rootPhysics.em.parentTrack].momentum*corrEvent.pTrack[rootPhysics.em.parentTrack].p, Me);
 	rootPhysics.ep.P.SetVectM(corrEvent.pTrack[rootPhysics.ep.parentTrack].momentum*corrEvent.pTrack[rootPhysics.ep.parentTrack].p, Me);
 	rootPhysics.pic.P.SetVectM(corrEvent.pTrack[rootPhysics.pic.parentTrack].momentum*corrEvent.pTrack[rootPhysics.pic.parentTrack].p, Mpic);
@@ -536,9 +677,9 @@ bool nico_pi0DalitzSelect(){
 	if(options.isOptDebug()) cout << "Bad electron tracks eop :\t" << badElectron << "\t == " << true << ": rejected" << endl;
 	if(badElectron==io.cutsDefinition.boolBadECandidates) {pi0d_failCut(10); return false;}
 
-	// 12) Exactly 1 good LKr cluster
+	// 12) Exactly 1 good LKr cluster (tight)
 	if(options.isOptDebug()) cout << "~~~~ Cut 12 ~~~~" << endl;
-	goodClusters = pi0d_goodClusters();
+	goodClusters = pi0d_goodClusters_tight();
 	if(options.isOptDebug()) cout << "Good LKr clusters :\t\t" << goodClusters << "\t != 1 : rejected" << endl;
 	if(goodClusters!=io.cutsDefinition.numAddGoodCluster) {pi0d_failCut(12); return false;}
 
@@ -689,20 +830,34 @@ int main(int argc, char **argv){
 	cout << "CorrectID(old) = " << pid_res.correctIDOld << " " << pid_res.correctIDOld*100./(double)(pid_res.compareMC) << endl;
 
 	cout << "Tested events " << pid_res.tested << endl;
-	cout << "Selected events (new) " << pid_res.nSelectedNew << endl;
-	cout << "Selected events (old) " << pid_res.nSelectedOld << endl;
+	cout << "Selected events (new) " << pid_res.nSelectedNew << " " << pid_res.nSelectedNew/(double)pid_res.tested << endl;
+	cout << "Selected events (old) " << pid_res.nSelectedOld << " " << pid_res.nSelectedOld/(double)pid_res.tested << endl;
 	meeTrue.Write();
 	mkTrue.Write();
 	meeepiTrue.Write();
 	meekTrue.Write();
+
+	meeDiffTrue.Write();
+	mkDiffTrue.Write();
 
 	meeFalse.Write();
 	mkFalse.Write();
 	meeepiFalse.Write();
 	meekFalse.Write();
 
+	meeDiffFalse.Write();
+	mkDiffFalse.Write();
+
 	nPiCandidates.Write();
+	nPiCandidatesNew.Write();
+	nBeamSign.Write();
+
+
 	pid->Write();
+
+
 	io.closeAll();
 	return 0;
 }
+
+
