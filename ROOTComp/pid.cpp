@@ -52,14 +52,26 @@ TH1D nPiCandidatesNew = TH1D("nPiCandidatesNew", "nPiCandidatesNew", 20, 0, 20);
 
 TH1D nBeamSign = TH1D("nBeamSign", "nBeamSign", 20, 0, 20);
 
+TH2D xreco_xtrue = TH2D("xreco_xtrue", "xreco_xtrue", 1000, 0, 1, 1000, 0, 1);
+
 struct alt_pid_res{
+	//MC association
 	int good=0, bad=0;
-	int correctIDNew=0;
-	int correctIDOld=0;
 	int compareMC=0;
-	int nSelectedNew=0;
-	int nSelectedOld=0;
-	int tested=0;
+
+	//Totals
+	int totEvents = 0;
+	int prelimEvents = 0;
+
+	//New
+	int nNoId = 0;
+	int nGoodId = 0;
+	int nWrongId = 0;
+	int nManyId = 0;
+	int nIded = 0;
+	int nPassGood = 0;
+	int nPassWrong = 0;
+	int nPassIded = 0;
 } pid_res;
 
 int em, ep, pic;
@@ -88,10 +100,6 @@ bool associateMCTracks(){
 		pid_res.good++;
 	}
 	else{
-		/*cout << endl << "Bad event " << ep1 << " " << ep2 << " " << ep3 << endl;
-		cout << (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag() << endl;
-		cout << (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag() << endl;
-		cout << (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag() << endl;*/
 		flBad = true;
 		pid_res.bad++;
 	}
@@ -104,10 +112,6 @@ bool associateMCTracks(){
 		pid_res.good++;
 	}
 	else{
-		/*cout << endl << "Bad event " << em1 << " " << em2 << " " << em3 << endl;
-		cout << (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag() << endl;
-		cout << (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag() << endl;
-		cout << (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag() << endl;*/
 		pid_res.bad++;
 		flBad = true;
 	}
@@ -147,7 +151,6 @@ int pi0d_identifyPi(int &piCandidate, bool &badElectron){
 		else if(eop>1.15) badElectron = true;
 	}
 
-	if(!badElectron && piCandidate==pic) pid_res.correctIDOld++;
 	return piCandidatesNb;
 }
 
@@ -271,9 +274,6 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 			meeDiffFalse.Fill(ee1.M()-Mpi0);
 			mkDiffFalse.Fill(k1.M()-Mk);
 		}
-
-		//Count correct id
-		if(nCandidates==1 && piCandidate==pic) pid_res.correctIDNew++;
 	}
 
 	return nCandidates;
@@ -609,30 +609,104 @@ bool nico_pi0DalitzSelect(){
 	if(rootPhysics.gamma.parentCluster==-1){
 		return 0;
 	}
-
-
 	TLorentzVector tempGamma;
-	tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rootPhysics.gamma.vertex).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
+	tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[corrEvent.goodVertexID].position).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
+
+	// 13) Photon candidate in LKr acceptance
+	if(options.isOptDebug()) cout << "~~~~ Cut 13 ~~~~" << endl;
+	lkrAcceptance = rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].lkr_acc;
+	if(options.isOptDebug()) cout << "Mauro condition :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
+	if(lkrAcceptance!=io.cutsDefinition.lkrAcceptance) {pi0d_failCut(13); return false;}
+
+	// 14) E_gamma>3GeV
+	if(options.isOptDebug()) cout << "~~~~ Cut 14 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempGamma.E() << "\t <= 3 : rejected" << endl;
+	if(tempGamma.E()<=io.cutsDefinition.minGammaEnergy) {pi0d_failCut(14); return false;}
+
+	// 15) D_deadcell>2cm
+	if(options.isOptDebug()) cout << "~~~~ Cut 15 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
+
+	if(options.isOptDebug()) cout << "d_deadcell(t1) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
+
+	if(options.isOptDebug()) cout << "d_deadcell(t2) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
+
+	if(options.isOptDebug()) cout << "d_deadcell(t2) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
+
+	// 16) Photon DCH1 intercept >13cm
+	if(options.isOptDebug()) cout << "~~~~ Cut 16 ~~~~" << endl;
+	propPos = propagate(rootGeom.Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, tempGamma.Vect());
+	radius = sqrt(pow(propPos.X(),2) + pow(propPos.Y(),2));
+	if(options.isOptDebug()) cout << "R_gDCH1 :\t\t\t" << radius << "\t <= 13 : rejected" << endl;
+	if(radius<=io.cutsDefinition.minGammaDCHRadius) {pi0d_failCut(16); return false;}
 
 
+	//Start Kinematic cuts
+	TVector3 totalP; // = t1 + t2 + t3 + tGamma
+	totalP = corrEvent.pTrack[corrEvent.goodTracks[0]].momentum + corrEvent.pTrack[corrEvent.goodTracks[1]].momentum + corrEvent.pTrack[corrEvent.goodTracks[2]].momentum + tempGamma.Vect();
+	//Pt
+	pt = totalP.Perp2(corrEvent.kaonMomentum);
+
+	// 11) Tracks momenta
+	if(options.isOptDebug()) cout << "~~~~ Cut 11 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "p_1 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[0]].p << "\t <5 || > 60 : rejected" << endl;
+	if(options.isOptDebug()) cout << "p_2 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[1]].p << "\t <5 || > 60 : rejected" << endl;
+	if(options.isOptDebug()) cout << "p_3 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[2]].p << "\t <5 || > 60 : rejected" << endl;
+	if(corrEvent.pTrack[corrEvent.goodTracks[0]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[0]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[1]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[1]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[2]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[2]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return false;}
+
+	// 17) Total momentum 70<p<78
+	if(options.isOptDebug()) cout << "~~~~ Cut 17 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "p_tot :\t\t\t" << totalP.Mag() << "\t <70 || >78 : rejected" << endl;
+	if(totalP.Mag()<io.cutsDefinition.minTotalMomentum || totalP.Mag()>io.cutsDefinition.maxTotalMomentum) {pi0d_failCut(17); return false;}
+
+	// 18) Transverse momentum^2 < 5E-4
+	if(options.isOptDebug()) cout << "~~~~ Cut 18 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "P_t^2 :\t\t" << pt << "\t >= " << io.cutsDefinition.maxPt << " : rejected" << endl;
+	if(pt>=io.cutsDefinition.maxPt) {pi0d_failCut(18); return false;}
+
+
+	// PID
 	flBad = false;
 	ep=-1;
 	em=-1;
 	pic=-1;
 
+	bool good=false, ided=false;
+
 	flBad = associateMCTracks();
+
+	pid_res.prelimEvents++;
 
 
 	// 9) Identify candidates
 	if(options.isOptDebug()) cout << "~~~~ Cut 9 ~~~~" << endl;
-	pid_res.tested++;
 	piCandNb = pid(piTrack, tempGamma);
-	if(piCandNb==1) pid_res.nSelectedNew++;
+	if(piCandNb==0) pid_res.nNoId++;
+	else if(piCandNb==1){
+		if(!flBad){
+			if(piTrack == pic){
+				pid_res.nGoodId++;
+				good = true;
+			}
+			else{
+				pid_res.nWrongId++;
+			}
+		}
+		pid_res.nIded++;
+		ided = true;
+	}
+	else if(piCandNb>1) pid_res.nManyId++;
 	nPiCandidatesNew.Fill(piCandNb);
 	badElectron = false;
-	piCandNb = pi0d_identifyPi(piTrack, badElectron);
-	if(piCandNb==1 && !badElectron) pid_res.nSelectedOld++;
-	nPiCandidates.Fill(piCandNb);
+	//piCandNb = pi0d_identifyPi(piTrack, badElectron);
+	//if(piCandNb==1 && !badElectron) pid_res.nSelectedOld++;
+	//nPiCandidates.Fill(piCandNb);
 	//return true;
 	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
 	if(piCandNb!=io.cutsDefinition.numPiCandidates) {pi0d_failCut(9); return false;}
@@ -648,7 +722,7 @@ bool nico_pi0DalitzSelect(){
 		}
 	}
 
-	//Create physics event from tracks
+	//Create physics event from tracks (e+, e-, pi+-)
 	rootPhysics.em.parentTrack = corrEvent.goodTracks[emTrack];
 	rootPhysics.em.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 	rootPhysics.em.parentVertex = corrEvent.goodVertexID;
@@ -663,6 +737,7 @@ bool nico_pi0DalitzSelect(){
 	rootPhysics.em.P.SetVectM(corrEvent.pTrack[rootPhysics.em.parentTrack].momentum*corrEvent.pTrack[rootPhysics.em.parentTrack].p, Me);
 	rootPhysics.ep.P.SetVectM(corrEvent.pTrack[rootPhysics.ep.parentTrack].momentum*corrEvent.pTrack[rootPhysics.ep.parentTrack].p, Me);
 	rootPhysics.pic.P.SetVectM(corrEvent.pTrack[rootPhysics.pic.parentTrack].momentum*corrEvent.pTrack[rootPhysics.pic.parentTrack].p, Mpic);
+	// Select event charge
 	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1){
 		rootPhysics.kaon.pdgID = 321;
 		rootPhysics.pic.pdgID = 211;
@@ -687,7 +762,7 @@ bool nico_pi0DalitzSelect(){
 		return 0;
 	}
 
-	//Add cluster information to physics event
+	//Add cluster information to physics event (gamma), build reco physics (pi0, kaon)
 	rootPhysics.gamma.vertex = rawEvent.vtx[corrEvent.goodVertexID].position;
 	rootPhysics.gamma.parentVertex = corrEvent.goodVertexID;
 	rootPhysics.gamma.P.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rootPhysics.gamma.vertex).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
@@ -696,66 +771,7 @@ bool nico_pi0DalitzSelect(){
 	rootPhysics.pi0.P = rootPhysics.em.P + rootPhysics.ep.P + rootPhysics.gamma.P;
 	rootPhysics.kaon.P = rootPhysics.pic.P + rootPhysics.pi0.P;
 
-	// 13) Photon candidate in LKr acceptance
-	if(options.isOptDebug()) cout << "~~~~ Cut 13 ~~~~" << endl;
-	lkrAcceptance = rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].lkr_acc;
-	if(options.isOptDebug()) cout << "Mauro condition :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
-	if(lkrAcceptance!=io.cutsDefinition.lkrAcceptance) {pi0d_failCut(13); return false;}
-
-	// 14) E_gamma>3GeV
-	if(options.isOptDebug()) cout << "~~~~ Cut 14 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << rootPhysics.gamma.P.E() << "\t <= 3 : rejected" << endl;
-	if(rootPhysics.gamma.P.E()<=io.cutsDefinition.minGammaEnergy) {pi0d_failCut(14); return false;}
-
-	// 15) D_deadcell>2cm
-	if(options.isOptDebug()) cout << "~~~~ Cut 15 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
-
-	if(options.isOptDebug()) cout << "d_deadcell(pi) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[rootPhysics.pic.parentTrack].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
-
-	if(options.isOptDebug()) cout << "d_deadcell(ep) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[rootPhysics.ep.parentTrack].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
-
-	if(options.isOptDebug()) cout << "d_deadcell(em) :\t\t\t" << rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[rootPhysics.em.parentTrack].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(15); return false;}
-
-	// 16) Photon DCH1 intercept >13cm
-	if(options.isOptDebug()) cout << "~~~~ Cut 16 ~~~~" << endl;
-	propPos = propagate(rootGeom.Dch[0].PosChamber.z, corrEvent.pCluster[rootPhysics.gamma.parentCluster].position, rootPhysics.gamma.P.Vect());
-	radius = sqrt(pow(propPos.X(),2) + pow(propPos.Y(),2));
-	if(options.isOptDebug()) cout << "R_gDCH1 :\t\t\t" << radius << "\t <= 13 : rejected" << endl;
-	if(radius<=io.cutsDefinition.minGammaDCHRadius) {pi0d_failCut(16); return false;}
-
-	//Start Kinematic cuts
-	//Pt
-	pt = rootPhysics.kaon.P.Perp2(corrEvent.kaonMomentum);
-
-	//Mee
-	rootPhysics.mee = (rootPhysics.em.P + rootPhysics.ep.P).M();
-	rootPhysics.x = pow(rootPhysics.mee/Mpi0, 2.);
-	rootPhysics.y = 2.*(rootPhysics.em.P.E() - rootPhysics.ep.P.E())/(Mpi0*(1-rootPhysics.x));
-
-	// 11) Tracks momenta
-	if(options.isOptDebug()) cout << "~~~~ Cut 11 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "p_pi :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p << "\t <5 || > 60 : rejected" << endl;
-	if(options.isOptDebug()) cout << "p_e+ :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p << "\t <5 || > 60 : rejected" << endl;
-	if(options.isOptDebug()) cout << "p_e- :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p << "\t <5 || > 60 : rejected" << endl;
-	if(corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[piTrack]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return false;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return false;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(11); return false;}
-
-	// 17) Total momentum 70<p<78
-	if(options.isOptDebug()) cout << "~~~~ Cut 17 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "p_pieeg :\t\t\t" << rootPhysics.kaon.P.Vect().Mag() << "\t <70 || >78 : rejected" << endl;
-	if(rootPhysics.kaon.P.Vect().Mag()<io.cutsDefinition.minTotalMomentum || rootPhysics.kaon.P.Vect().Mag()>io.cutsDefinition.maxTotalMomentum) {pi0d_failCut(17); return false;}
-
-	// 18) Transverse momentum^2 < 5E-4
-	if(options.isOptDebug()) cout << "~~~~ Cut 18 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "P_t^2 :\t\t" << pt << "\t >= " << io.cutsDefinition.maxPt << " : rejected" << endl;
-	if(pt>=io.cutsDefinition.maxPt) {pi0d_failCut(18); return false;}
-
+	//Start mass cuts
 	// 19) |M_eeg - M_pi0|<8 MeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 19 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "M_ee :\t\t" << rootPhysics.mee << endl;
@@ -766,6 +782,17 @@ bool nico_pi0DalitzSelect(){
 	if(options.isOptDebug()) cout << "~~~~ Cut 20 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "M_pieeg :\t\t" << rootPhysics.kaon.P.M() << "\t <0.475 || >0.510: rejected" << endl;
 	if(rootPhysics.kaon.P.M()<io.cutsDefinition.minKaonMassDiff || rootPhysics.kaon.P.M()>io.cutsDefinition.maxKaonMassDiff) {pi0d_failCut(20); return false;}
+
+	//pi0dalitz variables
+	rootPhysics.mee = (rootPhysics.em.P + rootPhysics.ep.P).M();
+	rootPhysics.x = pow(rootPhysics.mee/Mpi0, 2.);
+	rootPhysics.y = 2.*(rootPhysics.em.P.E() - rootPhysics.ep.P.E())/(Mpi0*(1-rootPhysics.x));
+
+	if(ided){
+		pid_res.nPassIded++;
+		if(good) pid_res.nPassGood++;
+		else pid_res.nPassWrong++;
+	}
 
 	pi0d_passSelection();
 	return true;
@@ -781,9 +808,24 @@ bool newEvent(int i, int &nevt){
 	}
 	if(i==0) cout << endl;
 
+	pid_res.totEvents++;
 	++nevt;
 	abcog_params = rootBurst.abcog_params;
-	return nico_pi0DalitzSelect(); // Normal thing
+	if(!options.isDoScan()) return nico_pi0DalitzSelect(); // Normal thing
+	else{
+		bool result;
+		bool defaultResult = false;
+		bool globalResult = false;
+		io.output.resetResult();
+		for(int i=io.cutsDefinition.loadList(0); i!=-1; i=io.cutsDefinition.loadNextList()){
+			result = nico_pi0DalitzSelect();
+			io.output.newResult(result);
+			globalResult |= result;
+			if(i==io.cutsDefinition.getDefaultIndex()) defaultResult = result;
+		}
+		corrEvent.failedCond = defaultResult;
+		return globalResult;
+	}
 }
 
 int main(int argc, char **argv){
@@ -800,7 +842,20 @@ int main(int argc, char **argv){
 	io.openAll(options.isDoScan());
 
 	TTree *pid = new TTree("pid", "pid");
-	pid->Branch("pid_res", &pid_res, "good/I:bad:correctIDNew:correctIDOld:compareMC:nSelectedNew:nSelectedOld:tested");
+	pid->Branch("pid_res.good", &pid_res.good, "good/I");
+	pid->Branch("pid_res.bad", &pid_res.bad, "bad/I");
+	pid->Branch("pid_res.compareMC", &pid_res.compareMC, "compareMC/I");
+	pid->Branch("pid_res.totEvents", &pid_res.totEvents, "totEvents/I");
+	pid->Branch("pid_res.prelimEvents", &pid_res.prelimEvents, "prelimEvents/I");
+	pid->Branch("pid_res.nNoId", &pid_res.nNoId, "nNoId/I");
+	pid->Branch("pid_res.nGoodId", &pid_res.nGoodId, "nGoodId/I");
+	pid->Branch("pid_res.nWrongId", &pid_res.nWrongId, "nWrongId/I");
+	pid->Branch("pid_res.nManyId", &pid_res.nManyId, "nManyId/I");
+	pid->Branch("pid_res.nIded", &pid_res.nIded, "nIded/I");
+	pid->Branch("pid_res.nPassGood", &pid_res.nPassGood, "nPassGood/I");
+	pid->Branch("pid_res.nPassWrong", &pid_res.nPassWrong, "nPassWrong/I");
+	pid->Branch("pid_res.nPassIded", &pid_res.nPassIded, "nPassIded/I");
+
 
 	int nevent = 0;
 
@@ -823,15 +878,24 @@ int main(int argc, char **argv){
 	cout << "Failed events    ->\t" << outputFileHeader.NFailedEvents << endl;
 	cout << "Passed events    ->\t" << outputFileHeader.NPassedEvents << endl;
 
+	cout << "MC Association" << endl << "--------------" << endl;
 	cout << "Good = " << pid_res.good << " " << pid_res.good*100./(double)(pid_res.good+pid_res.bad) << endl;
 	cout << "Bad  = " << pid_res.bad << " " << pid_res.bad*100./(double)(pid_res.good+pid_res.bad) << endl;
 
-	cout << "CorrectID(new) = " << pid_res.correctIDNew << " " << pid_res.correctIDNew*100./(double)(pid_res.compareMC) << endl;
-	cout << "CorrectID(old) = " << pid_res.correctIDOld << " " << pid_res.correctIDOld*100./(double)(pid_res.compareMC) << endl;
+	cout << "Global Counters (normalized to Total Events)" << endl << "---------------" << endl;
+	cout << "Total events = " << pid_res.totEvents << endl;
+	cout << "Pass preliminary = " << pid_res.prelimEvents << " " << pid_res.prelimEvents*100./(double)(pid_res.totEvents) << endl;
+	cout << "Identified = " << pid_res.nIded << " " << pid_res.nIded*100./(double)(pid_res.totEvents) << endl;
+	cout << "Associated = " << pid_res.compareMC << " " << pid_res.compareMC*100./(double)(pid_res.totEvents) << endl;
+	cout << "Pass with ID = " << pid_res.nPassIded << " " << pid_res.nPassIded*100./(double)(pid_res.totEvents) << endl;
 
-	cout << "Tested events " << pid_res.tested << endl;
-	cout << "Selected events (new) " << pid_res.nSelectedNew << " " << pid_res.nSelectedNew/(double)pid_res.tested << endl;
-	cout << "Selected events (old) " << pid_res.nSelectedOld << " " << pid_res.nSelectedOld/(double)pid_res.tested << endl;
+	cout << "ID categories (normalized to Associated)" << endl << "-------------" << endl;
+	cout << "No ID = " << pid_res.nNoId << " " << pid_res.nNoId*100./(double)(pid_res.compareMC) << endl;
+	cout << "Good ID = " << pid_res.nGoodId << " " << pid_res.nGoodId*100./(double)(pid_res.compareMC) << endl;
+	cout << "Wrong ID = " << pid_res.nWrongId << " " << pid_res.nWrongId*100./(double)(pid_res.compareMC) << endl;
+	cout << "Many ID = " << pid_res.nManyId << " " << pid_res.nManyId*100./(double)(pid_res.compareMC) << endl;
+	cout << "Pass with good ID = " << pid_res.nPassGood << " " << pid_res.nPassGood*100./(double)pid_res.compareMC << endl;
+	cout << "Pass with wrong ID = " << pid_res.nPassWrong << " " << pid_res.nPassWrong/(double)pid_res.compareMC << endl;
 	meeTrue.Write();
 	mkTrue.Write();
 	meeepiTrue.Write();
