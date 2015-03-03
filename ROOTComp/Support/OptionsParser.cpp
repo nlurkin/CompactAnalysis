@@ -15,14 +15,14 @@ OptionsParser::OptionsParser() :
 			("file,i",po::value<std::string>(), "input file name")
 			("list,l", po::value<std::string>(), "list of input files")
 			("prefix,p", po::value<std::string>(), "prefix for output files")
-			("debug,d",	po::value<bool>()->default_value(false), "Activate verbose debugging")
+			("debug,d",	po::value<bool>()->implicit_value(true)->default_value(false), "Activate verbose debugging")
 			("filter,f", po::value<std::string>(), "Filter file")
-			("dooutput", po::value<bool>()->default_value(false), "Activate output text files")
+			("dooutput", po::value<bool>()->implicit_value(true)->default_value(false), "Activate output text files")
 			("period", po::value<int>()->default_value(0), "Keep only events from specified period")
 			("mod,m", po::value<int>()->default_value(1), "Event number printing modulo")
 			("cuts,c", po::value<std::string>(), "Cuts file")
 			("scan", po::value<int>()->default_value(0), "Do a scan with n values")
-			("eall,e", po::value<bool>()->default_value(false), "Export all events, even failed");
+			("eall,e", po::value<bool>()->implicit_value(true)->default_value(false), "Export all events, even failed");
 }
 
 OptionsParser::~OptionsParser() {

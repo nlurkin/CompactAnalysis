@@ -466,7 +466,7 @@ bool newEvent(int i, int &nevt){
 }
 
 int main(int argc, char **argv){
-	options.parse(argc, argv, io);
+	if(!options.parse(argc, argv, io)) return -1;
 
 	if(options.isDoScan()) io.cutsDefinition.generateLists(options.getScan());
 	if(!io.cutsDefinition.addParseCutsFile(options.getCutsFile())) return -1;
