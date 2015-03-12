@@ -76,8 +76,8 @@ void ROOTOutput::close() {
 			outHeaderTree->Write();
 			if(outCuts) outCuts->Write();
 
+			//outFile->Write();
 			outFile->Flush();
-			outFile->Write();
 			outFile->Close();
 		}
 	}

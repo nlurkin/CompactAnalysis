@@ -30,21 +30,28 @@ ROOTFileHeader &outputFileHeader = io.getOutputFileHeader();
 // ### Database objects
 NAbcog_params abcog_params;
 
-TH1D meeTrue = TH1D("meeTrue", "meeTrue", 100, 0, 1);
-TH1D mkTrue = TH1D("mkTrue", "mkTrue", 100, 0, 1);
-TH2D meeepiTrue = TH2D("meeepiTrue", "meeepiTrue", 100, 0, 1, 100, 0, 1);
-TH2D meekTrue = TH2D("meekTrue", "meekTrue", 100, 0, 1, 100, 0, 1);
+const int stdNbins = 1000;
 
-TH1D meeFalse = TH1D("meeFalse", "meeFalse", 100, 0, 1);
-TH1D mkFalse = TH1D("mkFalse", "mkFalse", 100, 0, 1);
-TH2D meeepiFalse = TH2D("meeepiFalse", "meeepiFalse", 100, 0, 1, 100, 0, 1);
-TH2D meekFalse = TH2D("meekFalse", "meekFalse", 100, 0, 1, 100, 0, 1);
+TH1D meeTrue = TH1D("meeTrue", "meegTrue;m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D mkTrue = TH1D("mkTrue", "mkTrue;m_{K}", stdNbins, 0.15, 0.8);
+TH2D meeepiTrue = TH2D("meeepiTrue", "meegepiTrue;m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meekTrue = TH2D("meekTrue", "meegkTrue;m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeDiffTrue = TH1D("meeDiffTrue", "meeDiffTrue", 1000, -1, 1);
-TH1D mkDiffTrue = TH1D("mkDiffTrue", "mkDiffTrue", 1000, -1, 1);
+TH1D meeFalse = TH1D("meeFalse", "meegFalse;m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D mkFalse = TH1D("mkFalse", "mkFalse;m_{K}", stdNbins, 0.15, 0.8);
+TH2D meeepiFalse = TH2D("meeepiFalse", "meegepiFalse;m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meekFalse = TH2D("meekFalse", "meegkFalse;m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeDiffFalse = TH1D("meeDiffFalse", "meeDiffFalse", 1000, -1, 1);
-TH1D mkDiffFalse = TH1D("mkDiffFalse", "mkDiffFalse", 1000, -1, 1);
+TH1D meeTotal = TH1D("meeTotal", "meegTotal;m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D mkTotal = TH1D("mkTotal", "mkTotal;m_{K}", stdNbins, 0.15, 0.8);
+TH2D meeepiTotal = TH2D("meeepiTotal", "meegepiTotal;m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meekTotal = TH2D("meekTotal", "meegkTotal;m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+
+TH1D meeDiffTrue = TH1D("meeDiffTrue", "meegDiffTrue;m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
+TH1D mkDiffTrue = TH1D("mkDiffTrue", "mkDiffTrue;m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
+
+TH1D meeDiffFalse = TH1D("meeDiffFalse", "meegDiffFalse;m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
+TH1D mkDiffFalse = TH1D("mkDiffFalse", "mkDiffFalse;m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
 
 
 TH1D nPiCandidates = TH1D("nPiCandidates", "nPiCandidates", 20, 0, 20);
@@ -52,30 +59,128 @@ TH1D nPiCandidatesNew = TH1D("nPiCandidatesNew", "nPiCandidatesNew", 20, 0, 20);
 
 TH1D nBeamSign = TH1D("nBeamSign", "nBeamSign", 20, 0, 20);
 
-TH2D xreco_xtrue = TH2D("xreco_xtrue", "xreco_xtrue", 1000, 0, 1, 1000, 0, 1);
+TH2D xTruexFalse = TH2D("xTruexFalse", "xTruexFalse", 2*stdNbins, 0, 2, 2*stdNbins, 0, 20);
 
 struct alt_pid_res{
+	void incTotal(){ total.events++;}
+	void incPrelim(){ total.prelim.events++;}
+	void incNoID(bool assoc){
+		if(assoc) total.prelim.associated.noID.events++;
+		else total.prelim.noID.events++;
+	}
+	void incManyID(bool assoc){
+		if(assoc) total.prelim.associated.manyID.events++;
+		else total.prelim.manyID.events++;
+	}
+	void incAssociated(){
+		total.prelim.associated.events++;
+	}
+	void incIded(bool assoc){
+		if(assoc) total.prelim.associated.ided.events++;
+		else total.prelim.ided.events++;
+	}
+	void incGoodId(){
+		total.prelim.associated.ided.good.events++;
+	}
+	void incBadId(){
+		total.prelim.associated.ided.bad.events++;
+	}
+	void incPass(bool assoc, bool good, bool bad){
+		if(assoc){
+			if(good) total.prelim.associated.ided.good.pass.events++;
+			else if(bad) total.prelim.associated.ided.bad.pass.events++;
+		}
+		else{
+			total.prelim.ided.pass.events++;
+		}
+	}
+	void incNonPass(bool assoc, bool good, bool bad){
+		if(assoc){
+			if(good) total.prelim.associated.ided.good.noPass.events++;
+			else if(bad) total.prelim.associated.ided.bad.noPass.events++;
+		}
+		else{
+			total.prelim.ided.noPass.events++;
+		}
+	}
+
 	//MC association
 	int good=0, bad=0;
-	int compareMC=0;
 
-	//Totals
-	int totEvents = 0;
-	int prelimEvents = 0;
+	struct total_t{
+		int events = 0;
 
-	//New
-	int nNoId = 0;
-	int nGoodId = 0;
-	int nWrongId = 0;
-	int nManyId = 0;
-	int nIded = 0;
-	int nPassGood = 0;
-	int nPassWrong = 0;
-	int nPassIded = 0;
+		struct prelim_t{
+			int events = 0;
+			struct noID_t{
+				int events = 0;
+			} noID;
+			struct manyID_t{
+				int events = 0;
+			} manyID;
+
+			struct associated_t{
+				int events = 0;
+				struct noID_t{
+					int events = 0;
+				} noID;
+				struct manyID_t{
+					int events = 0;
+				} manyID;
+
+				struct ided_t{
+					int events = 0;
+					struct good_t{
+						int events = 0;
+						struct pass_t{
+							int events = 0;
+						} pass;
+						struct noPass_t{
+							int events = 0;
+						} noPass;
+					} good;
+					struct bad_t{
+						int events = 0;
+						struct pass_t{
+							int events = 0;
+						} pass;
+						struct noPass_t{
+							int events = 0;
+						} noPass;
+					} bad;
+				} ided;
+			} associated;
+
+			struct ided_t{
+				int events = 0;
+				struct pass_t{
+					int events = 0;
+				} pass;
+				struct noPass_t{
+					int events = 0;
+				}noPass;
+			} ided;
+		} prelim;
+	} total;
 } pid_res;
 
 int em, ep, pic;
 bool flBad;
+double xTrue, xFalse;
+
+string printDiv(int a, int b, int c=0, int d=0, int e=0, int f=0){
+	stringstream s;
+
+	s.precision(3);
+	s << std::fixed;
+	s << a;
+	if(b!=0) s << "\t\t" << a*100./(double)b << "%";
+	if(c!=0) s << "\t\t" << a*100./(double)c << "%";
+	if(d!=0) s << "\t\t" << a*100./(double)d << "%";
+	if(e!=0) s << "\t\t" << a*100./(double)e << "%";
+	if(f!=0) s << "\t\t" << a*100./(double)f << "%";
+	return s.str();
+}
 
 bool associateMCTracks(){
 	double limit = 2e-4;
@@ -120,7 +225,7 @@ bool associateMCTracks(){
 		if((ep==0 && em==1) || (ep==1 && em==0)) pic=2;
 		else if((ep==0 && em==2) || (ep==2 && em==0)) pic=1;
 		else if((ep==1 && em==2) || (ep==2 && em==1)) pic=0;
-		pid_res.compareMC++;
+		pid_res.incAssociated();
 	}
 	else{
 		ep = -1;
@@ -224,12 +329,19 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 
 	double pi0DiffLimit = io.cutsDefinition.pid_pi0Diff;
 	double kDiffLimit = io.cutsDefinition.pid_kDiff;
+
+	double pi0MSupLim = Mpi0+0.03;
+	double kMSupLim = Mk+0.04;
+	double kMLowLim1 = 0.3 + ((Mk-0.32)/(Mpi0+0.03))*ee1.M();
+	double kMLowLim2 = 0.3 + ((Mk-0.32)/(Mpi0+0.03))*ee2.M();
 	//take the smallest ee mass as the ep em, the other is pi
-	if(ee1.M()<(Mpi0+pi0DiffLimit) && k1.M()<(Mk+kDiffLimit)){
+	//if(ee1.M()<(Mpi0+pi0DiffLimit) && k1.M()<(Mk+kDiffLimit)){
+	if( (ee1.M()<pi0MSupLim) && (k1.M()<kMSupLim) && (k1.M() > kMLowLim1)){
 		nCandidates++;
 		piCandidate = goodTrack2;
 	}
-	if(ee2.M()<(Mpi0+pi0DiffLimit) && k2.M()<(Mk+kDiffLimit)){
+	//if((ee2.M()-Mpi0)<pi0DiffLimit && fabs(k2.M()-Mk)<kDiffLimit){
+	if( (ee2.M()<pi0MSupLim) && (k2.M()<kMSupLim) && (k2.M() > kMLowLim2)){
 		nCandidates++;
 		piCandidate = goodTrack1;
 	}
@@ -237,6 +349,15 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	/*if(diff1<diff2 && diff1<diff3) piCandidate = 2;
 	else if(diff2<diff1 && diff2<diff3) piCandidate = 1;
 	else if(diff3<diff2 && diff3<diff1) piCandidate = 0;*/
+
+	meeTotal.Fill(ee1.M());
+	meeTotal.Fill(ee2.M());
+	mkTotal.Fill(k1.M());
+	mkTotal.Fill(k2.M());
+	meeepiTotal.Fill(ee1.M(), (tem+t1pi).M());
+	meeepiTotal.Fill(ee2.M(), (tem+t2pi).M());
+	meekTotal.Fill(ee1.M(), k1.M());
+	meekTotal.Fill(ee2.M(), k2.M());
 
 	if(!flBad){
 		//Good MC association, fill the plots
@@ -256,6 +377,9 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 
 			meeDiffFalse.Fill(ee2.M()-Mpi0);
 			mkDiffFalse.Fill(k2.M()-Mk);
+
+			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
+			xFalse = pow((tem+t2ep).M()/Mpi0, 2.);
 		}
 		else if(pic==goodTrack1){
 			meeTrue.Fill(ee2.M());
@@ -273,6 +397,9 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 
 			meeDiffFalse.Fill(ee1.M()-Mpi0);
 			mkDiffFalse.Fill(k1.M()-Mk);
+
+			xTrue = pow((tem+t2ep).M()/Mpi0,2.);
+			xFalse = pow((tem+t1ep).M()/Mpi0, 2.);
 		}
 	}
 
@@ -537,6 +664,13 @@ bool pi0d_failCut(int i){
 	if(io.isDoOutput()) io.output.f1() << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << " " << i << endl;
 	return false;
 }
+bool pi0d_failCutInc(int i, bool assoc, bool good, bool bad){
+	pid_res.incNonPass(assoc, good, bad);
+	if(!options.isDoScan())corrEvent.failedCond = i;
+	if(options.isOptDebug()) cout << "Event is not passing selection " << i << endl;
+	if(io.isDoOutput()) io.output.f1() << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << " " << i << endl;
+	return false;
+}
 void pi0d_passSelection(){
 	if(options.isOptDebug()) cout << "Event is passing selection" << endl;
 	if(io.isDoOutput()) io.output.f2() << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
@@ -647,7 +781,10 @@ bool nico_pi0DalitzSelect(){
 
 	//Start Kinematic cuts
 	TVector3 totalP; // = t1 + t2 + t3 + tGamma
-	totalP = corrEvent.pTrack[corrEvent.goodTracks[0]].momentum + corrEvent.pTrack[corrEvent.goodTracks[1]].momentum + corrEvent.pTrack[corrEvent.goodTracks[2]].momentum + tempGamma.Vect();
+	totalP =  corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p \
+			+ corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p \
+			+ corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p \
+			+ tempGamma.Vect();
 	//Pt
 	pt = totalP.Perp2(corrEvent.kaonMomentum);
 
@@ -676,40 +813,41 @@ bool nico_pi0DalitzSelect(){
 	ep=-1;
 	em=-1;
 	pic=-1;
+	xTrue = 999;
+	xFalse = 999;
 
-	bool good=false, ided=false;
+	bool good=false, bad=false, ided=false;
 
 	flBad = associateMCTracks();
 
-	pid_res.prelimEvents++;
+	pid_res.incPrelim();
 
 
 	// 9) Identify candidates
 	if(options.isOptDebug()) cout << "~~~~ Cut 9 ~~~~" << endl;
 	piCandNb = pid(piTrack, tempGamma);
-	if(piCandNb==0) pid_res.nNoId++;
+	badElectron = false;
+	//piCandNb = pi0d_identifyPi(piTrack, badElectron);
+	if(piCandNb==0) pid_res.incNoID(!flBad);
 	else if(piCandNb==1){
 		if(!flBad){
 			if(piTrack == pic){
-				pid_res.nGoodId++;
+				pid_res.incGoodId();
 				good = true;
 			}
 			else{
-				pid_res.nWrongId++;
+				xTruexFalse.Fill(xTrue, xFalse);
+				pid_res.incBadId();
+				bad = true;
 			}
 		}
-		pid_res.nIded++;
+		pid_res.incIded(!flBad);
 		ided = true;
 	}
-	else if(piCandNb>1) pid_res.nManyId++;
+	else if(piCandNb>1) pid_res.incManyID(!flBad);
 	nPiCandidatesNew.Fill(piCandNb);
-	badElectron = false;
-	//piCandNb = pi0d_identifyPi(piTrack, badElectron);
-	//if(piCandNb==1 && !badElectron) pid_res.nSelectedOld++;
-	//nPiCandidates.Fill(piCandNb);
-	//return true;
 	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
-	if(piCandNb!=io.cutsDefinition.numPiCandidates) {pi0d_failCut(9); return false;}
+	if(piCandNb!=io.cutsDefinition.numPiCandidates) {pi0d_failCutInc(9, !flBad, good, bad); return false;}
 
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); i++){
 		if((int)i==piTrack) continue;
@@ -750,13 +888,13 @@ bool nico_pi0DalitzSelect(){
 	// 10) Bad electron cluster
 	if(options.isOptDebug()) cout << "~~~~ Cut 10 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "Bad electron tracks eop :\t" << badElectron << "\t == " << true << ": rejected" << endl;
-	if(badElectron==io.cutsDefinition.boolBadECandidates) {pi0d_failCut(10); return false;}
+	if(badElectron==io.cutsDefinition.boolBadECandidates) {pi0d_failCutInc(10, !flBad, good, bad); return false;}
 
 	// 12) Exactly 1 good LKr cluster (tight)
 	if(options.isOptDebug()) cout << "~~~~ Cut 12 ~~~~" << endl;
 	goodClusters = pi0d_goodClusters_tight();
 	if(options.isOptDebug()) cout << "Good LKr clusters :\t\t" << goodClusters << "\t != 1 : rejected" << endl;
-	if(goodClusters!=io.cutsDefinition.numAddGoodCluster) {pi0d_failCut(12); return false;}
+	if(goodClusters!=io.cutsDefinition.numAddGoodCluster) {pi0d_failCutInc(12, !flBad, good, bad); return false;}
 
 	if(rootPhysics.gamma.parentCluster==-1){
 		return 0;
@@ -776,23 +914,19 @@ bool nico_pi0DalitzSelect(){
 	if(options.isOptDebug()) cout << "~~~~ Cut 19 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "M_ee :\t\t" << rootPhysics.mee << endl;
 	if(options.isOptDebug()) cout << "|M_eeg - M_pi0| :\t\t" << fabs(rootPhysics.pi0.P.M()-Mpi0) << "\t >= 0.008 : rejected" << endl;
-	if(fabs(rootPhysics.pi0.P.M()-Mpi0)>=io.cutsDefinition.maxPi0MassDiff) {pi0d_failCut(19); return false;}
+	if(fabs(rootPhysics.pi0.P.M()-Mpi0)>=io.cutsDefinition.maxPi0MassDiff) {pi0d_failCutInc(19, !flBad, good, bad); return false;}
 
 	// 20) 0.475 < M_pieeg < 0.510
 	if(options.isOptDebug()) cout << "~~~~ Cut 20 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "M_pieeg :\t\t" << rootPhysics.kaon.P.M() << "\t <0.475 || >0.510: rejected" << endl;
-	if(rootPhysics.kaon.P.M()<io.cutsDefinition.minKaonMassDiff || rootPhysics.kaon.P.M()>io.cutsDefinition.maxKaonMassDiff) {pi0d_failCut(20); return false;}
+	if(rootPhysics.kaon.P.M()<io.cutsDefinition.minKaonMassDiff || rootPhysics.kaon.P.M()>io.cutsDefinition.maxKaonMassDiff) {pi0d_failCutInc(20, !flBad, good, bad); return false;}
 
 	//pi0dalitz variables
 	rootPhysics.mee = (rootPhysics.em.P + rootPhysics.ep.P).M();
 	rootPhysics.x = pow(rootPhysics.mee/Mpi0, 2.);
 	rootPhysics.y = 2.*(rootPhysics.em.P.E() - rootPhysics.ep.P.E())/(Mpi0*(1-rootPhysics.x));
 
-	if(ided){
-		pid_res.nPassIded++;
-		if(good) pid_res.nPassGood++;
-		else pid_res.nPassWrong++;
-	}
+	pid_res.incPass(!flBad, good, bad);
 
 	pi0d_passSelection();
 	return true;
@@ -801,14 +935,16 @@ bool nico_pi0DalitzSelect(){
 bool newEvent(int i, int &nevt){
 	rootPhysics.clear();
 
+	if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
 	if(i==0) cout << "First event: ";
 	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
 	if(options.getBadEventsList().size()>0){
 		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, options.getBadEventsList())) return false;
 	}
 	if(i==0) cout << endl;
+	if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
 
-	pid_res.totEvents++;
+	pid_res.incTotal();
 	++nevt;
 	abcog_params = rootBurst.abcog_params;
 	if(!options.isDoScan()) return nico_pi0DalitzSelect(); // Normal thing
@@ -844,18 +980,23 @@ int main(int argc, char **argv){
 	TTree *pid = new TTree("pid", "pid");
 	pid->Branch("pid_res.good", &pid_res.good, "good/I");
 	pid->Branch("pid_res.bad", &pid_res.bad, "bad/I");
-	pid->Branch("pid_res.compareMC", &pid_res.compareMC, "compareMC/I");
-	pid->Branch("pid_res.totEvents", &pid_res.totEvents, "totEvents/I");
-	pid->Branch("pid_res.prelimEvents", &pid_res.prelimEvents, "prelimEvents/I");
-	pid->Branch("pid_res.nNoId", &pid_res.nNoId, "nNoId/I");
-	pid->Branch("pid_res.nGoodId", &pid_res.nGoodId, "nGoodId/I");
-	pid->Branch("pid_res.nWrongId", &pid_res.nWrongId, "nWrongId/I");
-	pid->Branch("pid_res.nManyId", &pid_res.nManyId, "nManyId/I");
-	pid->Branch("pid_res.nIded", &pid_res.nIded, "nIded/I");
-	pid->Branch("pid_res.nPassGood", &pid_res.nPassGood, "nPassGood/I");
-	pid->Branch("pid_res.nPassWrong", &pid_res.nPassWrong, "nPassWrong/I");
-	pid->Branch("pid_res.nPassIded", &pid_res.nPassIded, "nPassIded/I");
-
+	pid->Branch("pid_res.total", &pid_res.total.events, "total/I");
+	pid->Branch("pid_res.total.prelim", &pid_res.total.prelim.events, "prelim/I");
+	pid->Branch("pid_res.total.prelim.associated", &pid_res.total.prelim.associated.events, "associated/I");
+	pid->Branch("pid_res.total.prelim.associated.noID", &pid_res.total.prelim.associated.noID.events, "noID/I");
+	pid->Branch("pid_res.total.prelim.associated.manyID", &pid_res.total.prelim.associated.manyID.events, "manyID/I");
+	pid->Branch("pid_res.total.prelim.associated.ided", &pid_res.total.prelim.associated.ided.events, "ided/I");
+	pid->Branch("pid_res.total.prelim.associated.ided.good", &pid_res.total.prelim.associated.ided.good.events, "good/I");
+	pid->Branch("pid_res.total.prelim.associated.ided.bad", &pid_res.total.prelim.associated.ided.bad.events, "bad/I");
+	pid->Branch("pid_res.total.prelim.noID", &pid_res.total.prelim.noID.events, "noID/I");
+	pid->Branch("pid_res.total.prelim.manyID", &pid_res.total.prelim.manyID.events, "manyID/I");
+	pid->Branch("pid_res.total.prelim.associated.ided.good.pass", &pid_res.total.prelim.associated.ided.good.pass.events, "pass/I");
+	pid->Branch("pid_res.total.prelim.associated.ided.good.noPass", &pid_res.total.prelim.associated.ided.good.noPass.events, "noPass/I");
+	pid->Branch("pid_res.total.prelim.associated.ided.bad.pass", &pid_res.total.prelim.associated.ided.bad.pass.events, "pass/I");
+	pid->Branch("pid_res.total.prelim.associated.ided.bad.noPass", &pid_res.total.prelim.associated.ided.bad.noPass.events, "noPass/I");
+	pid->Branch("pid_res.total.prelim.ided", &pid_res.total.prelim.ided.events, "ided/I");
+	pid->Branch("pid_res.total.prelim.ided.pass", &pid_res.total.prelim.ided.pass.events, "pass/I");
+	pid->Branch("pid_res.total.prelim.ided.noPass", &pid_res.total.prelim.ided.noPass.events, "noPass/I");
 
 	int nevent = 0;
 
@@ -878,28 +1019,39 @@ int main(int argc, char **argv){
 	cout << "Failed events    ->\t" << outputFileHeader.NFailedEvents << endl;
 	cout << "Passed events    ->\t" << outputFileHeader.NPassedEvents << endl;
 
-	cout << "MC Association" << endl << "--------------" << endl;
+	cout << endl << "MC Association (track)" << endl << "--------------" << endl;
 	cout << "Good = " << pid_res.good << " " << pid_res.good*100./(double)(pid_res.good+pid_res.bad) << endl;
 	cout << "Bad  = " << pid_res.bad << " " << pid_res.bad*100./(double)(pid_res.good+pid_res.bad) << endl;
 
-	cout << "Global Counters (normalized to Total Events)" << endl << "---------------" << endl;
-	cout << "Total events = " << pid_res.totEvents << endl;
-	cout << "Pass preliminary = " << pid_res.prelimEvents << " " << pid_res.prelimEvents*100./(double)(pid_res.totEvents) << endl;
-	cout << "Identified = " << pid_res.nIded << " " << pid_res.nIded*100./(double)(pid_res.totEvents) << endl;
-	cout << "Associated = " << pid_res.compareMC << " " << pid_res.compareMC*100./(double)(pid_res.totEvents) << endl;
-	cout << "Pass with ID = " << pid_res.nPassIded << " " << pid_res.nPassIded*100./(double)(pid_res.totEvents) << endl;
+	cout << "\t\t\t\t\t0\t\t1\t\t2\t\t3\t\t4" << endl;
+	cout << "Total: \t\t\t" << printDiv(pid_res.total.events, pid_res.total.events) << endl;
+	cout << "|-Prelim: \t\t" << printDiv(pid_res.total.prelim.events, pid_res.total.events, pid_res.total.prelim.events) << endl;
+	cout << "  |-NoID: \t\t" << printDiv(pid_res.total.prelim.noID.events, pid_res.total.events, pid_res.total.prelim.events) << endl;
+	cout << "  |-ManyID: \t\t" << printDiv(pid_res.total.prelim.manyID.events, pid_res.total.events, pid_res.total.prelim.events) << endl;
+	cout << "  |-Ided: \t\t" << printDiv(pid_res.total.prelim.ided.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.ided.events) << endl;
+	cout << "    |-Pass: \t\t" << printDiv(pid_res.total.prelim.ided.pass.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.ided.events) << endl;
+	cout << "    |-NoPass: \t\t" << printDiv(pid_res.total.prelim.ided.noPass.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.ided.events) << endl;
+	cout << "  |-Associated: \t" << printDiv(pid_res.total.prelim.associated.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events) << endl;
+	cout << "  | |-NoID: \t\t" << printDiv(pid_res.total.prelim.associated.noID.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events) << endl;
+	cout << "  | |-ManyID: \t\t" << printDiv(pid_res.total.prelim.associated.manyID.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events) << endl;
+	cout << "  | |-Ided: \t\t" << printDiv(pid_res.total.prelim.associated.ided.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events) << endl;
+	cout << "  |   |-Good: \t\t" << printDiv(pid_res.total.prelim.associated.ided.good.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events, pid_res.total.prelim.associated.ided.good.events) << endl;
+	cout << "  |   | |-Pass: \t" << printDiv(pid_res.total.prelim.associated.ided.good.pass.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events, pid_res.total.prelim.associated.ided.good.events) << endl;
+	cout << "  |   | |-NoPass: \t" << printDiv(pid_res.total.prelim.associated.ided.good.noPass.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events, pid_res.total.prelim.associated.ided.good.events) << endl;
+	cout << "  |   |-Bad: \t\t" << printDiv(pid_res.total.prelim.associated.ided.bad.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events, pid_res.total.prelim.associated.ided.bad.events) << endl;
+	cout << "  |     |-Pass: \t" << printDiv(pid_res.total.prelim.associated.ided.bad.pass.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events, pid_res.total.prelim.associated.ided.bad.events) << endl;
+	cout << "  |     |-NoPass: \t" << printDiv(pid_res.total.prelim.associated.ided.bad.noPass.events, pid_res.total.events, pid_res.total.prelim.events, pid_res.total.prelim.associated.events, pid_res.total.prelim.associated.ided.events, pid_res.total.prelim.associated.ided.bad.events) << endl;
 
-	cout << "ID categories (normalized to Associated)" << endl << "-------------" << endl;
-	cout << "No ID = " << pid_res.nNoId << " " << pid_res.nNoId*100./(double)(pid_res.compareMC) << endl;
-	cout << "Good ID = " << pid_res.nGoodId << " " << pid_res.nGoodId*100./(double)(pid_res.compareMC) << endl;
-	cout << "Wrong ID = " << pid_res.nWrongId << " " << pid_res.nWrongId*100./(double)(pid_res.compareMC) << endl;
-	cout << "Many ID = " << pid_res.nManyId << " " << pid_res.nManyId*100./(double)(pid_res.compareMC) << endl;
-	cout << "Pass with good ID = " << pid_res.nPassGood << " " << pid_res.nPassGood*100./(double)pid_res.compareMC << endl;
-	cout << "Pass with wrong ID = " << pid_res.nPassWrong << " " << pid_res.nPassWrong/(double)pid_res.compareMC << endl;
+
 	meeTrue.Write();
 	mkTrue.Write();
 	meeepiTrue.Write();
 	meekTrue.Write();
+
+	meeTotal.Write();
+	mkTotal.Write();
+	meeepiTotal.Write();
+	meekTotal.Write();
 
 	meeDiffTrue.Write();
 	mkDiffTrue.Write();
@@ -915,6 +1067,7 @@ int main(int argc, char **argv){
 	nPiCandidates.Write();
 	nPiCandidatesNew.Write();
 	nBeamSign.Write();
+	xTruexFalse.Write();
 
 
 	pid->Write();

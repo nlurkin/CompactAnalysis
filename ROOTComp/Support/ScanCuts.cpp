@@ -40,7 +40,7 @@ Cuts::Cuts(){
 	minKaonMassDiff = 0.475;
 	maxKaonMassDiff = 0.510;
 
-	pid_pi0Diff = 0.030;
+	pid_pi0Diff = 0.020;
 	pid_kDiff = 0.04;
 }
 
