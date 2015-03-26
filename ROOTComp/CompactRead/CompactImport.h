@@ -30,7 +30,7 @@ public:
 	int getNHeaders();
 
 	int nextEvent(ROOTFileHeader &outputHeader);
-	int firstEvent(ROOTFileHeader &outputHeader);
+	int firstEvent(ROOTFileHeader &outputHeader, int first=0);
 	bool eof();
 
 	void associateTrees(ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent,

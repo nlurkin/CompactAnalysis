@@ -9,9 +9,12 @@
 #include "CompactIO.h"
 
 OptionsParser::OptionsParser() :
-		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false), doScan(false), nScan(0), desc("Allowed options") {
+		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false),
+		doScan(false), nScan(0), startEvent(0), desc("Allowed options") {
 	// Declare the supported options.
-	desc.add_options()("help,h", "produce help message")("nevt,n", po::value<int>(), "max number of events")
+	desc.add_options()("help,h", "produce help message")
+			("nevt,n", po::value<int>(), "max number of events")
+			("start,s", po::value<int>(), "First event to process")
 			("file,i",po::value<std::string>(), "input file name")
 			("list,l", po::value<std::string>(), "list of input files")
 			("prefix,p", po::value<std::string>(), "prefix for output files")
@@ -58,6 +61,8 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 
 	if (vm.count("nevt"))
 		maxEvents = vm["nevt"].as<int>();
+	if (vm.count("start"))
+		startEvent = vm["start"].as<int>();
 
 	/// String options
 	if (vm.count("prefix"))

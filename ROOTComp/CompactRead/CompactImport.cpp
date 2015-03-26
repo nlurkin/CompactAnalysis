@@ -85,8 +85,8 @@ int CompactImport::getNHeaders() {
 	return nFiles;
 }
 
-int CompactImport::firstEvent(ROOTFileHeader &outputHeader) {
-	currentEvent = -1;
+int CompactImport::firstEvent(ROOTFileHeader &outputHeader, int first) {
+	currentEvent = first-1;
 	currentFile = -1;
 	currentFileName = "";
 	return nextEvent(outputHeader);

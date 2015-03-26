@@ -60,6 +60,10 @@ public:
 		return nScan;
 	}
 
+	int getStartEvent() const {
+		return startEvent;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -68,6 +72,7 @@ private:
 	bool exportAllEvents;
 	bool doScan;
 	int nScan;
+	int startEvent;
 	po::options_description desc;
 	std::string optString;
 	std::string cutsFile;
