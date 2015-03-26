@@ -14,6 +14,8 @@ using namespace std;
 #include <TH2D.h>
 #include <TTree.h>
 
+#define PRINTVAR(v) #v << "= " << v << " "
+
 CompactIO io;
 OptionsParser options;
 
@@ -32,26 +34,26 @@ NAbcog_params abcog_params;
 
 const int stdNbins = 1000;
 
-TH1D meeTrue = TH1D("meeTrue", "meegTrue;m_{#pi^{0}}", stdNbins, 0, 0.6);
-TH1D mkTrue = TH1D("mkTrue", "mkTrue;m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeepiTrue = TH2D("meeepiTrue", "meegepiTrue;m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekTrue = TH2D("meekTrue", "meegkTrue;m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH1D meeTrue = TH1D("meeTrue", "m_{#pi^{0}} (Good combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D mkTrue = TH1D("mkTrue", "m_{K} (Good combination);m_{K}", stdNbins, 0.15, 0.8);
+TH2D meeepiTrue = TH2D("meeepiTrue", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meekTrue = TH2D("meekTrue", "m_{K} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeFalse = TH1D("meeFalse", "meegFalse;m_{#pi^{0}}", stdNbins, 0, 0.6);
-TH1D mkFalse = TH1D("mkFalse", "mkFalse;m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeepiFalse = TH2D("meeepiFalse", "meegepiFalse;m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekFalse = TH2D("meekFalse", "meegkFalse;m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH1D meeFalse = TH1D("meeFalse", "m_{#pi^{0}} (Wrong combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D mkFalse = TH1D("mkFalse", "m_{K} (Wrong combination);m_{K}", stdNbins, 0.15, 0.8);
+TH2D meeepiFalse = TH2D("meeepiFalse", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meekFalse = TH2D("meekFalse", "m_{K} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeTotal = TH1D("meeTotal", "meegTotal;m_{#pi^{0}}", stdNbins, 0, 0.6);
-TH1D mkTotal = TH1D("mkTotal", "mkTotal;m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeepiTotal = TH2D("meeepiTotal", "meegepiTotal;m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekTotal = TH2D("meekTotal", "meegkTotal;m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH1D meeTotal = TH1D("meeTotal", "m_{#pi^{0}} (Both combinations);m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D mkTotal = TH1D("mkTotal", "m_{K} (Both combinations);m_{K}", stdNbins, 0.15, 0.8);
+TH2D meeepiTotal = TH2D("meeepiTotal", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meekTotal = TH2D("meekTotal", "m_{K} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeDiffTrue = TH1D("meeDiffTrue", "meegDiffTrue;m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
-TH1D mkDiffTrue = TH1D("mkDiffTrue", "mkDiffTrue;m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
+TH1D meeDiffTrue = TH1D("meeDiffTrue", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Good combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
+TH1D mkDiffTrue = TH1D("mkDiffTrue", "m_{K}^{reco}-M_{K} (Good combination);m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
 
-TH1D meeDiffFalse = TH1D("meeDiffFalse", "meegDiffFalse;m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
-TH1D mkDiffFalse = TH1D("mkDiffFalse", "mkDiffFalse;m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
+TH1D meeDiffFalse = TH1D("meeDiffFalse", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Wrong combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
+TH1D mkDiffFalse = TH1D("mkDiffFalse", "m_{K}^{reco}-M_{K} (Wrong combination);m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
 
 
 TH1D nPiCandidates = TH1D("nPiCandidates", "nPiCandidates", 20, 0, 20);
@@ -59,7 +61,14 @@ TH1D nPiCandidatesNew = TH1D("nPiCandidatesNew", "nPiCandidatesNew", 20, 0, 20);
 
 TH1D nBeamSign = TH1D("nBeamSign", "nBeamSign", 20, 0, 20);
 
-TH2D xTruexFalse = TH2D("xTruexFalse", "xTruexFalse", 2*stdNbins, 0, 2, 2*stdNbins, 0, 20);
+TH2D xTruexFalse = TH2D("xTruexFalse", "xTruexFalse", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
+TH2D xTruexFalseMany = TH2D("xTruexFalseMany", "xTruexFalseMany", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
+TH2D xTruexFalseNo = TH2D("xTruexFalseNo", "xTruexFalseNo", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
+TH1D xMCNoID = TH1D("xMCNoID", "xMCNoID", 2*stdNbins, 0, 2);
+TH1D xMCManyID = TH1D("xMCManyID", "xMCManyID", 2*stdNbins, 0, 2);
+
+TH2D xTruexMCMany = TH2D("xTruexMCMany", "xTruexMCMany", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
+TH2D xTruexMCNo = TH2D("xTruexMCNo", "xTruexMCNo", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
 
 struct alt_pid_res{
 	void incTotal(){ total.events++;}
@@ -184,6 +193,7 @@ string printDiv(int a, int b, int c=0, int d=0, int e=0, int f=0){
 
 bool associateMCTracks(){
 	double limit = 2e-4;
+	//double limit = 1e-4;
 	bool flBad = false;
 
 	int ep1=-1, ep2=-1, ep3=-1;
@@ -197,6 +207,22 @@ bool associateMCTracks(){
 	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()<limit) em2=1;
 	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()<limit) em3=2;
 
+	/*if((rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag()*fabs(rootMC.ep.P.E()-corrEvent.pTrack[corrEvent.goodTracks[0]].p)<limit) ep1=0;
+	if((rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()*fabs(rootMC.ep.P.E()-corrEvent.pTrack[corrEvent.goodTracks[1]].p)<limit) ep2=1;
+	if((rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()*fabs(rootMC.ep.P.E()-corrEvent.pTrack[corrEvent.goodTracks[2]].p)<limit) ep3=2;
+
+	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag()*fabs(rootMC.em.P.E()-corrEvent.pTrack[corrEvent.goodTracks[0]].p)<limit) em1=0;
+	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()*fabs(rootMC.em.P.E()-corrEvent.pTrack[corrEvent.goodTracks[1]].p)<limit) em2=1;
+	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()*fabs(rootMC.em.P.E()-corrEvent.pTrack[corrEvent.goodTracks[2]].p)<limit) em3=2;*/
+
+	//cout << (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag()*fabs(rootMC.ep.P.E()-corrEvent.pTrack[corrEvent.goodTracks[0]].p) << endl;
+	//cout << (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()*fabs(rootMC.ep.P.E()-corrEvent.pTrack[corrEvent.goodTracks[1]].p) << endl;
+	//cout << (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()*fabs(rootMC.ep.P.E()-corrEvent.pTrack[corrEvent.goodTracks[2]].p) << endl;
+	//cout << (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag()*fabs(rootMC.em.P.E()-corrEvent.pTrack[corrEvent.goodTracks[0]].p) << endl;
+	//cout << (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()*fabs(rootMC.em.P.E()-corrEvent.pTrack[corrEvent.goodTracks[1]].p) << endl;
+	//cout << (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()*fabs(rootMC.em.P.E()-corrEvent.pTrack[corrEvent.goodTracks[2]].p) << endl;
+	//cout << PRINTVAR(ep1) << PRINTVAR(ep2) << PRINTVAR(ep3) << endl;
+	//cout << PRINTVAR(em1) << PRINTVAR(em2) << PRINTVAR(em3) << endl;
 	if((ep1==-1 && ep2==-1 && ep3!=-1) || (ep1==-1 && ep2!=-1 && ep3==-1) || (ep1!=-1 && ep2==-1 && ep3==-1)){
 		//OK
 		if(ep1!=-1) ep=ep1;
@@ -220,8 +246,14 @@ bool associateMCTracks(){
 		pid_res.bad++;
 		flBad = true;
 	}
+	//if(em==ep){ // Both are identified to the same tracks
+		//pid_res.good -= 2;
+		//pid_res.bad += 2;
+		//flBad = true;
+	//}
 
 	if(!flBad){
+		//cout << PRINTVAR(ep) << PRINTVAR(em) << endl;
 		if((ep==0 && em==1) || (ep==1 && em==0)) pic=2;
 		else if((ep==0 && em==2) || (ep==2 && em==0)) pic=1;
 		else if((ep==1 && em==2) || (ep==2 && em==1)) pic=0;
@@ -336,12 +368,14 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	double kMLowLim2 = 0.3 + ((Mk-0.32)/(Mpi0+0.03))*ee2.M();
 	//take the smallest ee mass as the ep em, the other is pi
 	//if(ee1.M()<(Mpi0+pi0DiffLimit) && k1.M()<(Mk+kDiffLimit)){
-	if( (ee1.M()<pi0MSupLim) && (k1.M()<kMSupLim) && (k1.M() > kMLowLim1)){
+	//if( (ee1.M()<pi0MSupLim) && (k1.M()<kMSupLim) && (k1.M() > kMLowLim1)){
+	if( (fabs(ee1.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && (k1.M()>io.cutsDefinition.minKaonMassDiff && k1.M()<io.cutsDefinition.maxKaonMassDiff)){
 		nCandidates++;
 		piCandidate = goodTrack2;
 	}
 	//if((ee2.M()-Mpi0)<pi0DiffLimit && fabs(k2.M()-Mk)<kDiffLimit){
-	if( (ee2.M()<pi0MSupLim) && (k2.M()<kMSupLim) && (k2.M() > kMLowLim2)){
+	//if( (ee2.M()<pi0MSupLim) && (k2.M()<kMSupLim) && (k2.M() > kMLowLim2)){
+	if( (fabs(ee2.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && (k2.M()>io.cutsDefinition.minKaonMassDiff && k2.M()<io.cutsDefinition.maxKaonMassDiff)){
 		nCandidates++;
 		piCandidate = goodTrack1;
 	}
@@ -359,6 +393,7 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	meekTotal.Fill(ee1.M(), k1.M());
 	meekTotal.Fill(ee2.M(), k2.M());
 
+	//cout << PRINTVAR(flBad) << PRINTVAR(pic) << PRINTVAR(goodTrack1) << PRINTVAR(goodTrack2) << endl;
 	if(!flBad){
 		//Good MC association, fill the plots
 		if(pic==goodTrack2){
@@ -449,7 +484,58 @@ int pi0d_tracksAcceptance(){
 	return badTrack;
 }
 
-int pi0d_trackCombinationVeto(){
+int pi0d_trackCombinationVeto_loose(){
+	int ntracks = 3;
+
+	TVector3 propPos1, propPos2;
+	double RDCH1, RLKr;
+	double tDiff;
+
+	bool bad = false;
+
+	int badCombis = 0;
+
+	for(int i=0; i<ntracks-1; i++){
+		for(int j=i+1; j<ntracks; j++){
+			int trackID1 = corrEvent.goodTracks[i];
+			int trackID2 = corrEvent.goodTracks[j];
+			NPhysicsTrack t1 = corrEvent.pTrack[trackID1];
+			NPhysicsTrack t2 = corrEvent.pTrack[trackID2];
+			bad = false;
+			if(options.isOptDebug()) cout << "\tTrying combination :\t" << i << " " << j << endl;
+
+			// Track-to-Track distance in DCH1 plane >1cm
+			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1);
+			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2);
+
+			RDCH1 = distance2D(propPos1, propPos2);
+			if(options.isOptDebug()) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
+			if(RDCH1<=2) bad = true;
+
+			// Track DCH times
+			// |t1-t2|<15
+			if(rootBurst.isData){
+				tDiff = fabs(rawEvent.track[t1.trackID].time - rawEvent.track[t2.trackID].time);
+				if(options.isOptDebug()) cout << "\t\t|t_i-t_j| :\t" << tDiff << "\t >15: rejected" << endl;
+				if(tDiff>=15) bad = true;
+			}
+
+			// Track separation in LKr plane >15
+			propPos1 = propagateAfter(rootGeom.Lkr.z, t1);
+			propPos2 = propagateAfter(rootGeom.Lkr.z, t2);
+
+			RLKr = distance2D(propPos1, propPos2);
+			if(options.isOptDebug()) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
+			if(RLKr<=20) bad = true;
+
+			if(bad) badCombis++;
+		}
+	}
+
+	return badCombis;
+}
+
+int pi0d_trackCombinationVeto_tight(){
 	int ntracks = 3;
 
 	TVector3 propPos1, propPos2;
@@ -676,7 +762,7 @@ void pi0d_passSelection(){
 	if(io.isDoOutput()) io.output.f2() << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
 }
 
-bool nico_pi0DalitzSelect(){
+bool nico_pi0DalitzSelect(int iEvent){
 	bool badAcceptance;
 
 	int badCombis=0;
@@ -729,7 +815,8 @@ bool nico_pi0DalitzSelect(){
 
 	// 8) Track combination veto
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
-	badCombis = pi0d_trackCombinationVeto();
+//	badCombis = pi0d_trackCombinationVeto(); //Wrong - depends on pi+ id
+	badCombis = pi0d_trackCombinationVeto_loose();
 	if(options.isOptDebug()) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
 	if(badCombis!=io.cutsDefinition.numBadTrackCombi) {pi0d_failCut(8); return false;}
 
@@ -828,7 +915,12 @@ bool nico_pi0DalitzSelect(){
 	piCandNb = pid(piTrack, tempGamma);
 	badElectron = false;
 	//piCandNb = pi0d_identifyPi(piTrack, badElectron);
-	if(piCandNb==0) pid_res.incNoID(!flBad);
+	if(piCandNb==0){
+		pid_res.incNoID(!flBad);
+		xMCNoID.Fill(rootMC.xTrue);
+		xTruexFalseNo.Fill(xTrue, xFalse);
+		xTruexMCNo.Fill(xTrue, rootMC.xTrue);
+	}
 	else if(piCandNb==1){
 		if(!flBad){
 			if(piTrack == pic){
@@ -844,7 +936,12 @@ bool nico_pi0DalitzSelect(){
 		pid_res.incIded(!flBad);
 		ided = true;
 	}
-	else if(piCandNb>1) pid_res.incManyID(!flBad);
+	else if(piCandNb>1){
+		pid_res.incManyID(!flBad);
+		xMCManyID.Fill(rootMC.xTrue);
+		xTruexFalseMany.Fill(xTrue, xFalse);
+		xTruexMCMany.Fill(xTrue, rootMC.xTrue);
+	}
 	nPiCandidatesNew.Fill(piCandNb);
 	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << piCandNb << "\t != 1: rejected" << endl;
 	if(piCandNb!=io.cutsDefinition.numPiCandidates) {pi0d_failCutInc(9, !flBad, good, bad); return false;}
@@ -890,6 +987,12 @@ bool nico_pi0DalitzSelect(){
 	if(options.isOptDebug()) cout << "Bad electron tracks eop :\t" << badElectron << "\t == " << true << ": rejected" << endl;
 	if(badElectron==io.cutsDefinition.boolBadECandidates) {pi0d_failCutInc(10, !flBad, good, bad); return false;}
 
+	// 8) Track combination veto
+	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
+	badCombis = pi0d_trackCombinationVeto_tight();
+	if(options.isOptDebug()) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
+	if(badCombis!=io.cutsDefinition.numBadTrackCombi) {pi0d_failCut(8); return false;}
+	
 	// 12) Exactly 1 good LKr cluster (tight)
 	if(options.isOptDebug()) cout << "~~~~ Cut 12 ~~~~" << endl;
 	goodClusters = pi0d_goodClusters_tight();
@@ -947,14 +1050,14 @@ bool newEvent(int i, int &nevt){
 	pid_res.incTotal();
 	++nevt;
 	abcog_params = rootBurst.abcog_params;
-	if(!options.isDoScan()) return nico_pi0DalitzSelect(); // Normal thing
+	if(!options.isDoScan()) return nico_pi0DalitzSelect(i); // Normal thing
 	else{
 		bool result;
 		bool defaultResult = false;
 		bool globalResult = false;
 		io.output.resetResult();
 		for(int i=io.cutsDefinition.loadList(0); i!=-1; i=io.cutsDefinition.loadNextList()){
-			result = nico_pi0DalitzSelect();
+			result = nico_pi0DalitzSelect(i);
 			io.output.newResult(result);
 			globalResult |= result;
 			if(i==io.cutsDefinition.getDefaultIndex()) defaultResult = result;
@@ -965,7 +1068,7 @@ bool newEvent(int i, int &nevt){
 }
 
 int main(int argc, char **argv){
-	options.parse(argc, argv, io);
+	if(!options.parse(argc, argv, io)) return 0;
 
 	if(options.isDoScan()) io.cutsDefinition.generateLists(options.getScan());
 	if(!io.cutsDefinition.addParseCutsFile(options.getCutsFile())) return -1;
@@ -1002,7 +1105,7 @@ int main(int argc, char **argv){
 
 	outputFileHeader.NPassedEvents = 0;
 	cout << "Entries in the tree: " << io.input.getNEvents() << endl;
-	for(int i=io.input.firstEvent(outputFileHeader); !io.input.eof() && (options.getMaxEvents()<0 || nevent<options.getMaxEvents() ); i = io.input.nextEvent(outputFileHeader)){
+	for(int i=io.input.firstEvent(outputFileHeader, options.getStartEvent()); !io.input.eof() && (options.getMaxEvents()<0 || nevent<options.getMaxEvents() ); i = io.input.nextEvent(outputFileHeader)){
 		if(newEvent(i, nevent)){
 			io.output.fillEvent();
 			outputFileHeader.NPassedEvents++;
@@ -1068,6 +1171,13 @@ int main(int argc, char **argv){
 	nPiCandidatesNew.Write();
 	nBeamSign.Write();
 	xTruexFalse.Write();
+	xTruexFalseMany.Write();
+	xTruexFalseNo.Write();
+	xMCNoID.Write();
+	xMCManyID.Write();
+
+	xTruexMCMany.Write();
+	xTruexMCNo.Write();
 
 
 	pid->Write();
