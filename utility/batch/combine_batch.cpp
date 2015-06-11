@@ -162,6 +162,9 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("pipCDA", index, v, 100, 0, 10);
 	addHisto("pipEnergy", index, v, 60, 0, 60);
 
+	addHisto("eop", index, v, 100, 0, 1.5);
+	addHisto("eop_pi", index, v, 100, 0, 1.5);
+
 	addHisto("xMap", index, vMap, 1000,0,1, 1000, 0, 1);
 }
 
@@ -204,6 +207,9 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "pipVtxZ", ++i, v);
 	getHisto(fd, "pipCDA", ++i, v);
 	getHisto(fd, "pipEnergy", ++i, v);
+
+	getHisto(fd, "eop", ++i, v);
+	getHisto(fd, "eop_pi", ++i, v);
 
 	getHisto(fd, "xMap", ++iMap, vMap);
 }
@@ -269,6 +275,12 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(rawEvent->vtx[evt->pic.parentVertex].cda, weight);
 	
 	d->at(++i)->Fill(corrEvent->pCluster[evt->pic.parentCluster].E, weight);
+	
+	d->at(++i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[0]].E/corrEvent->pTrack[corrEvent->goodTracks[0]].p, weight);
+	d->at(i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[1]].E/corrEvent->pTrack[corrEvent->goodTracks[1]].p, weight);
+	d->at(i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[2]].E/corrEvent->pTrack[corrEvent->goodTracks[2]].p, weight);
+	
+	d->at(++i)->Fill(corrEvent->pTrack[evt->pic.parentTrack].E/corrEvent->pTrack[evt->pic.parentTrack].p, weight);
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
 }
@@ -735,6 +747,11 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot(28, "pipCDA", "CDA", leg, mcColors);
 	if(maxPlots--==0) return;
 	doPlot(29, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
+	if(maxPlots--==0) return;
+
+	doPlot(30, "eop", "Tracks E/p", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(31, "eop_pi", "Tracks E/p (pion)", leg, mcColors);
 	if(maxPlots--==0) return;
 
 	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);

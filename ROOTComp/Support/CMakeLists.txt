@@ -8,5 +8,6 @@ include_directories(${PROJECT_SOURCE_DIR}/Support)
 
 ROOT_GENERATE_DICTIONARY(ScanCuts.h LinkDef.h ScanCuts_DICT.cc "${ROOT_INCLUDE_DIR};${CMAKE_CURRENT_SOURCE_DIR};${PROJECT_SOURCE_DIR}/../userinc")
 add_library(Support OptionsParser.h OptionsParser.cpp ScanCuts.h ScanCuts.cpp ScanCuts_DICT.cc)
+add_library(Cuts SHARED ScanCuts.h ScanCuts.cpp ScanCuts_DICT.cc)
 install(TARGETS Support DESTINATION lib)
 install(FILES ScanCuts.h DESTINATION includes)

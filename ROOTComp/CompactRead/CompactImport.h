@@ -18,6 +18,7 @@ class ROOTFileHeader;
 class NGeom;
 class ROOTMCEvent;
 class ROOTOutput;
+class ROOTPhysicsEvent;
 
 class CompactImport {
 public:
