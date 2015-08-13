@@ -10,7 +10,7 @@
 
 OptionsParser::OptionsParser() :
 		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false),
-		doScan(false), nScan(0), startEvent(0), desc("Allowed options") {
+		doScan(false), nScan(0), startEvent(0), selectionType(K2PI), desc("Allowed options") {
 	// Declare the supported options.
 	desc.add_options()("help,h", "produce help message")
 			("nevt,n", po::value<int>(), "max number of events")
@@ -24,6 +24,7 @@ OptionsParser::OptionsParser() :
 			("period", po::value<int>()->default_value(0), "Keep only events from specified period")
 			("mod,m", po::value<int>()->default_value(1), "Event number printing modulo")
 			("cuts,c", po::value<std::string>(), "Cuts file")
+			("sel", po::value<std::string>(), "Selection type")
 			("scan", po::value<int>()->default_value(0), "Do a scan with n values")
 			("eall,e", po::value<bool>()->implicit_value(true)->default_value(false), "Export all events, even failed");
 }
@@ -67,6 +68,15 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 	/// String options
 	if (vm.count("prefix"))
 		io.output.setPrefix(vm["prefix"].as<std::string>());
+	if (vm.count("sel")){
+			std::string selType = vm["sel"].as<string>();
+			if(selType.compare("k2pi")) selectionType = K2PI;
+			else if(selType.compare("kmu3")) selectionType = KMU3;
+			else {
+				std::cerr << "Unknown selection type: " << selType << std::endl;
+				return false;
+			}
+	}
 	if (vm.count("debug"))
 		optDebug = vm["debug"].as<bool>();
 	if (vm.count("period"))

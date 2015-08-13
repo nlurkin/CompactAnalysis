@@ -390,7 +390,7 @@ public:
 
 class ROOTPhysicsEvent : public TObject{
 public:
-	ROOTPhysicsEvent(): x(0), y(0), mee(0), pic(), ep(11), em(-11), gamma(22), pi0(111), kaon(){};
+	ROOTPhysicsEvent(): x(0), y(0), mee(0), pic(), ep(11), em(-11), gamma(22), pi0(111), kaon(), mu(){};
 	~ROOTPhysicsEvent(){};
 
 	void clear(){
@@ -413,6 +413,7 @@ public:
 	NRecoParticle gamma;
 	NRecoParticle pi0;
 	NRecoParticle kaon;
+	NRecoParticle mu;
 
 	ClassDefNV(ROOTPhysicsEvent, 1);
 };

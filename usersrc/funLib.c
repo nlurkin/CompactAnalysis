@@ -37,6 +37,7 @@ extern FILE* fprt, *fprt2;
 double Mpi0 = 0.1349766;
 double Mpic = 0.139570;
 double Me = 0.00051099891;
+double Mmu = 0.1056583715;
 
 std::string printVector3(TVector3 v){
 	std::ostringstream ss;

@@ -35,10 +35,16 @@ Cuts::Cuts(){
 	minGammaDCHRadius = 13;
 	minTotalMomentum = 70;
 	maxTotalMomentum = 78;
+	maxTotalMuMomentum = 78;
 	maxPt = 0.0005;
-	maxPi0MassDiff = 0.008;
+	minMuPt = 0.0005;
+	maxMuPt = 0.04;
+	maxPi0MassDiff = 0.02;
+	maxPi0MassDiffMu = 0.01;
 	minKaonMassDiff = 0.475;
-	maxKaonMassDiff = 0.510;
+	maxKaonMassDiff = 0.02;
+	maxMissMassSq = 0.01;
+
 
 	pid_pi0Diff = 0.020;
 	pid_kDiff = 0.04;
@@ -67,10 +73,15 @@ void Cuts::print(){
 	std::cout << "minGammaDCHRadius\t--> " << minGammaDCHRadius << std::endl;
 	std::cout << "minTotalMomentum\t--> " << minTotalMomentum << std::endl;
 	std::cout << "maxTotalMomentum\t--> " << maxTotalMomentum << std::endl;
+	std::cout << "maxTotalMuMomentum\t--> " << maxTotalMuMomentum << std::endl;
 	std::cout << "maxPt\t\t\t--> " << maxPt << std::endl;
+	std::cout << "minmuPt\t\t\t--> " << minMuPt << std::endl;
+	std::cout << "maxMuPt\t\t\t--> " << maxMuPt << std::endl;
 	std::cout << "maxPi0MassDiff\t\t--> " << maxPi0MassDiff << std::endl;
+	std::cout << "maxPi0MassDiffMu\t\t--> " << maxPi0MassDiffMu << std::endl;
 	std::cout << "minKaonMassDiff\t\t--> " << minKaonMassDiff << std::endl;
 	std::cout << "maxKaonMassDiff\t\t--> " << maxKaonMassDiff << std::endl;
+	std::cout << "maxMissMassSq\t\t--> " << maxMissMassSq << std::endl;
 	std::cout << "pid_pi0Diff\t\t--> " << pid_pi0Diff << std::endl;
 	std::cout << "pid_kDiff\t\t--> " << pid_kDiff << std::endl << std::endl;
 }
@@ -213,17 +224,32 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			else if(name.compare("maxTotalMomentum")==0){
 				cutsLists[id].maxTotalMomentum = atoi(value.c_str());
 			}
+			else if(name.compare("maxTotalMuMomentum")==0){
+				cutsLists[id].maxTotalMuMomentum = atoi(value.c_str());
+			}
 			else if(name.compare("maxPt")==0){
 				cutsLists[id].maxPt = atof(value.c_str());
 			}
+			else if(name.compare("minMuPt")==0){
+				cutsLists[id].minMuPt = atof(value.c_str());
+			}
+			else if(name.compare("maxMuPt")==0){
+				cutsLists[id].maxMuPt = atof(value.c_str());
+			}
 			else if(name.compare("maxPi0MassDiff")==0){
 				cutsLists[id].maxPi0MassDiff = atof(value.c_str());
+			}
+			else if(name.compare("maxPi0MassDiffMu")==0){
+				cutsLists[id].maxPi0MassDiffMu = atof(value.c_str());
 			}
 			else if(name.compare("minKaonMassDiff")==0){
 				cutsLists[id].minKaonMassDiff = atof(value.c_str());
 			}
 			else if(name.compare("maxKaonMassDiff")==0){
 				cutsLists[id].maxKaonMassDiff = atof(value.c_str());
+			}
+			else if(name.compare("maxMissMassSq")==0){
+				cutsLists[id].maxMissMassSq = atof(value.c_str());
 			}
 			else if(name.compare("pid_pi0Diff")==0){
 				cutsLists[id].pid_pi0Diff = atof(value.c_str());

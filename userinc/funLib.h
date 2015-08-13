@@ -63,5 +63,6 @@ bool isFilteredEvent(int nrun, int nburst, int timestamp, const vector<eventID> 
 extern double Mpi0;
 extern double Mpic;
 extern double Me;
+extern double Mmu;
 
 #endif /* FUNLIB_H_ */

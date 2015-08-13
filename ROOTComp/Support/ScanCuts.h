@@ -35,10 +35,15 @@ public:
 	int minGammaDCHRadius;
 	int minTotalMomentum;
 	int maxTotalMomentum;
+	int maxTotalMuMomentum;
 	double maxPt;
+	double minMuPt;
+	double maxMuPt;
 	double maxPi0MassDiff;
+	double maxPi0MassDiffMu;
 	double minKaonMassDiff;
 	double maxKaonMassDiff;
+	double maxMissMassSq;
 	double pid_pi0Diff;
 	double pid_kDiff;
 
