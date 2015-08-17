@@ -70,8 +70,8 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 		io.output.setPrefix(vm["prefix"].as<std::string>());
 	if (vm.count("sel")){
 			std::string selType = vm["sel"].as<string>();
-			if(selType.compare("k2pi")) selectionType = K2PI;
-			else if(selType.compare("kmu3")) selectionType = KMU3;
+			if(selType.compare("k2pi")==0) selectionType = K2PI;
+			else if(selType.compare("kmu3")==0) selectionType = KMU3;
 			else {
 				std::cerr << "Unknown selection type: " << selType << std::endl;
 				return false;

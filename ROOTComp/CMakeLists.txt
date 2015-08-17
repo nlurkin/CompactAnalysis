@@ -27,9 +27,9 @@ add_subdirectory(Support)
 include_directories(CompactRead)
 include_directories(Support)
 
-add_executable(pi0d_selection pi0d_Selection.cpp)
-add_executable(alt_id pid.cpp)
-add_executable(alt_id_kmu3 pid_mu.cpp)
+add_executable(pi0d_selection pi0d_Selection.cpp SelectionFunctions.cpp)
+add_executable(alt_id pid.cpp SelectionFunctions.cpp)
+#add_executable(alt_id_kmu3 pid_mu.cpp)
 
 target_link_libraries(pi0d_selection CompactRead Support) #Own
 target_link_libraries(pi0d_selection exportClasses funLib) #Compact
@@ -39,8 +39,8 @@ target_link_libraries(alt_id CompactRead Support) #Own
 target_link_libraries(alt_id exportClasses funLib) #Compact
 target_link_libraries(alt_id ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
 
-target_link_libraries(alt_id_kmu3 CompactRead Support) #Own
-target_link_libraries(alt_id_kmu3 exportClasses funLib) #Compact
-target_link_libraries(alt_id_kmu3 ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
+#target_link_libraries(alt_id_kmu3 CompactRead Support) #Own
+#target_link_libraries(alt_id_kmu3 exportClasses funLib) #Compact
+#target_link_libraries(alt_id_kmu3 ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
 
-install(TARGETS pi0d_selection alt_id alt_id_kmu3 DESTINATION .)
+install(TARGETS pi0d_selection alt_id DESTINATION .)
