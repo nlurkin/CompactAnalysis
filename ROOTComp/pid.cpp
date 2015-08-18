@@ -38,20 +38,20 @@ NAbcog_params abcog_params;
 
 const int stdNbins = 1000;
 
-TH1D meeTrue = TH1D("meeTrue", "m_{#pi^{0}} (Good combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
-TH1D mkTrue = TH1D("mkTrue", "m_{K} (Good combination);m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeepiTrue = TH2D("meeepiTrue", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekTrue = TH2D("meekTrue", "m_{K} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH1D meeTrue = TH1D("meeTrue", "m_{#pi^{0}} (Good combination);m_{#pi^{0}}", stdNbins, 0, 6);
+TH1D mkTrue = TH1D("mkTrue", "m_{K} (Good combination);m_{K}", stdNbins, -0.5, 0.8);
+TH2D meeepiTrue = TH2D("meeepiTrue", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 6, stdNbins, 0, 6);
+TH2D meekTrue = TH2D("meekTrue", "m_{K} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 6, stdNbins, 0, 1);
 
-TH1D meeFalse = TH1D("meeFalse", "m_{#pi^{0}} (Wrong combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
-TH1D mkFalse = TH1D("mkFalse", "m_{K} (Wrong combination);m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeepiFalse = TH2D("meeepiFalse", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekFalse = TH2D("meekFalse", "m_{K} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH1D meeFalse = TH1D("meeFalse", "m_{#pi^{0}} (Wrong combination);m_{#pi^{0}}", stdNbins, 0, 6);
+TH1D mkFalse = TH1D("mkFalse", "m_{K} (Wrong combination);m_{K}", stdNbins, -0.5, 0.8);
+TH2D meeepiFalse = TH2D("meeepiFalse", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 6, stdNbins, 0, 6);
+TH2D meekFalse = TH2D("meekFalse", "m_{K} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 6, stdNbins, 0, 1);
 
-TH1D meeTotal = TH1D("meeTotal", "m_{#pi^{0}} (Both combinations);m_{#pi^{0}}", stdNbins, 0, 0.6);
-TH1D mkTotal = TH1D("mkTotal", "m_{K} (Both combinations);m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeepiTotal = TH2D("meeepiTotal", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekTotal = TH2D("meekTotal", "m_{K} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH1D meeTotal = TH1D("meeTotal", "m_{#pi^{0}} (Both combinations);m_{#pi^{0}}", stdNbins, 0, 6);
+TH1D mkTotal = TH1D("mkTotal", "m_{K} (Both combinations);m_{K}", stdNbins, -0.5, 0.8);
+TH2D meeepiTotal = TH2D("meeepiTotal", "m_{e^{#pm}#pi^{#mp}} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{e^{#pm}#pi^{#mp}}", stdNbins, 0, 6, stdNbins, 0, 6);
+TH2D meekTotal = TH2D("meekTotal", "m_{K} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{K}", stdNbins, 0, 6, stdNbins, 0, 1);
 
 TH1D meeDiffTrue = TH1D("meeDiffTrue", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Good combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
 TH1D mkDiffTrue = TH1D("mkDiffTrue", "m_{K}^{reco}-M_{K} (Good combination);m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
@@ -74,9 +74,9 @@ TH1D xMCManyID = TH1D("xMCManyID", "xMCManyID", 2*stdNbins, 0, 2);
 TH2D xTruexMCMany = TH2D("xTruexMCMany", "xTruexMCMany", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
 TH2D xTruexMCNo = TH2D("xTruexMCNo", "xTruexMCNo", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
 
-TH2D combi2Dpi = TH2D("combi2Dpi", "combi2Dpi", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D combi2Dk = TH2D("combi2Dk", "combi2Dk", stdNbins, 0.15, 0.8, stdNbins, 0.15, 0.8);
-TH2D combi2Dk_exclu = TH2D("combi2Dk_exclu", "combi2Dk_exclu", stdNbins, 0.15, 0.8, stdNbins, 0.15, 0.8);
+TH2D combi2Dpi = TH2D("combi2Dpi", "combi2Dpi", stdNbins, 0, 6, stdNbins, 0, 6);
+TH2D combi2Dk = TH2D("combi2Dk", "combi2Dk", stdNbins, -0.5, 0.8, stdNbins, -0.5, 0.8);
+TH2D combi2Dk_exclu = TH2D("combi2Dk_exclu", "combi2Dk_exclu", stdNbins, -0.5, 0.8, stdNbins, -0.5, 0.8);
 
 TH1D eopPi = TH1D("eopPi", "eopPi", 1500, 0, 1.5);
 TH1D eope = TH1D("eope", "eope", 1500, 0, 1.5);
@@ -348,6 +348,7 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	TLorentzVector t2ep, t2pi;
 	TLorentzVector ee1, ee2;
 	TLorentzVector k1, k2;
+	double x1, x2;
 
 	int goodTrack1, goodTrack2;
 
@@ -377,26 +378,35 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	nBeamSign.Fill(nNegative);
 	if(nNegative!=1) return 0;
 
+	TLorentzVector myKaon;
+	myKaon.SetVectM(corrEvent.kaonMomentum*corrEvent.kaonP, abcog_params.mkp);
+	//cout << corrEvent.kaonMomentum << " " << corrEvent.kaonP << " " << myKaon.Vect().Mag() << " " << myKaon.M() << endl;
 	//Try e = goodTrack1, pi = goodTrack2
 	//cout << endl << corrEvent.pTrack.size() << " " << corrEvent.goodTracks.size() << " " << goodTrack1 << " " << goodTrack2 << endl;
 	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
 	t1pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Mpic);
 	ee1 = tem+t1ep+gamma;
-	k1 = ee1+t1pi;
+	//k1 = ee1+t1pi;
+	k1 = myKaon - t1pi;
+	x1 = (tem+t1ep).M2()/pow(Mpi0,2);
 
 	//Try e = goodTrack2, pi = goodTrack1
 	t2pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Mpic);
 	t2ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
 	ee2 = tem+t2ep+gamma;
-	k2 = ee2+t2pi;
+	//k2 = ee2+t2pi;
+	k2 = myKaon - t2pi;
+	x2 = (tem+t2ep).M2()/pow(Mpi0,2);
 
 	double Mk;
 	double diffpi01, diffpi02;
 	double diffk1, diffk2;
 	double diff1, diff2;
 
-	diffpi01 = fabs(ee1.M()-Mpi0);
-	diffpi02 = fabs(ee2.M()-Mpi0);
+	//diffpi01 = fabs(ee1.M()-Mpi0);
+	//diffpi02 = fabs(ee2.M()-Mpi0);
+	diffpi01 = fabs(k1.M2() - 0.02);
+	diffpi02 = fabs(k2.M2() - 0.02);
 
 	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = abcog_params.mkp;
 	else Mk = abcog_params.mkn;
@@ -420,13 +430,15 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	//take the smallest ee mass as the ep em, the other is pi
 	//if(ee1.M()<(Mpi0+pi0DiffLimit) && k1.M()<(Mk+kDiffLimit)){
 	//if( (ee1.M()<pi0MSupLim) && (k1.M()<kMSupLim) && (k1.M() > kMLowLim1)){
-	if( (fabs(ee1.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && fabs(k1.M()-abcog_params.mkp)<io.cutsDefinition.maxKaonMassDiff){
+	//if( (fabs(ee1.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && fabs(k1.M()-abcog_params.mkp)<io.cutsDefinition.maxKaonMassDiff){
+	if( (x1<1) && (diffpi01<0.01) ){
 		nCandidates++;
 		piCandidate = goodTrack2;
 	}
 	//if((ee2.M()-Mpi0)<pi0DiffLimit && fabs(k2.M()-Mk)<kDiffLimit){
 	//if( (ee2.M()<pi0MSupLim) && (k2.M()<kMSupLim) && (k2.M() > kMLowLim2)){
-	if( (fabs(ee2.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && fabs(k2.M()-abcog_params.mkp)<io.cutsDefinition.maxKaonMassDiff){
+	//if( (fabs(ee2.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && fabs(k2.M()-abcog_params.mkp)<io.cutsDefinition.maxKaonMassDiff){
+	if( (x2<1) && (diffpi02<0.01) ){
 		nCandidates++;
 		piCandidate = goodTrack1;
 	}
@@ -435,19 +447,19 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	else if(diff2<diff1 && diff2<diff3) piCandidate = 1;
 	else if(diff3<diff2 && diff3<diff1) piCandidate = 0;*/
 
-	meeTotal.Fill(ee1.M());
-	meeTotal.Fill(ee2.M());
-	mkTotal.Fill(k1.M());
-	mkTotal.Fill(k2.M());
-	meeepiTotal.Fill(ee1.M(), (tem+t1pi).M());
-	meeepiTotal.Fill(ee2.M(), (tem+t2pi).M());
-	meekTotal.Fill(ee1.M(), k1.M());
-	meekTotal.Fill(ee2.M(), k2.M());
+	meeTotal.Fill(x1);
+	meeTotal.Fill(x2);
+	mkTotal.Fill(k1.M2());
+	mkTotal.Fill(k2.M2());
+	meeepiTotal.Fill(x1, (tem+t1pi).M());
+	meeepiTotal.Fill(x2, (tem+t2pi).M());
+	meekTotal.Fill(x1, k1.M());
+	meekTotal.Fill(x2, k2.M());
 
-	combi2Dpi.Fill(ee1.M(), ee2.M());
+	combi2Dpi.Fill(x1, x2);
 	combi2Dk.Fill(k1.M(), k2.M());
 
-	if((fabs(ee1.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff) && (fabs(ee2.M()-Mpi0)<io.cutsDefinition.maxPi0MassDiff)){
+	if((diffpi01<0.01) && (diffpi02<0.01)){
 		combi2Dk_exclu.Fill(k1.M(), k2.M());
 	}
 
@@ -455,41 +467,41 @@ int pid(int &piCandidate, TLorentzVector &gamma){
 	if(!flBad){
 		//Good MC association, fill the plots
 		if(pic==goodTrack2){
-			meeTrue.Fill(ee1.M());
+			meeTrue.Fill(x1);
 			mkTrue.Fill(k1.M());
-			meeepiTrue.Fill(ee1.M(), (tem+t1pi).M());
-			meekTrue.Fill(ee1.M(), k1.M());
+			meeepiTrue.Fill(x1, (tem+t1pi).M());
+			meekTrue.Fill(x1, k1.M());
 
-			meeDiffTrue.Fill(ee1.M()-Mpi0);
-			mkDiffTrue.Fill(k1.M()-Mk);
+			meeDiffTrue.Fill(x1-Mpi0);
+			mkDiffTrue.Fill(k1.M2()-pow(Mpi0,2));
 
-			meeFalse.Fill(ee2.M());
+			meeFalse.Fill(x2);
 			mkFalse.Fill(k2.M());
-			meeepiFalse.Fill(ee2.M(), (tem+t2pi).M());
-			meekFalse.Fill(ee2.M(), k2.M());
+			meeepiFalse.Fill(x2, (tem+t2pi).M());
+			meekFalse.Fill(x2, k2.M());
 
-			meeDiffFalse.Fill(ee2.M()-Mpi0);
-			mkDiffFalse.Fill(k2.M()-Mk);
+			meeDiffFalse.Fill(x2-Mpi0);
+			mkDiffFalse.Fill(k2.M2()-pow(Mpi0,2));
 
 			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
 			xFalse = pow((tem+t2ep).M()/Mpi0, 2.);
 		}
 		else if(pic==goodTrack1){
-			meeTrue.Fill(ee2.M());
+			meeTrue.Fill(x2);
 			mkTrue.Fill(k2.M());
-			meeepiTrue.Fill(ee2.M(), (tem+t2pi).M());
-			meekTrue.Fill(ee2.M(), k2.M());
+			meeepiTrue.Fill(x2, (tem+t2pi).M());
+			meekTrue.Fill(x2, k2.M());
 
-			meeDiffTrue.Fill(ee2.M()-Mpi0);
-			mkDiffTrue.Fill(k2.M()-Mk);
+			meeDiffTrue.Fill(x2-Mpi0);
+			mkDiffTrue.Fill(k2.M2()-pow(Mpi0,2));
 
-			meeFalse.Fill(ee1.M());
+			meeFalse.Fill(x1);
 			mkFalse.Fill(k1.M());
-			meeepiFalse.Fill(ee1.M(), (tem+t1pi).M());
-			meekFalse.Fill(ee1.M(), k1.M());
+			meeepiFalse.Fill(x1, (tem+t1pi).M());
+			meekFalse.Fill(x1, k1.M());
 
-			meeDiffFalse.Fill(ee1.M()-Mpi0);
-			mkDiffFalse.Fill(k1.M()-Mk);
+			meeDiffFalse.Fill(x1-Mpi0);
+			mkDiffFalse.Fill(k1.M2()-pow(Mpi0,2));
 
 			xTrue = pow((tem+t2ep).M()/Mpi0,2.);
 			xFalse = pow((tem+t1ep).M()/Mpi0, 2.);
