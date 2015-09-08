@@ -552,7 +552,7 @@ void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* r
 	ratio->GetXaxis()->SetLabelSize(15);
 }
 
-void drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
+TCanvas* drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
 	TCanvas *c1 = new TCanvas(TString::Format("c%li", iCanvas), name);
 	TH1D* r = buildRatio(stack, data, name);
 
@@ -562,6 +562,7 @@ void drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
 	//c1->Update();
 	//c1->Draw();
 	++iCanvas;
+	return c1;
 }
 
 void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
@@ -595,9 +596,11 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 	dSig->at(0).at(index)->SetLineColor(kRed);
 	if(legendTitle) leg->AddEntry(dSig->at(0).at(index),dataLegendTitle[0].Data(),"lep");
 	
-	drawCanvas(name, hStack, dSig->at(0).at(index), leg);
+	TCanvas *c = drawCanvas(name, hStack, dSig->at(0).at(index), leg);
 
 	hStack->Write();
+	cout << name+".png" << endl;
+	c->SaveAs(name+".png");
 }
 
 void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){

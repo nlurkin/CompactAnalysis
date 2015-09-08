@@ -33,6 +33,12 @@ target_link_libraries(make_bins common exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(prepareWeights common exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(toyMC common exportClasses ${ROOT_LIBRARIES} Minuit) 
 
+add_custom_command(TARGET combine
+                   POST_BUILD
+                   COMMAND ./gitcommit.sh
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                   COMMENT "Running git commit")
+
 install(TARGETS combine DESTINATION .)
 install(TARGETS fit DESTINATION .)
 install(TARGETS make_bins DESTINATION .)
