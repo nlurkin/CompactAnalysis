@@ -420,18 +420,20 @@ public:
 
 class ROOTMCEvent: public TObject{
 public:
-	ROOTMCEvent(): xTrue(-1), ep(11), em(-11){};
+	ROOTMCEvent(): xTrue(-1), ep(11), em(-11), k(321){};
 	~ROOTMCEvent(){};
 
 	void clear(){
 		xTrue = -1;
 		ep.clear();
 		em.clear();
+		k.clear();
 	}
 public:
 	float xTrue;
 	NMCParticle ep;
 	NMCParticle em;
+	NMCParticle k;
 
 	ClassDefNV(ROOTMCEvent, 1);
 };
