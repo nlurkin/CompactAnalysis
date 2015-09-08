@@ -25,29 +25,45 @@ NAbcog_params abcog_params;
 //int xPDGId;
 //NRecoParticle *xRootPhysics;
 
-// ### Histograms
 const int stdNbins = 1000;
-TH1D meeTrue = TH1D("meeTrue", "m_{#pi^{0}} (Good combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
+// ### Histograms for Michal pre_pid
+TH1D meeTrue = TH1D("meeTrue", "m_{e^{+}e^{-}} (Good combination);m_{e^{+}e^{-}}", stdNbins, 0, 6);
+TH1D m2pi0True = TH1D("m2pi0True", "m^{2}_{#pi^{0}} (Good combination);m^{2}_{#pi^{0}}", stdNbins, -1, 1);
+TH2D mee2pi0True = TH2D("mee2pi0True", "m^{2}_{#pi^{0}} vs. m_{e^{+}e^{-}} (Good combination);m_{e^{+}e^{-}};m^{2}_{#pi^{0}}", stdNbins, 0, 6, stdNbins, -1, 1);
+
+TH1D meeFalse = TH1D("meeFalse", "m_{e^{+}e^{-}} (Wrong combination);m_{e^{+}e^{-}}", stdNbins, 0, 6);
+TH1D m2pi0False = TH1D("m2pi0False", "m_{#pi^{0}} (Wrong combination);m_{#pi^{0}}", stdNbins, -1, 1);
+TH2D mee2pi0False = TH2D("mee2pi0False", "m^{2}_{#pi^{0}} vs. m_{e^{+}e^{-}} (Wrong combination);m_{e^{+}e^{-}};m^{2}_{#pi^{0}}", stdNbins, 0, 6, stdNbins, -1, 1);
+
+TH1D meeTotal = TH1D("meeTotal", "m_{e^{+}e^{-}} (Both combinations);m_{e^{+}e^{-}}", stdNbins, 0, 6);
+TH1D m2pi0Total = TH1D("m2pi0Total", "m_{#pi^{0}} (Both combinations);m_{#pi^{0}}", stdNbins, -1, 1);
+TH2D mee2pi0Total = TH2D("mee2pi0Total", "m^{2}_{#pi^{0}} vs. m_{e^{+}e^{-}} (Both combinations);m_{e^{+}e^{-}};m^{2}_{#pi^{0}}", stdNbins, 0, 6, stdNbins, -1, 1);
+
+TH1D m2pi0DiffTrue = TH1D("m2pi0DiffTrue", "m^{2}_{#pi^{0}}^{reco}-0.02 (Good combination);m^{2}_{#pi^{0}}^{reco}-0.02", stdNbins, -1, 1);
+
+TH1D m2pi0DiffFalse = TH1D("m2pi0DiffFalse", "m^{2}_{#pi^{0}}^{reco}-0.02 (Wrong combination);m^{2}_{#pi^{0}}^{reco}-0.02", stdNbins, -1, 1);
+
+// ### Histograms for pid
+TH1D meegTrue = TH1D("meegTrue", "m_{#pi^{0}} (Good combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
 TH1D mkTrue = TH1D("mkTrue", "m_{K} (Good combination);m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeexTrue = TH2D("meeexTrue", "m_{e^{#pm}#x^{#mp}} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{e^{#pm}#x^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekTrue = TH2D("meekTrue", "m_{K} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH2D meegexTrue = TH2D("meegexTrue", "m_{e^{#pm}#x^{#mp}} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{e^{#pm}#x^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meegkTrue = TH2D("meegkTrue", "m_{K} vs. m_{#pi^{0}} (Good combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeFalse = TH1D("meeFalse", "m_{#pi^{0}} (Wrong combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D meegFalse = TH1D("meegFalse", "m_{#pi^{0}} (Wrong combination);m_{#pi^{0}}", stdNbins, 0, 0.6);
 TH1D mkFalse = TH1D("mkFalse", "m_{K} (Wrong combination);m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeexFalse = TH2D("meeexFalse", "m_{e^{#pm}#x^{#mp}} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{e^{#pm}#x^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekFalse = TH2D("meekFalse", "m_{K} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH2D meegexFalse = TH2D("meegexFalse", "m_{e^{#pm}#x^{#mp}} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{e^{#pm}#x^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meegkFalse = TH2D("meegkFalse", "m_{K} vs. m_{#pi^{0}} (Wrong combination);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeTotal = TH1D("meeTotal", "m_{#pi^{0}} (Both combinations);m_{#pi^{0}}", stdNbins, 0, 0.6);
+TH1D meegTotal = TH1D("meegTotal", "m_{#pi^{0}} (Both combinations);m_{#pi^{0}}", stdNbins, 0, 0.6);
 TH1D mkTotal = TH1D("mkTotal", "m_{K} (Both combinations);m_{K}", stdNbins, 0.15, 0.8);
-TH2D meeexTotal = TH2D("meeexTotal", "m_{e^{#pm}#x^{#mp}} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{e^{#pm}#x^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
-TH2D meekTotal = TH2D("meekTotal", "m_{K} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
+TH2D meegexTotal = TH2D("meegexTotal", "m_{e^{#pm}#x^{#mp}} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{e^{#pm}#x^{#mp}}", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D meegkTotal = TH2D("meegkTotal", "m_{K} vs. m_{#pi^{0}} (Both combinations);m_{#pi^{0}};m_{K}", stdNbins, 0, 0.6, stdNbins, 0, 1);
 
-TH1D meeDiffTrue = TH1D("meeDiffTrue", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Good combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
+TH1D meegDiffTrue = TH1D("meegDiffTrue", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Good combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
 TH1D mkDiffTrue = TH1D("mkDiffTrue", "m_{K}^{reco}-M_{K} (Good combination);m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
 
-TH1D meeDiffFalse = TH1D("meeDiffFalse", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Wrong combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
+TH1D meegDiffFalse = TH1D("meegDiffFalse", "m_{#pi^{0}}^{reco}-M_{#pi^{0}} (Wrong combination);m_{#pi^{0}}^{reco}-M_{#pi^{0}}", stdNbins, -0.2, 0.5);
 TH1D mkDiffFalse = TH1D("mkDiffFalse", "m_{K}^{reco}-M_{K} (Wrong combination);m_{K}^{reco}-M_{K}", stdNbins, -0.4, 0.4);
-
 
 TH1D nxCandidates = TH1D("nxCandidates", "nxCandidates", 20, 0, 20);
 TH1D nxCandidatesNew = TH1D("nxCandidatesNew", "nxCandidatesNew", 20, 0, 20);
@@ -63,7 +79,7 @@ TH1D xMCManyID = TH1D("xMCManyID", "xMCManyID", 2*stdNbins, 0, 2);
 TH2D xTruexMCMany = TH2D("xTruexMCMany", "xTruexMCMany", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
 TH2D xTruexMCNo = TH2D("xTruexMCNo", "xTruexMCNo", 2*stdNbins, 0, 2, 2*stdNbins, 0, 2);
 
-TH2D combi2Dpi = TH2D("combi2Dpi", "combi2Dpi", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
+TH2D combi2Deeg = TH2D("combi2Deeg", "combi2Deeg", stdNbins, 0, 0.6, stdNbins, 0, 0.6);
 TH2D combi2Dk = TH2D("combi2Dk", "combi2Dk", stdNbins, 0.15, 0.8, stdNbins, 0.15, 0.8);
 TH2D combi2Dk_exclu = TH2D("combi2Dk_exclu", "combi2Dk_exclu", stdNbins, 0.15, 0.8, stdNbins, 0.15, 0.8);
 
@@ -84,6 +100,118 @@ bool flBad;
 double xTrue, xFalse;
 //bool isK2PiType = true;
 //bool isKMu3Type = true;
+
+int michal_prepid(int &xCandidate, OptionsParser::ESelectionType t){
+	TLorentzVector tem;
+	TLorentzVector t1ep, t1pi;
+	TLorentzVector t2ep, t2pi;
+	TLorentzVector pi01, pi02;
+	double x1, x2;
+
+	int goodTrack1, goodTrack2;
+
+	int nCandidates = 0;
+
+	int nNegative = 0;
+	int vtxCharge = rawEvent.vtx[corrEvent.goodVertexID].charge;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 1;
+		goodTrack2 = 2;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Me);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 2;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Me);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 1;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Me);
+		nNegative++;
+	}
+
+	nBeamSign.Fill(nNegative);
+	if(nNegative!=1) return 0;
+
+	TLorentzVector myKaon;
+	myKaon.SetVectM(corrEvent.kaonMomentum*corrEvent.kaonP, abcog_params.mkp);
+
+	//Try e = goodTrack1, pi = goodTrack2
+	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
+	t1pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Mpic);
+	x1 = (tem+t1ep).M2()/pow(Mpi0,2);
+	pi01 = myKaon - t1pi;
+
+	//Try e = goodTrack2, pi = goodTrack1
+	t2pi.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Mpic);
+	t2ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
+	x2 = (tem+t2ep).M2()/pow(Mpi0,2);
+	pi02 = myKaon - t2pi;
+
+	double diffpi01, diffpi02;
+
+	if(t==OptionsParser::K2PI){
+		diffpi01 = fabs(pi01.M2() - 0.02);
+		diffpi02 = fabs(pi02.M2() - 0.02);
+	}
+	else if(t==OptionsParser::KMU3){
+		//Bypass the missing mass cut
+		diffpi01 = 0;
+		diffpi02 = 0;
+	}
+
+	if( (x1<1) && (diffpi01<0.01) ){
+		nCandidates++;
+		xCandidate = goodTrack2;
+	}
+
+	if( (x2<1) && (diffpi02<0.01) ){
+		nCandidates++;
+		xCandidate = goodTrack1;
+	}
+
+	meeTotal.Fill(x1);
+	meeTotal.Fill(x2);
+	m2pi0Total.Fill(pi01.M2());
+	m2pi0Total.Fill(pi02.M2());
+	mee2pi0Total.Fill(x1, pi01.M2());
+	mee2pi0Total.Fill(x2, pi02.M2());
+
+	if(!flBad){
+		//Good MC association, fill the plots
+		if(xPart==goodTrack2){
+			meeTrue.Fill(x1);
+			m2pi0True.Fill(pi01.M2());
+			mee2pi0True.Fill(x1, pi01.M2());
+
+			m2pi0DiffTrue.Fill(pi01.M2()-0.02);
+
+			meeFalse.Fill(x2);
+			m2pi0False.Fill(pi02.M2());
+			mee2pi0False.Fill(x2, pi02.M2());
+
+			m2pi0DiffFalse.Fill(pi02.M2()-0.02);
+		}
+		else if(xPart==goodTrack1){
+			meeTrue.Fill(x2);
+			m2pi0True.Fill(pi02.M2());
+			mee2pi0True.Fill(x2, pi02.M2());
+
+			m2pi0DiffTrue.Fill(pi02.M2()-0.02);
+
+			meeFalse.Fill(x1);
+			m2pi0False.Fill(pi01.M2());
+			mee2pi0False.Fill(x1, pi01.M2());
+
+			m2pi0DiffFalse.Fill(pi01.M2()-0.02);
+		}
+	}
+
+	return nCandidates;
+}
 
 int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t){
 	TLorentzVector tem;
@@ -171,16 +299,16 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 		}
 	}
 
-	meeTotal.Fill(ee1.M());
-	meeTotal.Fill(ee2.M());
+	meegTotal.Fill(ee1.M());
+	meegTotal.Fill(ee2.M());
 	mkTotal.Fill(k1.M());
 	mkTotal.Fill(k2.M());
-	meeexTotal.Fill(ee1.M(), (tem+t1x).M());
-	meeexTotal.Fill(ee2.M(), (tem+t2x).M());
-	meekTotal.Fill(ee1.M(), k1.M());
-	meekTotal.Fill(ee2.M(), k2.M());
+	meegexTotal.Fill(ee1.M(), (tem+t1x).M());
+	meegexTotal.Fill(ee2.M(), (tem+t2x).M());
+	meegkTotal.Fill(ee1.M(), k1.M());
+	meegkTotal.Fill(ee2.M(), k2.M());
 
-	combi2Dpi.Fill(ee1.M(), ee2.M());
+	combi2Deeg.Fill(ee1.M(), ee2.M());
 	combi2Dk.Fill(k1.M(), k2.M());
 
 	if(t==OptionsParser::K2PI){
@@ -197,40 +325,40 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	if(!flBad){
 		//Good MC association, fill the plots
 		if(xPart==goodTrack2){
-			meeTrue.Fill(ee1.M());
+			meegTrue.Fill(ee1.M());
 			mkTrue.Fill(k1.M());
-			meeexTrue.Fill(ee1.M(), (tem+t1x).M());
-			meekTrue.Fill(ee1.M(), k1.M());
+			meegexTrue.Fill(ee1.M(), (tem+t1x).M());
+			meegkTrue.Fill(ee1.M(), k1.M());
 
-			meeDiffTrue.Fill(ee1.M()-Mpi0);
+			meegDiffTrue.Fill(ee1.M()-Mpi0);
 			mkDiffTrue.Fill(k1.M()-Mk);
 
-			meeFalse.Fill(ee2.M());
+			meegFalse.Fill(ee2.M());
 			mkFalse.Fill(k2.M());
-			meeexFalse.Fill(ee2.M(), (tem+t2x).M());
-			meekFalse.Fill(ee2.M(), k2.M());
+			meegexFalse.Fill(ee2.M(), (tem+t2x).M());
+			meegkFalse.Fill(ee2.M(), k2.M());
 
-			meeDiffFalse.Fill(ee2.M()-Mpi0);
+			meegDiffFalse.Fill(ee2.M()-Mpi0);
 			mkDiffFalse.Fill(k2.M()-Mk);
 
 			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
 			xFalse = pow((tem+t2ep).M()/Mpi0, 2.);
 		}
 		else if(xPart==goodTrack1){
-			meeTrue.Fill(ee2.M());
+			meegTrue.Fill(ee2.M());
 			mkTrue.Fill(k2.M());
-			meeexTrue.Fill(ee2.M(), (tem+t2x).M());
-			meekTrue.Fill(ee2.M(), k2.M());
+			meegexTrue.Fill(ee2.M(), (tem+t2x).M());
+			meegkTrue.Fill(ee2.M(), k2.M());
 
-			meeDiffTrue.Fill(ee2.M()-Mpi0);
+			meegDiffTrue.Fill(ee2.M()-Mpi0);
 			mkDiffTrue.Fill(k2.M()-Mk);
 
-			meeFalse.Fill(ee1.M());
+			meegFalse.Fill(ee1.M());
 			mkFalse.Fill(k1.M());
-			meeexFalse.Fill(ee1.M(), (tem+t1x).M());
-			meekFalse.Fill(ee1.M(), k1.M());
+			meegexFalse.Fill(ee1.M(), (tem+t1x).M());
+			meegkFalse.Fill(ee1.M(), k1.M());
 
-			meeDiffFalse.Fill(ee1.M()-Mpi0);
+			meegDiffFalse.Fill(ee1.M()-Mpi0);
 			mkDiffFalse.Fill(k1.M()-Mk);
 
 			xTrue = pow((tem+t2ep).M()/Mpi0,2.);
@@ -251,6 +379,7 @@ int pi0d_tracksAcceptance(){
 	TVector3 dch2(rootGeom.Dch[1].PosChamber.x,rootGeom.Dch[1].PosChamber.y,rootGeom.Dch[1].PosChamber.z);
 	TVector3 dch4(rootGeom.Dch[3].PosChamber.x,rootGeom.Dch[3].PosChamber.y,rootGeom.Dch[3].PosChamber.z);
 
+	int ntrackLkr = 0;
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); ++i){
 		int iGoodTrack = corrEvent.goodTracks[i];
 		NPhysicsTrack t = corrEvent.pTrack[iGoodTrack];
@@ -258,12 +387,15 @@ int pi0d_tracksAcceptance(){
 		propPos = propagateAfter(rootGeom.Lkr.z, t);
 		lkrAcceptance = t.lkr_acc;
 		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
-		if(lkrAcceptance!=0) badTrack = true;
+		//to remove
+		//if(lkrAcceptance!=0) badTrack = true;
+		if(lkrAcceptance!=0 && t.p>=5) ntrackLkr++;
 
 		// Track position on LKr with Pb Wall
 		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
-			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
+			//to remove
+			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
 		}
 
 		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
@@ -282,6 +414,8 @@ int pi0d_tracksAcceptance(){
 		if(radius<12 || radius>110) badTrack = true;
 	}
 
+	//At least 1 track in lkr acceptance
+	if(ntrackLkr==0) badTrack = true;
 	return badTrack;
 }
 
@@ -327,7 +461,8 @@ int pi0d_trackCombinationVeto_loose(){
 
 			RLKr = distance2D(propPos1, propPos2);
 			if(options.isOptDebug()) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
-			if(RLKr<=20) bad = true;
+			//to remove
+			//if(RLKr<=20) bad = true;
 
 			if(bad) badCombis++;
 		}
@@ -545,25 +680,43 @@ void pi0d_passSelection(){
 }
 
 void savePlots(){
+	//Michal ones
 	meeTrue.Write();
-	mkTrue.Write();
-	meeexTrue.Write();
-	meekTrue.Write();
+	m2pi0True.Write();
+	mee2pi0True.Write();
 
 	meeTotal.Write();
-	mkTotal.Write();
-	meeexTotal.Write();
-	meekTotal.Write();
+	m2pi0Total.Write();
+	mee2pi0Total.Write();
 
-	meeDiffTrue.Write();
-	mkDiffTrue.Write();
+	m2pi0DiffTrue.Write();
 
 	meeFalse.Write();
-	mkFalse.Write();
-	meeexFalse.Write();
-	meekFalse.Write();
+	m2pi0False.Write();
+	mee2pi0False.Write();
 
-	meeDiffFalse.Write();
+	m2pi0DiffFalse.Write();
+
+	//PID ones
+	meegTrue.Write();
+	mkTrue.Write();
+	meegexTrue.Write();
+	meegkTrue.Write();
+
+	meegTotal.Write();
+	mkTotal.Write();
+	meegexTotal.Write();
+	meegkTotal.Write();
+
+	meegDiffTrue.Write();
+	mkDiffTrue.Write();
+
+	meegFalse.Write();
+	mkFalse.Write();
+	meegexFalse.Write();
+	meegkFalse.Write();
+
+	meegDiffFalse.Write();
 	mkDiffFalse.Write();
 
 	nxCandidates.Write();
@@ -578,7 +731,7 @@ void savePlots(){
 	xTruexMCMany.Write();
 	xTruexMCNo.Write();
 
-	combi2Dpi.Write();
+	combi2Deeg.Write();
 	combi2Dk.Write();
 	combi2Dk_exclu.Write();
 
@@ -643,7 +796,7 @@ int pi0d_identifyPiEOP(int &piCandidate, bool &badElectron){
 }
 
 
-bool associateMCTracks(struct alt_pid_res &pid_res){
+bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_mu){
 	double limit = 2e-4;
 	bool flBad = false;
 
@@ -664,10 +817,12 @@ bool associateMCTracks(struct alt_pid_res &pid_res){
 		if(ep2!=-1) ep=ep2;
 		if(ep3!=-1) ep=ep3;
 		pid_res.good[pid_res.currentID]++;
+		if(pid_res_mu) pid_res_mu->good[pid_res_mu->currentID]++;
 	}
 	else{
 		flBad = true;
 		pid_res.bad[pid_res.currentID]++;
+		if(pid_res_mu) pid_res_mu->bad[pid_res_mu->currentID]++;
 	}
 
 	if((em1==-1 && em2==-1 && em3!=-1) || (em1==-1 && em2!=-1 && em3==-1) || (em1!=-1 && em2==-1 && em3==-1)){
@@ -676,9 +831,11 @@ bool associateMCTracks(struct alt_pid_res &pid_res){
 		if(em2!=-1) em=em2;
 		if(em3!=-1) em=em3;
 		pid_res.good[pid_res.currentID]++;
+		if(pid_res_mu) pid_res_mu->good[pid_res_mu->currentID]++;
 	}
 	else{
 		pid_res.bad[pid_res.currentID]++;
+		if(pid_res_mu) pid_res_mu->bad[pid_res_mu->currentID]++;
 		flBad = true;
 	}
 	//if(em==ep){ // Both are identified to the same tracks
@@ -692,6 +849,7 @@ bool associateMCTracks(struct alt_pid_res &pid_res){
 		else if((ep==0 && em==2) || (ep==2 && em==0)) xPart=1;
 		else if((ep==1 && em==2) || (ep==2 && em==1)) xPart=0;
 		pid_res.incAssociated();
+		if(pid_res_mu) pid_res_mu->incAssociated();
 	}
 	else{
 		ep = -1;

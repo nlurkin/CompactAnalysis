@@ -40,6 +40,7 @@ public:
 		double maxPi0MassDiff;
 		double minKaonMassDiff;
 		double maxKaonMassDiff;
+		double pi0Mass2DiffCoarse;
 	} k2pi;
 	struct kmu3_t{
 		int maxTotalMomentum;

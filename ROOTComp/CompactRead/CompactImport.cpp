@@ -57,6 +57,19 @@ bool CompactImport::readInput(TString fName, bool isList) {
 			headerTree->AddFile(inputFileName);
 		}
 	} else {
+		if (fName.Contains("/castor/")
+				&& !fName.Contains(
+						"root://castorpublic.cern.ch//")) {
+			TString svcClass = getenv("STAGE_SVCCLASS");
+			if (svcClass == "")
+				svcClass = "na62";
+			fName = "root://castorpublic.cern.ch//" + fName
+					+ "?svcClass=" + svcClass;
+		}
+		if (fName.Contains("/eos/")
+				&& !fName.Contains("root://eosna62.cern.ch//")) {
+			fName = "root://eosna62.cern.ch//" + fName;
+		}
 		inTree->AddFile(fName);
 		headerTree->AddFile(fName);
 	}

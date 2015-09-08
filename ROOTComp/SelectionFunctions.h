@@ -36,25 +36,25 @@ extern NAbcog_params abcog_params;
 //extern NRecoParticle *xRootPhysics;
 
 // ### Histograms
-extern TH1D meeTrue;
+extern TH1D meegTrue;
 extern TH1D mkTrue;
-extern TH2D meeexTrue;
-extern TH2D meekTrue;
+extern TH2D meegexTrue;
+extern TH2D meegkTrue;
 
-extern TH1D meeFalse;
+extern TH1D meegFalse;
 extern TH1D mkFalse;
-extern TH2D meeexFalse;
-extern TH2D meekFalse;
+extern TH2D meegexFalse;
+extern TH2D meegkFalse;
 
-extern TH1D meeTotal;
+extern TH1D meegTotal;
 extern TH1D mkTotal;
-extern TH2D meeexTotal;
-extern TH2D meekTotal;
+extern TH2D meegexTotal;
+extern TH2D meegkTotal;
 
-extern TH1D meeDiffTrue;
+extern TH1D meegDiffTrue;
 extern TH1D mkDiffTrue;
 
-extern TH1D meeDiffFalse;
+extern TH1D meegDiffFalse;
 extern TH1D mkDiffFalse ;
 
 extern TH1D nxCandidates;
@@ -71,7 +71,7 @@ extern TH1D xMCManyID;
 extern TH2D xTruexMCMany;
 extern TH2D xTruexMCNo;
 
-extern TH2D combi2Dpi;
+extern TH2D combi2Deeg;
 extern TH2D combi2Dk;
 extern TH2D combi2Dk_exclu;
 
@@ -101,6 +101,7 @@ extern double xFalse;
 
 #define PRINTVAR(v) #v << "= " << v << " "
 
+int michal_prepid(int &xCandidate, OptionsParser::ESelectionType t);
 int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t);
 int pi0d_tracksAcceptance();
 int pi0d_trackCombinationVeto_loose();
@@ -112,7 +113,7 @@ bool pi0d_failCutInc(int i, bool assoc, bool good, bool bad, struct alt_pid_res 
 void pi0d_passSelection();
 vector<float> sortEOP();
 int pi0d_identifyPiEOP(int &piCandidate, bool &badElectron);
-bool associateMCTracks(struct alt_pid_res &pid_res);
+bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_mu);
 
 void savePlots();
 

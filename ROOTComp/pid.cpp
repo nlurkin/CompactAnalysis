@@ -78,6 +78,14 @@ bool nico_pi0DalitzSelect(){
 	if(options.isOptDebug()) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
 	if(badCombis!=io.cutsDefinition.numBadTrackCombi) {pi0d_failCut(8+firstCutIndex); return false;}
 
+	// 4) Michal pre identification
+	int nPreCandidates;
+	int xPreSelected;
+	if(options.isOptDebug()) cout << "~~~~ Cut 4 ~~~~" << endl;
+	nPreCandidates = michal_prepid(xPreSelected, OptionsParser::KMU3);
+	if(options.isOptDebug()) cout << "Michal pre-id:\t\t " << nPreCandidates << "\t == 0 : rejected" << endl;
+	if(nPreCandidates==0) {pi0d_failCut(9+firstCutIndex); return false;}
+
 	// 4) Exactly 1 good LKr cluster
 	if(options.isOptDebug()) cout << "~~~~ Cut 4 ~~~~" << endl;
 	goodClusters = pi0d_goodClusters_loose();
@@ -175,7 +183,7 @@ bool nico_pi0DalitzSelect(){
 
 	bool good=false, bad=false;
 
-	flBad = associateMCTracks(pid_res);
+	flBad = associateMCTracks(pid_res, NULL);
 	pid_res.incPrelim();
 
 

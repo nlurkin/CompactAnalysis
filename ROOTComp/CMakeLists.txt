@@ -43,4 +43,10 @@ target_link_libraries(alt_id ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
 #target_link_libraries(alt_id_kmu3 exportClasses funLib) #Compact
 #target_link_libraries(alt_id_kmu3 ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
 
+add_custom_command(TARGET pi0d_selection
+                   POST_BUILD
+                   COMMAND ./gitcommit.sh
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                   COMMENT "Running git commit")
+
 install(TARGETS pi0d_selection alt_id DESTINATION .)

@@ -44,6 +44,7 @@ Cuts::Cuts(){
 	k2pi.minKaonMassDiff = 0.475;
 	k2pi.maxKaonMassDiff = 0.02;
 	kmu3.maxMissMassSq = 0.01;
+	k2pi.pi0Mass2DiffCoarse = 0.01;
 }
 
 void Cuts::print(){
@@ -74,6 +75,7 @@ void Cuts::print(){
 	std::cout << "maxPi0MassDiff\t\t--> " << k2pi.maxPi0MassDiff << std::endl;
 	std::cout << "minKaonMassDiff\t\t--> " << k2pi.minKaonMassDiff << std::endl;
 	std::cout << "maxKaonMassDiff\t\t--> " << k2pi.maxKaonMassDiff << std::endl;
+	std::cout << "pi0Mass2DiffCoarse\t\t--> " << k2pi.pi0Mass2DiffCoarse << std::endl;
 	std::cout << "  -> KMu3 specific" << std::endl;
 	std::cout << "maxTotalMomentum\t--> " << kmu3.maxTotalMomentum << std::endl;
 	std::cout << "minPt\t\t\t--> " << kmu3.minPt << std::endl;
@@ -231,6 +233,9 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			}
 			else if(name.compare("k2pi.maxKaonMassDiff")==0){
 				cutsLists[id].k2pi.maxKaonMassDiff = atof(value.c_str());
+			}
+			else if(name.compare("k2pi.pi0Mass2DiffCoarse")==0){
+				cutsLists[id].k2pi.pi0Mass2DiffCoarse = atof(value.c_str());
 			}
 			else if(name.compare("kmu3.maxTotalMomentum")==0){
 				cutsLists[id].kmu3.maxTotalMomentum = atoi(value.c_str());
