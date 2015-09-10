@@ -113,7 +113,7 @@ bool pi0d_failCutInc(int i, bool assoc, bool good, bool bad, struct alt_pid_res 
 void pi0d_passSelection();
 vector<float> sortEOP();
 int pi0d_identifyPiEOP(int &piCandidate, bool &badElectron);
-bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_mu);
+bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_mu=NULL);
 
 void savePlots();
 

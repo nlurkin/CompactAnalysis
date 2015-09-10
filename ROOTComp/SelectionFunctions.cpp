@@ -386,10 +386,10 @@ int pi0d_tracksAcceptance(){
 
 		propPos = propagateAfter(rootGeom.Lkr.z, t);
 		lkrAcceptance = t.lkr_acc;
-		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t != 0 : rejected" << endl;
+		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
 		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance!=0 && t.p>=5) ntrackLkr++;
+		if(lkrAcceptance==0 && t.p>=5) ntrackLkr++;
 
 		// Track position on LKr with Pb Wall
 		if(rootBurst.pbWall){
