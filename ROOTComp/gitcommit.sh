@@ -10,6 +10,7 @@ git add Support/*.h Support/*.cpp Support/CMakeLists.txt
 git commit -m "Automatic commit"
 git push origin automatic
 
-autoCommit=`git branch -v | grep automatic | tr -s " " | cut -f 3 -d " "`
-git checkout $currBranch
-git cherry-pick --no-commit $autoCommit
+#autoCommit=`git branch -v | grep automatic | tr -s " " | cut -f 3 -d " "`
+git reset $currBranch
+#git checkout $currBranch
+#git cherry-pick --no-commit $autoCommit
