@@ -265,11 +265,11 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	if(epeop > 0.85 && epeop < 1.15 && emeop > 0.85 && emeop < 1.15) eopx_goode.Fill(xeop);
 	else eopx_bade.Fill(xeop);
 
-	/*// 14) Track combination veto
+	// 14) Track combination veto
 	if(options.isOptDebug()) cout << "~~~~ Cut 14 ~~~~" << endl;
-	badCombis = pi0d_trackCombinationVeto_tight();
+	int badCombis = pi0d_trackCombinationVeto_tight(tempObj.piEvent.pic);
 	if(options.isOptDebug()) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
-	if(badCombis!=io.cutsDefinition.numBadTrackCombi) return 14+firstCutIndex;*/
+	if(badCombis!=io.cutsDefinition.numBadTrackCombi) return 14+firstCutIndex;
 	
 	// 15) Exactly 1 good LKr cluster (tight)
 	if(options.isOptDebug()) cout << "~~~~ Cut 15 ~~~~" << endl;

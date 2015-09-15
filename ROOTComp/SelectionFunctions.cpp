@@ -388,14 +388,14 @@ int pi0d_tracksAcceptance(){
 		lkrAcceptance = t.lkr_acc;
 		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
-		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance==0 && t.p>=5) ntrackLkr++;
+		if(lkrAcceptance!=0) badTrack = true;
+		//if(lkrAcceptance==0 && t.p>=5) ntrackLkr++;
 
 		// Track position on LKr with Pb Wall
 		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			//to remove
-			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
+			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
 		}
 
 		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
@@ -415,7 +415,7 @@ int pi0d_tracksAcceptance(){
 	}
 
 	//At least 1 track in lkr acceptance
-	if(ntrackLkr==0) badTrack = true;
+	//if(ntrackLkr==0) badTrack = true;
 	return badTrack;
 }
 
