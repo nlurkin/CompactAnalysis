@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <TApplication.h>
+#include <iomanip>
 using namespace std;
 
 void setStyle();
@@ -271,7 +272,11 @@ void readFilesFill(){
 			localFiles.push_back(mcFileNames[i]);
 		}
 
+		int iFile=0;
+		double totalFiles = localFiles.size();
 		for(auto files : localFiles){
+			cout << "Processing file " << files << setprecision(2) << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+			cout << "Br: " << brs[prevIndex] << endl;
 			ffd = TFile::Open(files);
 
 			//Request the TTree reading function
@@ -279,6 +284,7 @@ void readFilesFill(){
 
 			//Close the input file
 			ffd->Close();
+			iFile++;
 		}
 	}
 
@@ -295,13 +301,34 @@ void readFilesFill(){
 		++inputDataNbr;
 		//Open new input file
 		cout << dataFileNames[i] << endl;
-		ffd = TFile::Open(dataFileNames[i]);
 
-		//Request the TTree reading function
-		Input::getInputDataFill(ffd, fdo);
+		vector<TString> localFiles;
+		if(!dataFileNames[i].Contains(".root")){
+			cout << "List file detected..." << endl;
+			ifstream listFile(dataFileNames[i]);
+			string buffer;
+			while(getline(listFile, buffer)){
+				localFiles.push_back(buffer);
+			}
+		}
+		else{
+			localFiles.push_back(dataFileNames[i]);
+		}
 
-		//Close input file
-		ffd->Close();
+		int iFile=0;
+		double totalFiles = localFiles.size();
+		for(auto files : localFiles){
+			cout << "Processing file " << files << setprecision(2) << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+
+			ffd = TFile::Open(files);
+
+			//Request the TTree reading function
+			Input::getInputDataFill(ffd, fdo);
+
+			//Close input file
+			ffd->Close();
+			iFile++;
+		}
 	}
 
 	//Close last output file
