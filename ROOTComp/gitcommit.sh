@@ -12,5 +12,5 @@ git push origin automatic
 
 #autoCommit=`git branch -v | grep automatic | tr -s " " | cut -f 3 -d " "`
 git reset $currBranch
-#git checkout $currBranch
+git checkout $currBranch
 #git cherry-pick --no-commit $autoCommit

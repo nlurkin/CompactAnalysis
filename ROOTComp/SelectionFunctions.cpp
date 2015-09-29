@@ -388,8 +388,13 @@ int pi0d_tracksAcceptance(){
 		lkrAcceptance = t.lkr_acc;
 		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
+<<<<<<< HEAD
 		//if(lkrAcceptance!=0) badTrack = true;
 		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.85) ntrackLkr++;
+=======
+		if(lkrAcceptance!=0) badTrack = true;
+		//if(lkrAcceptance==0 && t.p>=5) ntrackLkr++;
+>>>>>>> feature/alt_pid
 
 		// Track position on LKr with Pb Wall
 		if(rootBurst.pbWall){
@@ -414,8 +419,13 @@ int pi0d_tracksAcceptance(){
 		if(radius<12 || radius>110) badTrack = true;
 	}
 
+<<<<<<< HEAD
 	//At least 1 e+/e- track in lkr acceptance
 	if(ntrackLkr==0) badTrack = true;
+=======
+	//At least 1 track in lkr acceptance
+	//if(ntrackLkr==0) badTrack = true;
+>>>>>>> feature/alt_pid
 	return badTrack;
 }
 
@@ -646,11 +656,13 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
+		//cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>50) cond++;
+		//cond++;
 
 		// |t_g - t_vtx|<10ns
 		if(rootBurst.isData){

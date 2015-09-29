@@ -10,6 +10,7 @@
 #include <TCanvas.h>
 #include "../userinc/exportClasses.h"
 #include <TGaxis.h>
+#include <iomanip>
 using namespace std;
 
 #define MAXEVENTS 0
@@ -347,6 +348,8 @@ namespace Input{
 		cout << "Filling " << nevt << endl;
 		double weight = 1.;
 		for(int i=0; i<nevt; ++i){
+			if(i % 10000 == 0) cout << setprecision(2) << i/(double)nevt << "% " << i << "/" << nevt << "\r";
+			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
 			weight = applyWeights(burstBrch->nrun);
@@ -402,6 +405,8 @@ namespace Input{
 
 		cout << "Filling data " << nevt << endl;
 		for(i=0; i<nevt; i++){
+			if(i % 10000 == 0) cout << setprecision(2) << i/(double)nevt << "% " << i << "/" << nevt << "\r";
+			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
 			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch, rawBrch, corrBrch, mcEvent);
