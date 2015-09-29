@@ -386,17 +386,22 @@ int pi0d_tracksAcceptance(){
 
 		propPos = propagateAfter(rootGeom.Lkr.z, t);
 		lkrAcceptance = t.lkr_acc;
+		bool goodAcceptance = false;
 		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
 		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.85) ntrackLkr++;
+		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.85) goodAcceptance=true;
 
 		// Track position on LKr with Pb Wall
+		bool goodPBWall = true;
 		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			//to remove
 			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
+			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
 		}
+
+		if(goodAcceptance && goodPBWall) ntrackLkr++;
 
 		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
 		radius = distance2D(dch1, propPos);
