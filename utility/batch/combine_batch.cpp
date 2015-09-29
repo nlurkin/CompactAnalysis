@@ -348,7 +348,7 @@ namespace Input{
 		cout << "Filling " << nevt << endl;
 		double weight = 1.;
 		for(int i=0; i<nevt; ++i){
-			if(i % 10000 == 0) cout << setprecision(2) << i/(double)nevt << "% " << i << "/" << nevt << "\r";
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
@@ -405,7 +405,7 @@ namespace Input{
 
 		cout << "Filling data " << nevt << endl;
 		for(i=0; i<nevt; i++){
-			if(i % 10000 == 0) cout << setprecision(2) << i/(double)nevt << "% " << i << "/" << nevt << "\r";
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
