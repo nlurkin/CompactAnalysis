@@ -275,7 +275,7 @@ void readFilesFill(){
 		int iFile=0;
 		double totalFiles = localFiles.size();
 		for(auto files : localFiles){
-			cout << "Processing file " << files << setprecision(2) << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+			cout << "Processing file " << files << " " << setprecision(2) << std::fixed << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
 			cout << "Br: " << brs[prevIndex] << endl;
 			ffd = TFile::Open(files);
 
