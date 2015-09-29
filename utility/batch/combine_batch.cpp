@@ -328,10 +328,13 @@ namespace Input{
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 
-		th->GetEntry(0);
 		//Set event nb
 		int nevt = t->GetEntries();
-		int totalChanEvents = headerBrch->NProcessedEvents;
+		int totalChanEvents = 0;
+		for(int i=0; i<th->GetEntries(); i++){
+			th->GetEntry(i);
+			totalChanEvents += headerBrch->NProcessedEvents;
+		}
 		int processedEvents = 0;
 		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
 
