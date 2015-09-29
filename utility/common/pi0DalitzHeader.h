@@ -181,7 +181,8 @@ bool readConfig(TString confFile){
 		for(int i=0; i<tok->GetEntries(); ++i){
 			TString entry(((TObjString*)tok->At(i))->GetString());
 			if(key.CompareTo("mcfiles")==0){
-				if(entry.Contains(".root")) mcFileNames.push_back(entry);
+				mcFileNames.push_back(entry);
+				/*if(entry.Contains(".root")) mcFileNames.push_back(entry);
 				else{
 					ifstream fd(entry);
 					TString fileName;
@@ -189,7 +190,7 @@ bool readConfig(TString confFile){
 						mcFileNames.push_back(fileName);
 					}
 					fd.close();
-				}
+				}*/
 			}
 			else if(key.CompareTo("mcout")==0) mcOutputFiles.push_back(entry);
 			else if(key.CompareTo("modelfiles")==0) modelFiles.push_back(entry);
@@ -197,7 +198,8 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("mccolors")==0) mcColors.push_back(entry.Atoi());
 			else if(key.CompareTo("mclegends")==0) mcLegendTitle.push_back(entry);
 			else if(key.CompareTo("datafiles")==0){
-				if(entry.Contains(".root")) dataFileNames.push_back(entry);
+				dataFileNames.push_back(entry);
+				/*if(entry.Contains(".root")) dataFileNames.push_back(entry);
 				else{
 					ifstream fd(entry);
 					TString fileName;
@@ -205,7 +207,7 @@ bool readConfig(TString confFile){
 						dataFileNames.push_back(fileName);
 					}
 					fd.close();
-				}
+				}*/
 			}
 			else if(key.CompareTo("dataout")==0) dataOutputFiles.push_back(entry);
 			else if(key.CompareTo("datacolors")==0) dataColors.push_back(entry.Atoi());
