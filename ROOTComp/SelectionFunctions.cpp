@@ -395,7 +395,7 @@ int pi0d_tracksAcceptance(){
 		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			//to remove
-			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
+			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
 		}
 
 		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
