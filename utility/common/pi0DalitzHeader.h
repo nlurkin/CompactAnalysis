@@ -256,13 +256,28 @@ void readFilesFill(){
 
 		//Open new input file
 		cout << mcFileNames[i] << endl;
-		ffd = TFile::Open(mcFileNames[i]);
+		vector<TString> localFiles;
+		if(!mcFileNames[i].Contains(".root")){
+			cout << "List file detected..." << endl;
+			ifstream listFile(mcFileNames[i]);
+			string buffer;
+			while(getline(listFile, buffer)){
+				localFiles.push_back(buffer);
+			}
+		}
+		else{
+			localFiles.push_back(mcFileNames[i]);
+		}
 
-		//Request the TTree reading function
-		Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+		for(auto files : localFiles){
+			ffd = TFile::Open(files);
 
-		//Close the input file
-		ffd->Close();
+			//Request the TTree reading function
+			Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+
+			//Close the input file
+			ffd->Close();
+		}
 	}
 
 	//Close last output file
