@@ -388,8 +388,8 @@ int pi0d_tracksAcceptance(){
 		lkrAcceptance = t.lkr_acc;
 		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
-		if(lkrAcceptance!=0) badTrack = true;
-		//if(lkrAcceptance==0 && t.p>=5) ntrackLkr++;
+		//if(lkrAcceptance!=0) badTrack = true;
+		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.85) ntrackLkr++;
 
 		// Track position on LKr with Pb Wall
 		if(rootBurst.pbWall){
@@ -414,8 +414,8 @@ int pi0d_tracksAcceptance(){
 		if(radius<12 || radius>110) badTrack = true;
 	}
 
-	//At least 1 track in lkr acceptance
-	//if(ntrackLkr==0) badTrack = true;
+	//At least 1 e+/e- track in lkr acceptance
+	if(ntrackLkr==0) badTrack = true;
 	return badTrack;
 }
 
