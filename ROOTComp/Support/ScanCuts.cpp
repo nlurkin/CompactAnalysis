@@ -140,6 +140,7 @@ bool ScanCuts::parseCuts(std::string fileName) {
 	std::string buffer;
 	if(fdCuts.is_open()){
 		while(getline(fdCuts, buffer)){
+			std::cout << "buffer is: " << buffer << std::endl;
 			if(buffer[0]=='#') continue;
 
 			std::stringstream ss(buffer);
