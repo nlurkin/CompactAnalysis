@@ -650,13 +650,13 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>50) cond++;
+		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 		//cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>50) cond++;
+		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 		//cond++;
 
 		// |t_g - t_vtx|<10ns

@@ -33,6 +33,7 @@ public:
 	int minGammaEnergy;
 	int minDeadCellDist;
 	int minGammaDCHRadius;
+	int unDeflectedElDist;
 	struct k2pi_t{
 		int minTotalMomentum;
 		int maxTotalMomentum;
