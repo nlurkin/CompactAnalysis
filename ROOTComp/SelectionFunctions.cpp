@@ -390,7 +390,7 @@ int pi0d_tracksAcceptance(){
 		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
 		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.85) goodAcceptance=true;
+		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.6) goodAcceptance=true;
 
 		// Track position on LKr with Pb Wall
 		bool goodPBWall = true;
@@ -461,13 +461,13 @@ int pi0d_trackCombinationVeto_loose(){
 			}
 
 			// Track separation in LKr plane >15
-			propPos1 = propagateAfter(rootGeom.Lkr.z, t1);
+			/*propPos1 = propagateAfter(rootGeom.Lkr.z, t1);
 			propPos2 = propagateAfter(rootGeom.Lkr.z, t2);
 
 			RLKr = distance2D(propPos1, propPos2);
 			if(options.isOptDebug()) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
 			//to remove
-			//if(RLKr<=20) bad = true;
+			if(RLKr<=20) bad = true;*/
 
 			if(bad) badCombis++;
 		}
@@ -512,7 +512,7 @@ int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
 			}
 
 			// Track separation in LKr plane >15
-			propPos1 = propagateAfter(rootGeom.Lkr.z, t1);
+			/*propPos1 = propagateAfter(rootGeom.Lkr.z, t1);
 			propPos2 = propagateAfter(rootGeom.Lkr.z, t2);
 
 			RLKr = distance2D(propPos1, propPos2);
@@ -523,7 +523,7 @@ int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
 			else{
 				if(options.isOptDebug()) cout << "\t\tR_LKr :\t\t" << RLKr << "\t <20: rejected" << endl;
 				if(RLKr<=20) bad = true;
-			}
+			}*/
 
 			if(bad) badCombis++;
 		}
