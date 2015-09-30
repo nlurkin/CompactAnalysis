@@ -140,7 +140,6 @@ bool ScanCuts::parseCuts(std::string fileName) {
 	std::string buffer;
 	if(fdCuts.is_open()){
 		while(getline(fdCuts, buffer)){
-			std::cout << "buffer is: " << buffer << "(" << buffer.length() << ")" << std::endl;
 			if(buffer[0]=='#') continue;
 			if(buffer.length()==0) continue;
 
@@ -148,8 +147,6 @@ bool ScanCuts::parseCuts(std::string fileName) {
 
 			//read new format
 			ss >> name >> value;
-
-			std::cout << name << " " << value << " " << name.compare("defaultIndex") << std::endl;
 			if(defaultIndex==-1 && name.compare("defaultIndex")==0){
 				defaultIndex = atoi(value.c_str());
 				continue;
