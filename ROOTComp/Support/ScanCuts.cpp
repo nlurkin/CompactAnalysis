@@ -147,6 +147,7 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			//read new format
 			ss >> name >> value;
 
+			std::cout << name << " " << name.compare("defaultIndex") << std::endl;
 			if(defaultIndex==-1 && name.compare("defaultIndex")==0){
 				defaultIndex = atoi(value.c_str());
 				continue;
