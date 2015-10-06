@@ -387,19 +387,20 @@ int pi0d_tracksAcceptance(){
 		propPos = propagateAfter(rootGeom.Lkr.z, t);
 		lkrAcceptance = t.lkr_acc;
 		bool goodAcceptance = false;
-		if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
+		//if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
 		//to remove
 		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.6) goodAcceptance=true;
+		//if(lkrAcceptance==0 && t.p>=5 && t.E/t.p>0.6) goodAcceptance=true;
+		goodAcceptance = true;
 
 		// Track position on LKr with Pb Wall
 		bool goodPBWall = true;
-		if(rootBurst.pbWall){
+		/*if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			//to remove
 			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
 			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
-		}
+		}*/
 
 		if(goodAcceptance && goodPBWall) ntrackLkr++;
 
@@ -632,32 +633,35 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		// separation from x impact point >30cm
 		propPos = propagateAfter(rootGeom.Lkr.z, x);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_x :\t\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>50) cond++;
+		//if(options.isOptDebug()) cout << "\t\tR_LKr_x :\t\t" << distance << "\t > 50 : ++" << endl;
+		//if(distance>50) cond++;
+		cond++;
 
 		// separation from e+ e- impact point >10cm
 		propPos = propagateAfter(rootGeom.Lkr.z, ep);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		//if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
+		//if(distance>20) cond++;
+		cond++;
 
 		propPos = propagateAfter(rootGeom.Lkr.z, em);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		//if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
+		//if(distance>20) cond++;
+		cond++;
 
 		// separation from undeflected e+ e- trajectories >20cm
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[ep.trackID].bDetPos, rawEvent.track[ep.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
-		//cond++;
+		//if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e+ :\t" << distance << "\t > 50 : ++" << endl;
+		//if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
+		cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[em.trackID].bDetPos, rawEvent.track[em.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
-		//cond++;
+		//if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_e- :\t" << distance << "\t > 50 : ++" << endl;
+		//if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
+		cond++;
 
 		// |t_g - t_vtx|<10ns
 		if(rootBurst.isData){
