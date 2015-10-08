@@ -98,6 +98,11 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	}
 	tempObj.tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[corrEvent.goodVertexID].position).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
 
+	if(rootBurst.pbWall){
+		if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << corrEvent.pCluster[rootPhysics.gamma.parentCluster].position.Y() << " < -11.850 : reject" << endl;
+		if(corrEvent.pCluster[rootPhysics.gamma.parentCluster].position.Y()>-33.575 && corrEvent.pCluster[rootPhysics.gamma.parentCluster].position.Y() < -11.850) {pi0d_failCut(5+firstCutIndex); return false;}
+	}
+
 	// 6) Photon candidate in LKr acceptance
 	if(options.isOptDebug()) cout << "~~~~ Cut 6 ~~~~" << endl;
 	lkrAcceptance = rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].lkr_acc;

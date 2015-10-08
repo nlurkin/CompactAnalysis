@@ -565,10 +565,10 @@ int pi0d_goodClusters_loose(){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
-		if(rootBurst.pbWall){
+		/*if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
-		}
+		}*/
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
 
 		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
@@ -630,10 +630,10 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
-		if(rootBurst.pbWall){
+		/*if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
-		}
+		}*/
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
