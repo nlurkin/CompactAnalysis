@@ -293,14 +293,14 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	//Start mass cuts
 	// 16) |M_eeg - M_pi0|<8 MeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 16 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "M_ee :\t\t" << tempObj.piEvent.mee << endl;
+	if(options.isOptDebug()) cout << "M_ee :\t\t" << tempObj.piEvent.pi0.P.M() << endl;
 	if(options.isOptDebug()) cout << "|M_eeg - M_pi0| :\t\t" << fabs(tempObj.piEvent.pi0.P.M()-Mpi0) << "\t >= 0.008 : rejected" << endl;
 	if(fabs(tempObj.piEvent.pi0.P.M()-Mpi0)>=io.cutsDefinition.k2pi.maxPi0MassDiff) return 16+firstCutIndex;
 
 
 	// 17) 0.475 < M_pieeg < 0.510
 	if(options.isOptDebug()) cout << "~~~~ Cut 17 ~~~~" << endl;
-	if(options.isOptDebug()) cout << abcog_params.mkp << endl;
+	if(options.isOptDebug()) cout << "DB: " << abcog_params.mkp << " mass: " << tempObj.piEvent.kaon.P.M() << endl;
 	if(options.isOptDebug()) cout << "M_pieeg :\t\t" << fabs(tempObj.piEvent.kaon.P.M() - abcog_params.mkp) << "\t >" << io.cutsDefinition.k2pi.maxKaonMassDiff << ": rejected" << endl;
 	if(fabs(tempObj.piEvent.kaon.P.M() - abcog_params.mkp) > io.cutsDefinition.k2pi.maxKaonMassDiff) return 17+firstCutIndex;
 
