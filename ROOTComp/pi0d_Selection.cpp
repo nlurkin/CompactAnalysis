@@ -300,6 +300,7 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 
 	// 17) 0.475 < M_pieeg < 0.510
 	if(options.isOptDebug()) cout << "~~~~ Cut 17 ~~~~" << endl;
+	if(options.isOptDebug()) cout << abcog_params.mkp << endl;
 	if(options.isOptDebug()) cout << "M_pieeg :\t\t" << fabs(tempObj.piEvent.kaon.P.M() - abcog_params.mkp) << "\t >" << io.cutsDefinition.k2pi.maxKaonMassDiff << ": rejected" << endl;
 	if(fabs(tempObj.piEvent.kaon.P.M() - abcog_params.mkp) > io.cutsDefinition.k2pi.maxKaonMassDiff) return 17+firstCutIndex;
 
