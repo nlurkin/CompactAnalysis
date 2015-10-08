@@ -404,12 +404,12 @@ int pi0d_tracksAcceptance(){
 
 		if(goodAcceptance && goodPBWall) ntrackLkr++;
 
-		propPos = propagateCorrBefore(rootGeom.Dch[0].PosChamber.z, t);
+		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t);
 		radius = distance2D(dch1, propPos);
 		if(options.isOptDebug()) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateCorrBefore(rootGeom.Dch[1].PosChamber.z, t);
+		propPos = propagateBefore(rootGeom.Dch[1].PosChamber.z, t);
 		radius = distance2D(dch2, propPos);
 		if(options.isOptDebug()) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
