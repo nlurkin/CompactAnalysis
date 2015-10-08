@@ -137,7 +137,7 @@ int michal_prepid(int &xCandidate, OptionsParser::ESelectionType t){
 	if(nNegative!=1) return 0;
 
 	TLorentzVector myKaon;
-	myKaon.SetVectM(corrEvent.kaonMomentum*corrEvent.kaonP, abcog_params.mkp);
+	myKaon.SetVectM(corrEvent.kaonMomentum*corrEvent.kaonP, MK);
 
 	//Try e = goodTrack1, pi = goodTrack2
 	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
@@ -269,7 +269,7 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	diffpi01 = fabs(ee1.M()-Mpi0);
 	diffpi02 = fabs(ee2.M()-Mpi0);
 
-	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = abcog_params.mkp;
+	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = MK;
 	else Mk = abcog_params.mkn;
 
 	diffk1 = fabs(k1.M()-Mk);
