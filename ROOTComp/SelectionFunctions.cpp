@@ -275,8 +275,8 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	diffk1 = fabs(k1.M()-Mk);
 	diffk2 = fabs(k2.M()-Mk);
 
-	diffk1 = 0;
-	diffk2 = 0;
+	//diffk1 = 0;
+	//diffk2 = 0;
 
 	if(t==OptionsParser::K2PI){
 		if(options.isOptDebug()){
