@@ -279,9 +279,19 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	diffk2 = 0;
 
 	if(t==OptionsParser::K2PI){
+		if(options.isOptDebug()){
+			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
+			cout << " diffpi0:" << diffpi01 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " diffk:" << diffk1 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+		}
 		if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
 			nCandidates++;
 			xCandidate = goodTrack2;
+		}
+		if(options.isOptDebug()){
+			cout << "Track2 pi0mass: " << ee2.M() << " kmass: " << k2.M() << endl;
+			cout << " diffpi0:" << diffpi02 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " diffk:" << diffk2 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 		}
 		if( (diffpi02<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk2<io.cutsDefinition.k2pi.maxKaonMassDiff){
 			nCandidates++;
