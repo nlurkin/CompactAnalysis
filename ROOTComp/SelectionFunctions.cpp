@@ -270,7 +270,8 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	diffpi02 = fabs(ee2.M()-Mpi0);
 
 	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = MK;
-	else Mk = abcog_params.mkn;
+	//else Mk = abcog_params.mkn;
+	else Mk = MK;
 
 	diffk1 = fabs(k1.M()-Mk);
 	diffk2 = fabs(k2.M()-Mk);
