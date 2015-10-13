@@ -190,56 +190,73 @@ print "Processed events ->\t{0}".format(NProcessedEvents);
 print "Failed events ->\t{0}".format(NFailedEvents);
 print "Passed events ->\t{0}".format(NPassedEvents);
 
+
+print pid_res.total.prelim.ided.pass_t.events
 showIndex = ScanIndex
-# for i,l in enumerate(f.cutsDefinition):
+for i,l in enumerate(f.cutsDefinition):
 #     if i==showIndex:
-#         d = l.lists
+    d = l.lists
+    showIndex = i
 #         print "\nShowing ScanIndex {0}: mpi={1}, mkmin={2}, mkmax={3}".format(i, d.maxPi0MassDiff, d.minKaonMassDiff, d.maxKaonMassDiff)
 
-#print "\nShowing ScanIndex {0}: mpi={1}, mkmin={2}, mkmax={3}".format(showIndex, d.maxPi0MassDiff, d.minKaonMassDiff, d.maxKaonMassDiff)
-print "\nMC Association (track)\n--------------";
-#print "Good = {0}\t{1}".format(pid_res.good, pid_res.good*100./(pid_res.good+pid_res.bad))
-#print "Bad = {0}\t{1}".format(pid_res.bad, pid_res.bad*100./(pid_res.good+pid_res.bad))
-print "\t\t\t{0:10}\t{1:10}\t{2:10}\t{3:10}\t{4:10}".format(0, 1, 2, 3, 4)
-print "Total: \t\t\t{0}".format(printDiv(pid_res.total.events[showIndex], pid_res.total.events[showIndex]))
-print "|-Prelim: \t\t{0}".format(printDiv(pid_res.total.prelim.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex]))
-print "  |-NoID: \t\t{0}".format(printDiv(pid_res.total.prelim.noID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex]))
-print "  |-ManyID: \t\t{0}".format(printDiv(pid_res.total.prelim.manyID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex]))
-print "  |-Ided: \t\t{0}".format(printDiv(pid_res.total.prelim.ided.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.ided.events[showIndex]))
-print "    |-Pass: \t\t{0}".format(printDiv(pid_res.total.prelim.ided.pass_t.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.ided.events[showIndex]))
-print "    |-NoPass: \t\t{0}".format(printDiv(pid_res.total.prelim.ided.noPass.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.ided.events[showIndex]))
-print "  |-Associated: \t{0}".format(printDiv(pid_res.total.prelim.associated.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex]))
-print "  | |-NoID: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.noID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex]))
-print "  | |-ManyID: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.manyID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex]))
-print "  | |-Ided: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex]))
-print "  |   |-Good: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.ided.good.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.good.events[showIndex]))
-print "  |   | |-Pass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.good.pass_t.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.good.events[showIndex]))
-print "  |   | |-NoPass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.good.noPass.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.good.events[showIndex]))
-print "  |   |-Bad: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.ided.bad.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.bad.events[showIndex]))
-print "  |     |-Pass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.bad.pass_t.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.bad.events[showIndex]))
-print "  |     |-NoPass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.bad.noPass.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.bad.events[showIndex]))
-
-print "\t\t\t{0:10}\t{1:10}\t{2:10}\t{3:10}\t{4:10}".format(0, 1, 2, 3, 4)
-print "Total: \t\t\t{0}".format(printDiv(pid_res_mu.total.events[showIndex], pid_res_mu.total.events[showIndex]))
-print "|-Prelim: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex]))
-print "  |-NoID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.noID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex]))
-print "  |-ManyID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.manyID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex]))
-print "  |-Ided: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.ided.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.ided.events[showIndex]))
-print "    |-Pass: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.ided.pass_t.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.ided.events[showIndex]))
-print "    |-NoPass: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.ided.noPass.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.ided.events[showIndex]))
-print "  |-Associated: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex]))
-print "  | |-NoID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.noID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex]))
-print "  | |-ManyID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.manyID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex]))
-print "  | |-Ided: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex]))
-print "  |   |-Good: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.good.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.good.events[showIndex]))
-print "  |   | |-Pass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.good.pass_t.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.good.events[showIndex]))
-print "  |   | |-NoPass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.good.noPass.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.good.events[showIndex]))
-print "  |   |-Bad: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.bad.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.bad.events[showIndex]))
-print "  |     |-Pass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.bad.pass_t.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.bad.events[showIndex]))
-print "  |     |-NoPass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.bad.noPass.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.bad.events[showIndex]))
+    print "\nShowing ScanIndex {0}: cut: {1}".format(showIndex, d.unDeflectedElDist)
+    print "\nMC Association (track)\n--------------";
+    #print "Good = {0}\t{1}".format(pid_res.good, pid_res.good*100./(pid_res.good+pid_res.bad))
+    #print "Bad = {0}\t{1}".format(pid_res.bad, pid_res.bad*100./(pid_res.good+pid_res.bad))
+    print "\t\t\t{0:10}\t{1:10}\t{2:10}\t{3:10}\t{4:10}".format(0, 1, 2, 3, 4)
+    print "Total: \t\t\t{0}".format(printDiv(pid_res.total.events[showIndex], pid_res.total.events[showIndex]))
+    print "|-Prelim: \t\t{0}".format(printDiv(pid_res.total.prelim.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex]))
+    print "  |-NoID: \t\t{0}".format(printDiv(pid_res.total.prelim.noID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex]))
+    print "  |-ManyID: \t\t{0}".format(printDiv(pid_res.total.prelim.manyID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex]))
+    print "  |-Ided: \t\t{0}".format(printDiv(pid_res.total.prelim.ided.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.ided.events[showIndex]))
+    print "    |-Pass: \t\t{0}".format(printDiv(pid_res.total.prelim.ided.pass_t.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.ided.events[showIndex]))
+    print "    |-NoPass: \t\t{0}".format(printDiv(pid_res.total.prelim.ided.noPass.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.ided.events[showIndex]))
+    print "  |-Associated: \t{0}".format(printDiv(pid_res.total.prelim.associated.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex]))
+    print "  | |-NoID: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.noID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex]))
+    print "  | |-ManyID: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.manyID.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex]))
+    print "  | |-Ided: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex]))
+    print "  |   |-Good: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.ided.good.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.good.events[showIndex]))
+    print "  |   | |-Pass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.good.pass_t.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.good.events[showIndex]))
+    print "  |   | |-NoPass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.good.noPass.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.good.events[showIndex]))
+    print "  |   |-Bad: \t\t{0}".format(printDiv(pid_res.total.prelim.associated.ided.bad.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.bad.events[showIndex]))
+    print "  |     |-Pass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.bad.pass_t.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.bad.events[showIndex]))
+    print "  |     |-NoPass: \t{0}".format(printDiv(pid_res.total.prelim.associated.ided.bad.noPass.events[showIndex], pid_res.total.events[showIndex], pid_res.total.prelim.events[showIndex], pid_res.total.prelim.associated.events[showIndex], pid_res.total.prelim.associated.ided.events[showIndex], pid_res.total.prelim.associated.ided.bad.events[showIndex]))
+    
+    print "\t\t\t{0:10}\t{1:10}\t{2:10}\t{3:10}\t{4:10}".format(0, 1, 2, 3, 4)
+    print "Total: \t\t\t{0}".format(printDiv(pid_res_mu.total.events[showIndex], pid_res_mu.total.events[showIndex]))
+    print "|-Prelim: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex]))
+    print "  |-NoID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.noID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex]))
+    print "  |-ManyID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.manyID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex]))
+    print "  |-Ided: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.ided.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.ided.events[showIndex]))
+    print "    |-Pass: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.ided.pass_t.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.ided.events[showIndex]))
+    print "    |-NoPass: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.ided.noPass.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.ided.events[showIndex]))
+    print "  |-Associated: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex]))
+    print "  | |-NoID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.noID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex]))
+    print "  | |-ManyID: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.manyID.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex]))
+    print "  | |-Ided: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex]))
+    print "  |   |-Good: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.good.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.good.events[showIndex]))
+    print "  |   | |-Pass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.good.pass_t.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.good.events[showIndex]))
+    print "  |   | |-NoPass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.good.noPass.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.good.events[showIndex]))
+    print "  |   |-Bad: \t\t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.bad.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.bad.events[showIndex]))
+    print "  |     |-Pass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.bad.pass_t.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.bad.events[showIndex]))
+    print "  |     |-NoPass: \t{0}".format(printDiv(pid_res_mu.total.prelim.associated.ided.bad.noPass.events[showIndex], pid_res_mu.total.events[showIndex], pid_res_mu.total.prelim.events[showIndex], pid_res_mu.total.prelim.associated.events[showIndex], pid_res_mu.total.prelim.associated.ided.events[showIndex], pid_res_mu.total.prelim.associated.ided.bad.events[showIndex]))
 
 if not hasattr(f, "cutsDefinition"):
     sys.exit(0)
+    
+cut = [0]
+for val in f.cutsDefinition:
+    cut.append(val.lists.unDeflectedElDist)
+    
+passed = Hist1D(320, 10, 70)
+for i, val  in enumerate(f.cutsDefinition):
+    passed.Fill(val.lists.unDeflectedElDist, pid_res.total.prelim.ided.pass_t.events[i])
+
+c1 = Canvas()
+passed.Draw()
+wait()
+
+sys.exit(0)
 cuts1 = [0]
 cuts2 = [0]
 cuts3 = [0]

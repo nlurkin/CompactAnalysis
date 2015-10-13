@@ -328,10 +328,13 @@ namespace Input{
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 
-		th->GetEntry(0);
 		//Set event nb
 		int nevt = t->GetEntries();
-		int totalChanEvents = headerBrch->NProcessedEvents;
+		int totalChanEvents = 0;
+		for(int i=0; i<th->GetEntries(); i++){
+			th->GetEntry(i);
+			totalChanEvents += headerBrch->NProcessedEvents;
+		}
 		int processedEvents = 0;
 		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
 
@@ -348,7 +351,7 @@ namespace Input{
 		cout << "Filling " << nevt << endl;
 		double weight = 1.;
 		for(int i=0; i<nevt; ++i){
-			if(i % 10000 == 0) cout << setprecision(2) << i/(double)nevt << "% " << i << "/" << nevt << "\r";
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
@@ -405,7 +408,7 @@ namespace Input{
 
 		cout << "Filling data " << nevt << endl;
 		for(i=0; i<nevt; i++){
-			if(i % 10000 == 0) cout << setprecision(2) << i/(double)nevt << "% " << i << "/" << nevt << "\r";
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
