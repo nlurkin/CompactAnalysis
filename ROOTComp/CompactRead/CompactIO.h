@@ -110,6 +110,14 @@ public:
 		this->rootPhysics = rootPhysics;
 	}
 
+	const Event& getEvt() const {
+		return evt;
+	}
+
+	void setEvt(const Event& evt) {
+		this->evt = evt;
+	}
+
 public:
 	CompactImport input;
 	ROOTOutput output;
@@ -129,6 +137,7 @@ private:
 	ROOTMCEvent rootMC;
 	ROOTPhysicsEvent rootPhysics;
 	ROOTFileHeader outputFileHeader;
+	Event evt;
 };
 
 #endif /* COMPACTIO_H_ */
