@@ -14,32 +14,24 @@
 #include "reader.h"
 #include <iostream>
 #include <iomanip>
+#include "compactLib.h"
+#include "funLib.h"
 
 using namespace std;
 
 void clearAll(){
 	int i = 0;
 
-	for(int i=0; i<vtrack.size();i++){
-		delete vtrack[i];
-	}
-	vtrack.clear();
-
-	for(int i=0; i<vCluster.size();i++){
-		delete vCluster[i];
-	}
-	vCluster.clear();
-
-	closeClusters.clear();
-	assocClusters.clear();
-	goodTracks.clear();
+	rawEvent.clear();
+	corrEvent.clear();
 }
 
 int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	/* WARNING: do not alter things before this line */
 	/*---------- Add user C code here ----------*/
+
 	//if(!eopLoaded) loadEOPData(sbur); Done in user_superBurst
-	if(periodKeep!= 0 && period!=periodKeep) return 0;
+	if(periodKeep!= 0 && rootBurst.period!=periodKeep) return 0;
 	if(iEvent==0) cout << "First event: ";
 	if(iEvent % outputMod == 0) cout << iEvent << " " << sbur->nrun << " " << sbur->time << " " << sevt->timeStamp << "                 \r";
 	//####### DEBUGGING
@@ -53,8 +45,8 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	if(run!=-1){
 		if(!((sbur->nrun==run) && (sbur->time==burst) && (sevt->timeStamp==event)))return 0;
 	}
-	if(opts.count("filter")>0){
-		if(!isFilteredEvent(sbur->nrun, sbur->time, sevt->timeStamp)) return 0;
+	if(!opts["filter"].empty()){
+		if(!isFilteredEvent(sbur->nrun, sbur->time, sevt->timeStamp, badEventsList)) return 0;
 	}
 	if(iEvent==0) cout << endl;
 
@@ -63,21 +55,31 @@ int user_superCmpEvent(superBurst *sbur,superCmpEvent *sevt) {
 	clearAll();
 
 	// 1) Apply all corrections
-	if(dataOnly) user_lkrcalcor_SC(sbur,sevt,1);
-	vtrack = CreateTracks(sevt);
-	vCluster = CreateClusters(sevt);
-	//Do it later: depends on the detected beam charge
-	//kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
-	//kaonP = abcog_params.pkp*(1+abcog_params.beta);
+	if(rootBurst.isData) user_lkrcalcor_SC(sbur,sevt,1);
+	rootBurst = sbur;
+	rawEvent = sevt;
+	rootBurst.abcog_params = &abcog_params;
+	rootGeom = Geom;
+	CreateTracks(sevt);
+	CreateClusters(sevt);
 
-
+	rootFileHeader.NProcessedEvents++;
 
 	if(channel==KE2){
-		passEvent = nico_ke2Select(sbur, sevt);
+		//passEvent = nico_ke2Select(sbur, sevt);
 	}
 	if(channel==PI0DALITZ){
-		passEvent = nico_pi0DalitzSelect(sbur, sevt);
-		if(passEvent==0) nico_pi0DalitzAna(sbur, sevt);
+		passEvent = nico_pi0DalitzSelect();
+		if(passEvent==0){
+			nico_pi0DalitzAna(sbur, sevt);
+			rootFileHeader.NPassedEvents++;
+			outTree->Fill();
+		}
+		else{
+			rootFileHeader.NFailedEvents++;
+			if(exportAllEvents) outTree->Fill();
+		}
+
 	}
 
 	/*----------- End of user C code -----------*/

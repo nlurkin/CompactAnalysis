@@ -18,5 +18,5 @@ int user_superCmpFilter(superBurst *sbur,superCmpEvent *sevt,hyperCmpEvent *hevt
 
 	/*----------- End of user C code -----------*/
 	/*ask trigger + 3 tracks and 2 with eop>0.5*/
-	return nico_pi0DalitzFilter(sbur, sevt);
+	return -1;//nico_pi0DalitzFilter(sbur, sevt);
 }

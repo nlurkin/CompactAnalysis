@@ -50,7 +50,7 @@ MKDIR    = mkdir -p
 endif
 
 VERSION  = 7.3
-SUBVERSION = .1
+SUBVERSION = .2
 
 ifeq ($(USE_RFIO),yes)
 ZLIBTYPE=-rfio
@@ -70,7 +70,8 @@ LINVER = -slc6
 #GFORTRAN needed on lxplus/lxbatch since CERNLIB is compiled with gfortran
 GFORLIBS = -L/usr/lib/gcc/x86_64-redhat-linux/4.4.4/32 -lgfortran
 #32 bit libshift library not linked to libshift.so, use the binary
-LIBSHIFT = -L. $(shell ls /usr/lib/libshift.* | head -1)
+#LIBSHIFT = -L/afs/cern.ch/na62/user/kmassri/compact/xrdlib -liowrapper -lXrdPosixPreload -lXrdPosix -L. $(shell ls /usr/lib/libshift.* | head -1)
+LIBSHIFT = -L$(XROOTD)/lib -liowrapper -lXrdPosixPreload -lXrdPosix -lshift 
 else
 ifeq ($(ISSLC5),1)
 LINVER = -slc5
@@ -196,9 +197,9 @@ endif
 
 # Set this to be the GNU C compiler
 ifeq ($(USE_ROOT),yes)
-CC     = g++ -g
+CC     = g++  
 else
-CC     = gcc -g
+CC     = gcc 
 endif
 # Set any GCC compiler flags here.
 ifeq ($(DEBUG),yes)
@@ -236,7 +237,7 @@ F77LIBS =
 # for offline PC farm, use g77
 #FC = g77
 ifeq ($(DEBUG),yes)
-FFLAGS =  -m32 -w -ffixed-line-length-none -fno-second-underscore -g3 -DCOMPACT7 -O
+FFLAGS =  -m32 -w -ffixed-line-length-none -fno-second-underscore -g -DCOMPACT7
 else
 FFLAGS = -m32 -O -w -ffixed-line-length-none -fno-second-underscore -DCOMPACT7
 endif
@@ -380,8 +381,8 @@ UFSRCS = fuser_init.F \
          fuser_superEob.F \
          fuser_cmpEvent.F \
          fuser_exit.F \
-         fuser_hyperBurst.F\
-			fuser_hyperCmpEvent.F \
+		 fuser_hyperBurst.F\
+		 fuser_hyperCmpEvent.F
 
 UFOBJS = $(UFSRCS:.F=.o)
 
@@ -408,7 +409,9 @@ UCSRCS = user_init.c \
 			user_hyperCmpEvent.c\
 			nico_pi0dalitzSelection.c\
 			nico_pi0dalitzAna.c\
-			nico_ke2Selection.c\
+			funLib.c\
+			compactLib.c\
+#			nico_ke2Selection.c\
 
 UCOBJS = $(UCSRCS:.c=.o)
 
@@ -447,7 +450,7 @@ compact: $(OBJS) $(UOBJS) $(UAOBJS)
 	$(OBJS:%=$(OBJDIR)/%) \
 	$(UOBJS:%=$(OBJDIR)/%) \
 	$(UAOBJS:%=$(OBJDIR)/%) \
-	$(LDIRS) $(LIBS) $(CERNLIBS) $(F77LIBS) $(LIBS) $(ROOTLIBS) -lmystructs -Lobj
+	$(LDIRS) $(LIBS) $(CERNLIBS) $(F77LIBS) $(LIBS) $(ROOTLIBS) -lmystructs -lexportClasses -Lobj
 
 clean:
 	$(RM) -r $(OBJDIR) $(DEPDIR)
@@ -511,6 +514,15 @@ $(LASTCMP):
 FORCE:
 
 # $Log: Makefile,v $
+# Revision 1.38  2014/09/05 12:27:42  venelin
+# Version update of Compact - 7.3.1->7.3.2
+#
+# Revision 1.37  2014/02/27 09:57:09  venelin
+# A hack to use the new libiowrapper (which uses XROOTD)
+#
+# Revision 1.36  2013/05/17 16:13:04  venelin
+# Fix compilation of compact on SLC6
+#
 # Revision 1.35  2010/07/16 12:25:21  venelin
 # Disable generation of functions time profile - safe of 1MB of extra disk-space per compact process
 # 	(forgotten from previous debugging purposes)
@@ -622,12 +634,23 @@ FORCE:
 #
 
 
-root:obj/libmystructs.so
+root:obj/libmystructs.so obj/libexportClasses.so obj/libfunLib.so
 
 obj/libmystructs.so:usersrc/mystructs.c obj/Dict_mystructs.cpp
 	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/mystructs.c obj/Dict_mystructs.cpp -o obj/libmystructs.so
+
+obj/libexportClasses.so: usersrc/exportClasses.c obj/Dict_exportClasses.cpp
+	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) usersrc/exportClasses.c obj/Dict_exportClasses.cpp -o obj/libexportClasses.so
+
+obj/libfunLib.so: usersrc/funLib.c userinc/funLib.h
+	g++ -W -Wall -fPIC -g3 -shared $(ROOTCFLAGS) $(ROOTLIBS) $(CFLAGS) $(CFORINC) $(CPPFLAGS) -DOUTSIDECOMPACT=1 usersrc/funLib.c userinc/funLib.h -o obj/libfunLib.so
 
 
 obj/Dict_mystructs.cpp: userinc/mystructs.h userinc/LinkDef_mystructs.h
 	@ [ ! -d $(OBJDIR) ] && $(MKDIR) $(OBJDIR) || true
 	rootcint -v -f obj/Dict_mystructs.cpp -c userinc/mystructs.h userinc/LinkDef_mystructs.h
+
+obj/Dict_exportClasses.cpp: userinc/exportClasses.h userinc/LinkDef_exportClasses.h
+	@ [ ! -d $(OBJDIR) ] && $(MKDIR) $(OBJDIR) || true
+	rootcint -v -f obj/Dict_exportClasses.cpp -c userinc/exportClasses.h userinc/LinkDef_exportClasses.h 
+	

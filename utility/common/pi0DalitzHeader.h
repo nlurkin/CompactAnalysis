@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <TApplication.h>
+#include <iomanip>
 using namespace std;
 
 void setStyle();
@@ -69,6 +70,9 @@ vector<TString> dataFileNames;
 vector<int> mcIndexes;
 vector<TString> mcOutputFiles;
 vector<TString> dataOutputFiles;
+vector<TString> modelFiles;
+TString binsFileName;
+bool withEqualBins;
 
 TTree* fitTree;
 fitStruct fitBrch;
@@ -81,6 +85,8 @@ map<int,double> ratioMap;
 double averageRatio;
 
 double testA = 0.;
+
+int scanID = -1;
 
 /*************************
  * Signal handling
@@ -103,18 +109,21 @@ void sighandler(int sig)
 void closeMCOutput(TFile *fdo, int index);
 void closeDataOutput(TFile *fdo, int index);
 void initNewOutput(TFile **fdo, TString fileName);
-void getInputMCFill(TFile *fd, TFile *fdo, double br, unsigned int index);
-int getInputDataFill(TFile *fd, TFile *fdo);
+
+namespace Input{
+	void getInputMCFill(TFile *fd, TFile *fdo, double br, unsigned int index);
+	int getInputDataFill(TFile *fd, TFile *fdo);
+	void getInputMCGet(TFile *fd, double br, unsigned int index);
+	int getInputDataGet(TFile *fd);
+}
 
 void initNewChannel();
-void getInputMCGet(TFile *fd, double br, unsigned int index);
-int getInputDataGet(TFile *fd);
 void scaleMC(fitStruct N, int index, double br);
 
 /************************
  * Utility
  ************************/
-void scale(TH1D *histo, double scaleFactor, double totEvents, double br){
+void scale(TH1 *histo, double scaleFactor, double totEvents, double br){
 	//histo->Scale(br/((double)totEvents/(double)selEvents)/integral);
 	histo->Scale(br/(totEvents*scaleFactor));
 }
@@ -172,12 +181,35 @@ bool readConfig(TString confFile){
 		cout << tline << endl;
 		for(int i=0; i<tok->GetEntries(); ++i){
 			TString entry(((TObjString*)tok->At(i))->GetString());
-			if(key.CompareTo("mcfiles")==0) mcFileNames.push_back(entry);
+			if(key.CompareTo("mcfiles")==0){
+				mcFileNames.push_back(entry);
+				/*if(entry.Contains(".root")) mcFileNames.push_back(entry);
+				else{
+					ifstream fd(entry);
+					TString fileName;
+					while(fd >> fileName){
+						mcFileNames.push_back(fileName);
+					}
+					fd.close();
+				}*/
+			}
 			else if(key.CompareTo("mcout")==0) mcOutputFiles.push_back(entry);
+			else if(key.CompareTo("modelfiles")==0) modelFiles.push_back(entry);
 			else if(key.CompareTo("brs")==0) brs.push_back(entry.Atof());
 			else if(key.CompareTo("mccolors")==0) mcColors.push_back(entry.Atoi());
 			else if(key.CompareTo("mclegends")==0) mcLegendTitle.push_back(entry);
-			else if(key.CompareTo("datafiles")==0) dataFileNames.push_back(entry);
+			else if(key.CompareTo("datafiles")==0){
+				dataFileNames.push_back(entry);
+				/*if(entry.Contains(".root")) dataFileNames.push_back(entry);
+				else{
+					ifstream fd(entry);
+					TString fileName;
+					while(fd >> fileName){
+						dataFileNames.push_back(fileName);
+					}
+					fd.close();
+				}*/
+			}
 			else if(key.CompareTo("dataout")==0) dataOutputFiles.push_back(entry);
 			else if(key.CompareTo("datacolors")==0) dataColors.push_back(entry.Atoi());
 			else if(key.CompareTo("datalegends")==0) dataLegendTitle.push_back(entry);
@@ -185,6 +217,9 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("runstart")==0) runStart = entry.Atoi();
 			else if(key.CompareTo("runend")==0) runEnd = entry.Atoi();
 			else if(key.CompareTo("testA")==0) testA = entry.Atof();
+			else if(key.CompareTo("binsfile")==0) binsFileName = entry;
+			else if(key.CompareTo("equalbin")==0) withEqualBins = entry.CompareTo("true")==0 ? true : false;
+			else if(key.CompareTo("scanid")==0) scanID = entry.Atoi();
 			delete tok->At(i);
 		}
 	}
@@ -198,37 +233,59 @@ void readFilesFill(){
 	vector<TFile*> fd;
 	TFile* ffd;
 	int prevIndex = -1;
+	int newIndex;
 
 	TFile *fdo;
 
-	int fileNumber;
+	unsigned int fileNumber;
 
 	fileNumber = mcFileNames.size();
 
 	//Getting MC
-	for(int i=0; i<fileNumber; ++i){
+	for(unsigned int i=0; i<fileNumber; ++i){
 		//Do we have a new output file?
-		if(prevIndex != mcIndexes[i]){
+		if(i>=mcIndexes.size()) newIndex = prevIndex;
+		else newIndex = mcIndexes[i];
+		if(prevIndex != newIndex){
 			//Need to close the previous one
 			if(prevIndex!=-1){
 				//scaleMC(fitBrch, prevIndex, brs[prevIndex]);
 				closeMCOutput(fdo, prevIndex);
 			}
-			prevIndex = mcIndexes[i];
+			prevIndex = newIndex;
 			++inputMCNbr;
 			initNewOutput(&fdo, mcOutputFiles[prevIndex]);
 		}
 
 		//Open new input file
 		cout << mcFileNames[i] << endl;
-		ffd = TFile::Open(mcFileNames[i]);
+		vector<TString> localFiles;
+		if(!mcFileNames[i].Contains(".root")){
+			cout << "List file detected..." << endl;
+			ifstream listFile(mcFileNames[i]);
+			string buffer;
+			while(getline(listFile, buffer)){
+				localFiles.push_back(buffer);
+			}
+		}
+		else{
+			localFiles.push_back(mcFileNames[i]);
+		}
 
-		//Request the TTree reading function
-		cout << prevIndex << " " << brs[prevIndex] << " " << prevIndex << endl;
-		getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+		int iFile=0;
+		double totalFiles = localFiles.size();
+		for(auto files : localFiles){
+			cout << "Processing file " << files << " " << setprecision(2) << std::fixed << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+			cout << "Br: " << brs[prevIndex] << endl;
+			ffd = TFile::Open(files);
 
-		//Close the input file
-		ffd->Close();
+			//Request the TTree reading function
+			Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+
+			//Close the input file
+			ffd->Close();
+			iFile++;
+		}
 	}
 
 	//Close last output file
@@ -240,17 +297,38 @@ void readFilesFill(){
 	cout << dataOutputFiles.size() << endl;
 	if(fileNumber>0) initNewOutput(&fdo, dataOutputFiles[0]);
 
-	for(int i=0; i<fileNumber; ++i){
+	for(unsigned int i=0; i<fileNumber; ++i){
 		++inputDataNbr;
 		//Open new input file
 		cout << dataFileNames[i] << endl;
-		ffd = TFile::Open(dataFileNames[i]);
 
-		//Request the TTree reading function
-		getInputDataFill(ffd, fdo);
+		vector<TString> localFiles;
+		if(!dataFileNames[i].Contains(".root")){
+			cout << "List file detected..." << endl;
+			ifstream listFile(dataFileNames[i]);
+			string buffer;
+			while(getline(listFile, buffer)){
+				localFiles.push_back(buffer);
+			}
+		}
+		else{
+			localFiles.push_back(dataFileNames[i]);
+		}
 
-		//Close input file
-		ffd->Close();
+		int iFile=0;
+		double totalFiles = localFiles.size();
+		for(auto files : localFiles){
+			cout << "Processing file " << files << setprecision(2) << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+
+			ffd = TFile::Open(files);
+
+			//Request the TTree reading function
+			Input::getInputDataFill(ffd, fdo);
+
+			//Close input file
+			ffd->Close();
+			iFile++;
+		}
 	}
 
 	//Close last output file
@@ -285,7 +363,7 @@ void readFilesGet(){
 		ffd = TFile::Open(mcOutputFiles[i]);
 
 		//Request the Histo reading function
-		getInputMCGet(ffd, brs[prevIndex], prevIndex);
+		Input::getInputMCGet(ffd, brs[prevIndex], prevIndex);
 		//cout << fitBrch.selEvents << " " << fitBrch.totEvents << endl;
 
 		//Close the input file
@@ -309,7 +387,7 @@ void readFilesGet(){
 		ffd = TFile::Open(dataOutputFiles[i]);
 
 		//Request the Histo reading function
-		getInputDataGet(ffd);
+		Input::getInputDataGet(ffd);
 
 		//Close input file
 		ffd->Close();
@@ -326,7 +404,7 @@ void loadWeights(TString fileName){
 		return;
 	}
 	fd.open(fileName.Data(), ios_base::in);
-	int burst =-1, mcNumber=-1, dataNumber=-1;
+	int burst =-1;//, mcNumber=-1, dataNumber=-1;
 	double ratio, val;
 	int i;
 	i = 0;
@@ -336,9 +414,9 @@ void loadWeights(TString fileName){
 	while(fd >> val){
 		if(i==0) burst = val;
 		else if(i==1) ratio = val;
-		else if(i==2) mcNumber = val;
+		//else if(i==2) mcNumber = val;
 		else if(i==3){
-			dataNumber = val;
+			//dataNumber = val;
 			sumRatio += ratio;
 			number++;
 			ratioMap.insert(std::pair<int, double>(burst, ratio));
@@ -363,4 +441,15 @@ double applyWeights(int run){
 	}
 	double ratio = ratioMap[run];
 	return averageRatio / ratio;
+}
+
+void loadBins(double *bins, int& nbins){
+	ifstream fd(binsFileName);
+
+	double val;
+	nbins = 0;
+	while(fd >> val){
+		bins[nbins] = val;
+		nbins++;
+	}
 }
