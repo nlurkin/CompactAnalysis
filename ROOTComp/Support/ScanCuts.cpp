@@ -33,7 +33,7 @@ Cuts::Cuts(){
 	minGammaEnergy = 3;
 	minDeadCellDist = 2;
 	minGammaDCHRadius = 13;
-	unDeflectedElDist = 50;
+	unDeflectedElDist = 20;
 	k2pi.minTotalMomentum = 70;
 	k2pi.maxTotalMomentum = 78;
 	kmu3.maxTotalMomentum = 78;
