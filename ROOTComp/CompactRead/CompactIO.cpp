@@ -20,7 +20,7 @@ bool CompactIO::openAll(bool doScan) {
 	if (!input.readInput(inputFileName, isInputList))
 		return false;
 	output.openOutput(input.getHasMC(), doOutput, doScan, rootBurst, rawEvent,
-			corrEvent, rootGeom, rootMC, rootPhysics, outputFileHeader, cutsDefinition);
+			corrEvent, rootGeom, rootMC, rootPhysics, outputFileHeader, cutsDefinition, evt);
 
 
 	if(doScan) fillCutsList();

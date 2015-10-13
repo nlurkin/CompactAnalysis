@@ -29,7 +29,7 @@ public:
 	bool openOutput(bool doMC, bool doOutput, bool doScan, ROOTBurst &rootBurst,
 			ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent,
 			NGeom &rootGeom, ROOTMCEvent &rootMC, ROOTPhysicsEvent &rootPhysics,
-			ROOTFileHeader &outputFileHeader, ScanCuts &cutsDefinition);
+			ROOTFileHeader &outputFileHeader, ScanCuts &cutsDefinition, Event &event);
 	void fillEvent();
 	void fillCuts();
 	void close();

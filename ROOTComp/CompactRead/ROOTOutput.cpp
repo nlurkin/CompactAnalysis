@@ -32,7 +32,7 @@ ROOTOutput::~ROOTOutput() {
 bool ROOTOutput::openOutput(bool doMC, bool doOutput, bool doScan, ROOTBurst &rootBurst,
 		ROOTRawEvent &rawEvent, ROOTCorrectedEvent &corrEvent, NGeom &rootGeom,
 		ROOTMCEvent &rootMC, ROOTPhysicsEvent &rootPhysics,
-		ROOTFileHeader &outputFileHeader, ScanCuts &cutsDefinition) {
+		ROOTFileHeader &outputFileHeader, ScanCuts &cutsDefinition, Event &event) {
 	outFile = TFile::Open(generateROOTName().c_str(), "RECREATE");
 	outTree = new TTree("event", "Event");
 	outHeaderTree = new TTree("header", "Header");
@@ -40,6 +40,7 @@ bool ROOTOutput::openOutput(bool doMC, bool doOutput, bool doScan, ROOTBurst &ro
 	outTree->Branch("rawBurst", "ROOTBurst", &rootBurst);
 	outTree->Branch("rawEvent", "ROOTRawEvent", &rawEvent);
 	outTree->Branch("corrEvent", "ROOTCorrectedEvent", &corrEvent);
+	outTree->Branch("Event", "Event", &event);
 	if (doMC)
 		outTree->Branch("mc", "ROOTMCEvent", &rootMC);
 
