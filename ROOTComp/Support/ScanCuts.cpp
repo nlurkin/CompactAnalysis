@@ -33,6 +33,7 @@ Cuts::Cuts(){
 	minGammaEnergy = 3;
 	minDeadCellDist = 2;
 	minGammaDCHRadius = 13;
+	unDeflectedElDist = 50;
 	k2pi.minTotalMomentum = 70;
 	k2pi.maxTotalMomentum = 78;
 	kmu3.maxTotalMomentum = 78;
@@ -68,6 +69,7 @@ void Cuts::print(){
 	std::cout << "minGammaEnergy\t\t--> " << minGammaEnergy << std::endl;
 	std::cout << "minDeadCellDist\t\t--> " << minDeadCellDist << std::endl;
 	std::cout << "minGammaDCHRadius\t--> " << minGammaDCHRadius << std::endl;
+	std::cout << "unDeflectedElDist\t--> " << unDeflectedElDist << std::endl;
 	std::cout << "  -> K2Pi specific" << std::endl;
 	std::cout << "minTotalMomentum\t--> " << k2pi.minTotalMomentum << std::endl;
 	std::cout << "maxTotalMomentum\t--> " << k2pi.maxTotalMomentum << std::endl;
@@ -139,12 +141,12 @@ bool ScanCuts::parseCuts(std::string fileName) {
 	if(fdCuts.is_open()){
 		while(getline(fdCuts, buffer)){
 			if(buffer[0]=='#') continue;
+			if(buffer.length()==0) continue;
 
 			std::stringstream ss(buffer);
 
 			//read new format
 			ss >> name >> value;
-
 			if(defaultIndex==-1 && name.compare("defaultIndex")==0){
 				defaultIndex = atoi(value.c_str());
 				continue;
@@ -215,6 +217,9 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			}
 			else if(name.compare("minGammaDCHRadius")==0){
 				cutsLists[id].minGammaDCHRadius = atoi(value.c_str());
+			}
+			else if(name.compare("unDeflectedElDist")==0){
+				cutsLists[id].unDeflectedElDist = atoi(value.c_str());
 			}
 			else if(name.compare("k2pi.minTotalMomentum")==0){
 				cutsLists[id].k2pi.minTotalMomentum = atoi(value.c_str());

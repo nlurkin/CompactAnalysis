@@ -98,6 +98,11 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	}
 	tempObj.tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[corrEvent.goodVertexID].position).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
 
+	if(rootBurst.pbWall){
+		if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << corrEvent.pCluster[rootPhysics.gamma.parentCluster].position.Y() << " < -11.850 : reject" << endl;
+		if(corrEvent.pCluster[rootPhysics.gamma.parentCluster].position.Y()>-33.575 && corrEvent.pCluster[rootPhysics.gamma.parentCluster].position.Y() < -11.850) {pi0d_failCut(5+firstCutIndex); return false;}
+	}
+
 	// 6) Photon candidate in LKr acceptance
 	if(options.isOptDebug()) cout << "~~~~ Cut 6 ~~~~" << endl;
 	lkrAcceptance = rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].lkr_acc;
@@ -107,21 +112,21 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	// 7) E_gamma>3GeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 7 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t <= 3 : rejected" << endl;
-	if(tempObj.tempGamma.E()<=io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
+	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
 	// 8) D_deadcell>2cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
 	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
 
-	if(options.isOptDebug()) cout << "d_deadcell(t1) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
+	/*if(options.isOptDebug()) cout << "d_deadcell(t1) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
 
 	if(options.isOptDebug()) cout << "d_deadcell(t2) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
 
 	if(options.isOptDebug()) cout << "d_deadcell(t2) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}*/
 
 	// 9) Photon DCH1 intercept >13cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 9 ~~~~" << endl;
@@ -293,20 +298,45 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	//Start mass cuts
 	// 16) |M_eeg - M_pi0|<8 MeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 16 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "M_ee :\t\t" << tempObj.piEvent.mee << endl;
+	if(options.isOptDebug()) cout << "M_ee :\t\t" << tempObj.piEvent.pi0.P.M() << endl;
 	if(options.isOptDebug()) cout << "|M_eeg - M_pi0| :\t\t" << fabs(tempObj.piEvent.pi0.P.M()-Mpi0) << "\t >= 0.008 : rejected" << endl;
 	if(fabs(tempObj.piEvent.pi0.P.M()-Mpi0)>=io.cutsDefinition.k2pi.maxPi0MassDiff) return 16+firstCutIndex;
 
 
 	// 17) 0.475 < M_pieeg < 0.510
 	if(options.isOptDebug()) cout << "~~~~ Cut 17 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "M_pieeg :\t\t" << tempObj.piEvent.kaon.P.M() << "\t <0.475 || >0.510: rejected" << endl;
-	if(fabs(tempObj.piEvent.kaon.P.M() - abcog_params.mkp) > io.cutsDefinition.k2pi.maxKaonMassDiff) return 17+firstCutIndex;
+	if(options.isOptDebug()) cout << "DB: " << MK << " mass: " << tempObj.piEvent.kaon.P.M() << endl;
+	if(options.isOptDebug()) cout << "M_pieeg :\t\t" << fabs(tempObj.piEvent.kaon.P.M() - MK) << "\t >" << io.cutsDefinition.k2pi.maxKaonMassDiff << ": rejected" << endl;
+	if(fabs(tempObj.piEvent.kaon.P.M() - MK) > io.cutsDefinition.k2pi.maxKaonMassDiff) return 17+firstCutIndex;
 
 	//pi0dalitz variables
 	tempObj.piEvent.mee = (tempObj.piEvent.em.P + tempObj.piEvent.ep.P).M();
 	tempObj.piEvent.x = pow(tempObj.piEvent.mee/Mpi0, 2.);
 	tempObj.piEvent.y = 2.*(tempObj.piEvent.em.P.E() - tempObj.piEvent.ep.P.E())/(Mpi0*(1-tempObj.piEvent.x));
+
+	//Trigger cut
+	// 18) L2: E_lkr > 14GeV
+	double ELKr_ep = 0;
+	double ELKr_em = 0;
+	bool goodPBWall;
+	TVector3 propPos;
+	NPhysicsTrack t_ep = corrEvent.pTrack[tempObj.piEvent.ep.parentTrack];
+	NPhysicsTrack t_em = corrEvent.pTrack[tempObj.piEvent.em.parentTrack];
+
+	propPos = propagateAfter(rootGeom.Lkr.z, t_ep);
+	goodPBWall = true;
+	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
+	if(t_ep.lkr_acc && goodPBWall && rawEvent.track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
+
+	propPos = propagateAfter(rootGeom.Lkr.z, t_em);
+	goodPBWall = true;
+	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
+	if(t_em.lkr_acc && goodPBWall && rawEvent.track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
+
+	double E_lkr = ELKr_ep + ELKr_em + tempObj.piEvent.gamma.P.E();
+	if(options.isOptDebug()) cout << "~~~~ Cut 18 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "E_LKr :\t\t\t\t" << E_lkr << "\t <14: rejected" << endl;
+	if(E_lkr < 14) return 18+firstCutIndex;
 
 	return -1;
 }
