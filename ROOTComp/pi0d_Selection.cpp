@@ -112,7 +112,7 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	// 7) E_gamma>3GeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 7 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t <= 3 : rejected" << endl;
-	if(tempObj.tempGamma.E()<=io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
+	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
 	// 8) D_deadcell>2cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
@@ -313,6 +313,30 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	tempObj.piEvent.mee = (tempObj.piEvent.em.P + tempObj.piEvent.ep.P).M();
 	tempObj.piEvent.x = pow(tempObj.piEvent.mee/Mpi0, 2.);
 	tempObj.piEvent.y = 2.*(tempObj.piEvent.em.P.E() - tempObj.piEvent.ep.P.E())/(Mpi0*(1-tempObj.piEvent.x));
+
+	//Trigger cut
+	// 18) L2: E_lkr > 14GeV
+	double ELKr_ep = 0;
+	double ELKr_em = 0;
+	bool goodPBWall;
+	TVector3 propPos;
+	NPhysicsTrack t_ep = corrEvent.pTrack[tempObj.piEvent.ep.parentTrack];
+	NPhysicsTrack t_em = corrEvent.pTrack[tempObj.piEvent.em.parentTrack];
+
+	propPos = propagateAfter(rootGeom.Lkr.z, t_ep);
+	goodPBWall = true;
+	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
+	if(t_ep.lkr_acc && goodPBWall && rawEvent.track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
+
+	propPos = propagateAfter(rootGeom.Lkr.z, t_em);
+	goodPBWall = true;
+	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
+	if(t_em.lkr_acc && goodPBWall && rawEvent.track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
+
+	double E_lkr = ELKr_ep + ELKr_em + tempObj.piEvent.gamma.P.E();
+	if(options.isOptDebug()) cout << "~~~~ Cut 18 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "E_LKr :\t\t\t\t" << E_lkr << "\t <14: rejected" << endl;
+	if(E_lkr < 14) return 18+firstCutIndex;
 
 	return -1;
 }
