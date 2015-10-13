@@ -16,6 +16,7 @@
 #include <bitset>
 #include <iomanip>
 #include "funLib.h"
+#include <vector>
 using namespace std;
 
 double pi0d_getVertexTime(int ivtx){
@@ -231,8 +232,8 @@ int nico_pi0DalitzSelect(){
 		corrEvent.kaonP = abcog_params.pkm*(1+abcog_params.beta);
 	}
 
-	if(rootBurst.isMC && false){
-		weight = 1 + rootBurst.alpha*pow(corrEvent.kaonP-74.,2);
+	if(rootBurst.isMC){
+		weight = 1 + rootBurst.alpha*pow(rootMC.k.P.Vect().Mag()-74.,2);
 	}
 	corrEvent.weight = weight;
 

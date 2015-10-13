@@ -27,10 +27,26 @@ add_subdirectory(Support)
 include_directories(CompactRead)
 include_directories(Support)
 
-add_executable(pi0d_selection pi0d_Selection.cpp)
+add_executable(pi0d_selection pi0d_Selection.cpp SelectionFunctions.cpp)
+add_executable(alt_id pid.cpp SelectionFunctions.cpp)
+#add_executable(alt_id_kmu3 pid_mu.cpp)
 
 target_link_libraries(pi0d_selection CompactRead Support) #Own
 target_link_libraries(pi0d_selection exportClasses funLib) #Compact
 target_link_libraries(pi0d_selection ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
 
-install(TARGETS pi0d_selection DESTINATION .)
+target_link_libraries(alt_id CompactRead Support) #Own
+target_link_libraries(alt_id exportClasses funLib) #Compact
+target_link_libraries(alt_id ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
+
+#target_link_libraries(alt_id_kmu3 CompactRead Support) #Own
+#target_link_libraries(alt_id_kmu3 exportClasses funLib) #Compact
+#target_link_libraries(alt_id_kmu3 ${Boost_LIBRARIES} ${ROOT_LIBRARIES}) #External
+
+add_custom_command(TARGET pi0d_selection
+                   POST_BUILD
+                   COMMAND ./gitcommit.sh
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                   COMMENT "Running git commit")
+
+install(TARGETS pi0d_selection alt_id DESTINATION .)

@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <TApplication.h>
+#include <iomanip>
 using namespace std;
 
 void setStyle();
@@ -181,7 +182,8 @@ bool readConfig(TString confFile){
 		for(int i=0; i<tok->GetEntries(); ++i){
 			TString entry(((TObjString*)tok->At(i))->GetString());
 			if(key.CompareTo("mcfiles")==0){
-				if(entry.Contains(".root")) mcFileNames.push_back(entry);
+				mcFileNames.push_back(entry);
+				/*if(entry.Contains(".root")) mcFileNames.push_back(entry);
 				else{
 					ifstream fd(entry);
 					TString fileName;
@@ -189,7 +191,7 @@ bool readConfig(TString confFile){
 						mcFileNames.push_back(fileName);
 					}
 					fd.close();
-				}
+				}*/
 			}
 			else if(key.CompareTo("mcout")==0) mcOutputFiles.push_back(entry);
 			else if(key.CompareTo("modelfiles")==0) modelFiles.push_back(entry);
@@ -197,7 +199,8 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("mccolors")==0) mcColors.push_back(entry.Atoi());
 			else if(key.CompareTo("mclegends")==0) mcLegendTitle.push_back(entry);
 			else if(key.CompareTo("datafiles")==0){
-				if(entry.Contains(".root")) dataFileNames.push_back(entry);
+				dataFileNames.push_back(entry);
+				/*if(entry.Contains(".root")) dataFileNames.push_back(entry);
 				else{
 					ifstream fd(entry);
 					TString fileName;
@@ -205,7 +208,7 @@ bool readConfig(TString confFile){
 						dataFileNames.push_back(fileName);
 					}
 					fd.close();
-				}
+				}*/
 			}
 			else if(key.CompareTo("dataout")==0) dataOutputFiles.push_back(entry);
 			else if(key.CompareTo("datacolors")==0) dataColors.push_back(entry.Atoi());
@@ -256,13 +259,33 @@ void readFilesFill(){
 
 		//Open new input file
 		cout << mcFileNames[i] << endl;
-		ffd = TFile::Open(mcFileNames[i]);
+		vector<TString> localFiles;
+		if(!mcFileNames[i].Contains(".root")){
+			cout << "List file detected..." << endl;
+			ifstream listFile(mcFileNames[i]);
+			string buffer;
+			while(getline(listFile, buffer)){
+				localFiles.push_back(buffer);
+			}
+		}
+		else{
+			localFiles.push_back(mcFileNames[i]);
+		}
 
-		//Request the TTree reading function
-		Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+		int iFile=0;
+		double totalFiles = localFiles.size();
+		for(auto files : localFiles){
+			cout << "Processing file " << files << " " << setprecision(2) << std::fixed << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+			cout << "Br: " << brs[prevIndex] << endl;
+			ffd = TFile::Open(files);
 
-		//Close the input file
-		ffd->Close();
+			//Request the TTree reading function
+			Input::getInputMCFill(ffd, fdo, brs[prevIndex], prevIndex);
+
+			//Close the input file
+			ffd->Close();
+			iFile++;
+		}
 	}
 
 	//Close last output file
@@ -278,13 +301,34 @@ void readFilesFill(){
 		++inputDataNbr;
 		//Open new input file
 		cout << dataFileNames[i] << endl;
-		ffd = TFile::Open(dataFileNames[i]);
 
-		//Request the TTree reading function
-		Input::getInputDataFill(ffd, fdo);
+		vector<TString> localFiles;
+		if(!dataFileNames[i].Contains(".root")){
+			cout << "List file detected..." << endl;
+			ifstream listFile(dataFileNames[i]);
+			string buffer;
+			while(getline(listFile, buffer)){
+				localFiles.push_back(buffer);
+			}
+		}
+		else{
+			localFiles.push_back(dataFileNames[i]);
+		}
 
-		//Close input file
-		ffd->Close();
+		int iFile=0;
+		double totalFiles = localFiles.size();
+		for(auto files : localFiles){
+			cout << "Processing file " << files << setprecision(2) << iFile*100./totalFiles << "% " << iFile << "/" << totalFiles << endl;
+
+			ffd = TFile::Open(files);
+
+			//Request the TTree reading function
+			Input::getInputDataFill(ffd, fdo);
+
+			//Close input file
+			ffd->Close();
+			iFile++;
+		}
 	}
 
 	//Close last output file

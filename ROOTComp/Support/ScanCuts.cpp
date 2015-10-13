@@ -24,7 +24,7 @@ Cuts::Cuts(){
 	maxTrackTime = 25;
 	boolBadTrack = true;
 	numBadTrackCombi = 0;
-	numPiCandidates = 1;
+	numXCandidates = 1;
 	boolBadECandidates = true;
 	minTrackMomentum = 5;
 	maxTrackMomentum = 74;
@@ -33,12 +33,19 @@ Cuts::Cuts(){
 	minGammaEnergy = 3;
 	minDeadCellDist = 2;
 	minGammaDCHRadius = 13;
-	minTotalMomentum = 70;
-	maxTotalMomentum = 78;
-	maxPt = 0.0005;
-	maxPi0MassDiff = 0.008;
-	minKaonMassDiff = 0.475;
-	maxKaonMassDiff = 0.510;
+	unDeflectedElDist = 50;
+	k2pi.minTotalMomentum = 70;
+	k2pi.maxTotalMomentum = 78;
+	kmu3.maxTotalMomentum = 78;
+	k2pi.maxPt = 0.0005;
+	kmu3.minPt = 0.0005;
+	kmu3.maxPt = 0.04;
+	k2pi.maxPi0MassDiff = 0.02;
+	kmu3.maxPi0MassDiff = 0.01;
+	k2pi.minKaonMassDiff = 0.475;
+	k2pi.maxKaonMassDiff = 0.02;
+	kmu3.maxMissMassSq = 0.01;
+	k2pi.pi0Mass2DiffCoarse = 0.01;
 }
 
 void Cuts::print(){
@@ -53,7 +60,7 @@ void Cuts::print(){
 	std::cout << "maxTrackTime\t\t--> " << maxTrackTime << std::endl;
 	std::cout << "boolBadTrack\t\t--> " << boolBadTrack << std::endl;
 	std::cout << "numBadTrackCombi\t--> " << numBadTrackCombi << std::endl;
-	std::cout << "numPiCandidates\t\t--> " << numPiCandidates << std::endl;
+	std::cout << "numXCandidates\t\t--> " << numXCandidates << std::endl;
 	std::cout << "boolBadECandidates\t--> " << boolBadECandidates << std::endl;
 	std::cout << "minTrackMomentum\t--> " << minTrackMomentum << std::endl;
 	std::cout << "maxTrackMomentum\t--> " << maxTrackMomentum << std::endl;
@@ -62,12 +69,21 @@ void Cuts::print(){
 	std::cout << "minGammaEnergy\t\t--> " << minGammaEnergy << std::endl;
 	std::cout << "minDeadCellDist\t\t--> " << minDeadCellDist << std::endl;
 	std::cout << "minGammaDCHRadius\t--> " << minGammaDCHRadius << std::endl;
-	std::cout << "minTotalMomentum\t--> " << minTotalMomentum << std::endl;
-	std::cout << "maxTotalMomentum\t--> " << maxTotalMomentum << std::endl;
-	std::cout << "maxPt\t\t\t--> " << maxPt << std::endl;
-	std::cout << "maxPi0MassDiff\t\t--> " << maxPi0MassDiff << std::endl;
-	std::cout << "minKaonMassDiff\t\t--> " << minKaonMassDiff << std::endl;
-	std::cout << "maxKaonMassDiff\t\t--> " << maxKaonMassDiff << std::endl << std::endl;
+	std::cout << "unDeflectedElDist\t--> " << unDeflectedElDist << std::endl;
+	std::cout << "  -> K2Pi specific" << std::endl;
+	std::cout << "minTotalMomentum\t--> " << k2pi.minTotalMomentum << std::endl;
+	std::cout << "maxTotalMomentum\t--> " << k2pi.maxTotalMomentum << std::endl;
+	std::cout << "maxPt\t\t\t--> " << k2pi.maxPt << std::endl;
+	std::cout << "maxPi0MassDiff\t\t--> " << k2pi.maxPi0MassDiff << std::endl;
+	std::cout << "minKaonMassDiff\t\t--> " << k2pi.minKaonMassDiff << std::endl;
+	std::cout << "maxKaonMassDiff\t\t--> " << k2pi.maxKaonMassDiff << std::endl;
+	std::cout << "pi0Mass2DiffCoarse\t\t--> " << k2pi.pi0Mass2DiffCoarse << std::endl;
+	std::cout << "  -> KMu3 specific" << std::endl;
+	std::cout << "maxTotalMomentum\t--> " << kmu3.maxTotalMomentum << std::endl;
+	std::cout << "minPt\t\t\t--> " << kmu3.minPt << std::endl;
+	std::cout << "maxPt\t\t\t--> " << kmu3.maxPt << std::endl;
+	std::cout << "maxPi0MassDiff\t\t--> " << kmu3.maxPi0MassDiff << std::endl;
+	std::cout << "maxMissMassSq\t\t--> " << kmu3.maxMissMassSq << std::endl;
 }
 
 ScanCuts::ScanCuts(): defaultIndex(-1), currentList(-1){
@@ -125,12 +141,12 @@ bool ScanCuts::parseCuts(std::string fileName) {
 	if(fdCuts.is_open()){
 		while(getline(fdCuts, buffer)){
 			if(buffer[0]=='#') continue;
+			if(buffer.length()==0) continue;
 
 			std::stringstream ss(buffer);
 
 			//read new format
 			ss >> name >> value;
-
 			if(defaultIndex==-1 && name.compare("defaultIndex")==0){
 				defaultIndex = atoi(value.c_str());
 				continue;
@@ -175,8 +191,8 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			else if(name.compare("numBadTrackCombi")==0){
 				cutsLists[id].numBadTrackCombi = atoi(value.c_str());
 			}
-			else if(name.compare("numPiCandidates")==0){
-				cutsLists[id].numPiCandidates = atoi(value.c_str());
+			else if(name.compare("numXCandidates")==0){
+				cutsLists[id].numXCandidates = atoi(value.c_str());
 			}
 			else if(name.compare("boolBadECandidates")==0){
 				cutsLists[id].boolBadECandidates = (value.compare("true")==0) ? true : false;
@@ -202,23 +218,44 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			else if(name.compare("minGammaDCHRadius")==0){
 				cutsLists[id].minGammaDCHRadius = atoi(value.c_str());
 			}
-			else if(name.compare("minTotalMomentum")==0){
-				cutsLists[id].minTotalMomentum = atoi(value.c_str());
+			else if(name.compare("unDeflectedElDist")==0){
+				cutsLists[id].unDeflectedElDist = atoi(value.c_str());
 			}
-			else if(name.compare("maxTotalMomentum")==0){
-				cutsLists[id].maxTotalMomentum = atoi(value.c_str());
+			else if(name.compare("k2pi.minTotalMomentum")==0){
+				cutsLists[id].k2pi.minTotalMomentum = atoi(value.c_str());
 			}
-			else if(name.compare("maxPt")==0){
-				cutsLists[id].maxPt = atof(value.c_str());
+			else if(name.compare("k2pi.maxTotalMomentum")==0){
+				cutsLists[id].k2pi.maxTotalMomentum = atoi(value.c_str());
 			}
-			else if(name.compare("maxPi0MassDiff")==0){
-				cutsLists[id].maxPi0MassDiff = atof(value.c_str());
+			else if(name.compare("k2pi.maxPt")==0){
+				cutsLists[id].k2pi.maxPt = atof(value.c_str());
 			}
-			else if(name.compare("minKaonMassDiff")==0){
-				cutsLists[id].minKaonMassDiff = atof(value.c_str());
+			else if(name.compare("k2pi.maxPi0MassDiff")==0){
+				cutsLists[id].k2pi.maxPi0MassDiff = atof(value.c_str());
 			}
-			else if(name.compare("maxKaonMassDiff")==0){
-				cutsLists[id].maxKaonMassDiff = atof(value.c_str());
+			else if(name.compare("k2pi.minKaonMassDiff")==0){
+				cutsLists[id].k2pi.minKaonMassDiff = atof(value.c_str());
+			}
+			else if(name.compare("k2pi.maxKaonMassDiff")==0){
+				cutsLists[id].k2pi.maxKaonMassDiff = atof(value.c_str());
+			}
+			else if(name.compare("k2pi.pi0Mass2DiffCoarse")==0){
+				cutsLists[id].k2pi.pi0Mass2DiffCoarse = atof(value.c_str());
+			}
+			else if(name.compare("kmu3.maxTotalMomentum")==0){
+				cutsLists[id].kmu3.maxTotalMomentum = atoi(value.c_str());
+			}
+			else if(name.compare("kmu3.minPt")==0){
+				cutsLists[id].kmu3.minPt = atof(value.c_str());
+			}
+			else if(name.compare("kmu3.maxPt")==0){
+				cutsLists[id].kmu3.maxPt = atof(value.c_str());
+			}
+			else if(name.compare("kmu3.maxPi0MassDiff")==0){
+				cutsLists[id].kmu3.maxPi0MassDiff = atof(value.c_str());
+			}
+			else if(name.compare("kmu3.maxMissMassSq")==0){
+				cutsLists[id].kmu3.maxMissMassSq = atof(value.c_str());
 			}
 			else{
 				std::cout << "No known " << name << " cut parameter " << value << std::endl;

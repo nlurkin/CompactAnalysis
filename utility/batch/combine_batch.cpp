@@ -10,6 +10,7 @@
 #include <TCanvas.h>
 #include "../userinc/exportClasses.h"
 #include <TGaxis.h>
+#include <iomanip>
 using namespace std;
 
 #define MAXEVENTS 0
@@ -162,6 +163,9 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("pipCDA", index, v, 100, 0, 10);
 	addHisto("pipEnergy", index, v, 60, 0, 60);
 
+	addHisto("eop", index, v, 100, 0, 1.5);
+	addHisto("eop_pi", index, v, 100, 0, 1.5);
+
 	addHisto("xMap", index, vMap, 1000,0,1, 1000, 0, 1);
 }
 
@@ -204,6 +208,9 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "pipVtxZ", ++i, v);
 	getHisto(fd, "pipCDA", ++i, v);
 	getHisto(fd, "pipEnergy", ++i, v);
+
+	getHisto(fd, "eop", ++i, v);
+	getHisto(fd, "eop_pi", ++i, v);
 
 	getHisto(fd, "xMap", ++iMap, vMap);
 }
@@ -269,6 +276,12 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(rawEvent->vtx[evt->pic.parentVertex].cda, weight);
 	
 	d->at(++i)->Fill(corrEvent->pCluster[evt->pic.parentCluster].E, weight);
+	
+	d->at(++i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[0]].E/corrEvent->pTrack[corrEvent->goodTracks[0]].p, weight);
+	d->at(i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[1]].E/corrEvent->pTrack[corrEvent->goodTracks[1]].p, weight);
+	d->at(i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[2]].E/corrEvent->pTrack[corrEvent->goodTracks[2]].p, weight);
+	
+	d->at(++i)->Fill(corrEvent->pTrack[evt->pic.parentTrack].E/corrEvent->pTrack[evt->pic.parentTrack].p, weight);
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
 }
@@ -315,10 +328,13 @@ namespace Input{
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 
-		th->GetEntry(0);
 		//Set event nb
 		int nevt = t->GetEntries();
-		int totalChanEvents = headerBrch->NProcessedEvents;
+		int totalChanEvents = 0;
+		for(int i=0; i<th->GetEntries(); i++){
+			th->GetEntry(i);
+			totalChanEvents += headerBrch->NProcessedEvents;
+		}
 		int processedEvents = 0;
 		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
 
@@ -335,6 +351,8 @@ namespace Input{
 		cout << "Filling " << nevt << endl;
 		double weight = 1.;
 		for(int i=0; i<nevt; ++i){
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
+			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
 			weight = applyWeights(burstBrch->nrun);
@@ -390,6 +408,8 @@ namespace Input{
 
 		cout << "Filling data " << nevt << endl;
 		for(i=0; i<nevt; i++){
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
+			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
 			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch, rawBrch, corrBrch, mcEvent);
@@ -540,7 +560,7 @@ void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* r
 	ratio->GetXaxis()->SetLabelSize(15);
 }
 
-void drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
+TCanvas* drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
 	TCanvas *c1 = new TCanvas(TString::Format("c%li", iCanvas), name);
 	TH1D* r = buildRatio(stack, data, name);
 
@@ -550,6 +570,7 @@ void drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
 	//c1->Update();
 	//c1->Draw();
 	++iCanvas;
+	return c1;
 }
 
 void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
@@ -583,9 +604,11 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 	dSig->at(0).at(index)->SetLineColor(kRed);
 	if(legendTitle) leg->AddEntry(dSig->at(0).at(index),dataLegendTitle[0].Data(),"lep");
 	
-	drawCanvas(name, hStack, dSig->at(0).at(index), leg);
+	TCanvas *c = drawCanvas(name, hStack, dSig->at(0).at(index), leg);
 
 	hStack->Write();
+	cout << name+".png" << endl;
+	c->SaveAs(name+".png");
 }
 
 void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
@@ -735,6 +758,11 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot(28, "pipCDA", "CDA", leg, mcColors);
 	if(maxPlots--==0) return;
 	doPlot(29, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
+	if(maxPlots--==0) return;
+
+	doPlot(30, "eop", "Tracks E/p", leg, mcColors);
+	if(maxPlots--==0) return;
+	doPlot(31, "eop_pi", "Tracks E/p (pion)", leg, mcColors);
 	if(maxPlots--==0) return;
 
 	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);

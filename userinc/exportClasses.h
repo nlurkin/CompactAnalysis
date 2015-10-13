@@ -390,7 +390,7 @@ public:
 
 class ROOTPhysicsEvent : public TObject{
 public:
-	ROOTPhysicsEvent(): x(0), y(0), mee(0), pic(), ep(11), em(-11), gamma(22), pi0(111), kaon(){};
+	ROOTPhysicsEvent(): x(0), y(0), mee(0), pic(), ep(11), em(-11), gamma(22), pi0(111), kaon(), mu(){};
 	~ROOTPhysicsEvent(){};
 
 	void clear(){
@@ -413,24 +413,27 @@ public:
 	NRecoParticle gamma;
 	NRecoParticle pi0;
 	NRecoParticle kaon;
+	NRecoParticle mu;
 
 	ClassDefNV(ROOTPhysicsEvent, 1);
 };
 
 class ROOTMCEvent: public TObject{
 public:
-	ROOTMCEvent(): xTrue(-1), ep(11), em(-11){};
+	ROOTMCEvent(): xTrue(-1), ep(11), em(-11), k(321){};
 	~ROOTMCEvent(){};
 
 	void clear(){
 		xTrue = -1;
 		ep.clear();
 		em.clear();
+		k.clear();
 	}
 public:
 	float xTrue;
 	NMCParticle ep;
 	NMCParticle em;
+	NMCParticle k;
 
 	ClassDefNV(ROOTMCEvent, 1);
 };

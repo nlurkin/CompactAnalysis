@@ -60,8 +60,10 @@ std::map<std::string,std::string> parseOptions(std::string s);
 const std::vector<std::string> tokenize(std::string s, const char delim);
 bool isFilteredEvent(int nrun, int nburst, int timestamp, const vector<eventID> &badEventsList);
 
+extern double MK;
 extern double Mpi0;
 extern double Mpic;
 extern double Me;
+extern double Mmu;
 
 #endif /* FUNLIB_H_ */

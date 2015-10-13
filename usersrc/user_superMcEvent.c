@@ -27,7 +27,13 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 
 	bool ep = false;
 	bool em = false;
+	bool k = false;
 	for(int i=0; i<= evt->Npart; i++){
+		if(abs(evt->part[i].type)==512 && !k){
+			rootMC.k.P.SetXYZT(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3], evt->part[i].p[0]);
+			rootMC.k.vertex.SetXYZ(evt->part[i].pvertex[0], evt->part[i].pvertex[1], evt->part[i].pvertex[2]);
+			k = true;
+		}
 		if(evt->part[i].type==64 && !ep){
 			rootMC.ep.P.SetXYZT(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3], evt->part[i].p[0]);
 			rootMC.ep.vertex.SetXYZ(evt->part[i].pvertex[0], evt->part[i].pvertex[1], evt->part[i].pvertex[2]);

@@ -17,6 +17,7 @@ class CompactIO;
 
 class OptionsParser {
 public:
+	enum ESelectionType {K2PI, KMU3};
 	OptionsParser();
 	virtual ~OptionsParser();
 
@@ -60,6 +61,14 @@ public:
 		return nScan;
 	}
 
+	int getStartEvent() const {
+		return startEvent;
+	}
+
+	ESelectionType getSelectionType() const {
+		return selectionType;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -68,6 +77,8 @@ private:
 	bool exportAllEvents;
 	bool doScan;
 	int nScan;
+	int startEvent;
+	ESelectionType selectionType;
 	po::options_description desc;
 	std::string optString;
 	std::string cutsFile;

@@ -298,22 +298,22 @@ void plotpi0mass(){
 	int NPoints = 10;
 	double points[10] = {0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01, 0.011};
 
-	double pointsOld[10] = {0.0149355, 0.0173647, 0.0238414, 0.032847, 0.0362169, 0.0383385, 0.0403324, 0.0411539, 0.0412099, 0.0446113};
-	double errOld[10] = {0.0118117, 0.0110085, 0.0107409, 0.0106093, 0.0105521, 0.0105102, 0.0104584, 0.0104281, 0.0104336, 0.0103517};
-		
-	double pointsOldRoot[10] = {0.0152272, 0.0174402, 0.0237519, 0.0325828, 0.035904, 0.0380045, 0.0399277, 0.0406624, 0.0406641, 0.0439828};
-	double errOldRoot[10] = {0.0145287, 0.0135896, 0.0132953, 0.0131689, 0.0131064, 0.0130632, 0.013027, 0.0129856, 0.0130037, 0.0128912};
+	double pointsOld[10] = {0.0257525, 0.0299572, 0.0347466, 0.0410449, 0.0436154, 0.0455023, 0.0467107, 0.0472451, 0.048017, 0.0484429};
+	double errOld[10] = {0.012046, 0.011257, 0.0109968, 0.0108846, 0.0108221, 0.0107851, 0.0107605, 0.0107444, 0.0107404, 0.0107241};
+	
+	double pointsOldRoot[10] = {0.0256596, 0.029835, 0.0345065, 0.0406962, 0.0432381, 0.0450902, 0.0462382, 0.0467681, 0.0474945, 0.0479093};
+	double errOldRoot[10] = {0.0149477, 0.0139699, 0.0136587, 0.0135292, 0.0134542, 0.0134128, 0.0133885, 0.0133693, 0.0133716, 0.01335};
 
-	double pointsNew[10] = {0.0146534, 0.0186988, 0.0251068, 0.0338209, 0.0372407, 0.0400598, 0.0415006, 0.0422051, 0.04217, 0.0452986};
-	double errNew[10] = {0.014576, 0.0136149, 0.0133031, 0.013167, 0.0130938, 0.0130392, 0.0130014, 0.0129531, 0.0129684, 0.01285};
+	double pointsNew[10] = {0.0259345, 0.0311638, 0.0359116, 0.0423887, 0.0449354, 0.0466156, 0.0477873, 0.0481367, 0.0488021, 0.0491589};
+	double errNew[10] = {0.0149385, 0.0139718, 0.0136461, 0.0135038, 0.0134258, 0.0133747, 0.0133404, 0.0133222, 0.0133192, 0.0132983};
 	
-	double pointsNewRoot[10] = {0.0145182, 0.0184307, 0.0248997, 0.033599, 0.0370024, 0.0398518, 0.0412759, 0.0419821, 0.0418912, 0.0450634};
-	double errNewRoot[10] = {0.0144619, 0.0135061, 0.013209, 0.0130864, 0.0130184, 0.0129677, 0.0129375, 0.0128975, 0.012916, 0.0128079};
+	double pointsNewRoot[10] = {0.0257485, 0.0309926, 0.035792, 0.0423119, 0.0448136, 0.0465055, 0.0476842, 0.0480334, 0.0487064, 0.0490642};
+	double errNewRoot[10] = {0.0148516, 0.0138768, 0.0135627, 0.0134277, 0.0133522, 0.0133057 ,0.0132792 ,0.0132628 ,0.0132658, 0.0132472};
 	
-	double pointsNEvents[10] = {792280, 916082, 963504, 985346, 997136, 1005345, 1009929, 1016579, 1013040, 1030818};
+	double pointsNEvents[10] = {756544, 874179, 919446, 940313, 951571, 958237, 962005, 964212, 963751, 966306};
 
 	//Creation
-	TGraphErrors *pi0massOld = new TGraphErrors();
+/*	TGraphErrors *pi0massOld = new TGraphErrors();
 	pi0massOld->SetName("pi0massOld");
 	//Points
 	for(int i=0; i<NPoints; ++i){
@@ -327,12 +327,12 @@ void plotpi0mass(){
 	pi0massOld->SetMarkerStyle(20);
 	pi0massOld->SetMarkerColor(2);
 	pi0massOld->SetLineColor(2);
-	pi0massOld->SetFillStyle(0);
+	pi0massOld->SetFillStyle(0);*/
 
 
 	//Creation
 	TGraphErrors *pi0massOldRoot = new TGraphErrors();
-	pi0massOld->SetName("pi0massOldRoot");
+	pi0massOldRoot->SetName("pi0massOldRoot");
 	//Points
 	for(int i=0; i<NPoints; ++i){
 		pi0massOldRoot->SetPoint(i, points[i]+0.00002, pointsOldRoot[i]);
@@ -350,7 +350,7 @@ void plotpi0mass(){
 
 	//Creation
 	TGraphErrors *pi0massNew = new TGraphErrors();
-	pi0massOld->SetName("pi0massNew");
+	pi0massNew->SetName("pi0massNew");
 	//Points
 	for(int i=0; i<NPoints; ++i){
 		pi0massNew->SetPoint(i, points[i]+0.00004, pointsNew[i]);
@@ -367,7 +367,7 @@ void plotpi0mass(){
 
 	//Creation
 	TGraphErrors *pi0massNewRoot = new TGraphErrors();
-	pi0massOld->SetName("pi0massNewRoot");
+	pi0massNewRoot->SetName("pi0massNewRoot");
 	//Points
 	for(int i=0; i<NPoints; ++i){
 		pi0massNewRoot->SetPoint(i, points[i]+0.00006, pointsNewRoot[i]);
@@ -401,18 +401,19 @@ void plotpi0mass(){
 	c->SetGrid(1, 1);
 
 	TLegend *leg = new TLegend(0.6, 0.8, 0.95, 0.95);
-	leg->AddEntry(pi0massOld, "m_{ee#gamma} Old Method");
+//	leg->AddEntry(pi0massOld, "m_{ee#gamma} Old Method");
 	leg->AddEntry(pi0massOldRoot, "m_{ee#gamma} Old Method with ROOT #chi^{2}");
 	leg->AddEntry(pi0massNew, "m_{ee#gamma} New Method");
 	leg->AddEntry(pi0massNewRoot, "m_{ee#gamma} New Method with ROOT #chi^{2}");
 
-	pi0massOld->GetYaxis()->SetRangeUser(0, 0.08);
-	pi0massOld->SetTitle("m_{ee#gamma} scan");
-	pi0massOld->GetXaxis()->SetTitle("m_{ee#gamma} cut");
-	pi0massOld->GetYaxis()->SetTitle("FF Slope a");
-	pi0massOld->GetYaxis()->SetTitleOffset(1.5);
-	pi0massOld->Draw("AP");
-	pi0massOldRoot->Draw("SAME P");
+	pi0massOldRoot->GetYaxis()->SetRangeUser(0, 0.08);
+	pi0massOldRoot->SetTitle("m_{ee#gamma} scan");
+	pi0massOldRoot->GetXaxis()->SetTitle("m_{ee#gamma} cut");
+	pi0massOldRoot->GetYaxis()->SetTitle("FF Slope a");
+	pi0massOldRoot->GetYaxis()->SetTitleOffset(1.5);
+//	pi0massOld->Draw("AP");
+//	pi0massOldRoot->Draw("SAME P");
+	pi0massOldRoot->Draw("AP");
 	pi0massNew->Draw("SAME P");
 	pi0massNewRoot->Draw("SAME P");
 	leg->Draw("LEP");

@@ -1,0 +1,15 @@
+mcfiles=../../ROOTComp/build/output.root
+mcIndex=0
+mcout=tst.root
+mccolors=630 740 850
+brs=2.066E-1
+mclegends=K^{+}->#pi^{+}#pi^{0}_{d}
+
+#datafiles=/afs/cern.ch/user/n/nlurkin/work/massScan/data.root
+#dataout=data.root
+#datacolors=360 370 380 390 400 410 420 430 440
+#datalegends=Datap5
+
+#These runs are included
+#runstart=20452
+#runend=20486

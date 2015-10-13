@@ -492,6 +492,8 @@ namespace Input {
 
 		cout << "Filling " << nevt << endl;
 		for (; i < nevt; ++i) {
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
+			cout.flush();
 			t->GetEntry(i);
 			if(cutsPass){
 				if(!cutsPass->at(scanID)){
@@ -499,8 +501,6 @@ namespace Input {
 					continue;
 				}
 			}
-			if ((i % 100) == 0)
-				cout << i << "/" << nevt << "\r" << endl;
 			if (!runIncluded(burstBrch->nrun))
 				continue;
 			weight = applyWeights(burstBrch->nrun);
@@ -595,13 +595,14 @@ namespace Input {
 		double a = testA;
 		cout << "Filling data " << testA << " with " << NSig << " events" << endl;
 		for (i = 0; i < NSig; i++) {
+			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
+			cout.flush();
 			t->GetEntry(i);
 			if(cutsPass){
 				if(!cutsPass->at(scanID)){
 					continue;
 				}
 			}
-			if ((i % 100) == 0) cout << i << "/" << nevt << "\r" << endl;
 			fitBrch.selEvents++;
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;

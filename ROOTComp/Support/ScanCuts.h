@@ -24,7 +24,7 @@ public:
 	int maxTrackTime;
 	bool boolBadTrack;
 	int numBadTrackCombi;
-	int numPiCandidates;
+	int numXCandidates;
 	bool boolBadECandidates;
 	int minTrackMomentum;
 	int maxTrackMomentum;
@@ -33,12 +33,23 @@ public:
 	int minGammaEnergy;
 	int minDeadCellDist;
 	int minGammaDCHRadius;
-	int minTotalMomentum;
-	int maxTotalMomentum;
-	double maxPt;
-	double maxPi0MassDiff;
-	double minKaonMassDiff;
-	double maxKaonMassDiff;
+	int unDeflectedElDist;
+	struct k2pi_t{
+		int minTotalMomentum;
+		int maxTotalMomentum;
+		double maxPt;
+		double maxPi0MassDiff;
+		double minKaonMassDiff;
+		double maxKaonMassDiff;
+		double pi0Mass2DiffCoarse;
+	} k2pi;
+	struct kmu3_t{
+		int maxTotalMomentum;
+		double minPt;
+		double maxPt;
+		double maxPi0MassDiff;
+		double maxMissMassSq;
+	} kmu3;
 
 	ClassDefNV(Cuts, 1)
 };
