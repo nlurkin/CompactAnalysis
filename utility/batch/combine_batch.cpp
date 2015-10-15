@@ -133,59 +133,59 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 
 	addHisto("mK", index, v, 100, 0.47, 0.52);
 
-	addHisto("R_DCH1_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH1_ep", index, v, 150, 0, 100);
 	addHisto("X_DCH1_ep", index, v, 200, -100, 100);
 	addHisto("Y_DCH1_ep", index, v, 200, -100, 100);
-	addHisto("R_DCH1_em", index, v, 200, -100, 100);
+	addHisto("R_DCH1_em", index, v, 150, 0, 100);
 	addHisto("X_DCH1_em", index, v, 200, -100, 100);
 	addHisto("Y_DCH1_em", index, v, 200, -100, 100);
-	addHisto("R_DCH1_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH1_pip", index, v, 150, 0, 100);
 	addHisto("X_DCH1_pip", index, v, 200, -100, 100);
 	addHisto("Y_DCH1_pip", index, v, 200, -100, 100);
-	addHisto("R_DCH1_gamma", index, v, 200, -100, 100);
+	addHisto("R_DCH1_gamma", index, v, 150, 0, 100);
 	addHisto("X_DCH1_gamma", index, v, 200, -100, 100);
 	addHisto("Y_DCH1_gamma", index, v, 200, -100, 100);
 
-	addHisto("R_DCH2_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH2_ep", index, v, 150, 0, 100);
 	addHisto("X_DCH2_ep", index, v, 200, -100, 100);
 	addHisto("Y_DCH2_ep", index, v, 200, -100, 100);
-	addHisto("R_DCH2_em", index, v, 200, -100, 100);
+	addHisto("R_DCH2_em", index, v, 150, 0, 100);
 	addHisto("X_DCH2_em", index, v, 200, -100, 100);
 	addHisto("Y_DCH2_em", index, v, 200, -100, 100);
-	addHisto("R_DCH2_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH2_pip", index, v, 150, 0, 100);
 	addHisto("X_DCH2_pip", index, v, 200, -100, 100);
 	addHisto("Y_DCH2_pip", index, v, 200, -100, 100);
-	addHisto("R_DCH2_gamma", index, v, 200, -100, 100);
+	addHisto("R_DCH2_gamma", index, v, 150, 0, 100);
 	addHisto("X_DCH2_gamma", index, v, 200, -100, 100);
 	addHisto("Y_DCH2_gamma", index, v, 200, -100, 100);
 
-	addHisto("R_DCH3_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH3_ep", index, v, 150, 0, 100);
 	addHisto("X_DCH3_ep", index, v, 200, -100, 100);
 	addHisto("Y_DCH3_ep", index, v, 200, -100, 100);
-	addHisto("R_DCH3_em", index, v, 200, -100, 100);
+	addHisto("R_DCH3_em", index, v, 150, 0, 100);
 	addHisto("X_DCH3_em", index, v, 200, -100, 100);
 	addHisto("Y_DCH3_em", index, v, 200, -100, 100);
-	addHisto("R_DCH3_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH3_pip", index, v, 150, 0, 100);
 	addHisto("X_DCH3_pip", index, v, 200, -100, 100);
 	addHisto("Y_DCH3_pip", index, v, 200, -100, 100);
-	addHisto("R_DCH3_gamma", index, v, 200, -100, 100);
+	addHisto("R_DCH3_gamma", index, v, 150, 0, 100);
 	addHisto("X_DCH3_gamma", index, v, 200, -100, 100);
 	addHisto("Y_DCH3_gamma", index, v, 200, -100, 100);
 
-	addHisto("R_DCH4_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH4_ep", index, v, 150, 0, 100);
 	addHisto("X_DCH4_ep", index, v, 200, -100, 100);
 	addHisto("Y_DCH4_ep", index, v, 200, -100, 100);
-	addHisto("R_DCH4_em", index, v, 200, -100, 100);
+	addHisto("R_DCH4_em", index, v, 150, 0, 100);
 	addHisto("X_DCH4_em", index, v, 200, -100, 100);
 	addHisto("Y_DCH4_em", index, v, 200, -100, 100);
-	addHisto("R_DCH4_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH4_pip", index, v, 150, 0, 100);
 	addHisto("X_DCH4_pip", index, v, 200, -100, 100);
 	addHisto("Y_DCH4_pip", index, v, 200, -100, 100);
-	addHisto("R_DCH4_gamma", index, v, 200, -100, 100);
+	addHisto("R_DCH4_gamma", index, v, 150, 0, 100);
 	addHisto("X_DCH4_gamma", index, v, 200, -100, 100);
 	addHisto("Y_DCH4_gamma", index, v, 200, -100, 100);
 
-	addHisto("Zvtx", index, v, 100, 0, 350000);
+	addHisto("Zvtx", index, v, 100, -2000, 9000);
 	addHisto("Qvtx", index, v, 10, -5, 5);
 	addHisto("CDAvtx", index, v, 100, 0, 10);
 	addHisto("Pt2", index, v, 100, 0, 0.001);
@@ -194,10 +194,10 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("Mpi0", index, v, 100, -0.01, 0.01);
 	
 	//Photon
-	addHisto("gEnergy", index, v, 60, 0, 60);
+	addHisto("gEnergy", index, v, 80, 0, 80);
 	addHisto("gPositionX", index, v, 120, -120, 120);
 	addHisto("gPositionY", index, v, 120, -120, 120);
-	addHisto("gRadius", index, v, 120, -120, 120);
+	addHisto("gRadius", index, v, 120, 0, 120);
 	addHisto("gP", index, v, 60, 0, 60);
 	
 	//e+/e-
@@ -506,6 +506,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
 	d->at(++i)->Fill(mrawEvent->vtx[evt->pic.parentVertex].charge, weight);
+	d->at(++i)->Fill(mrawEvent->vtx[evt->pic.parentVertex].cda, weight);
 	d->at(++i)->Fill(evt->kaon.P.Perp2(corrEvent->kaonMomentum), weight);
 	d->at(++i)->Fill(evt->kaon.P.Vect().Mag(), weight);
 
