@@ -195,8 +195,8 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	
 	//Photon
 	addHisto("gEnergy", index, v, 80, 0, 80);
-	addHisto("gPositionX", index, v, 120, -120, 120);
-	addHisto("gPositionY", index, v, 120, -120, 120);
+	addHisto("gPositionX", index, v, 300, -150, 150);
+	addHisto("gPositionY", index, v, 300, -150, 150);
 	addHisto("gRadius", index, v, 150, 0, 150);
 	addHisto("gP", index, v, 60, 0, 60);
 	
@@ -207,9 +207,9 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("epPz", index, v, 110, 0, 1.1);
 	addHisto("epEnergy", index, v, 60, 0, 60);
 	addHisto("epeop", index, v, 100, 0, 1.5);
-	addHisto("epLKrX", index, v, 120, -120, 120);
-	addHisto("epLKrY", index, v, 120, -120, 120);
-	addHisto("epLKrR", index, v, 120, -120, 120);
+	addHisto("epLKrX", index, v, 300, -150, 150);
+	addHisto("epLKrY", index, v, 300, -150, 150);
+	addHisto("epLKrR", index, v, 300, -150, 150);
 
 	addHisto("emPMag", index, v, 60, 0, 60);
 	addHisto("emPx", index, v, 60, -0.015, 0.015);
@@ -217,9 +217,9 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("emPz", index, v, 110, 0, 1.1);
 	addHisto("emEnergy", index, v, 60, 0, 60);
 	addHisto("emeop", index, v, 100, 0, 1.5);
-	addHisto("emLKrX", index, v, 120, -120, 120);
-	addHisto("emLKrY", index, v, 120, -120, 120);
-	addHisto("emLKrR", index, v, 120, -120, 120);
+	addHisto("emLKrX", index, v, 300, -150, 150);
+	addHisto("emLKrY", index, v, 300, -150, 150);
+	addHisto("emLKrR", index, v, 300, -150, 150);
 
 	addHisto("mee", index, v, 140, 0, 0.14);
 
@@ -235,20 +235,20 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("t_epem_DCH", index, v, 100, -75, 75);
 	addHisto("t_eppip_DCH", index, v, 100, -75, 75);
 	addHisto("t_empip_DCH", index, v, 100, -75, 75);
-	addHisto("t_epem_LKr", index, v, 120, -120, 120);
-	addHisto("t_eppip_LKr", index, v, 120, -120, 120);
-	addHisto("t_empip_LKr", index, v, 120, -120, 120);
+	addHisto("t_epem_LKr", index, v, 300, -150, 150);
+	addHisto("t_eppip_LKr", index, v, 300, -150, 150);
+	addHisto("t_empip_LKr", index, v, 300, -150, 150);
 
 	addHisto("t_gep_DCH", index, v, 100, -75, 75);
 	addHisto("t_gem_DCH", index, v, 100, -75, 75);
 	addHisto("t_gpip_DCH", index, v, 100, -75, 75);
-	addHisto("t_gep_LKr", index, v, 120, -120, 120);
-	addHisto("t_gem_LKr", index, v, 120, -120, 120);
-	addHisto("t_gpip_LKr", index, v, 120, -120, 120);
+	addHisto("t_gep_LKr", index, v, 300, -150, 150);
+	addHisto("t_gem_LKr", index, v, 300, -150, 150);
+	addHisto("t_gpip_LKr", index, v, 300, -150, 150);
 
-	addHisto("undeft_gep_LKr", index, v, 120, -120, 120);
-	addHisto("undeft_gem_LKr", index, v, 120, -120, 120);
-	addHisto("undeft_gpip_LKr", index, v, 120, -120, 120);
+	addHisto("undeft_gep_LKr", index, v, 300, -150, 150);
+	addHisto("undeft_gem_LKr", index, v, 300, -150, 150);
+	addHisto("undeft_gpip_LKr", index, v, 300, -150, 150);
 
 	addHisto("L3_E_LKr_ep", index, v, 800, 0, 80);
 	addHisto("L3_E_LKr_em", index, v, 800, 0, 80);
