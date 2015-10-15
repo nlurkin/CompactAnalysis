@@ -436,7 +436,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
-	cout << evt->ep.parentTrack << endl;
+	cout << endl << evt->ep.parentTrack << endl;
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
 	d->at(++i)->Fill(propPos.X(), weight);
