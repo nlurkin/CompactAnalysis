@@ -21,8 +21,8 @@ static vector< vector<TH1D*> > *d1;
 static vector< vector<TH1D*> > *dSig;
 static vector< vector<TH2D*> > *dMap, *dSigMap;
 
-ROOTRawEvent xxx;
-ROOTRawEvent &rawEvent = xxx;
+ROOTRawEvent *xxx;
+ROOTRawEvent &rawEvent = *xxx;
 
 /***************************
  * Mandatory from header
