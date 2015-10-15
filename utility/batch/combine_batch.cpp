@@ -1073,6 +1073,8 @@ void combine_show(TString inFile, int maxPlots){
 		i++;
 		new TCanvas(TString("c") + (Long_t)i, "xxx");
 		it->Draw();
+		cout << i << endl;
+		if(i>=3) break;
 	}
 	return;
 
