@@ -524,6 +524,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(evt->ep.P.Vect().Unit().X(), weight);
 	d->at(++i)->Fill(evt->ep.P.Vect().Unit().Y(), weight);
 	d->at(++i)->Fill(evt->ep.P.Vect().Unit().Z(), weight);
+	cout << corrEvent->pCluster[evt->ep.parentCluster].E << " " << evt->ep.P.E() << endl;
 	d->at(++i)->Fill(corrEvent->pCluster[evt->ep.parentCluster].E, weight);
 	d->at(++i)->Fill(corrEvent->pTrack[evt->ep.parentTrack].E/corrEvent->pTrack[evt->ep.parentTrack].p, weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
