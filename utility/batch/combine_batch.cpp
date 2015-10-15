@@ -14,7 +14,7 @@
 #include "../userinc/funLib.h"
 using namespace std;
 
-#define MAXEVENTS 0
+#define MAXEVENTS 30000
 Long_t iCanvas = 0;
 
 static vector< vector<TH1D*> > *d1;
@@ -133,57 +133,57 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 
 	addHisto("mK", index, v, 100, 0.47, 0.52);
 
-	addHisto("R_DCH1_ep", index, v, 100, -75, 75);
-	addHisto("X_DCH1_ep", index, v, 100, -75, 75);
-	addHisto("Y_DCH1_ep", index, v, 100, -75, 75);
-	addHisto("R_DCH1_em", index, v, 100, -75, 75);
-	addHisto("X_DCH1_em", index, v, 100, -75, 75);
-	addHisto("Y_DCH1_em", index, v, 100, -75, 75);
-	addHisto("R_DCH1_pip", index, v, 100, -75, 75);
-	addHisto("X_DCH1_pip", index, v, 100, -75, 75);
-	addHisto("Y_DCH1_pip", index, v, 100, -75, 75);
-	addHisto("R_DCH1_gamma", index, v, 100, -75, 75);
-	addHisto("X_DCH1_gamma", index, v, 100, -75, 75);
-	addHisto("Y_DCH1_gamma", index, v, 100, -75, 75);
+	addHisto("R_DCH1_ep", index, v, 200, -100, 100);
+	addHisto("X_DCH1_ep", index, v, 200, -100, 100);
+	addHisto("Y_DCH1_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH1_em", index, v, 200, -100, 100);
+	addHisto("X_DCH1_em", index, v, 200, -100, 100);
+	addHisto("Y_DCH1_em", index, v, 200, -100, 100);
+	addHisto("R_DCH1_pip", index, v, 200, -100, 100);
+	addHisto("X_DCH1_pip", index, v, 200, -100, 100);
+	addHisto("Y_DCH1_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH1_gamma", index, v, 200, -100, 100);
+	addHisto("X_DCH1_gamma", index, v, 200, -100, 100);
+	addHisto("Y_DCH1_gamma", index, v, 200, -100, 100);
 
-	addHisto("R_DCH2_ep", index, v, 100, -75, 75);
-	addHisto("X_DCH2_ep", index, v, 100, -75, 75);
-	addHisto("Y_DCH2_ep", index, v, 100, -75, 75);
-	addHisto("R_DCH2_em", index, v, 100, -75, 75);
-	addHisto("X_DCH2_em", index, v, 100, -75, 75);
-	addHisto("Y_DCH2_em", index, v, 100, -75, 75);
-	addHisto("R_DCH2_pip", index, v, 100, -75, 75);
-	addHisto("X_DCH2_pip", index, v, 100, -75, 75);
-	addHisto("Y_DCH2_pip", index, v, 100, -75, 75);
-	addHisto("R_DCH2_gamma", index, v, 100, -75, 75);
-	addHisto("X_DCH2_gamma", index, v, 100, -75, 75);
-	addHisto("Y_DCH2_gamma", index, v, 100, -75, 75);
+	addHisto("R_DCH2_ep", index, v, 200, -100, 100);
+	addHisto("X_DCH2_ep", index, v, 200, -100, 100);
+	addHisto("Y_DCH2_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH2_em", index, v, 200, -100, 100);
+	addHisto("X_DCH2_em", index, v, 200, -100, 100);
+	addHisto("Y_DCH2_em", index, v, 200, -100, 100);
+	addHisto("R_DCH2_pip", index, v, 200, -100, 100);
+	addHisto("X_DCH2_pip", index, v, 200, -100, 100);
+	addHisto("Y_DCH2_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH2_gamma", index, v, 200, -100, 100);
+	addHisto("X_DCH2_gamma", index, v, 200, -100, 100);
+	addHisto("Y_DCH2_gamma", index, v, 200, -100, 100);
 
-	addHisto("R_DCH3_ep", index, v, 100, -75, 75);
-	addHisto("X_DCH3_ep", index, v, 100, -75, 75);
-	addHisto("Y_DCH3_ep", index, v, 100, -75, 75);
-	addHisto("R_DCH3_em", index, v, 100, -75, 75);
-	addHisto("X_DCH3_em", index, v, 100, -75, 75);
-	addHisto("Y_DCH3_em", index, v, 100, -75, 75);
-	addHisto("R_DCH3_pip", index, v, 100, -75, 75);
-	addHisto("X_DCH3_pip", index, v, 100, -75, 75);
-	addHisto("Y_DCH3_pip", index, v, 100, -75, 75);
-	addHisto("R_DCH3_gamma", index, v, 100, -75, 75);
-	addHisto("X_DCH3_gamma", index, v, 100, -75, 75);
-	addHisto("Y_DCH3_gamma", index, v, 100, -75, 75);
+	addHisto("R_DCH3_ep", index, v, 200, -100, 100);
+	addHisto("X_DCH3_ep", index, v, 200, -100, 100);
+	addHisto("Y_DCH3_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH3_em", index, v, 200, -100, 100);
+	addHisto("X_DCH3_em", index, v, 200, -100, 100);
+	addHisto("Y_DCH3_em", index, v, 200, -100, 100);
+	addHisto("R_DCH3_pip", index, v, 200, -100, 100);
+	addHisto("X_DCH3_pip", index, v, 200, -100, 100);
+	addHisto("Y_DCH3_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH3_gamma", index, v, 200, -100, 100);
+	addHisto("X_DCH3_gamma", index, v, 200, -100, 100);
+	addHisto("Y_DCH3_gamma", index, v, 200, -100, 100);
 
-	addHisto("R_DCH4_ep", index, v, 100, -75, 75);
-	addHisto("X_DCH4_ep", index, v, 100, -75, 75);
-	addHisto("Y_DCH4_ep", index, v, 100, -75, 75);
-	addHisto("R_DCH4_em", index, v, 100, -75, 75);
-	addHisto("X_DCH4_em", index, v, 100, -75, 75);
-	addHisto("Y_DCH4_em", index, v, 100, -75, 75);
-	addHisto("R_DCH4_pip", index, v, 100, -75, 75);
-	addHisto("X_DCH4_pip", index, v, 100, -75, 75);
-	addHisto("Y_DCH4_pip", index, v, 100, -75, 75);
-	addHisto("R_DCH4_gamma", index, v, 100, -75, 75);
-	addHisto("X_DCH4_gamma", index, v, 100, -75, 75);
-	addHisto("Y_DCH4_gamma", index, v, 100, -75, 75);
+	addHisto("R_DCH4_ep", index, v, 200, -100, 100);
+	addHisto("X_DCH4_ep", index, v, 200, -100, 100);
+	addHisto("Y_DCH4_ep", index, v, 200, -100, 100);
+	addHisto("R_DCH4_em", index, v, 200, -100, 100);
+	addHisto("X_DCH4_em", index, v, 200, -100, 100);
+	addHisto("Y_DCH4_em", index, v, 200, -100, 100);
+	addHisto("R_DCH4_pip", index, v, 200, -100, 100);
+	addHisto("X_DCH4_pip", index, v, 200, -100, 100);
+	addHisto("Y_DCH4_pip", index, v, 200, -100, 100);
+	addHisto("R_DCH4_gamma", index, v, 200, -100, 100);
+	addHisto("X_DCH4_gamma", index, v, 200, -100, 100);
+	addHisto("Y_DCH4_gamma", index, v, 200, -100, 100);
 
 	addHisto("Zvtx", index, v, 100, 0, 350000);
 	addHisto("Qvtx", index, v, 10, -5, 5);
