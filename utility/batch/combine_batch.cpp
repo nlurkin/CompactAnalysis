@@ -1067,7 +1067,7 @@ void combine_show(TString inFile, int maxPlots){
 
 	tempFD->cd();
 
-	int i=0;
+	int i=-1;
 	doPlot(++i, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
 
