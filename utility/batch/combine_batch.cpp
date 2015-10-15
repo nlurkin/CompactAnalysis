@@ -966,6 +966,8 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 		d1->at(i).at(index)->Write();
 	}
 
+	cout << dSig->at(0).at(index)->GetName() << endl;
+
 	dSig->at(0).at(index)->Write();
 
 	//Style data
