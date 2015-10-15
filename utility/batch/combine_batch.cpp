@@ -21,7 +21,7 @@ static vector< vector<TH1D*> > *d1;
 static vector< vector<TH1D*> > *dSig;
 static vector< vector<TH2D*> > *dMap, *dSigMap;
 
-ROOTRawEvent *xxx;
+ROOTRawEvent *xxx = new ROOTRawEvent();
 ROOTRawEvent &rawEvent = *xxx;
 
 /***************************
@@ -677,7 +677,8 @@ namespace Input{
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTBurst *burstBrch = new ROOTBurst();
-		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		//ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTRawEvent *rawBrch = xxx;
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
@@ -685,8 +686,6 @@ namespace Input{
 		TTree *th = (TTree*)fd->Get("header");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 		NGeom *geomBrch = new NGeom();
-
-		xxx = rawBrch;
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);
@@ -742,13 +741,13 @@ namespace Input{
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTBurst *burstBrch = new ROOTBurst();
-		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		//ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTRawEvent *rawBrch = xxx;
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
 		NGeom *geomBrch = new NGeom();
 
-		xxx = rawBrch;
 		TTree *t = (TTree*)fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
