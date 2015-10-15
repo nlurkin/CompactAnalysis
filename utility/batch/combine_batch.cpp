@@ -510,6 +510,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(evt->kaon.P.Perp2(corrEvent->kaonMomentum), weight);
 	d->at(++i)->Fill(evt->kaon.P.Vect().Mag(), weight);
 
+	cout << evt->pi0.P.M() << endl;
 	d->at(++i)->Fill(evt->pi0.P.M(), weight);
 
 	//Photon
