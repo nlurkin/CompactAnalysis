@@ -423,9 +423,9 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "DCH3_XY_pip", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_ep", ++iMap, vMap);
-	getHisto(fd, "DCH4_XY_em", ++iMap, vMap);
-	getHisto(fd, "DCH4_XY_pip", ++iMap, vMap);
-	getHisto(fd, "DCH4_XY_gamma", ++iMap, vMap);
+	//getHisto(fd, "DCH4_XY_em", ++iMap, vMap);
+	//getHisto(fd, "DCH4_XY_pip", ++iMap, vMap);
+	//getHisto(fd, "DCH4_XY_gamma", ++iMap, vMap);
 }
 
 void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, ROOTRawEvent *mrawEvent, ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom, ROOTBurst *rootBurst, double weight=1.){
