@@ -27,7 +27,7 @@ add_executable(make_bins batch/make_bins.cpp)
 add_executable(prepareWeights batch/prepareWeights.cpp)
 add_executable(toyMC batch/toyMC.cpp)
 
-target_link_libraries(combine common exportClasses ${ROOT_LIBRARIES})
+target_link_libraries(combine common funLib exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(fit common exportClasses Support ${ROOT_LIBRARIES} Minuit)
 target_link_libraries(make_bins common exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(prepareWeights common exportClasses ${ROOT_LIBRARIES})

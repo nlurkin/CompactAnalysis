@@ -11,6 +11,7 @@
 #include "../userinc/exportClasses.h"
 #include <TGaxis.h>
 #include <iomanip>
+#include "../userinc/funLib.h"
 using namespace std;
 
 #define MAXEVENTS 0
@@ -19,6 +20,9 @@ Long_t iCanvas = 0;
 static vector< vector<TH1D*> > *d1;
 static vector< vector<TH1D*> > *dSig;
 static vector< vector<TH2D*> > *dMap, *dSigMap;
+
+ROOTRawEvent xxx;
+ROOTRawEvent &rawEvent = xxx;
 
 /***************************
  * Mandatory from header
@@ -126,30 +130,97 @@ void getHisto(TFile* fd, TString name, unsigned int index, vector<TH2D*> *v){
 
 void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	tempFD->cd();
+
 	addHisto("mK", index, v, 100, 0.47, 0.52);
-	addHisto("RDCH", index, v, 100, -75, 75);
-	addHisto("RLKr", index, v, 100, -75, 75);
+
+	addHisto("R_DCH1_ep", index, v, 100, -75, 75);
+	addHisto("X_DCH1_ep", index, v, 100, -75, 75);
+	addHisto("Y_DCH1_ep", index, v, 100, -75, 75);
+	addHisto("R_DCH1_em", index, v, 100, -75, 75);
+	addHisto("X_DCH1_em", index, v, 100, -75, 75);
+	addHisto("Y_DCH1_em", index, v, 100, -75, 75);
+	addHisto("R_DCH1_pip", index, v, 100, -75, 75);
+	addHisto("X_DCH1_pip", index, v, 100, -75, 75);
+	addHisto("Y_DCH1_pip", index, v, 100, -75, 75);
+	addHisto("R_DCH1_gamma", index, v, 100, -75, 75);
+	addHisto("X_DCH1_gamma", index, v, 100, -75, 75);
+	addHisto("Y_DCH1_gamma", index, v, 100, -75, 75);
+
+	addHisto("R_DCH2_ep", index, v, 100, -75, 75);
+	addHisto("X_DCH2_ep", index, v, 100, -75, 75);
+	addHisto("Y_DCH2_ep", index, v, 100, -75, 75);
+	addHisto("R_DCH2_em", index, v, 100, -75, 75);
+	addHisto("X_DCH2_em", index, v, 100, -75, 75);
+	addHisto("Y_DCH2_em", index, v, 100, -75, 75);
+	addHisto("R_DCH2_pip", index, v, 100, -75, 75);
+	addHisto("X_DCH2_pip", index, v, 100, -75, 75);
+	addHisto("Y_DCH2_pip", index, v, 100, -75, 75);
+	addHisto("R_DCH2_gamma", index, v, 100, -75, 75);
+	addHisto("X_DCH2_gamma", index, v, 100, -75, 75);
+	addHisto("Y_DCH2_gamma", index, v, 100, -75, 75);
+
+	addHisto("R_DCH3_ep", index, v, 100, -75, 75);
+	addHisto("X_DCH3_ep", index, v, 100, -75, 75);
+	addHisto("Y_DCH3_ep", index, v, 100, -75, 75);
+	addHisto("R_DCH3_em", index, v, 100, -75, 75);
+	addHisto("X_DCH3_em", index, v, 100, -75, 75);
+	addHisto("Y_DCH3_em", index, v, 100, -75, 75);
+	addHisto("R_DCH3_pip", index, v, 100, -75, 75);
+	addHisto("X_DCH3_pip", index, v, 100, -75, 75);
+	addHisto("Y_DCH3_pip", index, v, 100, -75, 75);
+	addHisto("R_DCH3_gamma", index, v, 100, -75, 75);
+	addHisto("X_DCH3_gamma", index, v, 100, -75, 75);
+	addHisto("Y_DCH3_gamma", index, v, 100, -75, 75);
+
+	addHisto("R_DCH4_ep", index, v, 100, -75, 75);
+	addHisto("X_DCH4_ep", index, v, 100, -75, 75);
+	addHisto("Y_DCH4_ep", index, v, 100, -75, 75);
+	addHisto("R_DCH4_em", index, v, 100, -75, 75);
+	addHisto("X_DCH4_em", index, v, 100, -75, 75);
+	addHisto("Y_DCH4_em", index, v, 100, -75, 75);
+	addHisto("R_DCH4_pip", index, v, 100, -75, 75);
+	addHisto("X_DCH4_pip", index, v, 100, -75, 75);
+	addHisto("Y_DCH4_pip", index, v, 100, -75, 75);
+	addHisto("R_DCH4_gamma", index, v, 100, -75, 75);
+	addHisto("X_DCH4_gamma", index, v, 100, -75, 75);
+	addHisto("Y_DCH4_gamma", index, v, 100, -75, 75);
+
 	addHisto("Zvtx", index, v, 100, 0, 350000);
+	addHisto("Qvtx", index, v, 10, -5, 5);
+	addHisto("CDAvtx", index, v, 100, 0, 10);
 	addHisto("Pt2", index, v, 100, 0, 0.001);
 	addHisto("P", index, v, 100, 68, 80);
-	addHisto("Mpi0diff", index, v, 100, -0.01, 0.01);
+
+	addHisto("Mpi0", index, v, 100, -0.01, 0.01);
 	
 	//Photon
 	addHisto("gEnergy", index, v, 60, 0, 60);
 	addHisto("gPositionX", index, v, 120, -120, 120);
 	addHisto("gPositionY", index, v, 120, -120, 120);
+	addHisto("gRadius", index, v, 120, -120, 120);
 	addHisto("gP", index, v, 60, 0, 60);
 	
 	//e+/e-
-	addHisto("ePMag", index, v, 60, 0, 60);
-	addHisto("ePx", index, v, 60, -0.015, 0.015);
-	addHisto("ePy", index, v, 60, -0.015, 0.015);
-	addHisto("ePz", index, v, 110, 0, 1.1);
-	addHisto("eVtxX", index, v, 60, -6, 6);
-	addHisto("eVtxY", index, v, 40, -4, 4);
-	addHisto("eVtxZ", index, v, 100, -2000, 8000);
-	addHisto("eCDA", index, v, 100, 0, 10);
-	addHisto("eEnergy", index, v, 60, 0, 60);
+	addHisto("epPMag", index, v, 60, 0, 60);
+	addHisto("epPx", index, v, 60, -0.015, 0.015);
+	addHisto("epPy", index, v, 60, -0.015, 0.015);
+	addHisto("epPz", index, v, 110, 0, 1.1);
+	addHisto("epEnergy", index, v, 60, 0, 60);
+	addHisto("epeop", index, v, 100, 0, 1.5);
+	addHisto("epLKrX", index, v, 120, -120, 120);
+	addHisto("epLKrY", index, v, 120, -120, 120);
+	addHisto("epLKrR", index, v, 120, -120, 120);
+
+	addHisto("emPMag", index, v, 60, 0, 60);
+	addHisto("emPx", index, v, 60, -0.015, 0.015);
+	addHisto("emPy", index, v, 60, -0.015, 0.015);
+	addHisto("emPz", index, v, 110, 0, 1.1);
+	addHisto("emEnergy", index, v, 60, 0, 60);
+	addHisto("emeop", index, v, 100, 0, 1.5);
+	addHisto("emLKrX", index, v, 120, -120, 120);
+	addHisto("emLKrY", index, v, 120, -120, 120);
+	addHisto("emLKrR", index, v, 120, -120, 120);
+
 	addHisto("mee", index, v, 140, 0, 0.14);
 
 	//pi+
@@ -157,45 +228,149 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("pipPx", index, v, 60, -0.015, 0.015);
 	addHisto("pipPy", index, v, 60, -0.015, 0.015);
 	addHisto("pipPz", index, v, 110, 0, 1.1);
-	addHisto("pipVtxX", index, v, 60, -6, 6);
-	addHisto("pipVtxY", index, v, 40, -4, 4);
-	addHisto("pipVtxZ", index, v, 100, -2000, 8000);
-	addHisto("pipCDA", index, v, 100, 0, 10);
 	addHisto("pipEnergy", index, v, 60, 0, 60);
+	addHisto("pieop", index, v, 100, 0, 1.5);
 
-	addHisto("eop", index, v, 100, 0, 1.5);
-	addHisto("eop_pi", index, v, 100, 0, 1.5);
+
+	addHisto("t_epem_DCH", index, v, 100, -75, 75);
+	addHisto("t_eppip_DCH", index, v, 100, -75, 75);
+	addHisto("t_empip_DCH", index, v, 100, -75, 75);
+	addHisto("t_epem_LKr", index, v, 120, -120, 120);
+	addHisto("t_eppip_LKr", index, v, 120, -120, 120);
+	addHisto("t_empip_LKr", index, v, 120, -120, 120);
+
+	addHisto("t_gep_DCH", index, v, 100, -75, 75);
+	addHisto("t_gem_DCH", index, v, 100, -75, 75);
+	addHisto("t_gpip_DCH", index, v, 100, -75, 75);
+	addHisto("t_gep_LKr", index, v, 120, -120, 120);
+	addHisto("t_gem_LKr", index, v, 120, -120, 120);
+	addHisto("t_gpip_LKr", index, v, 120, -120, 120);
+
+	addHisto("undeft_gep_LKr", index, v, 120, -120, 120);
+	addHisto("undeft_gem_LKr", index, v, 120, -120, 120);
+	addHisto("undeft_gpip_LKr", index, v, 120, -120, 120);
+
+	addHisto("L3_E_LKr_ep", index, v, 800, 0, 80);
+	addHisto("L3_E_LKr_em", index, v, 800, 0, 80);
+	addHisto("L3_E_LKr_gamma", index, v, 800, 0, 80);
+	addHisto("L3_E_LKr", index, v, 800, 0, 80);
 
 	addHisto("xMap", index, vMap, 1000,0,1, 1000, 0, 1);
+	addHisto("LKr_XY_ep", index, vMap, 2400,-120,120, 2400, -120, 120);
+	addHisto("LKr_XY_em", index, vMap, 2400,-120,120, 2400, -120, 120);
+	addHisto("LKr_XY_pip", index, vMap, 2400,-120,120, 2400, -120, 120);
+	addHisto("LKr_XY_gamma", index, vMap, 2400,-120,120, 2400, -120, 120);
+	addHisto("DCH1_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH1_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH1_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH1_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH2_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH2_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH2_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH2_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH3_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH3_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH3_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH3_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH4_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH4_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH4_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH4_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
 }
 
 void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	int i=-1;
 	int iMap=-1;
 	getHisto(fd, "mK", ++i, v);
-	getHisto(fd, "RDCH", ++i, v);
-	getHisto(fd, "RLKr", ++i, v);
+
+	getHisto(fd, "R_DCH1_ep", ++i, v);
+	getHisto(fd, "X_DCH1_ep", ++i, v);
+	getHisto(fd, "Y_DCH1_ep", ++i, v);
+	getHisto(fd, "R_DCH1_em", ++i, v);
+	getHisto(fd, "X_DCH1_em", ++i, v);
+	getHisto(fd, "Y_DCH1_em", ++i, v);
+	getHisto(fd, "R_DCH1_pip", ++i, v);
+	getHisto(fd, "X_DCH1_pip", ++i, v);
+	getHisto(fd, "Y_DCH1_pip", ++i, v);
+	getHisto(fd, "R_DCH1_gamma", ++i, v);
+	getHisto(fd, "X_DCH1_gamma", ++i, v);
+	getHisto(fd, "Y_DCH1_gamma", ++i, v);
+
+	getHisto(fd, "R_DCH2_ep", ++i, v);
+	getHisto(fd, "X_DCH2_ep", ++i, v);
+	getHisto(fd, "Y_DCH2_ep", ++i, v);
+	getHisto(fd, "R_DCH2_em", ++i, v);
+	getHisto(fd, "X_DCH2_em", ++i, v);
+	getHisto(fd, "Y_DCH2_em", ++i, v);
+	getHisto(fd, "R_DCH2_pip", ++i, v);
+	getHisto(fd, "X_DCH2_pip", ++i, v);
+	getHisto(fd, "Y_DCH2_pip", ++i, v);
+	getHisto(fd, "R_DCH2_gamma", ++i, v);
+	getHisto(fd, "X_DCH2_gamma", ++i, v);
+	getHisto(fd, "Y_DCH2_gamma", ++i, v);
+
+	getHisto(fd, "R_DCH3_ep", ++i, v);
+	getHisto(fd, "X_DCH3_ep", ++i, v);
+	getHisto(fd, "Y_DCH3_ep", ++i, v);
+	getHisto(fd, "R_DCH3_em", ++i, v);
+	getHisto(fd, "X_DCH3_em", ++i, v);
+	getHisto(fd, "Y_DCH3_em", ++i, v);
+	getHisto(fd, "R_DCH3_pip", ++i, v);
+	getHisto(fd, "X_DCH3_pip", ++i, v);
+	getHisto(fd, "Y_DCH3_pip", ++i, v);
+	getHisto(fd, "R_DCH3_gamma", ++i, v);
+	getHisto(fd, "X_DCH3_gamma", ++i, v);
+	getHisto(fd, "Y_DCH3_gamma", ++i, v);
+
+	getHisto(fd, "R_DCH4_ep", ++i, v);
+	getHisto(fd, "X_DCH4_ep", ++i, v);
+	getHisto(fd, "Y_DCH4_ep", ++i, v);
+	getHisto(fd, "R_DCH4_em", ++i, v);
+	getHisto(fd, "X_DCH4_em", ++i, v);
+	getHisto(fd, "Y_DCH4_em", ++i, v);
+	getHisto(fd, "R_DCH4_pip", ++i, v);
+	getHisto(fd, "X_DCH4_pip", ++i, v);
+	getHisto(fd, "Y_DCH4_pip", ++i, v);
+	getHisto(fd, "R_DCH4_gamma", ++i, v);
+	getHisto(fd, "X_DCH4_gamma", ++i, v);
+	getHisto(fd, "Y_DCH4_gamma", ++i, v);
+
 	getHisto(fd, "Zvtx", ++i, v);
+	getHisto(fd, "Qvtx", ++i, v);
+	getHisto(fd, "CDAvtx", ++i, v);
 	getHisto(fd, "Pt2", ++i, v);
 	getHisto(fd, "P", ++i, v);
-	getHisto(fd, "Mpi0diff", ++i, v);
-	
+
+	getHisto(fd, "Mpi0", ++i, v);
+
 	//Photon
 	getHisto(fd, "gEnergy", ++i, v);
 	getHisto(fd, "gPositionX", ++i, v);
 	getHisto(fd, "gPositionY", ++i, v);
+	getHisto(fd, "gRadius", ++i, v);
 	getHisto(fd, "gP", ++i, v);
-	
+
 	//e+/e-
-	getHisto(fd, "ePMag", ++i, v);
-	getHisto(fd, "ePx", ++i, v);
-	getHisto(fd, "ePy", ++i, v);
-	getHisto(fd, "ePz", ++i, v);
-	getHisto(fd, "eVtxX", ++i, v);
-	getHisto(fd, "eVtxY", ++i, v);
-	getHisto(fd, "eVtxZ", ++i, v);
-	getHisto(fd, "eCDA", ++i, v);
-	getHisto(fd, "eEnergy", ++i, v);
+	getHisto(fd, "epPMag", ++i, v);
+	getHisto(fd, "epPx", ++i, v);
+	getHisto(fd, "epPy", ++i, v);
+	getHisto(fd, "epPz", ++i, v);
+	getHisto(fd, "epEnergy", ++i, v);
+	getHisto(fd, "epeop", ++i, v);
+	getHisto(fd, "epLKrX", ++i, v);
+	getHisto(fd, "epLKrY", ++i, v);
+	getHisto(fd, "epLKrR", ++i, v);
+
+	getHisto(fd, "emPMag", ++i, v);
+	getHisto(fd, "emPx", ++i, v);
+	getHisto(fd, "emPy", ++i, v);
+	getHisto(fd, "emPz", ++i, v);
+	getHisto(fd, "emEnergy", ++i, v);
+	getHisto(fd, "emeop", ++i, v);
+	getHisto(fd, "emLKrX", ++i, v);
+	getHisto(fd, "emLKrY", ++i, v);
+	getHisto(fd, "emLKrR", ++i, v);
+
 	getHisto(fd, "mee", ++i, v);
 
 	//pi+
@@ -203,87 +378,273 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "pipPx", ++i, v);
 	getHisto(fd, "pipPy", ++i, v);
 	getHisto(fd, "pipPz", ++i, v);
-	getHisto(fd, "pipVtxX", ++i, v);
-	getHisto(fd, "pipVtxY", ++i, v);
-	getHisto(fd, "pipVtxZ", ++i, v);
-	getHisto(fd, "pipCDA", ++i, v);
 	getHisto(fd, "pipEnergy", ++i, v);
+	getHisto(fd, "pieop", ++i, v);
 
-	getHisto(fd, "eop", ++i, v);
-	getHisto(fd, "eop_pi", ++i, v);
+	getHisto(fd, "t_epem_DCH", ++i, v);
+	getHisto(fd, "t_eppip_DCH", ++i, v);
+	getHisto(fd, "t_empip_DCH", ++i, v);
+	getHisto(fd, "t_epem_LKr", ++i, v);
+	getHisto(fd, "t_eppip_LKr", ++i, v);
+	getHisto(fd, "t_empip_LKr", ++i, v);
+
+	getHisto(fd, "t_gep_DCH", ++i, v);
+	getHisto(fd, "t_gem_DCH", ++i, v);
+	getHisto(fd, "t_gpip_DCH", ++i, v);
+	getHisto(fd, "t_gep_LKr", ++i, v);
+	getHisto(fd, "t_gem_LKr", ++i, v);
+	getHisto(fd, "t_gpip_LKr", ++i, v);
+
+	getHisto(fd, "undeft_gep_LKr", ++i, v);
+	getHisto(fd, "undeft_gem_LKr", ++i, v);
+	getHisto(fd, "undeft_gpip_LKr", ++i, v);
+
+	getHisto(fd, "L3_E_LKr_ep", ++i, v);
+	getHisto(fd, "L3_E_LKr_em", ++i, v);
+	getHisto(fd, "L3_E_LKr_gamma", ++i, v);
+	getHisto(fd, "L3_E_LKr", ++i, v);
+
 
 	getHisto(fd, "xMap", ++iMap, vMap);
+	getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
+	getHisto(fd, "LKr_XY_em", ++iMap, vMap);
+	getHisto(fd, "LKr_XY_pip", ++iMap, vMap);
+	getHisto(fd, "LKr_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH1_XY_ep", ++iMap, vMap);
+	getHisto(fd, "DCH1_XY_em", ++iMap, vMap);
+	getHisto(fd, "DCH1_XY_pip", ++iMap, vMap);
+	getHisto(fd, "DCH1_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH2_XY_ep", ++iMap, vMap);
+	getHisto(fd, "DCH2_XY_em", ++iMap, vMap);
+	getHisto(fd, "DCH2_XY_pip", ++iMap, vMap);
+	getHisto(fd, "DCH2_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_ep", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_em", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_pip", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH4_XY_ep", ++iMap, vMap);
+	getHisto(fd, "DCH4_XY_em", ++iMap, vMap);
+	getHisto(fd, "DCH4_XY_pip", ++iMap, vMap);
+	getHisto(fd, "DCH4_XY_gamma", ++iMap, vMap);
 }
 
-void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvent, ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, double weight=1.){
+void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, ROOTRawEvent *mrawEvent, ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom, ROOTBurst *rootBurst, double weight=1.){
 	//ROOTPhysicsEvent *evt = (ROOTPhysicsEvent*)value;
 	int i=-1;
 	int iMap=-1;
+	TVector3 propPos, propPos2, propPos3;
 
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
-	//d->at(++i)->Fill(evt->, weight);
-	//d->at(++i)->Fill(evt->mK, weight);
-	//d->at(++i)->Fill(evt->zVtx, weight);
-	++i;
-	++i;
-	++i;
+
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[0].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[1].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+
+	propPos = propagateAfter(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[2].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+
+	propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[3].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+
+	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
+	d->at(++i)->Fill(mrawEvent->vtx[evt->pic.parentVertex].charge, weight);
 	d->at(++i)->Fill(evt->kaon.P.Perp2(corrEvent->kaonMomentum), weight);
 	d->at(++i)->Fill(evt->kaon.P.Vect().Mag(), weight);
-	d->at(++i)->Fill(evt->pi0.P.M()-0.1349766, weight);
+
+	d->at(++i)->Fill(evt->pi0.P.M(), weight);
+
 	//Photon
 	d->at(++i)->Fill(evt->gamma.P.E(), weight);
 	d->at(++i)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.X(), weight);
 	d->at(++i)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.Y(), weight);
+	d->at(++i)->Fill(distance2D(corrEvent->pCluster[evt->gamma.parentCluster].position, TVector3(0,0,0)), weight);
 	d->at(++i)->Fill(evt->gamma.P.Vect().Mag(), weight);
-	
+
 	//e+/e-
-	d->at(++i)->Fill(evt->em.P.Vect().Mag(), weight);
-	d->at(i)->Fill(evt->ep.P.Vect().Mag(), weight);
-	
+	d->at(++i)->Fill(evt->ep.P.Vect().Mag(), weight);
 	d->at(++i)->Fill(evt->ep.P.Vect().Unit().X(), weight);
-	d->at(i)->Fill(evt->em.P.Vect().Unit().X(), weight);
 	d->at(++i)->Fill(evt->ep.P.Vect().Unit().Y(), weight);
-	d->at(i)->Fill(evt->em.P.Vect().Unit().Y(), weight);
 	d->at(++i)->Fill(evt->ep.P.Vect().Unit().Z(), weight);
-	d->at(i)->Fill(evt->em.P.Vect().Unit().Z(), weight);
-	
-	d->at(++i)->Fill(evt->ep.vertex.X(), weight);
-	d->at(i)->Fill(evt->em.vertex.X(), weight);
-	d->at(++i)->Fill(evt->ep.vertex.Y(), weight);
-	d->at(i)->Fill(evt->em.vertex.Y(), weight);
-	d->at(++i)->Fill(evt->ep.vertex.Z(), weight);
-	d->at(i)->Fill(evt->em.vertex.Z(), weight);
-	
-	d->at(++i)->Fill(rawEvent->vtx[evt->ep.parentVertex].cda, weight);
-	d->at(i)->Fill(rawEvent->vtx[evt->em.parentVertex].cda, weight);
-	
 	d->at(++i)->Fill(corrEvent->pCluster[evt->ep.parentCluster].E, weight);
-	d->at(i)->Fill(corrEvent->pCluster[evt->ep.parentCluster].E, weight);
-	
+	d->at(++i)->Fill(corrEvent->pTrack[evt->ep.parentTrack].E/corrEvent->pTrack[evt->ep.parentTrack].p, weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+
+	d->at(++i)->Fill(evt->em.P.Vect().Mag(), weight);
+	d->at(++i)->Fill(evt->em.P.Vect().Unit().X(), weight);
+	d->at(++i)->Fill(evt->em.P.Vect().Unit().Y(), weight);
+	d->at(++i)->Fill(evt->em.P.Vect().Unit().Z(), weight);
+	d->at(++i)->Fill(corrEvent->pCluster[evt->em.parentCluster].E, weight);
+	d->at(++i)->Fill(corrEvent->pTrack[evt->em.parentTrack].E/corrEvent->pTrack[evt->em.parentTrack].p, weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+
 	d->at(++i)->Fill(evt->mee, weight);
-	
+
 	//pi+
 	d->at(++i)->Fill(evt->pic.P.Vect().Mag(), weight);
-	
 	d->at(++i)->Fill(evt->pic.P.Vect().Unit().X(), weight);
 	d->at(++i)->Fill(evt->pic.P.Vect().Unit().Y(), weight);
 	d->at(++i)->Fill(evt->pic.P.Vect().Unit().Z(), weight);
-	
-	d->at(++i)->Fill(evt->pic.vertex.X(), weight);
-	d->at(++i)->Fill(evt->pic.vertex.Y(), weight);
-	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
-	
-	d->at(++i)->Fill(rawEvent->vtx[evt->pic.parentVertex].cda, weight);
-	
 	d->at(++i)->Fill(corrEvent->pCluster[evt->pic.parentCluster].E, weight);
-	
-	d->at(++i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[0]].E/corrEvent->pTrack[corrEvent->goodTracks[0]].p, weight);
-	d->at(i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[1]].E/corrEvent->pTrack[corrEvent->goodTracks[1]].p, weight);
-	d->at(i)->Fill(corrEvent->pTrack[corrEvent->goodTracks[2]].E/corrEvent->pTrack[corrEvent->goodTracks[2]].p, weight);
-	
 	d->at(++i)->Fill(corrEvent->pTrack[evt->pic.parentTrack].E/corrEvent->pTrack[evt->pic.parentTrack].p, weight);
 
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos3 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, propPos2), weight);
+	d->at(++i)->Fill(distance2D(propPos, propPos3), weight);
+	d->at(++i)->Fill(distance2D(propPos2, propPos3), weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos3 = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, propPos2), weight);
+	d->at(++i)->Fill(distance2D(propPos, propPos3), weight);
+	d->at(++i)->Fill(distance2D(propPos2, propPos3), weight);
+
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos3 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	d->at(++i)->Fill(distance2D(propPos2, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	d->at(++i)->Fill(distance2D(propPos3, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos3 = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	d->at(++i)->Fill(distance2D(propPos2, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	d->at(++i)->Fill(distance2D(propPos3, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos3 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	d->at(++i)->Fill(distance2D(propPos, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	d->at(++i)->Fill(distance2D(propPos2, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+	d->at(++i)->Fill(distance2D(propPos3, corrEvent->pCluster[evt->gamma.parentCluster].position), weight);
+
+	double ELKr_ep = 0;
+	double ELKr_em = 0;
+	bool goodPBWall;
+	NPhysicsTrack t_ep = corrEvent->pTrack[evt->ep.parentTrack];
+	NPhysicsTrack t_em = corrEvent->pTrack[evt->em.parentTrack];
+
+	propPos = propagateAfter(rootGeom->Lkr.z, t_ep);
+	goodPBWall = true;
+	if(rootBurst->pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
+	if(t_ep.lkr_acc==0 && goodPBWall && mrawEvent->track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
+
+	propPos = propagateAfter(rootGeom->Lkr.z, t_em);
+	goodPBWall = true;
+	if(rootBurst->pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
+	if(t_em.lkr_acc==0 && goodPBWall && mrawEvent->track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
+
+	d->at(++i)->Fill(ELKr_ep, weight);
+	d->at(++i)->Fill(ELKr_em, weight);
+	d->at(++i)->Fill(evt->gamma.P.E(), weight);
+	d->at(++i)->Fill(ELKr_ep + ELKr_em + evt->gamma.P.E(), weight);
+
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	vMap->at(++iMap)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.X(), corrEvent->pCluster[evt->gamma.parentCluster].position.X(), weight);
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[0].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[1].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[2].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateBefore(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagate(rootGeom->Dch[3].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 }
 
 /*************************
@@ -320,6 +681,7 @@ namespace Input{
 		TTree *t = (TTree*)fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
+		NGeom *geomBrch = new NGeom();
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);
@@ -327,6 +689,7 @@ namespace Input{
 		t->SetBranchAddress("corrEvent", &corrBrch);
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
+		th->SetBranchAddress("geom", &geomBrch);
 
 		//Set event nb
 		int nevt = t->GetEntries();
@@ -356,7 +719,7 @@ namespace Input{
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
 			weight = applyWeights(burstBrch->nrun);
-			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, rawBrch, corrBrch, mcEvent, weight);
+			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch, weight);
 			processedEvents++;
 		}
 
@@ -378,6 +741,7 @@ namespace Input{
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
+		NGeom *geomBrch = new NGeom();
 
 		TTree *t = (TTree*)fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
@@ -389,6 +753,7 @@ namespace Input{
 		t->SetBranchAddress("corrEvent", &corrBrch);
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
+		th->SetBranchAddress("geom", &geomBrch);
 
 		// Set Number of events
 		int nevt = t->GetEntries();
@@ -412,7 +777,7 @@ namespace Input{
 			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun)) continue;
-			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch, rawBrch, corrBrch, mcEvent);
+			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch);
 			processedEvents++;
 		}
 
