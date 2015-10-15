@@ -191,7 +191,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("Pt2", index, v, 100, 0, 0.001);
 	addHisto("P", index, v, 100, 68, 80);
 
-	addHisto("Mpi0", index, v, 60, 120, 150);
+	addHisto("Mpi0", index, v, 60, 0.120, 0.150);
 	
 	//Photon
 	addHisto("gEnergy", index, v, 80, 0, 80);
@@ -510,7 +510,6 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(evt->kaon.P.Perp2(corrEvent->kaonMomentum), weight);
 	d->at(++i)->Fill(evt->kaon.P.Vect().Mag(), weight);
 
-	cout << evt->pi0.P.M() << endl;
 	d->at(++i)->Fill(evt->pi0.P.M(), weight);
 
 	//Photon
