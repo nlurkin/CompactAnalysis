@@ -685,6 +685,8 @@ namespace Input{
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 		NGeom *geomBrch = new NGeom();
 
+		xxx = rawBrch;
+
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);
 		t->SetBranchAddress("rawEvent", &rawBrch);
@@ -745,6 +747,7 @@ namespace Input{
 		ROOTMCEvent *mcEvent = 0;
 		NGeom *geomBrch = new NGeom();
 
+		xxx = rawBrch;
 		TTree *t = (TTree*)fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
