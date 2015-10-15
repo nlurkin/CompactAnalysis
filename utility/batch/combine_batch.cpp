@@ -1067,12 +1067,15 @@ void combine_show(TString inFile, int maxPlots){
 
 	tempFD->cd();
 
+
+	int i=-1;
 	for(auto it : dSig->at(0)){
-		new TCanvas("c1", "xxx");
+		i++;
+		new TCanvas(TString("c") + (Long_t)i, "xxx");
 		it->Draw();
 	}
 	return;
-	int i=-1;
+
 	doPlot(++i, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
 
