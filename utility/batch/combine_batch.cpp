@@ -1066,75 +1066,157 @@ void combine_show(TString inFile, int maxPlots){
 	readFilesGet();
 
 	tempFD->cd();
-	doPlot(0, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
-	if(maxPlots--==0) return;
-//	doPlot(1, "RDCH", "DCH Radius", leg, mcColors);
-//	doPlot(2, "RLKr", "LKr radius", leg, mcColors);
-//	doPlot(3, "Zvtx", "Z Vertex", leg, mcColors);
-	doPlot(4, "Pt", "Squared transverse momentum", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(5, "P", "Total momentum", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(6, "Mpi0diff", "Reconstructed pi0 mass difference", leg, mcColors);
+
+	int i=0;
+	doPlot(++i, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
 
-	doPlot(7, "gEnergy", "Photon cluster energy", leg, mcColors);
-	cout << maxPlots << endl;
-	if(maxPlots--==0) return;
-	doPlot(8, "gPositionX", "Photon cluster position X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(9, "gPositionY", "Photon cluster position Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(10, "gP", "Photon momentum", leg, mcColors);
-	if(maxPlots--==0) return;
+	doPlot(++i, "R_DCH1_ep", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH1_em", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH1_em", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH1_em", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH1_pip", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH1_pip", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH1_pip", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH1_gamma", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH1_gamma", "DCH1 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH1_gamma", "DCH1 Radius", leg, mcColors);
 
-	doPlot(11, "ePMag", "e+/e- momentum", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(12, "ePx", "e+/e- momentum X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(13, "ePy", "e+/e- momentum Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(14, "ePz", "e+/e- momentum Z", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(15, "eVtxX", "e+/e- vertex X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(16, "eVtxY", "e+/e- vertex Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(17, "eVtxZ", "e+/e- vertex Z", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(18, "eCDA", "e+/e- CDA", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(19, "eEnergy", "e+/e- cluster energy", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(20, "mee", "e+/e- invariant mass", leg, mcColors);
-	if(maxPlots--==0) return;
+	doPlot(++i, "R_DCH2_ep", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH2_ep", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH2_ep", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH2_em", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH2_em", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH2_em", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH2_pip", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH2_pip", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH2_pip", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH2_gamma", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH2_gamma", "DCH2 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH2_gamma", "DCH2 Radius", leg, mcColors);
 
-	doPlot(21, "pipPMag", "Pi+ momentum", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(22, "pipPx", "Pi+ momentum X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(23, "pipPy", "Pi+ momentum Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(24, "pipPz", "Pi+ momentum Z", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(25, "pipVtxX", "Vertex X", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(26, "pipVtxY", "Vertex Y", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(27, "pipVtxZ", "Vertex Z", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(28, "pipCDA", "CDA", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(29, "pipEnergy", "Pi+ cluster energy", leg, mcColors);
-	if(maxPlots--==0) return;
+	doPlot(++i, "R_DCH3_ep", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH3_ep", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH3_ep", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH3_em", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH3_em", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH3_em", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH3_pip", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH3_pip", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH3_pip", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH3_gamma", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH3_gamma", "DCH3 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH3_gamma", "DCH3 Radius", leg, mcColors);
 
-	doPlot(30, "eop", "Tracks E/p", leg, mcColors);
-	if(maxPlots--==0) return;
-	doPlot(31, "eop_pi", "Tracks E/p (pion)", leg, mcColors);
-	if(maxPlots--==0) return;
+	doPlot(++i, "R_DCH4_ep", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH4_ep", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH4_ep", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH4_em", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH4_em", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH4_em", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH4_pip", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH4_pip", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH4_pip", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "R_DCH4_gamma", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "X_DCH4_gamma", "DCH4 Radius", leg, mcColors);
+	doPlot(++i, "Y_DCH4_gamma", "DCH4 Radius", leg, mcColors);
 
-	doPlot2(0, "xMap", "x_reco vs. x_true", leg, mcColors);
-	if(maxPlots--==0) return;
+	doPlot(++i, "Zvtx", "Vertex Z", leg, mcColors);
+	doPlot(++i, "Qvtx", "Vertex Charge", leg, mcColors);
+	doPlot(++i, "CDAvtx", "Vertex CDA", leg, mcColors);
+	doPlot(++i, "Pt2", "Square transverse momentum", leg, mcColors);
+	doPlot(++i, "P", "Total momentum", leg, mcColors);
+
+	doPlot(++i, "Mpi0", "Reconstructed Pi0 mass", leg, mcColors);
+
+	//Photon
+	doPlot(++i, "gEnergy", "Photon energy", leg, mcColors);
+	doPlot(++i, "gPositionX", "Photon LKr position (X)", leg, mcColors);
+	doPlot(++i, "gPositionY", "Photon LKr position (Y)", leg, mcColors);
+	doPlot(++i, "gRadius", "Photon LKr radius", leg, mcColors);
+	doPlot(++i, "gP", "Photon momentum", leg, mcColors);
+
+	//e+/e-
+	doPlot(++i, "epPMag", "Electron momentum", leg, mcColors);
+	doPlot(++i, "epPx", "Electron momentum (X)", leg, mcColors);
+	doPlot(++i, "epPy", "Electron momentum (Y)", leg, mcColors);
+	doPlot(++i, "epPz", "Electron momentum (Z)", leg, mcColors);
+	doPlot(++i, "epEnergy", "Electron energy", leg, mcColors);
+	doPlot(++i, "epeop", "Electron E/p", leg, mcColors);
+	doPlot(++i, "epLKrX", "Electron LKr position (X)", leg, mcColors);
+	doPlot(++i, "epLKrY", "Electron LKr position (Y)", leg, mcColors);
+	doPlot(++i, "epLKrR", "Electron LKr radius", leg, mcColors);
+
+	doPlot(++i, "emPMag", "Electron momentum", leg, mcColors);
+	doPlot(++i, "emPx", "Electron momentum (X)", leg, mcColors);
+	doPlot(++i, "emPy", "Electron momentum (Y)", leg, mcColors);
+	doPlot(++i, "emPz", "Electron momentum (Z)", leg, mcColors);
+	doPlot(++i, "emEnergy", "Electron energy", leg, mcColors);
+	doPlot(++i, "emeop", "Electron E/p", leg, mcColors);
+	doPlot(++i, "emLKrX", "Electron LKr position (X)", leg, mcColors);
+	doPlot(++i, "emLKrY", "Electron LKr position (Y)", leg, mcColors);
+	doPlot(++i, "emLKrR", "Electron LKr radius", leg, mcColors);
+
+	doPlot(++i, "mee", "Di-electron invariant mass", leg, mcColors);
+
+	//pi+
+	doPlot(++i, "pipPMag", "Pion momentum", leg, mcColors);
+	doPlot(++i, "pipPx", "Pion momentum (X)", leg, mcColors);
+	doPlot(++i, "pipPy", "Pion momentum (Y)", leg, mcColors);
+	doPlot(++i, "pipPz", "Pion momentum (Z)", leg, mcColors);
+	doPlot(++i, "pipEnergy", "Pion energy", leg, mcColors);
+	doPlot(++i, "pieop", "Pion E/p", leg, mcColors);
+
+	doPlot(++i, "t_epem_DCH", "Track distance DCH1", leg, mcColors);
+	doPlot(++i, "t_eppip_DCH", "Track distance DCH1", leg, mcColors);
+	doPlot(++i, "t_empip_DCH", "Track distance DCH1", leg, mcColors);
+	doPlot(++i, "t_epem_LKr", "Track distance LKr", leg, mcColors);
+	doPlot(++i, "t_eppip_LKr", "Track distance LKr", leg, mcColors);
+	doPlot(++i, "t_empip_LKr", "Track distance LKr", leg, mcColors);
+
+	doPlot(++i, "t_gep_DCH", "Track photon distance DCH1", leg, mcColors);
+	doPlot(++i, "t_gem_DCH", "Track photon distance DCH1", leg, mcColors);
+	doPlot(++i, "t_gpip_DCH", "Track photon distance DCH1", leg, mcColors);
+	doPlot(++i, "t_gep_LKr", "Track photon distance LKr", leg, mcColors);
+	doPlot(++i, "t_gem_LKr", "Track photon distance LKr", leg, mcColors);
+	doPlot(++i, "t_gpip_LKr", "Track photon distance LKr", leg, mcColors);
+
+	doPlot(++i, "undeft_gep_LKr", "Undeflected track photon distance LKr", leg, mcColors);
+	doPlot(++i, "undeft_gem_LKr", "Undeflected track photon distance LKr", leg, mcColors);
+	doPlot(++i, "undeft_gpip_LKr", "Undeflected track photon distance LKr", leg, mcColors);
+
+	doPlot(++i, "L3_E_LKr_ep", "L3 Electron energy", leg, mcColors);
+	doPlot(++i, "L3_E_LKr_em", "L3 Electron energy", leg, mcColors);
+	doPlot(++i, "L3_E_LKr_gamma", "L3 photon energy", leg, mcColors);
+	doPlot(++i, "L3_E_LKr", "L3 energy", leg, mcColors);
+
+	int iMap = 0;
+	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
+
+	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
+	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
+	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);
+	doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
+	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
+	doPlot2(++iMap, "DCH1_XY_em", "Electron DCH1 map", leg, mcColors);
+	doPlot2(++iMap, "DCH1_XY_pip", "Pion DCH1 map", leg, mcColors);
+	doPlot2(++iMap, "DCH1_XY_gamma", "Photon DCH1 map", leg, mcColors);
+	doPlot2(++iMap, "DCH2_XY_ep", "Electron DCH2 map", leg, mcColors);
+	doPlot2(++iMap, "DCH2_XY_em", "Electron DCH2 map", leg, mcColors);
+	doPlot2(++iMap, "DCH2_XY_pip", "Pion DCH2 map", leg, mcColors);
+	doPlot2(++iMap, "DCH2_XY_gamma", "Photon DCH2 map", leg, mcColors);
+	doPlot2(++iMap, "DCH3_XY_ep", "Electron DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH3_XY_em", "Electron DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH3_XY_pip", "Pion DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
+
+
 }
 
 int main(int argc, char **argv){
