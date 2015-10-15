@@ -14,7 +14,7 @@
 #include "../userinc/funLib.h"
 using namespace std;
 
-#define MAXEVENTS 30000
+#define MAXEVENTS 0
 Long_t iCanvas = 0;
 
 static vector< vector<TH1D*> > *d1;
@@ -239,9 +239,9 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("t_eppip_LKr", index, v, 200, 0, 200);
 	addHisto("t_empip_LKr", index, v, 200, 0, 200);
 
-	addHisto("t_gep_DCH", index, v, 100, 0, 100);
-	addHisto("t_gem_DCH", index, v, 100, 0, 100);
-	addHisto("t_gpip_DCH", index, v, 100, 0, 100);
+	addHisto("t_gep_DCH", index, v, 150, 0, 150);
+	addHisto("t_gem_DCH", index, v, 150, 0, 150);
+	addHisto("t_gpip_DCH", index, v, 150, 0, 150);
 	addHisto("t_gep_LKr", index, v, 200, 0, 200);
 	addHisto("t_gem_LKr", index, v, 200, 0, 200);
 	addHisto("t_gpip_LKr", index, v, 200, 0, 200);
@@ -260,22 +260,22 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("LKr_XY_em", index, vMap, 2400,-120,120, 2400, -120, 120);
 	addHisto("LKr_XY_pip", index, vMap, 2400,-120,120, 2400, -120, 120);
 	addHisto("LKr_XY_gamma", index, vMap, 2400,-120,120, 2400, -120, 120);
-	addHisto("DCH1_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH1_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH1_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH1_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH2_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH2_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH2_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH2_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH3_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH3_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH3_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH3_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH4_XY_ep", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH4_XY_em", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH4_XY_pip", index, vMap, 1500,-75,75, 1500, -75, 75);
-	addHisto("DCH4_XY_gamma", index, vMap, 1500,-75,75, 1500, -75, 75);
+	addHisto("DCH1_XY_ep", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH1_XY_em", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH1_XY_pip", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH1_XY_gamma", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH2_XY_ep", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH2_XY_em", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH2_XY_pip", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH2_XY_gamma", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH3_XY_ep", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH3_XY_em", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH3_XY_pip", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH3_XY_gamma", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH4_XY_ep", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH4_XY_em", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH4_XY_pip", index, vMap, 2000,-100,100, 2000, -100, 100);
+	addHisto("DCH4_XY_gamma", index, vMap, 2000,-100,100, 2000, -100, 100);
 }
 
 void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
