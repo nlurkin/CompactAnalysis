@@ -406,7 +406,7 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 
 
 	getHisto(fd, "xMap", ++iMap, vMap);
-	getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
+	/*getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_em", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_pip", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_gamma", ++iMap, vMap);
@@ -421,7 +421,7 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "DCH3_XY_ep", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_em", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_pip", ++iMap, vMap);
-	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);*/
 	//getHisto(fd, "DCH4_XY_ep", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_em", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_pip", ++iMap, vMap);
@@ -1193,7 +1193,7 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot(++i, "L3_E_LKr", "L3 energy", leg, mcColors);
 
 	int iMap = 0;
-	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
+	/*doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 
 	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
@@ -1210,7 +1210,7 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot2(++iMap, "DCH3_XY_ep", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_em", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_pip", "Pion DCH3 map", leg, mcColors);
-	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);*/
 	//doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
 	//doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
 	//doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
