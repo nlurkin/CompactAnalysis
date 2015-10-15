@@ -232,28 +232,28 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("pieop", index, v, 100, 0, 1.5);
 
 
-	addHisto("t_epem_DCH", index, v, 100, -75, 75);
-	addHisto("t_eppip_DCH", index, v, 100, -75, 75);
-	addHisto("t_empip_DCH", index, v, 100, -75, 75);
-	addHisto("t_epem_LKr", index, v, 300, -150, 150);
-	addHisto("t_eppip_LKr", index, v, 300, -150, 150);
-	addHisto("t_empip_LKr", index, v, 300, -150, 150);
+	addHisto("t_epem_DCH", index, v, 100, 0, 100);
+	addHisto("t_eppip_DCH", index, v, 100, 0, 100);
+	addHisto("t_empip_DCH", index, v, 100, 0, 100);
+	addHisto("t_epem_LKr", index, v, 200, 0, 200);
+	addHisto("t_eppip_LKr", index, v, 200, 0, 200);
+	addHisto("t_empip_LKr", index, v, 200, 0, 200);
 
-	addHisto("t_gep_DCH", index, v, 100, -75, 75);
-	addHisto("t_gem_DCH", index, v, 100, -75, 75);
-	addHisto("t_gpip_DCH", index, v, 100, -75, 75);
-	addHisto("t_gep_LKr", index, v, 300, -150, 150);
-	addHisto("t_gem_LKr", index, v, 300, -150, 150);
-	addHisto("t_gpip_LKr", index, v, 300, -150, 150);
+	addHisto("t_gep_DCH", index, v, 100, 0, 100);
+	addHisto("t_gem_DCH", index, v, 100, 0, 100);
+	addHisto("t_gpip_DCH", index, v, 100, 0, 100);
+	addHisto("t_gep_LKr", index, v, 200, 0, 200);
+	addHisto("t_gem_LKr", index, v, 200, 0, 200);
+	addHisto("t_gpip_LKr", index, v, 200, 0, 200);
 
-	addHisto("undeft_gep_LKr", index, v, 300, -150, 150);
-	addHisto("undeft_gem_LKr", index, v, 300, -150, 150);
-	addHisto("undeft_gpip_LKr", index, v, 300, -150, 150);
+	addHisto("undeft_gep_LKr", index, v, 200, 0, 200);
+	addHisto("undeft_gem_LKr", index, v, 200, 0, 200);
+	addHisto("undeft_gpip_LKr", index, v, 200, 0, 200);
 
-	addHisto("L3_E_LKr_ep", index, v, 800, 0, 80);
-	addHisto("L3_E_LKr_em", index, v, 800, 0, 80);
-	addHisto("L3_E_LKr_gamma", index, v, 800, 0, 80);
-	addHisto("L3_E_LKr", index, v, 800, 0, 80);
+	addHisto("L3_E_LKr_ep", index, v, 160, 0, 80);
+	addHisto("L3_E_LKr_em", index, v, 160, 0, 80);
+	addHisto("L3_E_LKr_gamma", index, v, 160, 0, 80);
+	addHisto("L3_E_LKr", index, v, 160, 0, 80);
 
 	addHisto("xMap", index, vMap, 1000,0,1, 1000, 0, 1);
 	addHisto("LKr_XY_ep", index, vMap, 2400,-120,120, 2400, -120, 120);
@@ -549,7 +549,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(evt->pic.P.Vect().Unit().X(), weight);
 	d->at(++i)->Fill(evt->pic.P.Vect().Unit().Y(), weight);
 	d->at(++i)->Fill(evt->pic.P.Vect().Unit().Z(), weight);
-	d->at(++i)->Fill(corrEvent->pCluster[evt->pic.parentCluster].E, weight);
+	d->at(++i)->Fill(evt->pic.P.E(), weight);
 	d->at(++i)->Fill(corrEvent->pTrack[evt->pic.parentTrack].E/corrEvent->pTrack[evt->pic.parentTrack].p, weight);
 
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
