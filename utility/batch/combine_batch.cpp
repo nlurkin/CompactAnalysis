@@ -1211,10 +1211,10 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot2(++iMap, "DCH3_XY_em", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_pip", "Pion DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);
-	doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
-	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
-	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
-	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
 
 
 }
