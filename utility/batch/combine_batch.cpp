@@ -110,10 +110,11 @@ void getHisto(TFile* fd, TString name, unsigned int index, vector<TH1D*> *v){
 	if(v->size()==index){
 		xxx->SetName(TString::Format("%s%i", name.Data(), index));
 		tempFD->cd();
-		cout << xxx->GetName() << endl;
+		cout << "first " << xxx->GetName() << endl;
 		v->push_back((TH1D*)xxx->Clone());
 	}
 	else{
+		cout << "second " << xxx->GetName() << endl;
 		v->at(index)->Add(xxx, 1.);
 	}
 }
