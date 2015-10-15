@@ -110,11 +110,9 @@ void getHisto(TFile* fd, TString name, unsigned int index, vector<TH1D*> *v){
 	if(v->size()==index){
 		xxx->SetName(TString::Format("%s%i", name.Data(), index));
 		tempFD->cd();
-		cout << "first " << xxx->GetName() << endl;
 		v->push_back((TH1D*)xxx->Clone());
 	}
 	else{
-		cout << "second " << xxx->GetName() << endl;
 		v->at(index)->Add(xxx, 1.);
 	}
 }
@@ -1069,6 +1067,11 @@ void combine_show(TString inFile, int maxPlots){
 
 	tempFD->cd();
 
+	for(auto it : dSig->at(0)){
+		new TCanvas("c1", "xxx");
+		it->Draw();
+	}
+	return;
 	int i=-1;
 	doPlot(++i, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
