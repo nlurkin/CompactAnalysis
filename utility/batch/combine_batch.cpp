@@ -110,6 +110,7 @@ void getHisto(TFile* fd, TString name, unsigned int index, vector<TH1D*> *v){
 	if(v->size()==index){
 		xxx->SetName(TString::Format("%s%i", name.Data(), index));
 		tempFD->cd();
+		cout << xxx->GetName() << endl;
 		v->push_back((TH1D*)xxx->Clone());
 	}
 	else{
@@ -965,8 +966,6 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 		hStack->Add(d1->at(i).at(index));
 		d1->at(i).at(index)->Write();
 	}
-
-	cout << dSig->at(0).at(index)->GetName() << endl;
 
 	dSig->at(0).at(index)->Write();
 
