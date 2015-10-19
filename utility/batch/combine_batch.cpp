@@ -946,6 +946,7 @@ TCanvas* drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
 }
 
 void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
+	if(index<0) return;
 	tempFD->cd();
 
 	THStack *hStack = new THStack(name, title);
@@ -1011,8 +1012,12 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	new TCanvas(TString::Format("c%li", iCanvas), name);
+	TCanvas *c = new TCanvas(TString::Format("c%li", iCanvas), name);
+	c->Divide(2, 2);
+	c->cd(1);
 	temp->Draw("COLZ");
+	c->cd(2);
+	dSigMap->at(0).at(index)->Draw("COLZ");
 	++iCanvas;
 
 	temp->Write();
@@ -1047,7 +1052,7 @@ void combine_batch(TString inFile){
 	remove(tempFileName.Data());
 }
 
-void combine_show(TString inFile, int maxPlots){
+void combine_show(TString inFile, int firstPlot, int maxPlots){
 	srand(time(NULL));
 	gStyle->SetOptFit(1);
 
@@ -1072,62 +1077,110 @@ void combine_show(TString inFile, int maxPlots){
 	tempFD->cd();
 
 
-	int i=-1;
+	int i=firstPlot;
 
 	doPlot(++i, "mK", "Kaon invariant mass", leg, mcColors, &mcLegendTitle);
 	if(maxPlots--==0) return;
 
 	doPlot(++i, "R_DCH1_ep", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH1_ep", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH1_ep", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH1_em", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH1_em", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH1_em", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH1_pip", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH1_pip", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH1_pip", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH1_gamma", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH1_gamma", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH1_gamma", "DCH1 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 
 	doPlot(++i, "R_DCH2_ep", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH2_ep", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH2_ep", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH2_em", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH2_em", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH2_em", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH2_pip", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH2_pip", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH2_pip", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH2_gamma", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH2_gamma", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH2_gamma", "DCH2 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 
 	doPlot(++i, "R_DCH3_ep", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH3_ep", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH3_ep", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH3_em", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH3_em", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH3_em", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH3_pip", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH3_pip", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH3_pip", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH3_gamma", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH3_gamma", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH3_gamma", "DCH3 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 
 	doPlot(++i, "R_DCH4_ep", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH4_ep", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH4_ep", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH4_em", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH4_em", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH4_em", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH4_pip", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH4_pip", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH4_pip", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "R_DCH4_gamma", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "X_DCH4_gamma", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 	doPlot(++i, "Y_DCH4_gamma", "DCH4 Radius", leg, mcColors);
+	if(maxPlots--==0) return;
 
 	doPlot(++i, "Zvtx", "Vertex Z", leg, mcColors);
 	doPlot(++i, "Qvtx", "Vertex Charge", leg, mcColors);
@@ -1199,7 +1252,7 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot(++i, "L3_E_LKr", "L3 energy", leg, mcColors);
 
 	int iMap = 0;
-	/*doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
+	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 
 	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
@@ -1216,11 +1269,11 @@ void combine_show(TString inFile, int maxPlots){
 	doPlot2(++iMap, "DCH3_XY_ep", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_em", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_pip", "Pion DCH3 map", leg, mcColors);
-	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);*/
-	//doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
-	//doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
-	//doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
-	//doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
 
 
 }
@@ -1238,12 +1291,14 @@ int main(int argc, char **argv){
 	signal(SIGABRT, sighandler);
 
 	TString config(argv[1]);
+	int firstPlots=1;
 	int maxPlots=-1;
 	if(argc==2) combine_batch(config);
 	else{
-		if(argc==4) maxPlots=atoi(argv[3]);
+		if(argc==4) firstPlots=atoi(argv[3]);
+		if(argc==5) maxPlots=atoi(argv[4]);
 		theApp = new TApplication("combine", &argc, argv);
-		combine_show(config, maxPlots-1);
+		combine_show(config, -firstPlots, maxPlots-1);
 		theApp->Run();
 	}
 }
