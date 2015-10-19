@@ -1,5 +1,7 @@
 #define __CINT_NICO__ 1
 
+#define PRINTVAR(v) #v << "= " << v << " "
+
 #include "pi0DalitzHeader.h"
 #include <TSystem.h>
 #include <TStyle.h>
@@ -192,14 +194,14 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("P", index, v, 100, 68, 80);
 
 	addHisto("Mpi0", index, v, 60, 0.120, 0.150);
-	
+
 	//Photon
 	addHisto("gEnergy", index, v, 80, 0, 80);
 	addHisto("gPositionX", index, v, 300, -150, 150);
 	addHisto("gPositionY", index, v, 300, -150, 150);
 	addHisto("gRadius", index, v, 150, 0, 150);
 	addHisto("gP", index, v, 60, 0, 60);
-	
+
 	//e+/e-
 	addHisto("epPMag", index, v, 60, 0, 60);
 	addHisto("epPx", index, v, 60, -0.015, 0.015);
@@ -437,6 +439,9 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	cout << PRINTVAR(rootGeom->Dch[0].PosChamber.z) << endl;
+	cout << "e+ Momenetum " << printVector3(corrEvent->pTrack[evt->ep.parentTrack].momentum) << endl;
+	cout << "e+ propagated " << printVector3(propPos) << endl;
 	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
 	d->at(++i)->Fill(propPos.X(), weight);
 	d->at(++i)->Fill(propPos.Y(), weight);
@@ -943,7 +948,7 @@ TCanvas* drawCanvas(TString name, THStack *stack, TH1D* data, TLegend *leg){
 
 void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
 	tempFD->cd();
-	
+
 	THStack *hStack = new THStack(name, title);
 
 	//Scale MC to Data
@@ -971,7 +976,7 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 	//Style data
 	dSig->at(0).at(index)->SetLineColor(kRed);
 	if(legendTitle) leg->AddEntry(dSig->at(0).at(index),dataLegendTitle[0].Data(),"lep");
-	
+
 	TCanvas *c = drawCanvas(name, hStack, dSig->at(0).at(index), leg);
 
 	hStack->Write();
