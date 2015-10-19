@@ -439,9 +439,6 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	cout << PRINTVAR(rootGeom->Dch[0].PosChamber.z) << endl;
-	cout << "e+ Momenetum " << printVector3(corrEvent->pTrack[evt->ep.parentTrack].momentum) << endl;
-	cout << "e+ propagated " << printVector3(propPos) << endl;
 	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
 	d->at(++i)->Fill(propPos.X(), weight);
 	d->at(++i)->Fill(propPos.Y(), weight);
@@ -762,6 +759,8 @@ namespace Input{
 		th->SetBranchAddress("header", &headerBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 		th->SetBranchAddress("geom", &geomBrch);
+
+		th->GetEntry(0);
 
 		// Set Number of events
 		int nevt = t->GetEntries();
