@@ -1321,10 +1321,41 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot(++i, "L3_E_LKr_gamma", "L3 photon energy", leg, mcColors);
 	doPlot(++i, "L3_E_LKr", "L3 energy", leg, mcColors);
 
+	doPlot(++i, "R_DCH1_ep_0", "R_DCH1_ep_0", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_0", "X_DCH1_ep_0", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_0", "Y_DCH1_ep_0", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_1", "R_DCH1_ep_1", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_1", "X_DCH1_ep_1", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_1", "Y_DCH1_ep_1", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_2", "R_DCH1_ep_2", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_2", "X_DCH1_ep_2", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_2", "Y_DCH1_ep_2", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_3", "R_DCH1_ep_3", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_3", "X_DCH1_ep_3", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_3", "Y_DCH1_ep_3", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_4", "R_DCH1_ep_4", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_4", "X_DCH1_ep_4", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_4", "Y_DCH1_ep_4", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_5", "R_DCH1_ep_5", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_5", "X_DCH1_ep_5", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_5", "Y_DCH1_ep_5", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_6", "R_DCH1_ep_6", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_6", "X_DCH1_ep_6", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_6", "Y_DCH1_ep_6", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_7", "R_DCH1_ep_7", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_7", "X_DCH1_ep_7", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_7", "Y_DCH1_ep_7", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_8", "R_DCH1_ep_8", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_8", "X_DCH1_ep_8", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_8", "Y_DCH1_ep_8", leg, mcColors);
+	doPlot(++i, "R_DCH1_ep_9", "R_DCH1_ep_9", leg, mcColors);
+	doPlot(++i, "X_DCH1_ep_9", "X_DCH1_ep_9", leg, mcColors);
+	doPlot(++i, "Y_DCH1_ep_9", "Y_DCH1_ep_9", leg, mcColors);
+
 	int iMap = 0;
 	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 
-	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
+	/*doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
@@ -1343,7 +1374,7 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
-	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);*/
 
 
 }
