@@ -257,8 +257,39 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("L3_E_LKr_gamma", index, v, 160, 0, 80);
 	addHisto("L3_E_LKr", index, v, 160, 0, 80);
 
+	addHisto("R_DCH1_ep_0", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_0", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_0", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_1", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_1", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_1", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_2", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_2", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_2", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_3", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_3", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_3", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_4", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_4", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_4", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_5", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_5", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_5", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_6", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_6", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_6", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_7", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_7", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_7", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_8", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_8", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_8", index, v, 300, -150, 150);
+	addHisto("R_DCH1_ep_9", index, v, 150, 0, 150);
+	addHisto("X_DCH1_ep_9", index, v, 300, -150, 150);
+	addHisto("Y_DCH1_ep_9", index, v, 300, -150, 150);
+
 	addHisto("xMap", 		index, vMap, 1000,0,1, 1000, 0, 1);
-	addHisto("LKr_XY_ep", 	index, vMap, 600,-120,120, 600, -120, 120);
+	/*addHisto("LKr_XY_ep", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_em", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_pip", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_gamma",index, vMap, 600,-120,120, 600, -120, 120);
@@ -277,7 +308,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("DCH4_XY_ep", 	index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH4_XY_em", 	index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH4_XY_pip",	index, vMap, 500,-100,100, 500, -100, 100);
-	addHisto("DCH4_XY_gamma", index, vMap, 500,-100,100, 500, -100, 100);
+	addHisto("DCH4_XY_gamma", index, vMap, 500,-100,100, 500, -100, 100);*/
 }
 
 void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
@@ -407,8 +438,39 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "L3_E_LKr", ++i, v);
 
 
+	getHisto(fd, "R_DCH1_ep_0", ++i, v);
+	getHisto(fd, "X_DCH1_ep_0", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_0", ++i, v);
+	getHisto(fd, "R_DCH1_ep_1", ++i, v);
+	getHisto(fd, "X_DCH1_ep_1", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_1", ++i, v);
+	getHisto(fd, "R_DCH1_ep_2", ++i, v);
+	getHisto(fd, "X_DCH1_ep_2", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_2", ++i, v);
+	getHisto(fd, "R_DCH1_ep_3", ++i, v);
+	getHisto(fd, "X_DCH1_ep_3", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_3", ++i, v);
+	getHisto(fd, "R_DCH1_ep_4", ++i, v);
+	getHisto(fd, "X_DCH1_ep_4", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_4", ++i, v);
+	getHisto(fd, "R_DCH1_ep_5", ++i, v);
+	getHisto(fd, "X_DCH1_ep_5", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_5", ++i, v);
+	getHisto(fd, "R_DCH1_ep_6", ++i, v);
+	getHisto(fd, "X_DCH1_ep_6", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_6", ++i, v);
+	getHisto(fd, "R_DCH1_ep_7", ++i, v);
+	getHisto(fd, "X_DCH1_ep_7", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_7", ++i, v);
+	getHisto(fd, "R_DCH1_ep_8", ++i, v);
+	getHisto(fd, "X_DCH1_ep_8", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_8", ++i, v);
+	getHisto(fd, "R_DCH1_ep_9", ++i, v);
+	getHisto(fd, "X_DCH1_ep_9", ++i, v);
+	getHisto(fd, "Y_DCH1_ep_9", ++i, v);
+
 	getHisto(fd, "xMap", ++iMap, vMap);
-	getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
+	/*getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_em", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_pip", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_gamma", ++iMap, vMap);
@@ -423,7 +485,7 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "DCH3_XY_ep", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_em", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_pip", ++iMap, vMap);
-	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);*/
 	//getHisto(fd, "DCH4_XY_ep", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_em", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_pip", ++iMap, vMap);
@@ -607,6 +669,12 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(ELKr_em, weight);
 	d->at(++i)->Fill(evt->gamma.P.E(), weight);
 	d->at(++i)->Fill(ELKr_ep + ELKr_em + evt->gamma.P.E(), weight);
+
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	i += int((propPos.Y()+150)/15);
+	d->at(++i)->Fill(distance2D(propPos, TVector3(0,0,0)), weight);
+	d->at(++i)->Fill(propPos.X(), weight);
+	d->at(++i)->Fill(propPos.Y(), weight);
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
