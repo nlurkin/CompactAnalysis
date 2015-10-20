@@ -975,7 +975,7 @@ void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* r
 	ratio->SetStats(0);      // No statistics on lower plot
 	ratio->Draw("ep");
 	ratio->SetMarkerColor(kRed);
-	ratio->GetYaxis()->SetRangeUser(0.5, 1.5);
+	ratio->GetYaxis()->SetRangeUser(0.85, 1.15);
 
 	// Y axis mc plot settings
 	mc->GetYaxis()->SetTitleSize(20);
