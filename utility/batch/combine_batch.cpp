@@ -16,7 +16,7 @@
 #include "../userinc/funLib.h"
 using namespace std;
 
-#define MAXEVENTS 10000
+#define MAXEVENTS 0
 Long_t iCanvas = 0;
 
 static vector< vector<TH1D*> > *d1;
