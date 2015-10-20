@@ -677,7 +677,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(propPos.Y(), weight);
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
-	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	/*propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
@@ -715,7 +715,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	propPos = propagateBefore(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagate(rootGeom->Dch[3].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
-	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);*/
 }
 
 /*************************
