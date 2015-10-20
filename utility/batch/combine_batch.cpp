@@ -472,8 +472,8 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "Y_DCH1_ep_9", ++i, v);
 
 	getHisto(fd, "xMap", ++iMap, vMap);
-	/*getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
-	getHisto(fd, "LKr_XY_em", ++iMap, vMap);
+	getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
+	/*getHisto(fd, "LKr_XY_em", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_pip", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_gamma", ++iMap, vMap);
 	getHisto(fd, "DCH1_XY_ep", ++iMap, vMap);
@@ -679,8 +679,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(propPos.Y(), weight);
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
-	/*propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	/*vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->pic.parentTrack]);
@@ -1355,8 +1355,8 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	int iMap = 0;
 	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 
-	/*doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
-	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
+	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
+	/*doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
