@@ -380,9 +380,27 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	return nCandidates;
 }
 
+bool pi0d_L3Trigger(NPhysicsTrack &t){
+	TVector3 propPos = propagateAfter(rootGeom.Lkr.z, t);
+	bool lkrAcceptance = t.lkr_acc;
+	bool goodAcceptance = false;
+	if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=6 && " <<  t.E/t.p << " >0.8: ok" << endl;
+	if(lkrAcceptance==0 && t.p>=6 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
+
+	// Track position on LKr with Pb Wall
+	bool goodPBWall = true;
+	if(rootBurst.pbWall){
+		if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
+		if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
+	}
+
+	if(goodAcceptance && goodPBWall) return true;
+	return false;
+}
+
 //Selection
 int pi0d_tracksAcceptance(){
-	bool lkrAcceptance;
+	//bool lkrAcceptance;
 	TVector3 propPos;
 	bool badTrack = false;
 	double radius;
@@ -395,25 +413,25 @@ int pi0d_tracksAcceptance(){
 		int iGoodTrack = corrEvent.goodTracks[i];
 		NPhysicsTrack t = corrEvent.pTrack[iGoodTrack];
 
-		propPos = propagateAfter(rootGeom.Lkr.z, t);
-		lkrAcceptance = t.lkr_acc;
-		bool goodAcceptance = false;
-		//if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
+		//propPos = propagateAfter(rootGeom.Lkr.z, t);
+		//lkrAcceptance = t.lkr_acc;
+		//bool goodAcceptance = false;
+		//if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=6 && " <<  t.E/t.p << " >0.8: ok" << endl;
 		//to remove
 		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance==0 && t.p>=6 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
-		goodAcceptance = true;
+		//if(lkrAcceptance==0 && t.p>=6 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
+		//goodAcceptance = true;
 
 		// Track position on LKr with Pb Wall
-		bool goodPBWall = true;
-		if(rootBurst.pbWall){
-			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
+		//bool goodPBWall = true;
+		//if(rootBurst.pbWall){
+		//	if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			//to remove
 			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
-			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
-		}
+		//	if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
+		//}
 
-		if(goodAcceptance && goodPBWall) ntrackLkr++;
+		//if(goodAcceptance && goodPBWall) ntrackLkr++;
 
 		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t);
 		radius = distance2D(dch1, propPos);
@@ -432,7 +450,7 @@ int pi0d_tracksAcceptance(){
 	}
 
 	//At least 1 e+/e- track in lkr acceptance
-	if(ntrackLkr==0) badTrack = true;
+	//if(ntrackLkr==0) badTrack = true;
 	return badTrack;
 }
 
@@ -635,8 +653,8 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 
 	int conditions;
 
-	if(rootBurst.isData) conditions = 6;
-	else conditions=5;
+	if(rootBurst.isData) conditions = 7;
+	else conditions=6;
 
 	if(options.isOptDebug()) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
 	if(options.isOptDebug()) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
@@ -662,6 +680,13 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_x :\t\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>20) cond++;
+		//cond++;
+
+		// separation from undeflected x impact point >20cm
+		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[x.trackID].bDetPos, rawEvent.track[x.trackID].bMomentum);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_x :\t" << distance << "\t > 50 : ++" << endl;
+		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 		//cond++;
 
 		// separation from e+ e- impact point >10cm

@@ -326,17 +326,26 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	propPos = propagateAfter(rootGeom.Lkr.z, t_ep);
 	goodPBWall = true;
 	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
-	if(t_ep.lkr_acc && goodPBWall && rawEvent.track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
+	if(t_ep.lkr_acc==0 && goodPBWall && rawEvent.track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
 
 	propPos = propagateAfter(rootGeom.Lkr.z, t_em);
 	goodPBWall = true;
 	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
-	if(t_em.lkr_acc && goodPBWall && rawEvent.track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
+	if(t_em.lkr_acc==0 && goodPBWall && rawEvent.track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
 
 	double E_lkr = ELKr_ep + ELKr_em + tempObj.piEvent.gamma.P.E();
 	if(options.isOptDebug()) cout << "~~~~ Cut 18 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "e+: lkr_acc=" << (t_ep.lkr_acc==0) << " pbwall=" << goodPBWall <<
+			" dDeadCell=" << rawEvent.track[t_ep.trackID].dDeadCell <<
+			" ELKr=" << ELKr_ep << endl;
+	if(options.isOptDebug()) cout << "e-: lkr_acc=" << (t_em.lkr_acc==0) << " pbwall=" << goodPBWall <<
+			" dDeadCell=" << rawEvent.track[t_em.trackID].dDeadCell <<
+			" ELKr=" << ELKr_em << endl;
 	if(options.isOptDebug()) cout << "E_LKr :\t\t\t\t" << E_lkr << "\t <14: rejected" << endl;
 	if(E_lkr < 14) return 18+firstCutIndex;
+
+
+	if(!pi0d_L3Trigger(t_ep) && !pi0d_L3Trigger(t_em)) return 19+firstCutIndex;
 
 	return -1;
 }
