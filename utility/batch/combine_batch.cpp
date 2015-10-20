@@ -291,7 +291,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	cout << "Vector size: " << v->size() << endl;
 
 	addHisto("xMap", 		index, vMap, 1000,0,1, 1000, 0, 1);
-	/*addHisto("LKr_XY_ep", 	index, vMap, 600,-120,120, 600, -120, 120);
+	addHisto("LKr_XY_ep", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_em", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_pip", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_gamma",index, vMap, 600,-120,120, 600, -120, 120);
@@ -310,7 +310,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("DCH4_XY_ep", 	index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH4_XY_em", 	index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH4_XY_pip",	index, vMap, 500,-100,100, 500, -100, 100);
-	addHisto("DCH4_XY_gamma", index, vMap, 500,-100,100, 500, -100, 100);*/
+	addHisto("DCH4_XY_gamma", index, vMap, 500,-100,100, 500, -100, 100);
 }
 
 void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
@@ -680,7 +680,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	/*vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->pic.parentTrack]);
@@ -717,7 +717,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	propPos = propagateBefore(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->pic.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagate(rootGeom->Dch[3].PosChamber.z, corrEvent->pCluster[evt->gamma.parentCluster].position, evt->gamma.P.Vect());
-	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);*/
+	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 }
 
 /*************************
