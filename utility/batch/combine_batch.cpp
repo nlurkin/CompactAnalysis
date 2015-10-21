@@ -453,47 +453,46 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "R_DCH1_ep_0", ++i, v);
 	getHisto(fd, "X_DCH1_ep_0", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_0", ++i, v);
-	getHisto(fd, "t_epem_DCH1_0", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_0", ++i, v);
 	getHisto(fd, "R_DCH1_ep_1", ++i, v);
 	getHisto(fd, "X_DCH1_ep_1", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_1", ++i, v);
-	getHisto(fd, "t_epem_DCH1_1", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_1", ++i, v);
 	getHisto(fd, "R_DCH1_ep_2", ++i, v);
 	getHisto(fd, "X_DCH1_ep_2", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_2", ++i, v);
-	getHisto(fd, "t_epem_DCH1_2", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_2", ++i, v);
 	getHisto(fd, "R_DCH1_ep_3", ++i, v);
 	getHisto(fd, "X_DCH1_ep_3", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_3", ++i, v);
-	getHisto(fd, "t_epem_DCH1_3", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_3", ++i, v);
 	getHisto(fd, "R_DCH1_ep_4", ++i, v);
 	getHisto(fd, "X_DCH1_ep_4", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_4", ++i, v);
-	getHisto(fd, "t_epem_DCH1_4", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_4", ++i, v);
 	getHisto(fd, "R_DCH1_ep_5", ++i, v);
 	getHisto(fd, "X_DCH1_ep_5", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_5", ++i, v);
-	getHisto(fd, "t_epem_DCH1_5", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_5", ++i, v);
 	getHisto(fd, "R_DCH1_ep_6", ++i, v);
 	getHisto(fd, "X_DCH1_ep_6", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_6", ++i, v);
-	getHisto(fd, "t_epem_DCH1_6", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_6", ++i, v);
 	getHisto(fd, "R_DCH1_ep_7", ++i, v);
 	getHisto(fd, "X_DCH1_ep_7", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_7", ++i, v);
-	getHisto(fd, "t_epem_DCH1_7", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_7", ++i, v);
 	getHisto(fd, "R_DCH1_ep_8", ++i, v);
 	getHisto(fd, "X_DCH1_ep_8", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_8", ++i, v);
-	getHisto(fd, "t_epem_DCH1_8", ++i, v);
+	//getHisto(fd, "t_epem_DCH1_8", ++i, v);
 	getHisto(fd, "R_DCH1_ep_9", ++i, v);
 	getHisto(fd, "X_DCH1_ep_9", ++i, v);
 	getHisto(fd, "Y_DCH1_ep_9", ++i, v);
-	getHisto(fd, "t_epem_DCH1_9", ++i, v);
-
+	//getHisto(fd, "t_epem_DCH1_9", ++i, v);
 	getHisto(fd, "xMap", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_ep", ++iMap, vMap);
-	getHisto(fd, "LKr_XY_em", ++iMap, vMap);
+	/*getHisto(fd, "LKr_XY_em", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_pip", ++iMap, vMap);
 	getHisto(fd, "LKr_XY_gamma", ++iMap, vMap);
 	getHisto(fd, "DCH1_XY_ep", ++iMap, vMap);
@@ -507,7 +506,7 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "DCH3_XY_ep", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_em", ++iMap, vMap);
 	getHisto(fd, "DCH3_XY_pip", ++iMap, vMap);
-	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);
+	getHisto(fd, "DCH3_XY_gamma", ++iMap, vMap);*/
 	//getHisto(fd, "DCH4_XY_ep", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_em", ++iMap, vMap);
 	//getHisto(fd, "DCH4_XY_pip", ++iMap, vMap);
@@ -707,14 +706,13 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(distance2D(propPos, propPos2), weight);
 
 	if(mcEvent) vMap->at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
-	else ++iMap;
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->em.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateAfter(rootGeom->Lkr.z, corrEvent->pTrack[evt->pic.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
-	vMap->at(++iMap)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.X(), corrEvent->pCluster[evt->gamma.parentCluster].position.Y(), weight);
+	vMap->at(++iMap)->Fill(corrEvent->pCluster[evt->gamma.parentCluster].position.X(), corrEvent->pCluster[evt->gamma.parentCluster].position.X(), weight);
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	vMap->at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
@@ -975,25 +973,6 @@ TH1D* buildRatio(THStack* stack, TH1D* data, TString name){
 	return r;
 }
 
-TH2D* buildRatio2(TH2D* mc, TH2D* data, TString name){
-	int nbinsx = data->GetNbinsX();
-	double minx = data->GetXaxis()->GetXmin();
-	double maxx = data->GetXaxis()->GetXmax();
-	int nbinsy = data->GetNbinsY();
-	double miny = data->GetYaxis()->GetXmin();
-	double maxy = data->GetYaxis()->GetXmax();
-	TH2D* r = new TH2D(TString::Format("ratio_%s", name.Data()), TString::Format("ratio_%s", name.Data()), nbinsx, minx, maxx, nbinsy, miny, maxy);
-
-	r->Sumw2();
-	r->Divide(data, mc, 1, 1, "B");
-	r->SetMarkerColor(kRed);
-	//r->SetMaximum(r->GetMaximum()*1.1);
-	//r->SetMinimum(r->GetMinimum()*0.9);
-	//r->SetMaximum(0.7);
-	//r->SetMinimum(1.3);
-	return r;
-}
-
 void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* ratio){
 	//double minx = data->GetXaxis()->GetXmin();
 	//double maxx = data->GetXaxis()->GetXmax();
@@ -1130,25 +1109,15 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	temp = (TH2D*)temp->Rebin2D(32, 16);
-	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(16, 16);
-
-	TH2D* ratio = buildRatio2(temp, tempSig, name);
-	ratio->GetZaxis()->SetRangeUser(0.85, 1.15);
-
 	TCanvas *c = new TCanvas(TString::Format("c%li", iCanvas), name);
 	c->Divide(2, 2);
 	c->cd(1);
 	temp->Draw("COLZ");
 	c->cd(2);
-	tempSig->Draw("COLZ");
-	c->cd(3);
-	ratio->Draw("colz");
+	dSigMap->at(0).at(index)->Draw("COLZ");
 	++iCanvas;
 
 	temp->Write();
-	cout << name+".png" << endl;
-	c->SaveAs(name+".png");
 }
 
 /*****************************
@@ -1382,49 +1351,49 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot(++i, "R_DCH1_ep_0", "R_DCH1_ep_0", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_0", "X_DCH1_ep_0", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_0", "Y_DCH1_ep_0", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_0", "Y_DCH1_ep_0", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_0", "Y_DCH1_ep_0", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_1", "R_DCH1_ep_1", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_1", "X_DCH1_ep_1", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_1", "Y_DCH1_ep_1", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_1", "Y_DCH1_ep_1", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_1", "Y_DCH1_ep_1", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_2", "R_DCH1_ep_2", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_2", "X_DCH1_ep_2", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_2", "Y_DCH1_ep_2", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_2", "Y_DCH1_ep_2", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_2", "Y_DCH1_ep_2", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_3", "R_DCH1_ep_3", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_3", "X_DCH1_ep_3", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_3", "Y_DCH1_ep_3", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_3", "Y_DCH1_ep_3", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_3", "Y_DCH1_ep_3", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_4", "R_DCH1_ep_4", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_4", "X_DCH1_ep_4", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_4", "Y_DCH1_ep_4", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_4", "Y_DCH1_ep_4", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_4", "Y_DCH1_ep_4", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_5", "R_DCH1_ep_5", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_5", "X_DCH1_ep_5", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_5", "Y_DCH1_ep_5", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_5", "Y_DCH1_ep_5", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_5", "Y_DCH1_ep_5", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_6", "R_DCH1_ep_6", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_6", "X_DCH1_ep_6", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_6", "Y_DCH1_ep_6", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_6", "Y_DCH1_ep_6", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_6", "Y_DCH1_ep_6", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_7", "R_DCH1_ep_7", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_7", "X_DCH1_ep_7", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_7", "Y_DCH1_ep_7", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_7", "Y_DCH1_ep_7", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_7", "Y_DCH1_ep_7", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_8", "R_DCH1_ep_8", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_8", "X_DCH1_ep_8", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_8", "Y_DCH1_ep_8", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_8", "Y_DCH1_ep_8", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_8", "Y_DCH1_ep_8", leg, mcColors);
 	doPlot(++i, "R_DCH1_ep_9", "R_DCH1_ep_9", leg, mcColors);
 	doPlot(++i, "X_DCH1_ep_9", "X_DCH1_ep_9", leg, mcColors);
 	doPlot(++i, "Y_DCH1_ep_9", "Y_DCH1_ep_9", leg, mcColors);
-	doPlot(++i, "t_epem_DCH1_9", "Y_DCH1_ep_9", leg, mcColors);
+	//doPlot(++i, "t_epem_DCH1_9", "Y_DCH1_ep_9", leg, mcColors);
 
-	int iMap = -1;
+	int iMap = 0;
 	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 
 	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
-	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
+	/*doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
@@ -1439,7 +1408,7 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot2(++iMap, "DCH3_XY_em", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_pip", "Pion DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);
-	/*doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);*/
