@@ -234,16 +234,16 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("pieop", index, v, 100, 0, 1.5);
 
 
-	addHisto("t_epem_DCH", index, v,  300, 0, 300);
-	addHisto("t_eppip_DCH", index, v, 300, 0, 300);
-	addHisto("t_empip_DCH", index, v, 300, 0, 300);
+	addHisto("t_epem_DCH", index, v,  150, 0, 150);
+	addHisto("t_eppip_DCH", index, v, 150, 0, 150);
+	addHisto("t_empip_DCH", index, v, 150, 0, 150);
 	addHisto("t_epem_LKr", index, v,  400, 0, 400);
 	addHisto("t_eppip_LKr", index, v, 400, 0, 400);
 	addHisto("t_empip_LKr", index, v, 400, 0, 400);
 
-	addHisto("t_gep_DCH", index, v,  300, 0, 300);
-	addHisto("t_gem_DCH", index, v,  300, 0, 300);
-	addHisto("t_gpip_DCH", index, v, 300, 0, 300);
+	addHisto("t_gep_DCH", index, v,  150, 0, 150);
+	addHisto("t_gem_DCH", index, v,  150, 0, 150);
+	addHisto("t_gpip_DCH", index, v, 150, 0, 150);
 	addHisto("t_gep_LKr", index, v,  400, 0, 400);
 	addHisto("t_gem_LKr", index, v,  400, 0, 400);
 	addHisto("t_gpip_LKr", index, v, 400, 0, 400);
@@ -261,43 +261,43 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("R_DCH1_ep_0", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_0", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_0", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_0", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_0", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_1", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_1", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_1", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_1", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_1", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_2", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_2", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_2", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_2", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_2", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_3", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_3", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_3", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_3", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_3", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_4", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_4", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_4", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_4", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_4", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_5", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_5", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_5", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_5", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_5", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_6", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_6", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_6", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_6", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_6", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_7", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_7", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_7", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_7", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_7", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_8", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_8", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_8", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_8", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_8", index, v,  150, 0, 150);
 	addHisto("R_DCH1_ep_9", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep_9", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep_9", index, v, 300, -150, 150);
-	addHisto("t_epem_DCH1_9", index, v,  300, 0, 300);
+	addHisto("t_epem_DCH1_9", index, v,  150, 0, 150);
 	cout << "Vector size: " << v->size() << endl;
 
 	addHisto("xMap", 		index, vMap, 1000,0,1, 1000, 0, 1);
@@ -1100,6 +1100,9 @@ void doPlot(int index, TString name, TString title, TLegend* leg, vector<int> co
 	hStack->Write();
 	cout << name+".png" << endl;
 	c->SaveAs(name+".png");
+
+	c->Close();
+	delete c;
 }
 
 void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> colors, vector<TString> *legendTitle = NULL){
@@ -1131,7 +1134,7 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 	}
 
 	temp = (TH2D*)temp->Rebin2D(32, 16);
-	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(16, 16);
+	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(32, 16);
 
 	TH2D* ratio = buildRatio2(temp, tempSig, name);
 	ratio->GetZaxis()->SetRangeUser(0.85, 1.15);
@@ -1149,6 +1152,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 	temp->Write();
 	cout << name+".png" << endl;
 	c->SaveAs(name+".png");
+	c->Close();
+	delete c;
 }
 
 /*****************************
