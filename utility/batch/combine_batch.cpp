@@ -1133,10 +1133,10 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	temp = (TH2D*)temp->Rebin2D(32, 16);
-	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(32, 16);
+	//temp = (TH2D*)temp->Rebin2D(32, 16);
+	//TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(32, 16);
 
-	TH2D* ratio = buildRatio2(temp, tempSig, name);
+	TH2D* ratio = buildRatio2(temp, dSigMap->at(0).at(index), name);
 	ratio->GetZaxis()->SetRangeUser(0.85, 1.15);
 
 	TCanvas *c = new TCanvas(TString::Format("c%li", iCanvas), name);
@@ -1144,7 +1144,7 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 	c->cd(1);
 	temp->Draw("COLZ");
 	c->cd(2);
-	tempSig->Draw("COLZ");
+	dSigMap->at(0).at(index)->Draw("COLZ");
 	c->cd(3);
 	ratio->Draw("colz");
 	++iCanvas;
