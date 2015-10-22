@@ -524,7 +524,6 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	//if(distance2D(propPos, TVector3(0,0,0))<15) return;
 	//if(distance2D(propPos2, TVector3(0,0,0))<15) return;
-	if(rootBurst->period!=0) return;
 
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
