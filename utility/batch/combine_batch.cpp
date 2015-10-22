@@ -522,8 +522,9 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	if(distance2D(propPos, TVector3(0,0,0))<15) return;
-	if(distance2D(propPos2, TVector3(0,0,0))<15) return;
+	//if(distance2D(propPos, TVector3(0,0,0))<15) return;
+	//if(distance2D(propPos2, TVector3(0,0,0))<15) return;
+	if(rootBurst->period!=0) return;
 
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
@@ -1132,8 +1133,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbinsy = 8;
-	int nbinsx = temp->GetXaxis()->GetNbins()/5;
+	int nbinsy = 1;//8;
+	int nbinsx = 1;//temp->GetXaxis()->GetNbins()/5;
 	if(nbinsx<=0) nbinsx=1;
 	if(nbinsy<=0) nbinsy=1;
 	temp = (TH2D*)temp->Rebin2D(nbinsx, nbinsy);
