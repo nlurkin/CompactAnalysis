@@ -1132,11 +1132,12 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbins = temp->GetYaxis()->GetNbins()/5;
-	cout << temp->GetYaxis()->GetNbins() << " " << nbins << endl;
-	if(nbins<=0) nbins=1;
-	temp = (TH2D*)temp->Rebin2D(8, nbins);
-	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(8, nbins);
+	int nbinsy = 8;
+	int nbinsx = temp->GetXaxis()->GetNbins()/5;
+	if(nbinsx<=0) nbinsx=1;
+	if(nbinsy<=0) nbinsy=1;
+	temp = (TH2D*)temp->Rebin2D(nbinsx, nbinsy);
+	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(nbinsx, nbinsy);
 
 	TH2D* ratio = buildRatio2(temp, tempSig, name);
 	ratio->GetZaxis()->SetRangeUser(0.85, 1.15);
