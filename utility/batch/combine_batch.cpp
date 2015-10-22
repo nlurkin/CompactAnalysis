@@ -1438,7 +1438,7 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_em", "Electron DCH1 map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_pip", "Pion DCH1 map", leg, mcColors);
-	doPlot2(++iMap, "DCH1_XY_gamma", "Photon DCH1 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH1_XY_gamma", "Photon DCH1 map", leg, mcColors);
 	/*doPlot2(++iMap, "DCH2_XY_ep", "Electron DCH2 map", leg, mcColors);
 	doPlot2(++iMap, "DCH2_XY_em", "Electron DCH2 map", leg, mcColors);
 	doPlot2(++iMap, "DCH2_XY_pip", "Pion DCH2 map", leg, mcColors);
