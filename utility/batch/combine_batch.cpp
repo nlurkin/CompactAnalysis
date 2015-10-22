@@ -1132,7 +1132,7 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbins = temp->GetXaxis()->GetNbins()/5 - 2;
+	int nbins = temp->GetXaxis()->GetNbins()/5;
 	cout << temp->GetXaxis()->GetNbins() << " " << nbins << endl;
 	if(nbins<=0) nbins=1;
 	temp = (TH2D*)temp->Rebin2D(nbins, 8);
