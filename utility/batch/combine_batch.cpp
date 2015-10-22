@@ -1134,6 +1134,7 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 
 	int nbins = temp->GetXaxis()->GetNbins()/5;
 	cout << temp->GetXaxis()->GetNbins() << " " << nbins << endl;
+	cout << temp->GetYaxis()->GetNbins() << " " << 8 << endl;
 	if(nbins<=0) nbins=1;
 	temp = (TH2D*)temp->Rebin2D(nbins, 8);
 	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(nbins, 8);
