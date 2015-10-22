@@ -1132,12 +1132,11 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbins = temp->GetXaxis()->GetNbins()/5;
-	cout << temp->GetXaxis()->GetNbins() << " " << nbins << endl;
-	cout << temp->GetYaxis()->GetNbins() << " " << 8 << endl;
+	int nbins = temp->GetYaxis()->GetNbins()/5;
+	cout << temp->GetYaxis()->GetNbins() << " " << nbins << endl;
 	if(nbins<=0) nbins=1;
-	temp = (TH2D*)temp->Rebin2D(nbins, 8);
-	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(nbins, 8);
+	temp = (TH2D*)temp->Rebin2D(16, nbins);
+	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(16, nbins);
 
 	TH2D* ratio = buildRatio2(temp, tempSig, name);
 	ratio->GetZaxis()->SetRangeUser(0.85, 1.15);
@@ -1429,15 +1428,15 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot(++i, "t_epem_DCH1_9", "Y_DCH1_ep_9", leg, mcColors);
 
 	int iMap = -1;
-	doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
+	//doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 
 	/*doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);*/
-	doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
+	//doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_em", "Electron DCH1 map", leg, mcColors);
-	doPlot2(++iMap, "DCH1_XY_pip", "Pion DCH1 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH1_XY_pip", "Pion DCH1 map", leg, mcColors);
 	//doPlot2(++iMap, "DCH1_XY_gamma", "Photon DCH1 map", leg, mcColors);
 	/*doPlot2(++iMap, "DCH2_XY_ep", "Electron DCH2 map", leg, mcColors);
 	doPlot2(++iMap, "DCH2_XY_em", "Electron DCH2 map", leg, mcColors);
