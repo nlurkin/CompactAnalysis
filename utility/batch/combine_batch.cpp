@@ -305,10 +305,10 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("LKr_XY_em", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_pip", 	index, vMap, 600,-120,120, 600, -120, 120);
 	addHisto("LKr_XY_gamma",index, vMap, 600,-120,120, 600, -120, 120);
-	addHisto("DCH1_XY_ep", 	index, vMap, 500,-100,100, 3, -100, 100);
-	addHisto("DCH1_XY_em", 	index, vMap, 500,-100,100, 3, -100, 100);
-	addHisto("DCH1_XY_pip", index, vMap, 500,-100,100, 3, -100, 100);
-	addHisto("DCH1_XY_gamma", index, vMap, 500,-100,100, 3, -100, 100);
+	addHisto("DCH1_XY_ep", 	index, vMap, 500,-100,100, 500, -100, 100);
+	addHisto("DCH1_XY_em", 	index, vMap, 500,-100,100, 500, -100, 100);
+	addHisto("DCH1_XY_pip", index, vMap, 500,-100,100, 500, -100, 100);
+	addHisto("DCH1_XY_gamma", index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH2_XY_ep", 	index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH2_XY_em", 	index, vMap, 500,-100,100, 500, -100, 100);
 	addHisto("DCH2_XY_pip", index, vMap, 500,-100,100, 500, -100, 100);
@@ -1133,8 +1133,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	temp = (TH2D*)temp->Rebin2D(32, 1);
-	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(32, 1);
+	temp = (TH2D*)temp->Rebin2D(32, 500);
+	TH2D* tempSig = (TH2D*)dSigMap->at(0).at(index)->Rebin2D(32, 500);
 
 	TH2D* ratio = buildRatio2(temp, tempSig, name);
 	ratio->GetZaxis()->SetRangeUser(0.85, 1.15);
