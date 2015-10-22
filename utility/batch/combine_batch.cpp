@@ -1152,8 +1152,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 	temp->Write();
 	cout << name+".png" << endl;
 	c->SaveAs(name+".png");
-	c->Close();
-	delete c;
+	//c->Close();
+	//delete c;
 }
 
 /*****************************
