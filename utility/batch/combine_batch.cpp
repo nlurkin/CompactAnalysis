@@ -514,7 +514,6 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 }
 
 void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, ROOTRawEvent *mrawEvent, ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom, ROOTBurst *rootBurst, double weight=1.){
-	//ROOTPhysicsEvent *evt = (ROOTPhysicsEvent*)value;
 	int i=-1;
 	int iMap=-1;
 	TVector3 propPos, propPos2, propPos3;
@@ -524,6 +523,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	if(distance2D(propPos, TVector3(0,0,0)) < 20) return;
 	if(distance2D(propPos2, TVector3(0,0,0))< 20) return;
+
+	if(evt->x <= 0.1) return;
 
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
