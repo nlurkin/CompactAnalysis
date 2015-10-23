@@ -524,7 +524,10 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	//if(distance2D(propPos, TVector3(0,0,0)) < 20) return;
 	//if(distance2D(propPos2, TVector3(0,0,0))< 20) return;
 
-	if(evt->x <= 0.1) return;
+	if(evt->x <= 0.1) {
+		fitBrch.selEvents--;
+		return;
+	}
 
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
