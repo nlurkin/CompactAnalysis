@@ -61,6 +61,9 @@ int inputDataNbr = 0;
 int runStart = 0;
 int runEnd = 0;
 
+int periodStart = -1;
+int periodEnd = -1;
+
 vector<int> mcColors, dataColors;
 vector<TString> mcLegendTitle, dataLegendTitle;
 
@@ -149,16 +152,12 @@ bool testAllOutputs(){
 	return error;
 }
 
-bool runIncluded(int run){
+bool runIncluded(int run, int period){
 	bool ret = true;
-	//cout << "Testing run " << run;
-	if(runStart!=0 && run<runStart){
-		ret = false;
-	}
-	if(runEnd!=0 && run>runEnd){
-		ret = false;
-	}
-	//cout << ((ret) ? "is included" : "is not included") << endl;
+	if(runStart!=0 && run<runStart) ret = false;
+	if(runEnd!=0 && run>runEnd) ret = false;
+	if(periodStart!=-1 && period<periodStart) ret = false;
+	if(periodEnd!=-1 && period>periodEnd) ret = false;
 	return ret;
 }
 
@@ -216,6 +215,8 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("mcIndex")==0) mcIndexes.push_back(entry.Atoi());
 			else if(key.CompareTo("runstart")==0) runStart = entry.Atoi();
 			else if(key.CompareTo("runend")==0) runEnd = entry.Atoi();
+			else if(key.CompareTo("periodstart")==0) 	periodStart = entry.Atoi();
+			else if(key.CompareTo("periodend")==0) 		periodEnd = entry.Atoi();
 			else if(key.CompareTo("testA")==0) testA = entry.Atof();
 			else if(key.CompareTo("binsfile")==0) binsFileName = entry;
 			else if(key.CompareTo("equalbin")==0) withEqualBins = entry.CompareTo("true")==0 ? true : false;

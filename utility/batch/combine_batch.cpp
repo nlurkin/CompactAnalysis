@@ -820,7 +820,7 @@ namespace Input{
 			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
-			if(!runIncluded(burstBrch->nrun)) continue;
+			if(!runIncluded(burstBrch->nrun, burstBrch->period)) continue;
 			weight = applyWeights(burstBrch->nrun);
 			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch, weight);
 			processedEvents++;
@@ -882,7 +882,7 @@ namespace Input{
 			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
-			if(!runIncluded(burstBrch->nrun)) continue;
+			if(!runIncluded(burstBrch->nrun, burstBrch->period)) continue;
 			fillHistos(&(dSig->at(0)), &(dSigMap->at(0)),eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch);
 			processedEvents++;
 		}
