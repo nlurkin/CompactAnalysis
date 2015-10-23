@@ -501,7 +501,7 @@ namespace Input {
 					continue;
 				}
 			}
-			if (!runIncluded(burstBrch->nrun))
+			if (!runIncluded(burstBrch->nrun, burstBrch->period))
 				continue;
 			weight = applyWeights(burstBrch->nrun);
 
