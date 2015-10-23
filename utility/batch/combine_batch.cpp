@@ -1136,8 +1136,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbinsy = 10;//8;
-	int nbinsx = temp->GetXaxis()->GetNbins()/5;
+	int nbinsx = 10;//8;
+	int nbinsy = temp->GetXaxis()->GetNbins()/5;
 	if(nbinsx<=0) nbinsx=1;
 	if(nbinsy<=0) nbinsy=1;
 	temp = (TH2D*)temp->Rebin2D(nbinsx, nbinsy);
@@ -1446,20 +1446,20 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	//doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_em", "Electron DCH1 map", leg, mcColors);
-	//doPlot2(++iMap, "DCH1_XY_pip", "Pion DCH1 map", leg, mcColors);
+	doPlot2(++iMap, "DCH1_XY_pip", "Pion DCH1 map", leg, mcColors);
 	//doPlot2(++iMap, "DCH1_XY_gamma", "Photon DCH1 map", leg, mcColors);
-	/*doPlot2(++iMap, "DCH2_XY_ep", "Electron DCH2 map", leg, mcColors);
+	doPlot2(++iMap, "DCH2_XY_ep", "Electron DCH2 map", leg, mcColors);
 	doPlot2(++iMap, "DCH2_XY_em", "Electron DCH2 map", leg, mcColors);
 	doPlot2(++iMap, "DCH2_XY_pip", "Pion DCH2 map", leg, mcColors);
-	doPlot2(++iMap, "DCH2_XY_gamma", "Photon DCH2 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH2_XY_gamma", "Photon DCH2 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_ep", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_em", "Electron DCH3 map", leg, mcColors);
 	doPlot2(++iMap, "DCH3_XY_pip", "Pion DCH3 map", leg, mcColors);
-	doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);*/
-	/*doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH3_XY_gamma", "Photon DCH3 map", leg, mcColors);
+	doPlot2(++iMap, "DCH4_XY_ep", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
-	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);*/
+	//doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
 
 
 }
