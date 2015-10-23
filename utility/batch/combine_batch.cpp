@@ -1436,13 +1436,10 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	//doPlot2(++iMap, "xMap", "x_reco vs. x_true", leg, mcColors);
 	++iMap;
 
-	++iMap;
-	++iMap;
-	++iMap;
-	++iMap;
-	/*doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
+	doPlot2(++iMap, "LKr_XY_ep", "Electron LKr map", leg, mcColors);
 	doPlot2(++iMap, "LKr_XY_em", "Electron LKr map", leg, mcColors);
-	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);*/
+	doPlot2(++iMap, "LKr_XY_pip", "Pion LKr map", leg, mcColors);
+	++iMap;
 	//doPlot2(++iMap, "LKr_XY_gamma", "Photon LKr map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_ep", "Electron DCH1 map", leg, mcColors);
 	doPlot2(++iMap, "DCH1_XY_em", "Electron DCH1 map", leg, mcColors);
