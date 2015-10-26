@@ -521,25 +521,23 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	//if(distance2D(propPos, TVector3(0,0,0)) < 20) return;
-	//if(distance2D(propPos2, TVector3(0,0,0))< 20) return;
+	if(distance2D(propPos, TVector3(0,0,0)) < 30){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(distance2D(propPos2, TVector3(0,0,0))< 30){
+		fitBrch.selEvents--;
+		return;
+	}
 
 	if(evt->x <= 0.01) {
 		fitBrch.selEvents--;
 		return;
 	}
 
-	propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	propPos2 = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	//propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	//propPos2 = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	if(propPos.X()<0 && propPos.X()>-20){
-		fitBrch.selEvents--;
-		return;
-	}
-	if(propPos2.X()<0 && propPos2.X()>-20){
-		fitBrch.selEvents--;
-		return;
-	}
 //	if(propPos.X()<-12 && propPos.X()>-25 && propPos.Y()<30 && propPos.Y()>0) {
 //		fitBrch.selEvents--;
 //		return;
