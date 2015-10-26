@@ -518,8 +518,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	int iMap=-1;
 	TVector3 propPos, propPos2, propPos3;
 
-	propPos = propagateAfter(rootGeom->Dch[4].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	propPos2 = propagateAfter(rootGeom->Dch[4].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
 	if(distance2D(propPos, TVector3(0,0,0)) < 30){
 		fitBrch.selEvents--;
