@@ -518,17 +518,25 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	int iMap=-1;
 	TVector3 propPos, propPos2, propPos3;
 
-	propPos = propagateAfter(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	propPos2 = propagateAfter(rootGeom->Dch[2].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	propPos = propagateAfter(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateAfter(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	if(distance2D(propPos, TVector3(0,0,0)) < 30){
+	if(propPos.Y()<20 && propPos.Y()>0 && propPos.X()<20 && propPos.X()>-20){
 		fitBrch.selEvents--;
 		return;
 	}
-	if(distance2D(propPos2, TVector3(0,0,0))< 30){
+	if(propPos2.Y()<20 && propPos2.Y()>0 && propPos2.X()<20 && propPos2.X()>-20){
 		fitBrch.selEvents--;
 		return;
 	}
+//	if(distance2D(propPos, TVector3(0,0,0)) < 30){
+//		fitBrch.selEvents--;
+//		return;
+//	}
+//	if(distance2D(propPos2, TVector3(0,0,0))< 30){
+//		fitBrch.selEvents--;
+//		return;
+//	}
 
 	if(evt->x <= 0.01) {
 		fitBrch.selEvents--;
