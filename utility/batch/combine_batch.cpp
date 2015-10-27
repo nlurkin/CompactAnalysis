@@ -521,11 +521,11 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	propPos = propagateAfter(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateAfter(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	if(propPos.Y()<20 && propPos.Y()>0 && propPos.X()<20 && propPos.X()>-20){
+	if(propPos.Y()<18 && propPos.Y()>4 && propPos.X()<-8 && propPos.X()>-12){
 		fitBrch.selEvents--;
 		return;
 	}
-	if(propPos2.Y()<20 && propPos2.Y()>0 && propPos2.X()<20 && propPos2.X()>-20){
+	if(propPos2.Y()<18&& propPos2.Y()>4 && propPos2.X()<-8 && propPos2.X()>-12){
 		fitBrch.selEvents--;
 		return;
 	}
@@ -1162,8 +1162,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbinsy = 5;//8;
-	int nbinsx = temp->GetXaxis()->GetNbins()/11;
+	int nbinsy = 20;//8;
+	int nbinsx = 20;//temp->GetXaxis()->GetNbins()/11;
 	if(nbinsx<=0) nbinsx=1;
 	if(nbinsy<=0) nbinsy=1;
 	temp = (TH2D*)temp->Rebin2D(nbinsx, nbinsy);
