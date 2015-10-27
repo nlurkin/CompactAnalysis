@@ -1163,7 +1163,7 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 	}
 
 	int nbinsy = 5;//8;
-	int nbinsx = temp->GetXaxis()->GetNbins()/10;
+	int nbinsx = temp->GetXaxis()->GetNbins()/11;
 	if(nbinsx<=0) nbinsx=1;
 	if(nbinsy<=0) nbinsy=1;
 	temp = (TH2D*)temp->Rebin2D(nbinsx, nbinsy);
