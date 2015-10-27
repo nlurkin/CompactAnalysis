@@ -1491,7 +1491,7 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	doPlot2(++iMap, "DCH4_XY_em", "Electron DCH4 map", leg, mcColors);
 	doPlot2(++iMap, "DCH4_XY_pip", "Pion DCH4 map", leg, mcColors);
 	++iMap;
-	doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
+	//doPlot2(++iMap, "DCH4_XY_gamma", "Photon DCH4 map", leg, mcColors);
 
 
 }
