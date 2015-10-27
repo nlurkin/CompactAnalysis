@@ -1162,8 +1162,8 @@ void doPlot2(int index, TString name, TString title, TLegend* leg, vector<int> c
 		dMap->at(i).at(index)->Write();
 	}
 
-	int nbinsx = 48;//8;
-	int nbinsy = 48;//temp->GetXaxis()->GetNbins()/10;
+	int nbinsx = 36;//8;
+	int nbinsy = 36;//temp->GetXaxis()->GetNbins()/10;
 	if(nbinsx<=0) nbinsx=1;
 	if(nbinsy<=0) nbinsy=1;
 	temp = (TH2D*)temp->Rebin2D(nbinsx, nbinsy);
