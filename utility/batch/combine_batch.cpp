@@ -526,11 +526,11 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		fitBrch.selEvents--;
 //		return;
 //	}
-	if(propPos.Y()<20 && propPos.Y()>0 && propPos.X()<30 && propPos.X()>-30){
+	if(propPos.Y()<20 && propPos.Y()>0 && propPos.X()<15 && propPos.X()>-15){
 		fitBrch.selEvents--;
 		return;
 	}
-	if(propPos2.Y()<20&& propPos2.Y()>0 && propPos2.X()<30 && propPos2.X()>-30){
+	if(propPos2.Y()<20&& propPos2.Y()>0 && propPos2.X()<15 && propPos2.X()>-15){
 		fitBrch.selEvents--;
 		return;
 	}
