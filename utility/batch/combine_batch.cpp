@@ -133,8 +133,10 @@ void getHisto(TFile* fd, TString name, unsigned int index, vector<TH2D*> *v){
 void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	tempFD->cd();
 
+	//1
 	addHisto("mK", index, v, 100, 0.47, 0.52);
 
+	//13
 	addHisto("R_DCH1_ep", index, v, 150, 0, 150);
 	addHisto("X_DCH1_ep", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_ep", index, v, 300, -150, 150);
@@ -148,6 +150,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("X_DCH1_gamma", index, v, 300, -150, 150);
 	addHisto("Y_DCH1_gamma", index, v, 300, -150, 150);
 
+	//25
 	addHisto("R_DCH2_ep", index, v, 150, 0, 150);
 	addHisto("X_DCH2_ep", index, v, 300, -150, 150);
 	addHisto("Y_DCH2_ep", index, v, 300, -150, 150);
@@ -161,6 +164,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("X_DCH2_gamma", index, v, 300, -150, 150);
 	addHisto("Y_DCH2_gamma", index, v, 300, -150, 150);
 
+	//37
 	addHisto("R_DCH3_ep", index, v, 150, 0, 150);
 	addHisto("X_DCH3_ep", index, v, 300, -150, 150);
 	addHisto("Y_DCH3_ep", index, v, 300, -150, 150);
@@ -174,6 +178,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("X_DCH3_gamma", index, v, 300, -150, 150);
 	addHisto("Y_DCH3_gamma", index, v, 300, -150, 150);
 
+	//49
 	addHisto("R_DCH4_ep", index, v, 150, 0, 150);
 	addHisto("X_DCH4_ep", index, v, 300, -150, 150);
 	addHisto("Y_DCH4_ep", index, v, 300, -150, 150);
@@ -187,15 +192,18 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("X_DCH4_gamma", index, v, 300, -150, 150);
 	addHisto("Y_DCH4_gamma", index, v, 300, -150, 150);
 
+	//54
 	addHisto("Zvtx", index, v, 100, -2000, 9000);
 	addHisto("Qvtx", index, v, 10, -5, 5);
 	addHisto("CDAvtx", index, v, 100, 0, 10);
 	addHisto("Pt2", index, v, 100, 0, 0.001);
 	addHisto("P", index, v, 100, 68, 80);
 
+	//55
 	addHisto("Mpi0", index, v, 60, 0.120, 0.150);
 
 	//Photon
+	//60
 	addHisto("gEnergy", index, v, 80, 0, 80);
 	addHisto("gPositionX", index, v, 300, -150, 150);
 	addHisto("gPositionY", index, v, 300, -150, 150);
@@ -203,6 +211,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("gP", index, v, 60, 0, 60);
 
 	//e+/e-
+	//69
 	addHisto("epPMag", index, v, 60, 0, 60);
 	addHisto("epPx", index, v, 60, -0.015, 0.015);
 	addHisto("epPy", index, v, 60, -0.015, 0.015);
@@ -213,6 +222,7 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("epLKrY", index, v, 300, -150, 150);
 	addHisto("epLKrR", index, v, 300, -150, 150);
 
+	//78
 	addHisto("emPMag", index, v, 60, 0, 60);
 	addHisto("emPx", index, v, 60, -0.015, 0.015);
 	addHisto("emPy", index, v, 60, -0.015, 0.015);
@@ -223,9 +233,11 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 	addHisto("emLKrY", index, v, 300, -150, 150);
 	addHisto("emLKrR", index, v, 300, -150, 150);
 
+	//79
 	addHisto("mee", index, v, 140, 0, 0.14);
 
 	//pi+
+	//85
 	addHisto("pipPMag", index, v, 60, 0, 60);
 	addHisto("pipPx", index, v, 60, -0.015, 0.015);
 	addHisto("pipPy", index, v, 60, -0.015, 0.015);
@@ -526,11 +538,15 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		fitBrch.selEvents--;
 //		return;
 //	}
-	if(propPos.Y()<20 && propPos.Y()>0 && propPos.X()<15 && propPos.X()>-15){
+	int miny = -10;
+	int maxy = 20;
+	int minx = -30;
+	int maxx = 30;
+	if(propPos.Y()<maxy && propPos.Y()>miny && propPos.X()<maxx && propPos.X()>minx){
 		fitBrch.selEvents--;
 		return;
 	}
-	if(propPos2.Y()<20&& propPos2.Y()>0 && propPos2.X()<15 && propPos2.X()>-15){
+	if(propPos2.Y()<maxy && propPos2.Y()>miny && propPos2.X()<maxx && propPos2.X()>minx){
 		fitBrch.selEvents--;
 		return;
 	}
