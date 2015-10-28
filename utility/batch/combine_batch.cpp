@@ -1530,8 +1530,8 @@ int main(int argc, char **argv){
 	int maxPlots=-1;
 	if(argc==2) combine_batch(config);
 	else{
-		if(argc==4) firstPlots=atoi(argv[3]);
-		if(argc==5) maxPlots=atoi(argv[4]);
+		if(argc>=4 && strcmp(argv[3], "-b")!=0 ) firstPlots=atoi(argv[3]);
+		if(argc>=5 && strcmp(argv[4], "-b")!=0) maxPlots=atoi(argv[4]);
 		theApp = new TApplication("combine", &argc, argv);
 		combine_show(config, -firstPlots, maxPlots-1);
 		theApp->Run();
