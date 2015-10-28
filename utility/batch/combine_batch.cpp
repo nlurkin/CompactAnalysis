@@ -540,8 +540,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //	}
 	int miny = -20;
 	int maxy = 20;
-	int minx = -20;
-	int maxx = 20;
+	int minx = -25;
+	int maxx = 25;
 	if(propPos.Y()<maxy && propPos.Y()>miny && propPos.X()<maxx && propPos.X()>minx){
 		fitBrch.selEvents--;
 		return;
