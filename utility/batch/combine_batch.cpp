@@ -538,15 +538,15 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		fitBrch.selEvents--;
 //		return;
 //	}
-	int miny = -15;
-	int maxy = 20;
-	int minx = -20;
-	int maxx = 20;
-	if(propPos.Y()<maxy && propPos.Y()>miny && propPos.X()<maxx && propPos.X()>minx){
+	int miny = -30;
+	int maxy = -20;
+	int minx = -30;
+	int maxx = 30;
+	if(propPos.Y()>maxy && propPos.Y()<miny && propPos.X()<maxx && propPos.X()>minx){
 		fitBrch.selEvents--;
 		return;
 	}
-	if(propPos2.Y()<maxy && propPos2.Y()>miny && propPos2.X()<maxx && propPos2.X()>minx){
+	if(propPos2.Y()>maxy && propPos2.Y()<miny && propPos2.X()<maxx && propPos2.X()>minx){
 		fitBrch.selEvents--;
 		return;
 	}
@@ -1530,8 +1530,8 @@ int main(int argc, char **argv){
 	int maxPlots=-1;
 	if(argc==2) combine_batch(config);
 	else{
-		if(argc>=4 && strcmp(argv[3], "-b")!=0 ) firstPlots=atoi(argv[3]);
-		if(argc>=5 && strcmp(argv[4], "-b")!=0) maxPlots=atoi(argv[4]);
+		if(argc>=4) firstPlots=atoi(argv[3]);
+		if(argc>=5) maxPlots=atoi(argv[4]);
 		theApp = new TApplication("combine", &argc, argv);
 		combine_show(config, -firstPlots, maxPlots-1);
 		theApp->Run();
