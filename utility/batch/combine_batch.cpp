@@ -540,8 +540,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //	}
 	int miny = 0;
 	int maxy = 10;
-	int minx = -20;
-	int maxx = -15;
+	int minx = -15;
+	int maxx = -10;
 
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
 		//Do fine selection
