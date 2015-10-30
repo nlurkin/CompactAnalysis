@@ -1541,6 +1541,6 @@ int main(int argc, char **argv){
 		if(argc>=5) maxPlots=atoi(argv[4]);
 		theApp = new TApplication("combine", &argc, argv);
 		combine_show(config, -firstPlots, maxPlots-1);
-		theApp->Run();
+		//theApp->Run();
 	}
 }
