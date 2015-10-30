@@ -538,17 +538,24 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		fitBrch.selEvents--;
 //		return;
 //	}
-	int miny = 0;
-	int maxy = 0;
-	int minx = 0;
-	int maxx = 0;
-	if( propPos.Y()<maxy && propPos.Y()>miny && (propPos.X()>maxx || propPos.X()<minx) ){
-		fitBrch.selEvents--;
-		return;
+	int miny = 20;
+	int maxy = 30;
+	int minx = -30;
+	int maxx = -25;
+
+	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
+		//Do fine selection
+		if( propPos.Y()>maxy || propPos.Y()<miny || (propPos.X()>maxx || propPos.X()<minx) ){
+			fitBrch.selEvents--;
+			return;
+		}
 	}
-	if( propPos2.Y()<maxy && propPos2.Y()>miny && (propPos2.X()>maxx || propPos2.X()<minx) ){
-		fitBrch.selEvents--;
+	if(propPos2.Y()<30 && propPos2.Y()>-30 && propPos2.X()<30 && propPos2.X()>-30){
+		//Do fine selection
+		if( propPos2.Y()>maxy || propPos2.Y()<miny || (propPos2.X()>maxx || propPos2.X()<minx) ){
+			fitBrch.selEvents--;
 		return;
+		}
 	}
 //	if(distance2D(propPos, TVector3(0,0,0)) < 30){
 //		fitBrch.selEvents--;
