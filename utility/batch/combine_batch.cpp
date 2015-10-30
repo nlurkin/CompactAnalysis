@@ -538,8 +538,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		fitBrch.selEvents--;
 //		return;
 //	}
-	int miny = -10;
-	int maxy = -00;
+	int miny = 0;
+	int maxy = 10;
 	int minx = -15;
 	int maxx = -10;
 
