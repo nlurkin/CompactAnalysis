@@ -538,7 +538,24 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		fitBrch.selEvents--;
 //		return;
 //	}
-	int miny = 20;
+
+	if(propPos.Y()<10 && propPos.Y()>-20 && propPos.X()<25 && propPos.X()>10){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(propPos2.Y()<10 && propPos2.Y()>-20 && propPos2.X()<25 && propPos2.X()>10){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(propPos.Y()<-10 && propPos.Y()>-30 && propPos.X()<0 && propPos.X()>-10){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(propPos2.Y()<-10 && propPos2.Y()>-30 && propPos2.X()<0 && propPos2.X()>-10){
+		fitBrch.selEvents--;
+		return;
+	}
+	/*int miny = 20;
 	int maxy = 30;
 	int minx = 5;
 	int maxx = 10;
@@ -556,7 +573,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 			fitBrch.selEvents--;
 		return;
 		}
-	}
+	}*/
 //	if(distance2D(propPos, TVector3(0,0,0)) < 30){
 //		fitBrch.selEvents--;
 //		return;
