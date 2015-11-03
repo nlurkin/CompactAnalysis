@@ -539,8 +539,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		return;
 //	}
 
-	int miny = 10;
-	int maxy = 30;
+	int miny = -30;
+	int maxy = -10;
 	int minx = 20;
 	int maxx = 30;
 
