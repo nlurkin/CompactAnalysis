@@ -27,7 +27,7 @@ TH1D selTrackDiff("selTrackDiff", "selTrackDiff", 10, -5, 5);
 
 bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	bool badAcceptance;
-	
+
 	int badCombis=0;
 
 	int goodClusters;
@@ -52,11 +52,11 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(options.isOptDebug()) cout << "~~~~ Cut 1 ~~~~" << endl;
 	if(rootBurst.isData){
 		if(options.isOptDebug()) cout << "|t_1| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch)>=io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
+		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch)>io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
 		if(options.isOptDebug()) cout << "|t_2| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch)>=io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
+		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch)>io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
 		if(options.isOptDebug()) cout << "|t_3| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
-		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch)>=io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
+		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch)>io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
 	}
 	else{
 		if(options.isOptDebug()) cout << "\tMC: Not applicable" << endl;
@@ -275,7 +275,7 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	int badCombis = pi0d_trackCombinationVeto_tight(tempObj.piEvent.pic);
 	if(options.isOptDebug()) cout << "Bad track combination :\t\t" << badCombis << "\t != 0: rejected" << endl;
 	if(badCombis!=io.cutsDefinition.numBadTrackCombi) return 14+firstCutIndex;
-	
+
 	// 15) Exactly 1 good LKr cluster (tight)
 	if(options.isOptDebug()) cout << "~~~~ Cut 15 ~~~~" << endl;
 	goodClusters = pi0d_goodClusters_tight(tempObj.piEvent.pic, tempObj.piEvent);
@@ -347,6 +347,7 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 
 	if(!pi0d_L3Trigger(t_ep) && !pi0d_L3Trigger(t_em)) return 19+firstCutIndex;
 
+	if(tempObj.piEvent.x <= 0.01) return 20+firstCutIndex;
 	return -1;
 }
 
