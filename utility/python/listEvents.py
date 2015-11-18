@@ -25,4 +25,5 @@ tree = f.event
 
 with open(sys.argv[2], "w") as fd:
     for event in tree:
-        fd.write("%i %i %i\n" % (event.rawBurst.nrun, event.rawBurst.time, event.rawEvent.timeStamp))
+        if event.pi0dEvent.x>0.01:
+            fd.write("%i %i %i\n" % (event.rawBurst.nrun, event.rawBurst.time, event.rawEvent.timeStamp))
