@@ -553,7 +553,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 			square(10, 30, -10, 10), square(-10, 10, -10, 10), square(-30, -10, -10, -10),
 			square(10, 30, 10, 30), square(-10, 10, 10, 30), square(-30, -10, 10, 30),
 	};
-	vector<int> incSq = {9,2};
+	vector<int> incSq = {1,2,3,7,9};
 
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
 		//Do fine selection
