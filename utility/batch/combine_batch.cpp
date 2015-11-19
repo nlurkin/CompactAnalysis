@@ -553,24 +553,32 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 			square(10, 30, -10, 10), square(-10, 10, -10, 10), square(-30, -10, -10, -10),
 			square(10, 30, 10, 30), square(-10, 10, 10, 30), square(-30, -10, 10, 30),
 	};
-	vector<int> incSq = {9,2,6};
+	vector<int> incSq = {};
+	bool accepted = false;
 
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
 		//Do fine selection
 		for(auto sqID : incSq){
-			if( propPos.Y()>sq[sqID].maxy|| propPos.Y()<sq[sqID].miny || (propPos.X()>sq[sqID].maxx || propPos.X()<sq[sqID].minx) ){
-				fitBrch.selEvents--;
-				return;
+			if( propPos.Y()<sq[sqID].maxy && propPos.Y()>sq[sqID].miny && (propPos.X()<sq[sqID].maxx && propPos.X()>sq[sqID].minx) ){
+				accepted = true;
 			}
+		}
+		if(!accepted){
+			fitBrch.selEvents--;
+			return;
 		}
 	}
 	if(propPos2.Y()<30 && propPos2.Y()>-30 && propPos2.X()<30 && propPos2.X()>-30){
 		//Do fine selection
+		accepted = false;
 		for(auto sqID : incSq){
-			if( propPos2.Y()>sq[sqID].maxy || propPos2.Y()<sq[sqID].miny || (propPos2.X()>sq[sqID].maxx || propPos2.X()<sq[sqID].minx) ){
-				fitBrch.selEvents--;
-				return;
+			if( propPos2.Y()<sq[sqID].maxy && propPos2.Y()>sq[sqID].miny && (propPos2.X()<sq[sqID].maxx && propPos2.X()>sq[sqID].minx) ){
+				accepted = true;
 			}
+		}
+		if(!accepted){
+			fitBrch.selEvents--;
+			return;
 		}
 	}
 //	if(distance2D(propPos, TVector3(0,0,0)) < 30){
