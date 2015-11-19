@@ -559,7 +559,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
 		//Do fine selection
 		for(auto sqID : incSq){
-			if( propPos.Y()<sq[sqID].maxy && propPos.Y()>sq[sqID].miny && (propPos.X()<sq[sqID].maxx && propPos.X()>sq[sqID].minx) ){
+			int index = sqID-1;
+			if( propPos.Y()<sq[index].maxy && propPos.Y()>sq[index].miny && (propPos.X()<sq[index].maxx && propPos.X()>sq[index].minx) ){
 				accepted = true;
 			}
 		}
@@ -572,7 +573,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 		//Do fine selection
 		accepted = false;
 		for(auto sqID : incSq){
-			if( propPos2.Y()<sq[sqID].maxy && propPos2.Y()>sq[sqID].miny && (propPos2.X()<sq[sqID].maxx && propPos2.X()>sq[sqID].minx) ){
+			int index = sqID-1;
+			if( propPos2.Y()<sq[index].maxy && propPos2.Y()>sq[index].miny && (propPos2.X()<sq[index].maxx && propPos2.X()>sq[index].minx) ){
 				accepted = true;
 			}
 		}
