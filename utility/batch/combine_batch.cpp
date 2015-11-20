@@ -579,7 +579,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	sq.insert(sq.end(), sq3.begin(), sq3.end());
 
 	//padding 69 -> 80
-	for(int i=0; i<=10; i++) sq.push_back(square(0,0,0,0));
+	//for(int i=0; i<=10; i++) sq.push_back(square(0,0,0,0));
 	vector<square> sq4 = {
 			square(4,10,10,16), square(4,10,16,24), square(4,10,24,30),
 			square(-4,4,10,16), square(-4,4,16,24), square(-4,4,24,30),
@@ -588,7 +588,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	int k = 0;
 	for(auto it : sq) {k++; cout << k << "(" << it.miny << "," << it.maxy << "," << it.minx << "," << it.maxx << ")" << endl;}
-	vector<int> incSq = {1,3,7,9,2};
+	vector<int> incSq = {1,3,5,7,9,20,23,26};
 	bool accepted = false;
 
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
