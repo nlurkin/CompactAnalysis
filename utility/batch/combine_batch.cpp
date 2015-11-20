@@ -587,7 +587,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	sq.insert(sq.end(), sq4.begin(), sq4.end());
 
 	int k = 0;
-	for(auto it : sq) {cout << k << "(" << it.miny << "," << it.maxy << "," << it.minx << "," << it.maxx << ")" << endl; k++;}
+	for(auto it : sq) {k++; cout << k << "(" << it.miny << "," << it.maxy << "," << it.minx << "," << it.maxx << ")" << endl;}
 	vector<int> incSq = {1,3,7,9,2};
 	bool accepted = false;
 
