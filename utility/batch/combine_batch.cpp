@@ -588,7 +588,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 
 	int k = 0;
 	for(auto it : sq) {k++; cout << k << "(" << it.miny << "," << it.maxy << "," << it.minx << "," << it.maxx << ")" << endl;}
-	vector<int> incSq = {1,3,5,7,9,40,43,46};
+	vector<int> incSq = {1,3,5,7,9,41,44,47};
 	bool accepted = false;
 
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
