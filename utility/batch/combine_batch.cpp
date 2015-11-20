@@ -586,9 +586,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 			square(-10,4,10,16), square(-10,4,16,24), square(-10,4,24,30)};
 	sq.insert(sq.end(), sq4.begin(), sq4.end());
 
-	int k = 0;
-	for(auto it : sq) {k++; cout << k << "(" << it.miny << "," << it.maxy << "," << it.minx << "," << it.maxx << ")" << endl;}
-	vector<int> incSq = {1,3,5,7,9,46};
+	vector<int> incSq = {1,3,5,7,9,47};
 	bool accepted = false;
 
 	if(propPos.Y()<30 && propPos.Y()>-30 && propPos.X()<30 && propPos.X()>-30){
