@@ -562,24 +562,24 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 			square(-10,4,-30,-24), square(-10,4,-24,-16), square(-10,4,-16,-10)};
 	sq.insert(sq.end(), sq1.begin(), sq1.end());
 
-	//padding 30 -> 40
-	for(int i=0; i<10; i++) sq.push_back(square(0,0,0,0));
+	//padding 29 -> 40
+	for(int i=0; i<=10; i++) sq.push_back(square(0,0,0,0));
 	vector<square> sq2 = {
 			square(24,30,-10,-4), square(24,30,-4,4), square(24,30,4,10),
 			square(16,24,-10,-4), square(16,24,-4,4), square(16,24,4,10),
 			square(10,16,-10,-4), square(10,16,-4,4), square(10,16,4,10),};
 	sq.insert(sq.end(), sq2.begin(), sq2.end());
 
-	//padding 50 -> 60
-	for(int i=0; i<10; i++) sq.push_back(square(0,0,0,0));
+	//padding 49 -> 60
+	for(int i=0; i<=10; i++) sq.push_back(square(0,0,0,0));
 	vector<square> sq3 = {
 			square(-16,-10,-10,-4), square(-16,-10,-4,4), square(-16,-10,4,10),
 			square(-24,-16,-10,-4), square(-24,-16,-4,4), square(-24,-16,4,10),
 			square(-30,-24,-10,-4), square(-30,-24,-4,4), square(-30,-24,4,10),};
 	sq.insert(sq.end(), sq3.begin(), sq3.end());
 
-	//padding 70 -> 80
-	for(int i=0; i<10; i++) sq.push_back(square(0,0,0,0));
+	//padding 69 -> 80
+	for(int i=0; i<=10; i++) sq.push_back(square(0,0,0,0));
 	vector<square> sq4 = {
 			square(4,10,10,16), square(4,10,16,24), square(4,10,24,30),
 			square(-4,4,10,16), square(-4,4,16,24), square(-4,4,24,30),
