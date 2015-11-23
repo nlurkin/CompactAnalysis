@@ -539,16 +539,43 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	int iMap=-1;
 	TVector3 propPos, propPos2, propPos3;
 
+	//Cut 12cm on DCH1
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	if(distance2D(propPos, TVector3(0,0,0))>12){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(distance2D(propPos2, TVector3(0,0,0))>12){
+		fitBrch.selEvents--;
+		return;
+	}
+
+	//Cut 12cm on DCH2
+	propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	if(distance2D(propPos, TVector3(0,0,0))>12){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(distance2D(propPos2, TVector3(0,0,0))>12){
+		fitBrch.selEvents--;
+		return;
+	}
+	//Cut 12cm on DCH4
+	propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos2 = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	if(distance2D(propPos, TVector3(0,0,0))>12){
+		fitBrch.selEvents--;
+		return;
+	}
+	if(distance2D(propPos2, TVector3(0,0,0))>12){
+		fitBrch.selEvents--;
+		return;
+	}
 
 
-//	if(distance2D(propPos, propPos2)>10){
-//		fitBrch.selEvents--;
-//		return;
-//	}
-
-	vector<square> sq = {
+	/*vector<square> sq = {
 			square(10, 30, -30, -10), square(-10, 10, -30, -10), square(-30, -10, -30, -10),
 			square(10, 30, -10, 10), square(-10, 10, -10, 10), square(-30, -10, -10, -10),
 			square(10, 30, 10, 30), square(-10, 10, 10, 30), square(-30, -10, 10, 30),
@@ -615,7 +642,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 			fitBrch.selEvents--;
 			return;
 		}
-	}
+	}*/
 //	if(distance2D(propPos, TVector3(0,0,0)) < 30){
 //		fitBrch.selEvents--;
 //		return;
