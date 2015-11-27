@@ -597,7 +597,7 @@ int pi0d_goodClusters_loose(){
 		// separation from x impact point >30cm
 		propPos = propagateAfter(rootGeom.Lkr.z, t1);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_1 :\t\t" << distance << "\t > 20 : ++" << endl;
+		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t\t" <<  distance2D(propPos, TVector3(0,0,0)) << "<20 : ++" << endl;
 		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<20) cond++;
 
 		// separation from undeflected x trajectories >20cm
