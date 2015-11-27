@@ -23,8 +23,8 @@ static vector< vector<TH1D*> > *d1;
 static vector< vector<TH1D*> > *dSig;
 static vector< vector<TH2D*> > *dMap, *dSigMap;
 
-ROOTRawEvent *xxx = new ROOTRawEvent();
-ROOTRawEvent &rawEvent = *xxx;
+//ROOTRawEvent *xxx = new ROOTRawEvent();
+//ROOTRawEvent &rawEvent = *xxx;
 
 struct square{
 	square(int y1, int y2, int x1, int x2):

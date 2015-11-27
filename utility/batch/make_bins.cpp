@@ -36,6 +36,9 @@ double Mpi0 = 0.1349766;
 
 multiset<double> setVals;
 
+//ROOTRawEvent *xxx = new ROOTRawEvent();
+//ROOTRawEvent &rawEvent = *xxx;
+
 /***************************
  * Mandatory from header
  * Opening/Closing files

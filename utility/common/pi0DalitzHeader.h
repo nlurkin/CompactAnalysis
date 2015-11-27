@@ -18,6 +18,9 @@
 #include "../userinc/funLib.h"
 using namespace std;
 
+ROOTRawEvent *xxx = new ROOTRawEvent();
+ROOTRawEvent &rawEvent = *xxx;
+
 void setStyle();
 /*************************
  * Structures
