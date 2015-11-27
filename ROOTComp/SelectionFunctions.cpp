@@ -565,6 +565,7 @@ int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
 int pi0d_goodClusters_loose(){
 	TVector3 propPos;
 	double distance;
+	double trackR;
 	double tDiff;
 
 	int cond;
@@ -597,8 +598,9 @@ int pi0d_goodClusters_loose(){
 		// separation from x impact point >30cm
 		propPos = propagateAfter(rootGeom.Lkr.z, t1);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t\t" <<  distance2D(propPos, TVector3(0,0,0)) << "<20 : ++" << endl;
-		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<20) cond++;
+		trackR = distance2D(propPos, TVector3(0,0,0));
+		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<20 : ++" << endl;
+		if(distance>20 || trackR<20) cond++;
 
 		// separation from undeflected x trajectories >20cm
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t1.trackID].bDetPos, rawEvent.track[t1.trackID].bMomentum);
@@ -609,8 +611,9 @@ int pi0d_goodClusters_loose(){
 		// separation from e+ e- impact point >10cm
 		propPos = propagateAfter(rootGeom.Lkr.z, t2);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<20) cond++;
+		trackR = distance2D(propPos, TVector3(0,0,0));
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<20 : ++" << endl;
+		if(distance>20 || trackR<20) cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t2.trackID].bDetPos, rawEvent.track[t2.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
@@ -619,8 +622,9 @@ int pi0d_goodClusters_loose(){
 
 		propPos = propagateAfter(rootGeom.Lkr.z, t3);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<20) cond++;
+		trackR = distance2D(propPos, TVector3(0,0,0));
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<20 : ++" << endl;
+		if(distance>20 || trackR<20) cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t3.trackID].bDetPos, rawEvent.track[t3.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
