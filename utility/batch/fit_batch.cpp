@@ -369,14 +369,39 @@ namespace Fit{
  * Input
  ****************************/
 namespace Input {
+
+	bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom){
+		TVector3 propPos, propPos2, propPos3;
+
+		/*if(rootBurst->period!=1){
+			fitBrch.selEvents--;
+			return;
+		}*/
+		propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+		propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+		if(distance2D(propPos, TVector3(0,0,0))<20 && distance2D(propPos2, TVector3(0,0,0))<20 ){
+			fitBrch.selEvents--;
+			return false;
+		}
+
+		if(evt->x <= 0.01) {
+			fitBrch.selEvents--;
+			return false;
+		}
+
+		return true;
+	}
+
 	void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index) {
 		//Get the TTree
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTBurst *burstBrch = new ROOTBurst();
 		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
+		NGeom *geomBrch = new NGeom();
 		vector<bool> *cutsPass = 0;
 		ScanCuts *cutsLists = 0;
 
@@ -392,7 +417,9 @@ namespace Input {
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("rawBurst", &burstBrch);
 		t->SetBranchAddress("rawEvent", &rawBrch);
+		t->SetBranchAddress("corrEvent", &corrBrch);
 		th->SetBranchAddress("header", &headerBrch);
+		th->SetBranchAddress("geom", &geomBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 		if(cutsPass){
 			t->SetBranchAddress("cutsResult", &cutsPass);
@@ -503,6 +530,9 @@ namespace Input {
 			}
 			if (!runIncluded(burstBrch->nrun, burstBrch->period))
 				continue;
+
+
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
 			weight = applyWeights(burstBrch->nrun);
 
 			x = eventBrch->x;
@@ -538,12 +568,15 @@ namespace Input {
 	int getInputDataFill(TFile *fd, TFile* fdout) {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+		NGeom *geomBrch = new NGeom();
 		ROOTMCEvent *mcEvent = 0;
 		vector<bool> *cutsPass = 0;
 		ScanCuts *cutsLists = 0;
 
 		TTree *t = (TTree*) fd->Get("event");
 		TTree *tc = (TTree*)fd->Get("cutsDefinition");
+		TTree *th = (TTree*)fd->Get("header");
 		if(t->GetListOfBranches()->Contains("mc")) mcEvent = new ROOTMCEvent();
 		if(t->GetListOfBranches()->Contains("cutsResult")){
 			cutsPass = new vector<bool>;
@@ -551,6 +584,8 @@ namespace Input {
 		}
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		t->SetBranchAddress("corrEvent", &corrBrch);
+		th->SetBranchAddress("geom", &geomBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 		if(cutsPass){
 			t->SetBranchAddress("cutsResult", &cutsPass);
@@ -603,7 +638,10 @@ namespace Input {
 					continue;
 				}
 			}
+
 			fitBrch.selEvents++;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
+
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;
 			weight = 1.;	//+2.*a*x+a*a*x*x;
