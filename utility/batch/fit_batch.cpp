@@ -370,28 +370,6 @@ namespace Fit{
  ****************************/
 namespace Input {
 
-	bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom){
-		TVector3 propPos, propPos2, propPos3;
-
-		/*if(rootBurst->period!=1){
-			fitBrch.selEvents--;
-			return;
-		}*/
-		propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
-		propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
-		if(distance2D(propPos, TVector3(0,0,0))<20 && distance2D(propPos2, TVector3(0,0,0))<20 ){
-			fitBrch.selEvents--;
-			return false;
-		}
-
-		if(evt->x <= 0.01) {
-			fitBrch.selEvents--;
-			return false;
-		}
-
-		return true;
-	}
-
 	void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index) {
 		//Get the TTree
 		//Input

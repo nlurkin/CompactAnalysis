@@ -68,8 +68,13 @@ namespace Input {
 	int getInputDataFill(TFile *fd, TFile* fdout) {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+		NGeom *geomBrch = new NGeom();
 		TTree *t = (TTree*) fd->Get("event");
+		TTree *th = (TTree*)fd->Get("header");
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
+		t->SetBranchAddress("corrEvent", &corrBrch);
+		th->SetBranchAddress("geom", &geomBrch);
 
 		tempFD->cd();
 
@@ -86,6 +91,8 @@ namespace Input {
 		cout << "Filling data " << endl;
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
+
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
 			x = eventBrch->x;
 
 			setVals.insert(x);
