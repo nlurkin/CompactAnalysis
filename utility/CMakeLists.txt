@@ -30,7 +30,7 @@ add_executable(toyMC batch/toyMC.cpp)
 target_link_libraries(combine common funLib exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(fit common funLib exportClasses Support ${ROOT_LIBRARIES} Minuit)
 target_link_libraries(make_bins common funLib exportClasses ${ROOT_LIBRARIES})
-target_link_libraries(prepareWeights common funLib exportClasses ${ROOT_LIBRARIES})
+target_link_libraries(prepareWeights common exportClasses ${ROOT_LIBRARIES})
 target_link_libraries(toyMC common funLib exportClasses ${ROOT_LIBRARIES} Minuit) 
 
 add_custom_command(TARGET combine

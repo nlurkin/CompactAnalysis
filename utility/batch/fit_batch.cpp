@@ -375,7 +375,8 @@ namespace Input {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTBurst *burstBrch = new ROOTBurst();
-		ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		//ROOTRawEvent *rawBrch = new ROOTRawEvent();
+		ROOTRawEvent *rawBrch = xxx;
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTFileHeader *headerBrch = new ROOTFileHeader();
 		ROOTMCEvent *mcEvent = 0;
@@ -547,6 +548,7 @@ namespace Input {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+		ROOTRawEvent *rawBrch = xxx;
 		NGeom *geomBrch = new NGeom();
 		ROOTMCEvent *mcEvent = 0;
 		vector<bool> *cutsPass = 0;
@@ -563,6 +565,7 @@ namespace Input {
 
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("corrEvent", &corrBrch);
+		t->SetBranchAddress("rawEvent", &rawBrch);
 		th->SetBranchAddress("geom", &geomBrch);
 		if(mcEvent) t->SetBranchAddress("mc", &mcEvent);
 		if(cutsPass){
@@ -704,9 +707,9 @@ namespace Input {
  ************************/
 namespace Display{
 	TH1D* buildRatio(double G, double a, TString proc) {
-		TH1D* sum = new TH1D("sum", "sum", nbins, bins);
+		TH1D* sum = new TH1D("sum", "sum", nbins-1, bins);
 		TH1D* r = new TH1D(TString::Format("ratio%s", proc.Data()),
-				TString::Format("ratio%s", proc.Data()), nbins, bins);
+				TString::Format("ratio%s", proc.Data()), nbins-1, bins);
 
 		for (int i = 0; i < inputMCNbr; ++i) {
 			sum->Add(d1->at(i), 1.);
@@ -723,9 +726,9 @@ namespace Display{
 	}
 
 	TH1D* buildRatioNew(double G, double a, TString proc) {
-		TH1D* sum = new TH1D("sum", "sum", nbins, bins);
+		TH1D* sum = new TH1D("sum", "sum", nbins-1, bins);
 		TH1D* r = new TH1D(TString::Format("ratio%s", proc.Data()),
-				TString::Format("ratio%s", proc.Data()), nbins, bins);
+				TString::Format("ratio%s", proc.Data()), nbins-1, bins);
 
 		for (int i = 0; i < inputMCNbr; ++i) {
 			sum->Add(dAlpha->at(i), 1.);
@@ -782,6 +785,7 @@ namespace Display{
 		}
 
 		TH1D* ratio = buildRatio(gWeight, a, proc);
+
 		TF1 *f = new TF1("f", "(1+[0]*2.0*x+[0]*[0]*x*x)", 0, 1);
 		f->SetLineColor(kRed);
 		//f->SetParameter(0, result.norm);
@@ -1103,7 +1107,7 @@ void fit_show(TString inFile) {
 	cout << "Initial bins: " << nbins << endl;
 	readFilesGet();
 
-	rebin(125);
+	//rebin(125);
 
 	//Scale MC to Data
 	double totalMC = 0;

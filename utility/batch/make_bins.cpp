@@ -72,11 +72,13 @@ namespace Input {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+		ROOTRawEvent *rawBrch = xxx;
 		NGeom *geomBrch = new NGeom();
 		TTree *t = (TTree*) fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("corrEvent", &corrBrch);
+		t->SetBranchAddress("rawEvent", &rawBrch);
 		th->SetBranchAddress("geom", &geomBrch);
 
 		tempFD->cd();
@@ -137,8 +139,11 @@ void make_bins(TString inFile) {
 	mcFileNames.clear();
 	readFilesFill();
 
-	int binAmount = 150;
-	int nbins = ceil(setVals.size()/double(binAmount));
+	//int binAmount = 50;
+	//int nbins = ceil(setVals.size()/double(binAmount));
+
+	int nbins = 50;
+	int binAmount = ceil(setVals.size()/double(nbins));
 	multiset<double>::reverse_iterator it;
 	int i = nbins;
 	int j = 0;
@@ -147,14 +152,17 @@ void make_bins(TString inFile) {
 	double currVal = -1;
 	cout << "binAmount = " << binAmount << endl;
 	cout << "nbins = " << nbins << endl;
+	int oldj=0;
 	for(it = setVals.rbegin(); it != setVals.rend(); ++it){
 		if(j==0 && currVal!=-1){
-			cout << i << " -> " << (*it+currVal)/2. << endl;
+			cout << i << " -> " << (*it+currVal)/2. << " (" << oldj << ")" << endl;
 			bins[i] = (*it+currVal)/2.;
 			--i;
+			oldj = 0;
 		}
 		if(++j==binAmount){
 			currVal = *it;
+			oldj=j;
 			j = 0;
 		}
 	}
@@ -164,8 +172,8 @@ void make_bins(TString inFile) {
 	cout << "nbins: " << nbins << endl;
 	ofstream fd(binsFileName);
 	for(int i=0; i<=nbins; ++i){
-		cout << bins[i] << endl;
-		fd << bins[i] << endl;
+		cout << std::fixed << std::setprecision(6) << bins[i] << endl;
+		fd << std::fixed << std::setprecision(6) <<  bins[i] << endl;
 	}
 	fd.close();
 	tempFD->Close();
