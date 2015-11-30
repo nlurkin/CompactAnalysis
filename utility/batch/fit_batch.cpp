@@ -495,6 +495,9 @@ namespace Input {
 		double weight;
 		int mod;
 
+		fitBrch.totEvents += totalChanEvents;
+		fitBrch.selEvents += nevt;
+
 		cout << "Filling " << nevt << endl;
 		for (; i < nevt; ++i) {
 			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
@@ -510,7 +513,10 @@ namespace Input {
 				continue;
 
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)){
+				cout << "Event no passing additional" << i << endl;
+				continue;
+			}
 			weight = applyWeights(burstBrch->nrun);
 
 			x = eventBrch->x;
@@ -547,9 +553,8 @@ namespace Input {
 		//	double ratio = (double)processedEvents/(double)nevt;
 		//	totalChanEvents = totalChanEvents*ratio;
 		//}
-		fitBrch.totEvents += totalChanEvents;
-		fitBrch.selEvents += nevt;
 
+		cout << endl << fitBrch.selEvents << endl;
 	}
 
 	int getInputDataFill(TFile *fd, TFile* fdout) {
@@ -594,6 +599,8 @@ namespace Input {
 		int processedEvents = 0;
 		NSig = nevt;
 
+		fitBrch.selEvents = nevt;
+
 		//Create histo
 
 		//int index = dSig->size();
@@ -617,8 +624,8 @@ namespace Input {
 		double weight, bweight = 1.;
 
 		double a = testA;
-		cout << "Filling data " << testA << " with " << NSig << " events" << endl;
-		for (i = 0; i < NSig; i++) {
+		cout << "Filling data " << testA << " with " << nevt << " events" << endl;
+		for (i = 0; i < nevt; i++) {
 			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
@@ -628,8 +635,10 @@ namespace Input {
 				}
 			}
 
-			fitBrch.selEvents++;
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)){
+				cout << "Event no passing additional" << i << endl;
+				continue;
+			}
 
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;
@@ -641,6 +650,7 @@ namespace Input {
 			processedEvents++;
 		}
 
+		cout << endl << fitBrch.selEvents << endl;
 		return processedEvents;
 	}
 
