@@ -471,7 +471,6 @@ bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEven
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	cout << propPos << " " << propPos2 << endl;
 	if(distance2D(propPos, TVector3(0,0,0))<20 && distance2D(propPos2, TVector3(0,0,0))<20 ){
 		fitBrch.selEvents--;
 		return false;

@@ -513,10 +513,8 @@ namespace Input {
 				continue;
 
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)){
-				cout << "Event no passing additional" << i << endl;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch))
 				continue;
-			}
 			weight = applyWeights(burstBrch->nrun);
 
 			x = eventBrch->x;
@@ -591,6 +589,7 @@ namespace Input {
 			cutsLists->Cuts::print();
 		}
 
+		th->GetEntry(0);
 		tempFD->cd();
 
 		// Set Number of events
@@ -635,10 +634,7 @@ namespace Input {
 				}
 			}
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)){
-				cout << "Event no passing additional" << i << endl;
-				continue;
-			}
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
 
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;
