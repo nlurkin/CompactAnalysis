@@ -699,9 +699,12 @@ namespace Input {
 		TTree *t = (TTree*) fd->Get("fitStruct");
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
+		cout << fitBrch.selEvents << endl;
 		initFitStruct(totFit);
 		sumTreeFitStruct(fitBrch, t, totFit);
 
+		cout << fitBrch.selEvents << endl;
+		cout << totFit.selEvents << endl;
 		//Set event nb
 		NSig = totFit.selEvents;
 

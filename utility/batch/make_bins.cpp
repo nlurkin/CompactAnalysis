@@ -81,6 +81,7 @@ namespace Input {
 		t->SetBranchAddress("rawEvent", &rawBrch);
 		th->SetBranchAddress("geom", &geomBrch);
 
+		th->GetEntry(0);
 		tempFD->cd();
 
 		// Set Number of events
