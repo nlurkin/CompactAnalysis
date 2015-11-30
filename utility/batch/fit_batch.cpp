@@ -598,7 +598,7 @@ namespace Input {
 		int processedEvents = 0;
 		NSig = nevt;
 
-		fitBrch.selEvents = nevt;
+		fitBrch.selEvents += nevt;
 
 		//Create histo
 
