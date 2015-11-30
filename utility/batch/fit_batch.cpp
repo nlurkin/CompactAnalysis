@@ -414,16 +414,17 @@ namespace Input {
 
 		tempFD->cd();
 		//Set event nb
-		th->GetEntry(0);
 		int nevt = t->GetEntries();
-		int totalChanEvents = headerBrch->NProcessedEvents;
+		int totalChanEvents = 0;
+		for(int i=0; i<th->GetEntries(); i++){
+			th->GetEntry(i);
+			totalChanEvents += headerBrch->NProcessedEvents;
+		}
+		int processedEvents = 0;
+		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
+
 		//int npart;
 		int divider;
-		if (MAXEVENTS > 0 && nevt > MAXEVENTS) {
-			double ratio = (double) MAXEVENTS / (double) nevt;
-			nevt = MAXEVENTS;
-			totalChanEvents = totalChanEvents * ratio;
-		}
 		//npart = nevt/5;
 		divider = 5;
 
@@ -431,8 +432,6 @@ namespace Input {
 		//int nx = npart;
 		//int nxx = npart;
 
-		fitBrch.totEvents += totalChanEvents;
-		fitBrch.selEvents += nevt;
 		//TODO to check
 		//fitBrch.n1 = n1;
 		//fitBrch.nx = nx;
@@ -541,7 +540,16 @@ namespace Input {
 				weight = xTrue * xTrue;
 				d3->at(index)->Fill(x, bweight * weight);
 			}
+			processedEvents++;
 		}
+
+		//if(processedEvents != t->GetEntries()){
+		//	double ratio = (double)processedEvents/(double)nevt;
+		//	totalChanEvents = totalChanEvents*ratio;
+		//}
+		fitBrch.totEvents += totalChanEvents;
+		fitBrch.selEvents += nevt;
+
 	}
 
 	int getInputDataFill(TFile *fd, TFile* fdout) {
@@ -582,8 +590,8 @@ namespace Input {
 
 		// Set Number of events
 		int nevt = t->GetEntries();
-		if (MAXEVENTS > 0 && nevt > MAXEVENTS)
-			nevt = MAXEVENTS;
+		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
+		int processedEvents = 0;
 		NSig = nevt;
 
 		//Create histo
@@ -630,8 +638,10 @@ namespace Input {
 				bweight = (1. + 2. * a * xTrue + a * a * xTrue * xTrue)
 						/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
 			dSig->at(index)->Fill(x, weight * bweight);
+			processedEvents++;
 		}
-		return fitBrch.selEvents;
+
+		return processedEvents;
 	}
 
 	void getInputMCGet(TFile *fd, double br, unsigned int index) {
