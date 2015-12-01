@@ -476,7 +476,7 @@ bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEven
 		return false;
 	}*/
 
-	if(evt->x <= 0.1) {
+	if(evt->x <= 0.05) {
 		fitBrch.selEvents--;
 		return false;
 	}
