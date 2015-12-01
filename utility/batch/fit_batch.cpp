@@ -276,7 +276,7 @@ namespace Fit{
 		G = par[0];
 
 		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
-			if (sig->GetBinLowEdge(i + 1) < 0.1) continue;
+			//if (sig->GetBinLowEdge(i + 1) < 0.1) continue;
 			b1 = 0;
 			b2 = 0;
 			b3 = 0;
@@ -329,7 +329,7 @@ namespace Fit{
 			sigComp = new TH1D("sigcomp", "sigcomp", sig->GetNbinsX(), bins);
 		}
 		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
-			if(sig->GetBinLowEdge(i+1)<0.1) continue;
+			//if(sig->GetBinLowEdge(i+1)<0.1) continue;
 			M_i = 0;
 			a_i = 0;
 			b_i = 0;
@@ -1025,7 +1025,7 @@ double fitProcedure(fitResult& result,
 
 	// Chi2: 1.
 	// -logl: 0.5
-	minuit.SetErrorDef(1);
+	minuit.SetErrorDef(0.5);
 
 	args[0] = 100000;
 	minuit.mnexcm("MIGRAD", args, 1, flag);
