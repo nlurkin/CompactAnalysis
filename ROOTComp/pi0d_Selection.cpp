@@ -142,9 +142,9 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(options.isOptDebug()) cout << "p_1 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[0]].p << "\t <5 || > 60 : rejected" << endl;
 	if(options.isOptDebug()) cout << "p_2 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[1]].p << "\t <5 || > 60 : rejected" << endl;
 	if(options.isOptDebug()) cout << "p_3 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[2]].p << "\t <5 || > 60 : rejected" << endl;
-	if(corrEvent.pTrack[corrEvent.goodTracks[0]].p<=io.cutsDefinition.minTrackMomentum/* || corrEvent.pTrack[corrEvent.goodTracks[0]].p>=io.cutsDefinition.maxTrackMomentum*/) {pi0d_failCut(10+firstCutIndex); return false;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[1]].p<=io.cutsDefinition.minTrackMomentum/* || corrEvent.pTrack[corrEvent.goodTracks[1]].p>=io.cutsDefinition.maxTrackMomentum*/) {pi0d_failCut(10+firstCutIndex); return false;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[2]].p<=io.cutsDefinition.minTrackMomentum/* || corrEvent.pTrack[corrEvent.goodTracks[2]].p>=io.cutsDefinition.maxTrackMomentum*/) {pi0d_failCut(10+firstCutIndex); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[0]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[0]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[1]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[1]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[2]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[2]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
 
 	return true;
 }
@@ -167,8 +167,8 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	double pt = totalP.Perp2(corrEvent.kaonMomentum);
 	// 11) Total momentum 70<p<78 (K2PI)
 	if(options.isOptDebug()) cout << "~~~~ Cut 11 (K2PI)~~~~" << endl;
-	if(options.isOptDebug()) cout << "p_tot :\t\t\t" << totalP.Mag() << "\t <70 || >78 : rejected" << endl;
-	if(totalP.Mag()<io.cutsDefinition.k2pi.minTotalMomentum || totalP.Mag()>io.cutsDefinition.k2pi.maxTotalMomentum) return 11+firstCutIndex;
+//	if(options.isOptDebug()) cout << "p_tot :\t\t\t" << totalP.Mag() << "\t <70 || >78 : rejected" << endl;
+//	if(totalP.Mag()<io.cutsDefinition.k2pi.minTotalMomentum || totalP.Mag()>io.cutsDefinition.k2pi.maxTotalMomentum) return 11+firstCutIndex;
 
 	// 12) Transverse momentum^2 < 5E-4 (K2PI)
 	if(options.isOptDebug()) cout << "~~~~ Cut 12 (K2PI) ~~~~" << endl;
