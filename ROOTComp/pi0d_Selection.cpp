@@ -167,8 +167,8 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	double pt = totalP.Perp2(corrEvent.kaonMomentum);
 	// 11) Total momentum 70<p<78 (K2PI)
 	if(options.isOptDebug()) cout << "~~~~ Cut 11 (K2PI)~~~~" << endl;
-//	if(options.isOptDebug()) cout << "p_tot :\t\t\t" << totalP.Mag() << "\t <70 || >78 : rejected" << endl;
-//	if(totalP.Mag()<io.cutsDefinition.k2pi.minTotalMomentum || totalP.Mag()>io.cutsDefinition.k2pi.maxTotalMomentum) return 11+firstCutIndex;
+	if(options.isOptDebug()) cout << "p_tot :\t\t\t" << totalP.Mag() << "\t <70 || >78 : rejected" << endl;
+	if(totalP.Mag()<io.cutsDefinition.k2pi.minTotalMomentum/* || totalP.Mag()>io.cutsDefinition.k2pi.maxTotalMomentum*/) return 11+firstCutIndex;
 
 	// 12) Transverse momentum^2 < 5E-4 (K2PI)
 	if(options.isOptDebug()) cout << "~~~~ Cut 12 (K2PI) ~~~~" << endl;
