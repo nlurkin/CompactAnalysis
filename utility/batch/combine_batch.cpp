@@ -543,12 +543,12 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 		fitBrch.selEvents--;
 		return;
 	}*/
-	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
-	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
-	if(distance2D(propPos, TVector3(0,0,0))<20 && distance2D(propPos2, TVector3(0,0,0))<20 ){
-		fitBrch.selEvents--;
-		return;
-	}
+	//propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	//propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
+	//if(distance2D(propPos, TVector3(0,0,0))<20 && distance2D(propPos2, TVector3(0,0,0))<20 ){
+	//	fitBrch.selEvents--;
+	//	return;
+	//}
 
 	/*propPos = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateBefore(rootGeom->Dch[1].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
@@ -676,10 +676,10 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		return;
 //	}
 
-	if(evt->x <= 0.01) {
-		fitBrch.selEvents--;
-		return;
-	}
+	//if(evt->x <= 0.1) {
+	//	fitBrch.selEvents--;
+	//	return;
+	//}
 
 	//propPos = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	//propPos2 = propagateAfter(rootGeom->Dch[3].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
@@ -693,6 +693,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //		return;
 //	}
 
+
+	if(!testAdditionalCondition(evt, corrEvent, rootGeom)) return;
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
