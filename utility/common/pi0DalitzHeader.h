@@ -93,7 +93,7 @@ TApplication *theApp = 0;
 map<int,double> ratioMap;
 double averageRatio;
 
-double testA = 0.365;
+double testA = 0.0365;
 
 int scanID = -1;
 
