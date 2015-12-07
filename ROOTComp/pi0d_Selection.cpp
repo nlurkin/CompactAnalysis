@@ -47,6 +47,10 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	}
 	if(options.isOptDebug()) cout << endl;
 
+	// -2)Redo z_vertex
+	if(options.isOptDebug()) cout << "~~~~ Cut -1 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "vertex Z :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].position.Z() << "\t <" << io.cutsDefinition.minZVertex << " || >" << io.cutsDefinition.maxZVertex << ": rejected" << endl;
+	if(rawEvent.vtx[corrEvent.goodVertexID].position.Z() < io.cutsDefinition.minZVertex || rawEvent.vtx[corrEvent.goodVertexID].position.Z() > io.cutsDefinition.maxZVertex) {pi0d_failCut(3); return false;}
 
 	// 1) Track DCH time
 	if(options.isOptDebug()) cout << "~~~~ Cut 1 ~~~~" << endl;
