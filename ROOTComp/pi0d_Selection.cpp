@@ -678,8 +678,8 @@ int main(int argc, char **argv){
 	printResStruct(pid_res_pi, &pid_res_mu);
 
 	selTrackDiff.Write();
-	pid_pi->Write();
-	pid_mu->Write();
+	//pid_pi->Write();
+	//pid_mu->Write();
 	savePlots();
 	io.closeAll();
 	return 0;
