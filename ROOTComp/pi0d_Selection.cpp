@@ -648,9 +648,9 @@ int main(int argc, char **argv){
 
 	// Create the output pid_res tree
 	TTree *pid_pi = new TTree("pid_pi", "pid_pi");
-	//branchResTree(pid_pi, pid_res_pi);
+	branchResTree(pid_pi, pid_res_pi);
 	TTree *pid_mu = new TTree("pid_mu", "pid_mu");
-	//branchResTree(pid_mu, pid_res_mu);
+	branchResTree(pid_mu, pid_res_mu);
 
 	// Initialise event loop
 	int nevent = 0;
@@ -675,11 +675,11 @@ int main(int argc, char **argv){
 
 	// Print pid result structure
 	cout << endl << endl;
-	//printResStruct(pid_res_pi, &pid_res_mu);
+	printResStruct(pid_res_pi, &pid_res_mu);
 
 	selTrackDiff.Write();
-	//pid_pi->Write();
-	//pid_mu->Write();
+	pid_pi->Write();
+	pid_mu->Write();
 	savePlots();
 	io.closeAll();
 	return 0;
