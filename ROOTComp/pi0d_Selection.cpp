@@ -184,7 +184,10 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	xFalse = 999;
 
 	// Identify candidates
-	xCandNb = pid(xTrack, tempObj.tempGamma, OptionsParser::K2PI);
+	if(options.isDoNegativePid())
+		xCandNb = pid_opposite_sign(xTrack, tempObj.tempGamma, OptionsParser::K2PI);
+	else
+		xCandNb = pid(xTrack, tempObj.tempGamma, OptionsParser::K2PI);
 
 	if(xCandNb==0){
 		pid_res_pi.incNoID(!flBad);

@@ -380,6 +380,93 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	return nCandidates;
 }
 
+int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t){
+	TLorentzVector tem;
+	TLorentzVector t1ep, t1x;
+	TLorentzVector t2ep, t2x;
+	TLorentzVector ee1, ee2;
+	TLorentzVector k1, k2;
+	double Mx;
+	int nCandidates = 0;
+	if(t==OptionsParser::K2PI) Mx = Mpic;
+	else if(t==OptionsParser::KMU3) Mx = Mmu;
+
+	int goodTrack1, goodTrack2;
+
+	int nNegative = 0;
+	int vtxCharge = rawEvent.vtx[corrEvent.goodVertexID].charge;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 1;
+		goodTrack2 = 2;
+		xCandidate = 0;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Mx);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 2;
+		xCandidate = 1;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Mx);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 1;
+		xCandidate = 2;
+		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Mx);
+		nNegative++;
+	}
+
+	if(nNegative!=1) return 0;
+
+	//Try e = goodTrack1, x = goodTrack2
+	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
+	t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
+	ee1 = tem+t1ep+gamma;
+	k1 = ee1+t1x;
+
+	double Mk;
+	double diffpi01;
+	double diffk1;
+
+	diffpi01 = fabs(ee1.M()-Mpi0);
+
+	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = MK;
+	else Mk = MK;
+
+	diffk1 = fabs(k1.M()-Mk);
+
+	if(t==OptionsParser::K2PI){
+		if(options.isOptDebug()){
+			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
+			cout << " diffpi0:" << diffpi01 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " diffk:" << diffk1 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+		}
+		if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+			nCandidates++;
+		}
+	}
+	else if(t==OptionsParser::KMU3){
+		if( (diffpi01<io.cutsDefinition.kmu3.maxPi0MassDiff)){
+			nCandidates++;
+		}
+	}
+
+	if(!flBad){
+		//Good MC association, fill the plots
+		if(xPart==goodTrack2){
+			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
+			xFalse = pow((tem+t2ep).M()/Mpi0, 2.);
+		}
+		else if(xPart==goodTrack1){
+			xTrue = pow((tem+t2ep).M()/Mpi0,2.);
+			xFalse = pow((tem+t1ep).M()/Mpi0, 2.);
+		}
+	}
+
+	return nCandidates;
+}
+
 bool pi0d_L3Trigger(NPhysicsTrack &t){
 	TVector3 propPos = propagateAfter(rootGeom.Lkr.z, t);
 	bool lkrAcceptance = t.lkr_acc;

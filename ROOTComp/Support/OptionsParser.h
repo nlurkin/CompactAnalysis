@@ -69,6 +69,10 @@ public:
 		return selectionType;
 	}
 
+	bool isDoNegativePid() const {
+		return doNegativePID;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -76,6 +80,7 @@ private:
 	int periodKeep;
 	bool exportAllEvents;
 	bool doScan;
+	bool doNegativePID;
 	int nScan;
 	int startEvent;
 	ESelectionType selectionType;

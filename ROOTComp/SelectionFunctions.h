@@ -103,6 +103,7 @@ extern double xFalse;
 
 int michal_prepid(int &xCandidate, OptionsParser::ESelectionType t);
 int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t);
+int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t);
 bool pi0d_L3Trigger(NPhysicsTrack &t);
 int pi0d_tracksAcceptance();
 int pi0d_trackCombinationVeto_loose();
