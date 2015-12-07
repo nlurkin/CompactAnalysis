@@ -13,6 +13,9 @@
 ClassImp(ScanCuts)
 ClassImp(Cuts)
 
+ClassImp(ScanCuts::k2pi_t)
+ClassImp(ScanCuts::kmu3_t)
+
 Cuts::Cuts(){
 	//Initialize with default values
 	triggerMask = 0x400;
