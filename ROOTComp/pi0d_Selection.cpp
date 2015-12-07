@@ -675,7 +675,7 @@ int main(int argc, char **argv){
 
 	// Print pid result structure
 	cout << endl << endl;
-	printResStruct(pid_res_pi, &pid_res_mu);
+	//printResStruct(pid_res_pi, &pid_res_mu);
 
 	selTrackDiff.Write();
 	//pid_pi->Write();
