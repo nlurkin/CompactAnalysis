@@ -383,9 +383,8 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t){
 	TLorentzVector tem;
 	TLorentzVector t1ep, t1x;
-	TLorentzVector t2ep, t2x;
-	TLorentzVector ee1, ee2;
-	TLorentzVector k1, k2;
+	TLorentzVector ee1;
+	TLorentzVector k1;
 	double Mx;
 	int nCandidates = 0;
 	if(t==OptionsParser::K2PI) Mx = Mpic;
@@ -436,6 +435,7 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 
 	diffk1 = fabs(k1.M()-Mk);
 
+
 	if(t==OptionsParser::K2PI){
 		if(options.isOptDebug()){
 			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
@@ -452,18 +452,36 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 		}
 	}
 
+	meegTotal.Fill(ee1.M());
+	mkTotal.Fill(k1.M());
+	meegexTotal.Fill(ee1.M(), (tem+t1x).M());
+	meegkTotal.Fill(ee1.M(), k1.M());
+
 	if(!flBad){
 		//Good MC association, fill the plots
 		if(xPart==goodTrack2){
+			meegTrue.Fill(ee1.M());
+			mkTrue.Fill(k1.M());
+			meegexTrue.Fill(ee1.M(), (tem+t1x).M());
+			meegkTrue.Fill(ee1.M(), k1.M());
+
+			meegDiffTrue.Fill(ee1.M()-Mpi0);
+			mkDiffTrue.Fill(k1.M()-Mk);
+
 			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
-			xFalse = pow((tem+t2ep).M()/Mpi0, 2.);
 		}
 		else if(xPart==goodTrack1){
-			xTrue = pow((tem+t2ep).M()/Mpi0,2.);
+			meegFalse.Fill(ee1.M());
+			mkFalse.Fill(k1.M());
+			meegexFalse.Fill(ee1.M(), (tem+t1x).M());
+			meegkFalse.Fill(ee1.M(), k1.M());
+
+			meegDiffFalse.Fill(ee1.M()-Mpi0);
+			mkDiffFalse.Fill(k1.M()-Mk);
+
 			xFalse = pow((tem+t1ep).M()/Mpi0, 2.);
 		}
 	}
-
 	return nCandidates;
 }
 
