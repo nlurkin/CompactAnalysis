@@ -398,21 +398,21 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 		goodTrack1 = 1;
 		goodTrack2 = 2;
 		xCandidate = 0;
-		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Me);
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Me);
 		nNegative++;
 	}
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].q==-1*vtxCharge){
 		goodTrack1 = 0;
 		goodTrack2 = 2;
 		xCandidate = 1;
-		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Me);
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Me);
 		nNegative++;
 	}
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].q==-1*vtxCharge){
 		goodTrack1 = 0;
 		goodTrack2 = 1;
 		xCandidate = 2;
-		tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Me);
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Me);
 		nNegative++;
 	}
 
@@ -420,7 +420,7 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 
 	//Try e = goodTrack1, x = goodTrack2
 	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
-	t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
+	tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
 	ee1 = tem+t1ep+gamma;
 	k1 = ee1+t1x;
 
@@ -678,8 +678,8 @@ int pi0d_goodClusters_loose(){
 
 	int conditions;
 
-	if(rootBurst.isData) conditions = 7;
-	else conditions=6;
+	if(rootBurst.isData) 	conditions = 7;
+	else 					conditions = 6;
 
 	if(options.isOptDebug()) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
 	if(options.isOptDebug()) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
@@ -690,11 +690,14 @@ int pi0d_goodClusters_loose(){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
-		/*if(rootBurst.pbWall){
+		//Ignore clusters behind Pb Wall
+		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
-		}*/
+		}
+		//Ignore clusters with low energy
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
+		if(c.E < 3.) continue;
 
 		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
 		NPhysicsTrack t2 = corrEvent.pTrack[corrEvent.goodTracks[1]];
@@ -774,11 +777,14 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
-		/*if(rootBurst.pbWall){
+		//Ignore clusters behind Pb Wall
+		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
-		}*/
+		}
+		//Ignore clusters with low energy
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
+		if(c.E < 3.) continue;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[event.ep.parentTrack];

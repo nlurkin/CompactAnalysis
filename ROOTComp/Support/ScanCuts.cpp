@@ -20,7 +20,7 @@ Cuts::Cuts(){
 	//Initialize with default values
 	triggerMask = 0x400;
 	numVertex3 = 1;
-	minZVertex = -1800;
+	minZVertex = -1700;
 	maxZVertex = 9000;
 	maxChi2Vertex = 25;
 	maxExtraTracks = 0;
