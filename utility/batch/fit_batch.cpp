@@ -492,7 +492,7 @@ namespace Input {
 		int i = 0;
 		double x, xTrue=-1;
 		double bweight = 1.;
-		double weight;
+		double weight, aweight;
 		int mod;
 
 		fitBrch.totEvents += totalChanEvents;
@@ -515,7 +515,7 @@ namespace Input {
 
 			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch))
 				continue;
-			weight = applyWeights(burstBrch->nrun);
+			weight = applyWeights(burstBrch->nrun) * corrBrch->weight;
 
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;
@@ -523,26 +523,26 @@ namespace Input {
 					/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
 			mod = rawBrch->timeStamp % divider;
 
-			weight = 1.;
-			dNew->at(index)->Fill(x, bweight * weight);
+			aweight = 1.;
+			dNew->at(index)->Fill(x, bweight * aweight * weight * );
 			dAlpha->at(index)->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
 			dBeta->at(index)->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
 			dGamma->at(index)->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
 			if (mod == 0 || mod == 1 || mod == 2) {
 				//TODO to check
 				fitBrch.n1++;
-				weight = 1.;
-				d1->at(index)->Fill(x, bweight * weight);
+				aweight = 1.;
+				d1->at(index)->Fill(x, bweight * aweight * weight);
 			} else if (mod == 3) {
 				//TODO to check
 				fitBrch.nx++;
-				weight = xTrue;
-				d2->at(index)->Fill(x, bweight * weight);
+				aweight = xTrue;
+				d2->at(index)->Fill(x, bweight * aweight * weight);
 			} else if (mod == 4) {
 				//TODO to check
 				fitBrch.nxx++;
-				weight = xTrue * xTrue;
-				d3->at(index)->Fill(x, bweight * weight);
+				aweight = xTrue * xTrue;
+				d3->at(index)->Fill(x, bweight * aweight * weight);
 			}
 			processedEvents++;
 		}
@@ -630,6 +630,7 @@ namespace Input {
 			t->GetEntry(i);
 			if(cutsPass){
 				if(!cutsPass->at(scanID)){
+					fitBrch.selEvents--;
 					continue;
 				}
 			}
@@ -1093,6 +1094,8 @@ void fit_batch(TString inFile) {
 
 	tempFD->Close();
 	remove(tempFileName.Data());
+
+	cout << "--Done--" << endl;
 }
 
 void fit_show(TString inFile) {
@@ -1218,7 +1221,7 @@ void fit_show(TString inFile) {
 	cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
 	cout << "Chi2 : " << chi2NewROOT << " prob : " << chi2ProbNewROOT << " p-value : " << chi2pv << endl;
 
-	cout << endl << endl;
+	cout << endl << endl << "RESULTLINE:";
 	cout << result1.norm << ";" << result1.normErr << ";" << result1.formFactor << ";" << result1.formFactorErr << ";" << chi21 << ";" << chi2Prob1 << ";";
 	cout << resultROOT.norm << ";" << resultROOT.normErr << ";" << resultROOT.formFactor << ";" << resultROOT.formFactorErr << ";" << chi2ROOT << ";" << chi2ProbROOT << ";";
 	cout << resultNew.norm << ";" << resultNew.normErr << ";" << resultNew.formFactor << ";" << resultNew.formFactorErr << ";" << chi2New << ";" << chi2ProbNew << ";";
@@ -1228,6 +1231,8 @@ void fit_show(TString inFile) {
 
 	//tempFD->Close();
 	//remove(tempFileName.Data());
+
+	cout << "--Done--" << endl;
 }
 
 int main(int argc, char **argv) {

@@ -990,7 +990,7 @@ namespace Input{
 			cout.flush();
 			t->GetEntry(i);
 			if(!runIncluded(burstBrch->nrun, burstBrch->period)) continue;
-			weight = applyWeights(burstBrch->nrun);
+			weight = applyWeights(burstBrch->nrun) * corrBrch->weight;
 			fillHistos(&(d1->at(index)), &(dMap->at(index)), eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch, weight);
 			processedEvents++;
 		}

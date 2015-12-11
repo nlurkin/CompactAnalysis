@@ -3,6 +3,9 @@
 #include <TROOT.h>
 #include <TStyle.h>
 
+#include <vector>
+using namespace std;
+
 // This is the file rootlogon.C
 void setStyle(){
 
@@ -53,19 +56,19 @@ void setStyle(){
 
 void plotpt2(){
 	//setStyle();
-	double pointsOld[10] = {0.0397792, 0.041743, 0.0428235, 0.0438376, 0.0435394, 0.043297, 0.0433736, 0.0435701, 0.0434316, 0.0432505};
-	double errOld[10] = {0.010694, 0.0104719, 0.0104066, 0.0103798, 0.010366, 0.0103568, 0.0103507, 0.0103469, 0.0103442, 0.0103415};
-	
-	double pointsOldRoot[10] = {0.0394773, 0.0411424, 0.0422285, 0.0432323, 0.042954, 0.0427035, 0.0427771, 0.0429641, 0.0428285, 0.0426402};
-	double errOldRoot[10] = {0.013312, 0.013045, 0.0129558, 0.0129198, 0.0128983, 0.0128855, 0.0128762, 0.0128733, 0.0128695, 0.0128659}; 
+	double pointsOld	[11] = 		{0.0365678,0.0365678,0.0343745,0.0343745,0.0331968,0.0331968,0.0322055,0.0322055,0.0321715,0.0321715,0.0320711};
+	double errOld		[11] = 		{0.00793701,0.00793701,0.00687002,0.00687002,0.00660519,0.00660519,0.00657244,0.00657244,0.00656821,0.00656821,0.00656661};
 
-	double pointsNew[10] = {0.0408979, 0.0426648, 0.043845, 0.0448861, 0.0445144, 0.0443114, 0.0443202, 0.0445949, 0.0444315, 0.0442956};
-	double errNew[10] = {0.0133229, 0.0130023, 0.0129171, 0.0128793, 0.0128599, 0.0128485, 0.0128416, 0.0128373, 0.0128355, 0.0128317};
-	
-	double pointsNewRoot[10] = {0.0407679, 0.0424753, 0.0436177, 0.0446595, 0.0442785, 0.0440594, 0.0440673, 0.0443324, 0.0441651, 0.0440268};
-	double errNewRoot[10] = {0.013248, 0.0129565, 0.0128696, 0.0128313, 0.0128102, 0.0127985, 0.0127918, 0.0127874, 0.0127854, 0.0127822};
-	
-	double pointsNEvents[10] = {952820, 1005159, 1020619, 1027590, 1031026, 1033011, 1034237, 1035008, 1035359, 1035927};
+	double pointsOldRoot[11] = 	{0.0384388,0.0384388,0.0356803,0.0356803,0.0342473,0.0342473,0.0332669,0.0332669,0.0332091,0.0332091,0.0331162};
+	double errOldRoot	[11] = 	{0.00756655,0.00756655,0.00766112,0.00766112,0.00771578,0.00771578,0.00772124,0.00772124,0.00772294,0.00772294,0.0077232};
+
+	double pointsNew	[11] = 		{0.040984,0.040984,0.0375896,0.0375896,0.0362318,0.0362318,0.0352833,0.0352833,0.035254,0.035254,0.0351612};
+	double errNew		[11] = 		{0.00765139,0.00765139,0.00774394,0.00774394,0.00779874,0.00779874,0.00780497,0.00780497,0.00780531,0.00780531,0.00780551};
+
+	double pointsNewRoot[11] = 	{0.0408873,0.0408873,0.0375794,0.0375794,0.0361593,0.0361593,0.0351997,0.0351997,0.0351612,0.0351612,0.0350738};
+	double errNewRoot	[11] = 	{0.00757255,0.00757255,0.00766464,0.00766464,0.00772138,0.00772138,0.00772708,0.00772708,0.00772828,0.00772828,0.00772844};
+
+	double pointsNEvents[11] = 	{424190,424190,356547,356547,335555,335555,332869,332869,332512,332512,332383};
 
 	//Creation
 	TGraphErrors *pt2Old = new TGraphErrors();
@@ -189,16 +192,16 @@ void plotBins(){
 	double x[6] = {11, 25, 55, 125, 275, 1375};
 	double pointsOld[6] = {0.0489317, 0.0477602, 0.0453805, 0.0435394, 0.0435394, 0.0435394};
 	double errOld[6] = {0.0117164, 0.0108575, 0.0104976, 0.010366, 0.010366, 0.010366};
-	
+
 	double pointsOldRoot[6] = {0.0489442, 0.0477102, 0.0451809, 0.042954, 0.042954, 0.042954};
 	double errOldRoot[6] = {0.0147777, 0.013616, 0.0131078, 0.0128983, 0.0128983, 0.0128983};
 
 	double pointsNew[6] = {0.0489511, 0.0485804, 0.0460614, 0.0445144, 0.0445144, 0.0445144};
 	double errNew[6] = {0.0147983, 0.0136198, 0.0130741, 0.0128599, 0.0128599, 0.0128599};
-	
+
 	double pointsNewRoot[6] = {0.0489394, 0.0485061, 0.0460815, 0.0442785, 0.0442785, 0.0442785};
 	double errNewRoot[6] = {0.0147336, 0.0135508, 0.013022, 0.0128102, 0.0128102, 0.0128102};
-	
+
 	//Creation
 	TGraphErrors *binsOld = new TGraphErrors();
 	binsOld->SetName("binsOld");
@@ -300,16 +303,16 @@ void plotpi0mass(){
 
 	double pointsOld[10] = {0.0257525, 0.0299572, 0.0347466, 0.0410449, 0.0436154, 0.0455023, 0.0467107, 0.0472451, 0.048017, 0.0484429};
 	double errOld[10] = {0.012046, 0.011257, 0.0109968, 0.0108846, 0.0108221, 0.0107851, 0.0107605, 0.0107444, 0.0107404, 0.0107241};
-	
+
 	double pointsOldRoot[10] = {0.0256596, 0.029835, 0.0345065, 0.0406962, 0.0432381, 0.0450902, 0.0462382, 0.0467681, 0.0474945, 0.0479093};
 	double errOldRoot[10] = {0.0149477, 0.0139699, 0.0136587, 0.0135292, 0.0134542, 0.0134128, 0.0133885, 0.0133693, 0.0133716, 0.01335};
 
 	double pointsNew[10] = {0.0259345, 0.0311638, 0.0359116, 0.0423887, 0.0449354, 0.0466156, 0.0477873, 0.0481367, 0.0488021, 0.0491589};
 	double errNew[10] = {0.0149385, 0.0139718, 0.0136461, 0.0135038, 0.0134258, 0.0133747, 0.0133404, 0.0133222, 0.0133192, 0.0132983};
-	
+
 	double pointsNewRoot[10] = {0.0257485, 0.0309926, 0.035792, 0.0423119, 0.0448136, 0.0465055, 0.0476842, 0.0480334, 0.0487064, 0.0490642};
 	double errNewRoot[10] = {0.0148516, 0.0138768, 0.0135627, 0.0134277, 0.0133522, 0.0133057 ,0.0132792 ,0.0132628 ,0.0132658, 0.0132472};
-	
+
 	double pointsNEvents[10] = {756544, 874179, 919446, 940313, 951571, 958237, 962005, 964212, 963751, 966306};
 
 	//Creation
@@ -417,7 +420,7 @@ void plotpi0mass(){
 	pi0massNew->Draw("SAME P");
 	pi0massNewRoot->Draw("SAME P");
 	leg->Draw("LEP");
-	
+
 	//Plotting
 	TCanvas *c = new TCanvas("mPi0Selected");
 	c->SetGrid(1, 1);
@@ -430,9 +433,69 @@ void plotpi0mass(){
 
 }
 
+void plot_only1(){
+	int npoints = 		  7;
+	double cutValue		 [7] = 	{30,35,40,45,50,55,60};
+	double pointsNewRoot [7] = 	{0.0476085,0.0401189,0.0381292,0.0334274,0.0356361,0.03627,0.0361639};
+	double errNewRoot	 [7] = 	{0.0132488,0.0100012,0.00868801,0.00807908,0.00783057,0.0077561,0.00774712};
+	double pointsNEvents [7] = 	{129595,211174,271140,307814,325379,330574,331057};
+
+	//Creation
+	TGraphErrors *pt2NewRoot = new TGraphErrors();
+	pt2NewRoot->SetName("pt2NewRoot");
+	//Points
+	for(int i=0; i<npoints; ++i){
+		pt2NewRoot->SetPoint(i, cutValue[i], pointsNewRoot[i]);
+	}
+	//Errors
+	for(int i=0; i<npoints; ++i){
+		pt2NewRoot->SetPointError(i, 0, errNewRoot[i]);
+	}
+	//Style
+	pt2NewRoot->SetMarkerStyle(23);
+	pt2NewRoot->SetMarkerColor(4);
+	pt2NewRoot->SetLineColor(4);
+	pt2NewRoot->SetFillStyle(0);
+
+	//Creation
+	TGraph *pt2Selected = new TGraph();
+	pt2Selected->SetName("fffit");
+	//Points
+	for(int i=0; i<npoints; ++i){
+		pt2Selected->SetPoint(i, cutValue[i], pointsNEvents[i]);
+	}
+	//Style
+	pt2Selected->SetMarkerStyle(20);
+	pt2Selected->SetMarkerColor(4);
+	pt2Selected->SetLineColor(4);
+	pt2Selected->SetFillStyle(0);
+
+	//Plotting
+	TCanvas *c = new TCanvas("plot");
+	c->SetGrid(1, 1);
+
+	pt2NewRoot->SetTitle("FF Slope fit result");
+	pt2NewRoot->GetXaxis()->SetTitle("Cut value");
+	pt2NewRoot->GetYaxis()->SetTitle("FF Slope a");
+	pt2NewRoot->GetYaxis()->SetTitleOffset(1.5);
+
+	pt2NewRoot->Draw("AP");
+
+	//Plotting
+	TCanvas *c = new TCanvas("Selected");
+	c->SetGrid(1, 1);
+
+	pt2Selected->SetTitle("Number of selected events");
+	pt2Selected->GetXaxis()->SetTitle("Cut value");
+	pt2Selected->GetYaxis()->SetTitle("Selected events");
+	pt2Selected->GetYaxis()->SetTitleOffset(1.5);
+	pt2Selected->Draw("APL");
+}
+
 void plot(){
-	plotpt2();
-	plotpi0mass();
-	plotBins();
+	//plotpt2();
+	//plotpi0mass();
+	//plotBins();
+	plot_only1();
 }
 
