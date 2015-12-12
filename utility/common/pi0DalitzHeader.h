@@ -83,8 +83,8 @@ vector<TString> modelFiles;
 TString binsFileName;
 bool withEqualBins;
 
-TTree* fitTree;
-fitStruct fitBrch;
+TTree* fitTree, *cut_fitTree;
+fitStruct fitBrch, cut_fitBrch;
 
 TString tempFileName;
 TFile *tempFD;
