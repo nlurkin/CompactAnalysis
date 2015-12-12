@@ -517,25 +517,25 @@ namespace Input {
 				xxxGamma->Sumw2();
 				dGamma->push_back(xxxGamma);
 
-				TH1D* xxx1 = new TH1D("cut_d1", "sample 1", BINS, 0, MAX);
+				xxx1 = new TH1D("cut_d1", "sample 1", BINS, 0, MAX);
 				xxx1->Sumw2();
 				cut_d1->push_back(xxx1);
-				TH1D* xxx2 = new TH1D("cut_d2", "sample x", BINS, 0, MAX);
+				xxx2 = new TH1D("cut_d2", "sample x", BINS, 0, MAX);
 				xxx2->Sumw2();
 				cut_d2->push_back(xxx2);
-				TH1D* xxx3 = new TH1D("cut_d3", "sample x^{2}", BINS, 0, MAX);
+				xxx3 = new TH1D("cut_d3", "sample x^{2}", BINS, 0, MAX);
 				xxx3->Sumw2();
 				cut_d3->push_back(xxx3);
-				TH1D* xxxNew = new TH1D("cut_dNew", "MC", BINS, 0, MAX);
+				xxxNew = new TH1D("cut_dNew", "MC", BINS, 0, MAX);
 				xxxNew->Sumw2();
 				cut_dNew->push_back(xxxNew);
-				TH1D* xxxAlpha = new TH1D("cut_dAlpha", "MC", BINS, 0, MAX);
+				xxxAlpha = new TH1D("cut_dAlpha", "MC", BINS, 0, MAX);
 				xxxAlpha->Sumw2();
 				cut_dAlpha->push_back(xxxAlpha);
-				TH1D* xxxBeta = new TH1D("cut_dBeta", "MC", BINS, 0, MAX);
+				xxxBeta = new TH1D("cut_dBeta", "MC", BINS, 0, MAX);
 				xxxBeta->Sumw2();
 				cut_dBeta->push_back(xxxBeta);
-				TH1D* xxxGamma = new TH1D("cut_dGamma", "MC", BINS, 0, MAX);
+				xxxGamma = new TH1D("cut_dGamma", "MC", BINS, 0, MAX);
 				xxxGamma->Sumw2();
 				cut_dGamma->push_back(xxxGamma);
 			}
@@ -562,25 +562,25 @@ namespace Input {
 				xxxGamma->Sumw2();
 				dGamma->push_back(xxxGamma);
 
-				TH1D* xxx1 = new TH1D("cut_d1", "sample 1", nbins-1, bins);
+				xxx1 = new TH1D("cut_d1", "sample 1", nbins-1, bins);
 				xxx1->Sumw2();
 				cut_d1->push_back(xxx1);
-				TH1D* xxx2 = new TH1D("cut_d2", "sample x", nbins-1, bins);
+				xxx2 = new TH1D("cut_d2", "sample x", nbins-1, bins);
 				xxx2->Sumw2();
 				cut_d2->push_back(xxx2);
-				TH1D* xxx3 = new TH1D("cut_d3", "sample x^{2}", nbins-1, bins);
+				xxx3 = new TH1D("cut_d3", "sample x^{2}", nbins-1, bins);
 				xxx3->Sumw2();
 				cut_d3->push_back(xxx3);
-				TH1D* xxxNew = new TH1D("cut_dNew", "MC", nbins-1, bins);
+				xxxNew = new TH1D("cut_dNew", "MC", nbins-1, bins);
 				xxxNew->Sumw2();
 				cut_dNew->push_back(xxxNew);
-				TH1D* xxxAlpha = new TH1D("cut_dAlpha", "MC", nbins-1, bins);
+				xxxAlpha = new TH1D("cut_dAlpha", "MC", nbins-1, bins);
 				xxxAlpha->Sumw2();
 				cut_dAlpha->push_back(xxxAlpha);
-				TH1D* xxxBeta = new TH1D("cut_dBeta", "MC", nbins-1, bins);
+				xxxBeta = new TH1D("cut_dBeta", "MC", nbins-1, bins);
 				xxxBeta->Sumw2();
 				cut_dBeta->push_back(xxxBeta);
-				TH1D* xxxGamma = new TH1D("cut_dGamma", "MC", nbins-1, bins);
+				xxxGamma = new TH1D("cut_dGamma", "MC", nbins-1, bins);
 				xxxGamma->Sumw2();
 				cut_dGamma->push_back(xxxGamma);
 			}
@@ -751,14 +751,14 @@ namespace Input {
 				TH1D* xxx = new TH1D("sig", "signal sample", BINS, 0, MAX);
 				dSig->push_back(xxx);
 
-				TH1D* xxx = new TH1D("cut_sig", "signal sample", BINS, 0, MAX);
+				xxx = new TH1D("cut_sig", "signal sample", BINS, 0, MAX);
 				cut_dSig->push_back(xxx);
 			}
 			else{
 				TH1D* xxx = new TH1D("sig", "signal sample", nbins-1, bins);
 				dSig->push_back(xxx);
 
-				TH1D* xxx = new TH1D("cut_sig", "signal sample", nbins-1, bins);
+				xxx = new TH1D("cut_sig", "signal sample", nbins-1, bins);
 				cut_dSig->push_back(xxx);
 			}
 		}
@@ -776,6 +776,8 @@ namespace Input {
 			if(i % 10000 == 0) cout << setprecision(2) << i*100./(double)nevt << "% " << i << "/" << nevt << "\r";
 			cout.flush();
 			t->GetEntry(i);
+			passNormal = true;
+			passCut = false;
 			if(cutsPass){
 				if(!cutsPass->at(scanID)){
 					fitBrch.selEvents--;
@@ -856,13 +858,13 @@ namespace Input {
 		dBeta->at(index)->SetName(TString::Format("dBeta_%i", index));
 		dGamma->at(index)->SetName(TString::Format("dGamma_%i", index));
 
-		TH1D* xxx1 = (TH1D*) fd->Get("cut_d1");
-		TH1D* xxx2 = (TH1D*) fd->Get("cut_d2");
-		TH1D* xxx3 = (TH1D*) fd->Get("cut_d3");
-		TH1D* xxx4 = (TH1D*) fd->Get("cut_dNew");
-		TH1D* xxxA = (TH1D*) fd->Get("cut_dAlpha");
-		TH1D* xxxB = (TH1D*) fd->Get("cut_dBeta");
-		TH1D* xxxG = (TH1D*) fd->Get("cut_dGamma");
+		xxx1 = (TH1D*) fd->Get("cut_d1");
+		xxx2 = (TH1D*) fd->Get("cut_d2");
+		xxx3 = (TH1D*) fd->Get("cut_d3");
+		xxx4 = (TH1D*) fd->Get("cut_dNew");
+		xxxA = (TH1D*) fd->Get("cut_dAlpha");
+		xxxB = (TH1D*) fd->Get("cut_dBeta");
+		xxxG = (TH1D*) fd->Get("cut_dGamma");
 
 		tempFD->cd();
 		cut_d1->push_back((TH1D*) xxx1->Clone());
@@ -915,7 +917,7 @@ namespace Input {
 
 		sig->Add(dSig->at(index), 1.);
 
-		TH1D* xxx = (TH1D*) fd->Get("cut_sig");
+		xxx = (TH1D*) fd->Get("cut_sig");
 		tempFD->cd();
 		cut_dSig->push_back((TH1D*) xxx->Clone());
 		cut_dSig->at(index)->SetName(TString::Format("cut_sig_%i", index));
@@ -1384,9 +1386,9 @@ void fit_show(TString inFile) {
 	}
 
 	//Scale MC to Data
-	double totalMC = 0;
-	double totalMCNew = 0;
-	double totalGreek = 0;
+	totalMC = 0;
+	totalMCNew = 0;
+	totalGreek = 0;
 	for (int i = 0; i < inputMCNbr; ++i) {
 		//TODO to check
 		totalMC += cut_d1->at(i)->Integral();// + d2->at(i)->Integral() + d3->at(i)->Integral();
@@ -1395,9 +1397,9 @@ void fit_show(TString inFile) {
 		totalGreek += cut_dAlpha->at(i)->Integral();
 	}
 
-	double factor = ((double) (cut_NSig)) / totalMC;
-	double factorNew = ((double) (cut_NSig)) / totalMCNew;
-	double factorGreek = ((double) (cut_NSig)) / totalGreek;
+	factor = ((double) (cut_NSig)) / totalMC;
+	factorNew = ((double) (cut_NSig)) / totalMCNew;
+	factorGreek = ((double) (cut_NSig)) / totalGreek;
 	//double factor = nsig/(d1->at(0)->Integral() + d2->at(0)->Integral() + d3->at(0)->Integral());
 	for (int i = 0; i < inputMCNbr; ++i) {
 		cut_d1->at(i)->Scale(factor);
