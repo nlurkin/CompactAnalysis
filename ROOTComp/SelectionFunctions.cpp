@@ -542,6 +542,7 @@ int pi0d_tracksAcceptance(){
 
 		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t);
 		cout << printVector3(rawEvent.track[t.trackID].bDetPos) << printVector3(rawEvent.track[t.trackID].bMomentum) << endl;
+		cout << printVector3(dch1) << printVector3(propPos) << endl;
 		radius = distance2D(dch1, propPos);
 		if(options.isOptDebug()) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
