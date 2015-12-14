@@ -513,6 +513,8 @@ int pi0d_tracksAcceptance(){
 	TVector3 dch2(rootGeom.Dch[1].PosChamber.x,rootGeom.Dch[1].PosChamber.y,rootGeom.Dch[1].PosChamber.z);
 	TVector3 dch4(rootGeom.Dch[3].PosChamber.x,rootGeom.Dch[3].PosChamber.y,rootGeom.Dch[3].PosChamber.z);
 
+	cout << PRINTVAR(rootGeom.Dch[0].PosChamber.x) << PRINTVAR(rootGeom.Dch[0].PosChamber.y) << PRINTVAR(rootGeom.Dch[0].PosChamber.z) << endl;
+
 	int ntrackLkr = 0;
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); ++i){
 		int iGoodTrack = corrEvent.goodTracks[i];
@@ -539,6 +541,7 @@ int pi0d_tracksAcceptance(){
 		//if(goodAcceptance && goodPBWall) ntrackLkr++;
 
 		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t);
+		cout << printVector3(rawEvent.track[t.trackID].bDetPos) << printVector3(rawEvent.track[t.trackID].bMomentum) << endl;
 		radius = distance2D(dch1, propPos);
 		if(options.isOptDebug()) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
