@@ -39,6 +39,7 @@ public:
 		int minTotalMomentum;
 		int maxTotalMomentum;
 		double maxPt;
+		double minPi0MassDiff;
 		double maxPi0MassDiff;
 		double minKaonMassDiff;
 		double maxKaonMassDiff;

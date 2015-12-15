@@ -282,10 +282,12 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	if(t==OptionsParser::K2PI){
 		if(options.isOptDebug()){
 			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
-			cout << " diffpi0:" << diffpi01 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
-			cout << " diffk:" << diffk1 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " M_pi0:" << ee1.M() << " <" << io.cutsDefinition.k2pi.minPi0MassDiff << " || " << ee1.M() << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " M_K:" << k1.M() << " <" << io.cutsDefinition.k2pi.minKaonMassDiff << " || " << k1.M() << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 		}
-		if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
+				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff){
 			nCandidates++;
 			xCandidate = goodTrack2;
 		}
@@ -294,7 +296,9 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 			cout << " diffpi0:" << diffpi02 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
 			cout << " diffk:" << diffk2 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 		}
-		if( (diffpi02<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk2<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		//if( (diffpi02<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk2<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		if( ee2.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee2.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
+				&& k2.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k2.M() < io.cutsDefinition.k2pi.maxKaonMassDiff){
 			nCandidates++;
 			xCandidate = goodTrack1;
 		}
@@ -398,21 +402,21 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 		goodTrack1 = 1;
 		goodTrack2 = 2;
 		xCandidate = 0;
-		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Mpic);
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Mx);
 		nNegative++;
 	}
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].q==-1*vtxCharge){
 		goodTrack1 = 0;
 		goodTrack2 = 2;
 		xCandidate = 1;
-		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Mpic);
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Mx);
 		nNegative++;
 	}
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].q==-1*vtxCharge){
 		goodTrack1 = 0;
 		goodTrack2 = 1;
 		xCandidate = 2;
-		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Mpic);
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Mx);
 		nNegative++;
 	}
 
@@ -442,7 +446,9 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 			cout << " diffpi0:" << diffpi01 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
 			cout << " diffk:" << diffk1 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 		}
-		if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
+				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff){
 			nCandidates++;
 		}
 	}
@@ -489,8 +495,8 @@ bool pi0d_L3Trigger(NPhysicsTrack &t){
 	TVector3 propPos = propagateAfter(rootGeom.Lkr.z, t);
 	bool lkrAcceptance = t.lkr_acc;
 	bool goodAcceptance = false;
-	if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=6 && " <<  t.E/t.p << " >0.8: ok" << endl;
-	if(lkrAcceptance==0 && t.p>=6 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
+	if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5.5 && " <<  t.E/t.p << " >0.8: ok" << endl;
+	if(lkrAcceptance==0 && t.p>=5.5 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
 
 	// Track position on LKr with Pb Wall
 	bool goodPBWall = true;
@@ -552,6 +558,9 @@ int pi0d_tracksAcceptance(){
 		radius = distance2D(dch4, propPos);
 		if(options.isOptDebug()) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
+
+		if(options.isOptDebug()) cout << "Track quality :\t\t" << rawEvent.track[t.trackID].quality << "< 0.7 : rejected" << endl;
+		if(rawEvent.track[t.trackID].quality < 0.7) badTrack = true;
 	}
 
 	//At least 1 e+/e- track in lkr acceptance
@@ -697,7 +706,7 @@ int pi0d_goodClusters_loose(){
 		}
 		//Ignore clusters with low energy
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
-		if(c.E < 3.) continue;
+		if(c.E < 2.) continue;
 
 		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
 		NPhysicsTrack t2 = corrEvent.pTrack[corrEvent.goodTracks[1]];
@@ -784,7 +793,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		}
 		//Ignore clusters with low energy
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
-		if(c.E < 3.) continue;
+		if(c.E < 2.) continue;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[event.ep.parentTrack];

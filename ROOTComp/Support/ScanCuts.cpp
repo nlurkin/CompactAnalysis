@@ -20,7 +20,7 @@ Cuts::Cuts(){
 	//Initialize with default values
 	triggerMask = 0x400;
 	numVertex3 = 1;
-	minZVertex = -1700;
+	minZVertex = -2100;
 	maxZVertex = 9000;
 	maxChi2Vertex = 25;
 	maxExtraTracks = 0;
@@ -29,7 +29,7 @@ Cuts::Cuts(){
 	numBadTrackCombi = 0;
 	numXCandidates = 1;
 	boolBadECandidates = true;
-	minTrackMomentum = 5;
+	minTrackMomentum = 2;
 	maxTrackMomentum = 74;
 	numAddGoodCluster = 1;
 	lkrAcceptance = 0;
@@ -43,10 +43,11 @@ Cuts::Cuts(){
 	k2pi.maxPt = 0.0005;
 	kmu3.minPt = 0.0005;
 	kmu3.maxPt = 0.04;
-	k2pi.maxPi0MassDiff = 0.02;
+	k2pi.minPi0MassDiff = 0.115;
+	k2pi.maxPi0MassDiff = 0.145;
 	kmu3.maxPi0MassDiff = 0.01;
-	k2pi.minKaonMassDiff = 0.475;
-	k2pi.maxKaonMassDiff = 0.02;
+	k2pi.minKaonMassDiff = 0.464;
+	k2pi.maxKaonMassDiff = 0.510;
 	kmu3.maxMissMassSq = 0.01;
 	k2pi.pi0Mass2DiffCoarse = 0.01;
 }
