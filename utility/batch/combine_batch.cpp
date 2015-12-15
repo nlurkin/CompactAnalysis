@@ -1089,7 +1089,7 @@ namespace Input{
 		scaleMC(totFit, index, br);
 	}
 
-	int getInputDataGet(TFile *fd){
+	int getInputDataGet(TFile *fd, double factor){
 		fitStruct fitBrch, totFit;
 		TTree *t = (TTree*)fd->Get("fitStruct");
 		t->SetBranchAddress("fitStruct", &fitBrch);

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 
+#define PRINTVAR(v) #v << "= " << v << " "
 #define __CINT_NICO__ 1
 
 #include "pi0DalitzHeader.h"
@@ -20,6 +21,7 @@
 #include <TGraph.h>
 #include "exportClasses.h"
 #include "ScanCuts.h"
+#include <TBrowser.h>
 using namespace std;
 
 /*************************
@@ -416,6 +418,58 @@ namespace Fit{
 		else
 			f = chi2;
 	}
+	void minFctNew_cut(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par,
+			Int_t flag) {
+		double chi2 = 0.;
+		double M_i, D_i, m_i;
+		double N = par[0];
+		double a = par[1];
+		double a_i, b_i, g_i;
+		double sigma2;
+		bool rootMethod = false;
+
+		TH1D *comp, *sigComp;
+		if (par[2] != 0) {
+			rootMethod = true;
+			comp = new TH1D("cut_comp", "comp", sig->GetNbinsX(), bins);
+			sigComp = new TH1D("cut_sigcomp", "sigcomp", sig->GetNbinsX(), bins);
+		}
+		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
+			//if(sig->GetBinLowEdge(i+1)<0.1) continue;
+			M_i = 0;
+			a_i = 0;
+			b_i = 0;
+			g_i = 0;
+
+			for (int j = 0; j < inputMCNbr; ++j) {
+				M_i += cut_dNew->at(j)->GetBinContent(i);
+				a_i += cut_dAlpha->at(j)->GetBinContent(i);
+				b_i += cut_dBeta->at(j)->GetBinContent(i);
+				g_i += cut_dGamma->at(j)->GetBinContent(i);
+			}
+			D_i = cut_sig->GetBinContent(i);
+
+			m_i = funNew(N, a, a_i, b_i, g_i);
+
+			//cout << D_i << " " << m_i << " " << sigma2 << endl;
+			sigma2 = D_i * D_i / M_i + D_i;
+			//totSigma = sigma*sigma + sigMC*sigMC;
+			if (rootMethod){
+				comp->Fill(cut_sig->GetBinCenter(i), m_i);
+				sigComp->SetBinContent(i, D_i);
+			}
+			else if (D_i != 0)
+				chi2 += pow(D_i - m_i, 2) / sigma2;
+		}
+
+		if (rootMethod){
+			f = sigComp->Chi2Test(comp, "UW CHI2 P");
+			delete comp;
+			delete sigComp;
+		}
+		else
+			f = chi2;
+	}
 }
 
 /***************************
@@ -608,9 +662,11 @@ namespace Input {
 			passNormal = true;
 			passCut = false;
 			if(cutsPass){
+//				cout << "ScanID:" << scanID << " defaultScan:" << defaultScan << endl;
 				if(!cutsPass->at(scanID)){
 					fitBrch.selEvents--;
 					passNormal = false;
+//					cout << "Pass default:" << cutsPass->at(defaultScan) << endl;
 					if(cutsPass->at(defaultScan))
 						passCut = true;
 					else
@@ -635,6 +691,7 @@ namespace Input {
 
 			aweight = 1.;
 
+//			cout << "PassNormal:" << passNormal << " passCut:" << passCut << endl;
 			if(passNormal){
 				dNew->at(index)->Fill(x, bweight * aweight * weight);
 				dAlpha->at(index)->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
@@ -822,7 +879,7 @@ namespace Input {
 		initFitStruct(totFit);
 		initFitStruct(cut_totFit);
 		sumTreeFitStruct(fitBrch, t, totFit);
-		sumTreeFitStruct(cut_fitBrch, t, cut_totFit);
+		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit);
 
 		nmc[index] = totFit.selEvents;
 		cut_nmc[index] = cut_totFit.selEvents;
@@ -841,6 +898,14 @@ namespace Input {
 		TH1D* xxxB = (TH1D*) fd->Get("dBeta");
 		TH1D* xxxG = (TH1D*) fd->Get("dGamma");
 
+		TH1D* cut_xxx1 = (TH1D*) fd->Get("cut_d1");
+		TH1D* cut_xxx2 = (TH1D*) fd->Get("cut_d2");
+		TH1D* cut_xxx3 = (TH1D*) fd->Get("cut_d3");
+		TH1D* cut_xxx4 = (TH1D*) fd->Get("cut_dNew");
+		TH1D* cut_xxxA = (TH1D*) fd->Get("cut_dAlpha");
+		TH1D* cut_xxxB = (TH1D*) fd->Get("cut_dBeta");
+		TH1D* cut_xxxG = (TH1D*) fd->Get("cut_dGamma");
+
 		tempFD->cd();
 		d1->push_back((TH1D*) xxx1->Clone());
 		d2->push_back((TH1D*) xxx2->Clone());
@@ -858,36 +923,28 @@ namespace Input {
 		dBeta->at(index)->SetName(TString::Format("dBeta_%i", index));
 		dGamma->at(index)->SetName(TString::Format("dGamma_%i", index));
 
-		xxx1 = (TH1D*) fd->Get("cut_d1");
-		xxx2 = (TH1D*) fd->Get("cut_d2");
-		xxx3 = (TH1D*) fd->Get("cut_d3");
-		xxx4 = (TH1D*) fd->Get("cut_dNew");
-		xxxA = (TH1D*) fd->Get("cut_dAlpha");
-		xxxB = (TH1D*) fd->Get("cut_dBeta");
-		xxxG = (TH1D*) fd->Get("cut_dGamma");
-
-		tempFD->cd();
-		cut_d1->push_back((TH1D*) xxx1->Clone());
-		cut_d2->push_back((TH1D*) xxx2->Clone());
-		cut_d3->push_back((TH1D*) xxx3->Clone());
-		cut_dNew->push_back((TH1D*) xxx4->Clone());
-		cut_dAlpha->push_back((TH1D*) xxxA->Clone());
-		cut_dBeta->push_back((TH1D*) xxxB->Clone());
-		cut_dGamma->push_back((TH1D*) xxxG->Clone());
+		cut_d1->push_back((TH1D*) cut_xxx1->Clone());
+		cut_d2->push_back((TH1D*) cut_xxx2->Clone());
+		cut_d3->push_back((TH1D*) cut_xxx3->Clone());
+		cut_dNew->push_back((TH1D*) cut_xxx4->Clone());
+		cut_dAlpha->push_back((TH1D*) cut_xxxA->Clone());
+		cut_dBeta->push_back((TH1D*) cut_xxxB->Clone());
+		cut_dGamma->push_back((TH1D*) cut_xxxG->Clone());
 		cut_d1->at(index)->SetName(TString::Format("cut_d1_%i", index));
 		cut_d2->at(index)->SetName(TString::Format("cut_d2_%i", index));
 		cut_d3->at(index)->SetName(TString::Format("cut_d3_%i", index));
 		cut_dNew->at(index)->SetName(TString::Format("cut_dNew_%i", index));
 
-		dAlpha->at(index)->SetName(TString::Format("cut_dAlpha_%i", index));
-		dBeta->at(index)->SetName(TString::Format("cut_dBeta_%i", index));
-		dGamma->at(index)->SetName(TString::Format("cut_dGamma_%i", index));
+		cut_dAlpha->at(index)->SetName(TString::Format("cut_dAlpha_%i", index));
+		cut_dBeta->at(index)->SetName(TString::Format("cut_dBeta_%i", index));
+		cut_dGamma->at(index)->SetName(TString::Format("cut_dGamma_%i", index));
 
+		cut_dNew->at(index)->SaveAs("toto.png");
 		scaleMC(totFit, index, br);
 		scaleMC_cut(cut_totFit, index, br);
 	}
 
-	int getInputDataGet(TFile *fd) {
+	int getInputDataGet(TFile *fd, double factor) {
 		fitStruct fitBrch, totFit;
 		TTree *t = (TTree*) fd->Get("fitStruct");
 		t->SetBranchAddress("fitStruct", &fitBrch);
@@ -900,7 +957,7 @@ namespace Input {
 		initFitStruct(totFit);
 		initFitStruct(cut_totFit);
 		sumTreeFitStruct(fitBrch, t, totFit);
-		sumTreeFitStruct(cut_fitBrch, t, cut_totFit);
+		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit);
 
 		cout << fitBrch.selEvents << endl;
 		cout << totFit.selEvents << endl;
@@ -1402,6 +1459,7 @@ void fit_show(TString inFile) {
 	factorGreek = ((double) (cut_NSig)) / totalGreek;
 	//double factor = nsig/(d1->at(0)->Integral() + d2->at(0)->Integral() + d3->at(0)->Integral());
 	for (int i = 0; i < inputMCNbr; ++i) {
+		cout << PRINTVAR(factorNew) << endl;
 		cut_d1->at(i)->Scale(factor);
 		cut_d2->at(i)->Scale(factor);
 		cut_d3->at(i)->Scale(factor);
@@ -1444,7 +1502,7 @@ void fit_show(TString inFile) {
 	fitResult resultNew, cut_resultNew;
 	chi2New = fitProcedure(resultNew, Fit::minFctNew, false);
 	double chi2ProbNew = TMath::Prob(chi2New, 50-2);
-	cut_chi2New = fitProcedure(cut_resultNew, Fit::minFctNew, false);
+	cut_chi2New = fitProcedure(cut_resultNew, Fit::minFctNew_cut, false);
 	double cut_chi2ProbNew = TMath::Prob(cut_chi2New, 50-2);
 	//chi2pv = chi2pValue(chi2, 138);
 
@@ -1454,7 +1512,7 @@ void fit_show(TString inFile) {
 	fitResult resultNewROOT, cut_resultNewROOT;
 	chi2NewROOT = fitProcedure(resultNewROOT, Fit::minFctNew, true);
 	double chi2ProbNewROOT = TMath::Prob(chi2NewROOT, 50-1);
-	cut_chi2NewROOT = fitProcedure(cut_resultNewROOT, Fit::minFctNew, true);
+	cut_chi2NewROOT = fitProcedure(cut_resultNewROOT, Fit::minFctNew_cut, true);
 	double cut_chi2ProbNewROOT = TMath::Prob(cut_chi2NewROOT, 50-1);
 	//chi2pv = chi2pValue(chi2, 138);
 

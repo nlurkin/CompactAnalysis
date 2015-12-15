@@ -434,28 +434,37 @@ void plotpi0mass(){
 }
 
 void plot_only1(){
-	int npoints = 		  7;
-	double cutValue		 [7] = 	{30,35,40,45,50,55,60};
-	double pointsNewRoot [7] = 	{0.0476085,0.0401189,0.0381292,0.0334274,0.0356361,0.03627,0.0361639};
-	double errNewRoot	 [7] = 	{0.0132488,0.0100012,0.00868801,0.00807908,0.00783057,0.0077561,0.00774712};
-	double pointsNEvents [7] = 	{129595,211174,271140,307814,325379,330574,331057};
-
+	int npoints = 		  12;
+	double cutValue		 [12] = 	{-2100,-2000,-1900,-1800,-1700,-1600,-1500,-1400,-1300,-1200,-1100,-1000};
+	double pointsNewRoot [12] = 	{0.0361575,0.0361575,0.0361575,0.0361575,0.0371057,0.0379628,0.0370318,0.0350169,0.0344579,0.035131,0.0354402,0.0340044};
+	double errNewRoot	 [12] = 	{0.00774705,0.00774705,0.00774705,0.00774705,0.0077795,0.00781397,0.00784396,0.00787361,0.00790872,0.00795052,0.00799469,0.00803385};
+	double pointsNEvents [12] = 	{331059,331059,331059,331059,328668,326136,323482,320743,317877,314904,311803,308644};
+	double errUncorrRoot [12] = 	{0.000709814,0.000709814,0.000709814,0.000709814,0,0.000733149,0.001003538,0.001213719,0.001423809,0.001640167,0.001842403,0.002005524};
 	//Creation
 	TGraphErrors *pt2NewRoot = new TGraphErrors();
 	pt2NewRoot->SetName("pt2NewRoot");
+	TGraphErrors *pt2NewRootUncorr = new TGraphErrors();
+	pt2NewRootUncorr->SetName("pt2NewRootUncorr");
 	//Points
 	for(int i=0; i<npoints; ++i){
 		pt2NewRoot->SetPoint(i, cutValue[i], pointsNewRoot[i]);
+		pt2NewRootUncorr->SetPoint(i, cutValue[i], pointsNewRoot[i]);
 	}
 	//Errors
 	for(int i=0; i<npoints; ++i){
 		pt2NewRoot->SetPointError(i, 0, errNewRoot[i]);
+		pt2NewRootUncorr->SetPointError(i, 0, errUncorrRoot[i]);
 	}
 	//Style
 	pt2NewRoot->SetMarkerStyle(23);
 	pt2NewRoot->SetMarkerColor(4);
 	pt2NewRoot->SetLineColor(4);
 	pt2NewRoot->SetFillStyle(0);
+
+	pt2NewRootUncorr->SetMarkerStyle(23);
+	pt2NewRootUncorr->SetMarkerColor(4);
+	pt2NewRootUncorr->SetLineColor(4);
+	pt2NewRootUncorr->SetFillStyle(0);
 
 	//Creation
 	TGraph *pt2Selected = new TGraph();
@@ -480,6 +489,16 @@ void plot_only1(){
 	pt2NewRoot->GetYaxis()->SetTitleOffset(1.5);
 
 	pt2NewRoot->Draw("AP");
+
+	TCanvas *c = new TCanvas("plotUncorr");
+	c->SetGrid(1, 1);
+
+	pt2NewRootUncorr->SetTitle("FF Slope fit result (Uncorrelated errors)");
+	pt2NewRootUncorr->GetXaxis()->SetTitle("Cut value");
+	pt2NewRootUncorr->GetYaxis()->SetTitle("FF Slope a");
+	pt2NewRootUncorr->GetYaxis()->SetTitleOffset(1.5);
+
+	pt2NewRootUncorr->Draw("AP");
 
 	//Plotting
 	TCanvas *c = new TCanvas("Selected");

@@ -20,7 +20,7 @@ mclegends=K^{{+}}->#pi^{{+}}#pi^{{0}}_{{d}}
 binsfile=/afs/cern.ch/user/n/nlurkin/work/bins/bins_x0.1.dat
 equalbin=true
 
-scanid={scanV}"""
+{comment}scanid={scanV}"""
 
 fileGlobalTemplate = """mcfiles= /afs/cern.ch/user/n/nlurkin/work/L2_L3/{sampleName}/listmu.lst 
 mcIndex=0
@@ -37,7 +37,7 @@ datalegends=Data
 binsfile=/afs/cern.ch/user/n/nlurkin/work/bins/bins_x0.1.dat
 equalbin=true
 
-scanid={scanV}"""
+{comment}scanid={scanV}"""
 
 fileAllTemplate = """
 mcIndex=0 1
@@ -73,16 +73,19 @@ class myThread (threading.Thread):
         printTo(self.tID+10, "\rThread {0} finished for scan {1}".format(self.listFile, self.scanID))
         
 
-def generateFiles(sample, scanV):
+def generateFiles(sample, scanV, noScan):
+    comment = ""
+    if noScan:
+        comment = "#"
     for fileID in range(1,7):
         with open("listFile{0}.cfg".format(fileID), "w") as fd:
-            fd.write(filePiTemplate.format(sampleName=sample, scanV=scanV, fileID=fileID))
+            fd.write(filePiTemplate.format(sampleName=sample, scanV=scanV, fileID=fileID, comment=comment))
 
     with open("listFile_global.cfg".format(fileID), "w") as fd:
-        fd.write(fileGlobalTemplate.format(sampleName=sample, scanV=scanV, fileID=fileID))
+        fd.write(fileGlobalTemplate.format(sampleName=sample, scanV=scanV, fileID=fileID, comment=comment))
 
     with open("listFile.cfg".format(fileID), "w") as fd:
-        fd.write(fileAllTemplate.format(sampleName=sample, scanV=scanV, fileID=fileID))
+        fd.write(fileAllTemplate.format(sampleName=sample, scanV=scanV, fileID=fileID, comment=comment))
 
 def setNonBlocking(fd):
     """
@@ -211,7 +214,11 @@ if __name__=="__main__":
         
     if not testSample(sample):
         sys.exit(0)
-        
+    
+    if nScan==0:
+        generateFiles(sample, 0, True)
+        runParts(0)
+        runFit(0)
     for scanV in range(startScan, nScan):
         generateFiles(sample, scanV)
         runParts(scanV)

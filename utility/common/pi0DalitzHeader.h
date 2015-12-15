@@ -77,6 +77,7 @@ vector<double> brs;
 vector<TString> mcFileNames;
 vector<TString> dataFileNames;
 vector<int> mcIndexes;
+vector<double> dataFactor;
 vector<TString> mcOutputFiles;
 vector<TString> dataOutputFiles;
 vector<TString> modelFiles;
@@ -123,7 +124,7 @@ namespace Input{
 	void getInputMCFill(TFile *fd, TFile *fdo, double br, unsigned int index);
 	int getInputDataFill(TFile *fd, TFile *fdo);
 	void getInputMCGet(TFile *fd, double br, unsigned int index);
-	int getInputDataGet(TFile *fd);
+	int getInputDataGet(TFile *fd, double factor);
 }
 
 void initNewChannel();
@@ -219,6 +220,7 @@ bool readConfig(TString confFile){
 			else if(key.CompareTo("datacolors")==0) dataColors.push_back(entry.Atoi());
 			else if(key.CompareTo("datalegends")==0) dataLegendTitle.push_back(entry);
 			else if(key.CompareTo("mcIndex")==0) mcIndexes.push_back(entry.Atoi());
+			else if(key.CompareTo("datafactor")==0) dataFactor.push_back(entry.Atof());
 			else if(key.CompareTo("runstart")==0) runStart = entry.Atoi();
 			else if(key.CompareTo("runend")==0) runEnd = entry.Atoi();
 			else if(key.CompareTo("periodstart")==0) 	periodStart = entry.Atoi();
@@ -394,7 +396,7 @@ void readFilesGet(){
 		ffd = TFile::Open(dataOutputFiles[i]);
 
 		//Request the Histo reading function
-		Input::getInputDataGet(ffd);
+		Input::getInputDataGet(ffd, dataFactor[i]);
 
 		//Close input file
 		ffd->Close();
