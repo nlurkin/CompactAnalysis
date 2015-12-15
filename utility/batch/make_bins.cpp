@@ -110,7 +110,7 @@ namespace Input {
 
 	}
 
-	int getInputDataGet(TFile *fd) {
+	int getInputDataGet(TFile *fd, double factor) {
 		return 0;
 	}
 }

@@ -49,6 +49,7 @@ mclegends=K^{{+}}->#pi^{{0}}_{{d}}#mu^{{+}}#nu K^{{+}}->#pi^{{+}}#pi^{{0}}_{{d}}
 dataout=data_{scanV}.root
 datacolors=360
 datalegends=Data
+datafactor=1
 
 binsfile=/afs/cern.ch/user/n/nlurkin/work/bins/bins_x0.1.dat
 equalbin=true"""

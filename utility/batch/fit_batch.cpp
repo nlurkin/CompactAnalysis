@@ -972,14 +972,14 @@ namespace Input {
 		dSig->push_back((TH1D*) xxx->Clone());
 		dSig->at(index)->SetName(TString::Format("sig_%i", index));
 
-		sig->Add(dSig->at(index), 1.);
+		sig->Add(dSig->at(index), factor);
 
 		xxx = (TH1D*) fd->Get("cut_sig");
 		tempFD->cd();
 		cut_dSig->push_back((TH1D*) xxx->Clone());
 		cut_dSig->at(index)->SetName(TString::Format("cut_sig_%i", index));
 
-		cut_sig->Add(cut_dSig->at(index), 1.);
+		cut_sig->Add(cut_dSig->at(index), factor);
 
 		return NSig;
 	}
@@ -1480,8 +1480,8 @@ void fit_show(TString inFile) {
 	fitResult result1, cut_result1;
 	chi21 = fitProcedure(result1, Fit::minFct, false);
 	double chi2Prob1 = TMath::Prob(chi21, 50-2);
-	cut_chi21 = fitProcedure(cut_result1, Fit::minFct, false);
-	double cut_chi2Prob1 = TMath::Prob(cut_chi21, 50-2);
+//	cut_chi21 = fitProcedure(cut_result1, Fit::minFct, false);
+//	double cut_chi2Prob1 = TMath::Prob(cut_chi21, 50-2);
 	//double chi2pv = chi2pValue(chi2, nbins-2);
 
 	//chi2Profile(result1, "1");
@@ -1491,8 +1491,8 @@ void fit_show(TString inFile) {
 	fitResult resultROOT, cut_resultROOT;
 	chi2ROOT = fitProcedure(resultROOT, Fit::minFct, true);
 	double chi2ProbROOT = TMath::Prob(chi2ROOT, 50-1);
-	cut_chi2ROOT = fitProcedure(cut_resultROOT, Fit::minFct, true);
-	double cut_chi2ProbROOT = TMath::Prob(cut_chi2ROOT, 50-1);
+//	cut_chi2ROOT = fitProcedure(cut_resultROOT, Fit::minFct, true);
+//	double cut_chi2ProbROOT = TMath::Prob(cut_chi2ROOT, 50-1);
 	//chi2pv = chi2pValue(chi2, 138);
 
 	//chi2Profile(resultROOT, "ROOT");
@@ -1502,8 +1502,8 @@ void fit_show(TString inFile) {
 	fitResult resultNew, cut_resultNew;
 	chi2New = fitProcedure(resultNew, Fit::minFctNew, false);
 	double chi2ProbNew = TMath::Prob(chi2New, 50-2);
-	cut_chi2New = fitProcedure(cut_resultNew, Fit::minFctNew_cut, false);
-	double cut_chi2ProbNew = TMath::Prob(cut_chi2New, 50-2);
+//	cut_chi2New = fitProcedure(cut_resultNew, Fit::minFctNew_cut, false);
+//	double cut_chi2ProbNew = TMath::Prob(cut_chi2New, 50-2);
 	//chi2pv = chi2pValue(chi2, 138);
 
 	//chi2Profile(resultNew, "New");
@@ -1512,8 +1512,8 @@ void fit_show(TString inFile) {
 	fitResult resultNewROOT, cut_resultNewROOT;
 	chi2NewROOT = fitProcedure(resultNewROOT, Fit::minFctNew, true);
 	double chi2ProbNewROOT = TMath::Prob(chi2NewROOT, 50-1);
-	cut_chi2NewROOT = fitProcedure(cut_resultNewROOT, Fit::minFctNew_cut, true);
-	double cut_chi2ProbNewROOT = TMath::Prob(cut_chi2NewROOT, 50-1);
+	//cut_chi2NewROOT = fitProcedure(cut_resultNewROOT, Fit::minFctNew_cut, true);
+	//double cut_chi2ProbNewROOT = TMath::Prob(cut_chi2NewROOT, 50-1);
 	//chi2pv = chi2pValue(chi2, 138);
 
 	//chi2Profile(resultNew, "New");
@@ -1543,10 +1543,10 @@ void fit_show(TString inFile) {
 	cout << "Slope a : " << resultNewROOT.formFactor << "+-" << resultNewROOT.formFactorErr << endl;
 	cout << "Chi2 : " << chi2NewROOT << " prob : " << chi2ProbNewROOT << " p-value : " << chi2pv << endl;
 
-	cout << "######## Procedure New ROOT result (cut)#########" << endl << "-------------------------------------" << endl;
-	cout << "Global normalization : " << cut_resultNewROOT.norm << "+-" << cut_resultNewROOT.normErr << endl;
-	cout << "Slope a : " << cut_resultNewROOT.formFactor << "+-" << cut_resultNewROOT.formFactorErr << endl;
-	cout << "Chi2 : " << cut_chi2NewROOT << " prob : " << cut_chi2ProbNewROOT << " p-value : " << cut_chi2pv << endl;
+//	cout << "######## Procedure New ROOT result (cut)#########" << endl << "-------------------------------------" << endl;
+//	cout << "Global normalization : " << cut_resultNewROOT.norm << "+-" << cut_resultNewROOT.normErr << endl;
+//	cout << "Slope a : " << cut_resultNewROOT.formFactor << "+-" << cut_resultNewROOT.formFactorErr << endl;
+//	cout << "Chi2 : " << cut_chi2NewROOT << " prob : " << cut_chi2ProbNewROOT << " p-value : " << cut_chi2pv << endl;
 
 	cout << endl << endl << "RESULTLINE:";
 	cout << result1.norm << ";" << result1.normErr << ";" << result1.formFactor << ";" << result1.formFactorErr << ";" << chi21 << ";" << chi2Prob1 << ";";
@@ -1555,11 +1555,11 @@ void fit_show(TString inFile) {
 	cout << resultNewROOT.norm << ";" << resultNewROOT.normErr << ";" << resultNewROOT.formFactor << ";" << resultNewROOT.formFactorErr << ";" << chi2NewROOT << ";" << chi2ProbNewROOT << ";";
 	cout << NSig << ";" << nmc[0] << ";" << nmc[1] << endl;
 
-	cout << cut_result1.norm << ";" << cut_result1.normErr << ";" << cut_result1.formFactor << ";" << cut_result1.formFactorErr << ";" << cut_chi21 << ";" << cut_chi2Prob1 << ";";
-	cout << cut_resultROOT.norm << ";" << cut_resultROOT.normErr << ";" << cut_resultROOT.formFactor << ";" << cut_resultROOT.formFactorErr << ";" << cut_chi2ROOT << ";" << cut_chi2ProbROOT << ";";
-	cout << cut_resultNew.norm << ";" << cut_resultNew.normErr << ";" << cut_resultNew.formFactor << ";" << cut_resultNew.formFactorErr << ";" << cut_chi2New << ";" << cut_chi2ProbNew << ";";
-	cout << cut_resultNewROOT.norm << ";" << cut_resultNewROOT.normErr << ";" << cut_resultNewROOT.formFactor << ";" << cut_resultNewROOT.formFactorErr << ";" << cut_chi2NewROOT << ";" << cut_chi2ProbNewROOT << ";";
-	cout << cut_NSig << ";" << nmc[0] << ";" << nmc[1] << endl;
+	//cout << cut_result1.norm << ";" << cut_result1.normErr << ";" << cut_result1.formFactor << ";" << cut_result1.formFactorErr << ";" << cut_chi21 << ";" << cut_chi2Prob1 << ";";
+	//cout << cut_resultROOT.norm << ";" << cut_resultROOT.normErr << ";" << cut_resultROOT.formFactor << ";" << cut_resultROOT.formFactorErr << ";" << cut_chi2ROOT << ";" << cut_chi2ProbROOT << ";";
+	//cout << cut_resultNew.norm << ";" << cut_resultNew.normErr << ";" << cut_resultNew.formFactor << ";" << cut_resultNew.formFactorErr << ";" << cut_chi2New << ";" << cut_chi2ProbNew << ";";
+	//cout << cut_resultNewROOT.norm << ";" << cut_resultNewROOT.normErr << ";" << cut_resultNewROOT.formFactor << ";" << cut_resultNewROOT.formFactorErr << ";" << cut_chi2NewROOT << ";" << cut_chi2ProbNewROOT << ";";
+	//cout << cut_NSig << ";" << nmc[0] << ";" << nmc[1] << endl;
 
 
 	//tempFD->Close();
