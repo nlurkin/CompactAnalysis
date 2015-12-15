@@ -1274,7 +1274,7 @@ double fitProcedure(fitResult& result,
 	int fixParam = useROOT ? 1 : 0;
 	minuit.SetFCN(minimFct);
 
-	args[0] = 1;
+	args[0] = 0;
 	minuit.mnexcm("SET PRINTOUT", args, 1, flag);
 	args[0] = 1;
 	minuit.mnexcm("SET ERROR", args, 1, flag);
