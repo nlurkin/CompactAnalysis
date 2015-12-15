@@ -878,8 +878,8 @@ namespace Input {
 
 		initFitStruct(totFit);
 		initFitStruct(cut_totFit);
-		sumTreeFitStruct(fitBrch, t, totFit);
-		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit);
+		sumTreeFitStruct(fitBrch, t, totFit, 1);
+		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, 1);
 
 		nmc[index] = totFit.selEvents;
 		cut_nmc[index] = cut_totFit.selEvents;
@@ -956,8 +956,8 @@ namespace Input {
 		cout << fitBrch.selEvents << endl;
 		initFitStruct(totFit);
 		initFitStruct(cut_totFit);
-		sumTreeFitStruct(fitBrch, t, totFit);
-		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit);
+		sumTreeFitStruct(fitBrch, t, totFit, factor);
+		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, factor);
 
 		cout << fitBrch.selEvents << endl;
 		cout << totFit.selEvents << endl;

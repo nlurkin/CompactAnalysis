@@ -41,14 +41,14 @@ void initFitStruct(fitStruct &s){
 	s.totEvents = 0;
 }
 
-void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out){
+void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor){
 	for(int i=0; i<t->GetEntries(); i++){
 		t->GetEntry(i);
-		out.n1 += in.n1;
-		out.nx += in.nx;
-		out.nxx += in.nxx;
-		out.selEvents += in.selEvents;
-		out.totEvents += in.totEvents;
+		out.n1 			+= factor*in.n1;
+		out.nx 			+= factor*in.nx;
+		out.nxx 		+= factor*in.nxx;
+		out.selEvents 	+= factor*in.selEvents;
+		out.totEvents 	+= factor*in.totEvents;
 	}
 
 	cout << "Total events: \t" << out.totEvents << endl;
