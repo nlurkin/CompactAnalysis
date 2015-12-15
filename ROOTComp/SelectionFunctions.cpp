@@ -559,8 +559,8 @@ int pi0d_tracksAcceptance(){
 		if(options.isOptDebug()) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		if(options.isOptDebug()) cout << "Track quality :\t\t" << rawEvent.track[t.trackID].quality << "< 0.7 : rejected" << endl;
-		if(rawEvent.track[t.trackID].quality < 0.7) badTrack = true;
+//		if(options.isOptDebug()) cout << "Track quality :\t\t" << rawEvent.track[t.trackID].quality << "< 0.7 : rejected" << endl;
+//		if(rawEvent.track[t.trackID].quality < 0.7) badTrack = true;
 	}
 
 	//At least 1 e+/e- track in lkr acceptance
