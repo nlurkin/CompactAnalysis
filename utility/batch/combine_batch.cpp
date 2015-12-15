@@ -694,7 +694,7 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 //	}
 
 
-	if(!testAdditionalCondition(evt, corrEvent, rootGeom)) return;
+	if(!testAdditionalCondition(evt, corrEvent, rootGeom, mrawEvent)) return;
 	d->at(++i)->Fill(evt->kaon.P.M(), weight);
 
 	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);

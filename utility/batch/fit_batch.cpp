@@ -679,7 +679,7 @@ namespace Input {
 				continue;
 
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch))
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch))
 				continue;
 			weight = applyWeights(burstBrch->nrun) * corrBrch->weight;
 
@@ -848,7 +848,7 @@ namespace Input {
 					cut_fitBrch.selEvents--;
 			}
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch)) continue;
 
 			x = eventBrch->x;
 			if(mcEvent) xTrue = mcEvent->xTrue;
@@ -956,14 +956,14 @@ namespace Input {
 		cout << fitBrch.selEvents << endl;
 		initFitStruct(totFit);
 		initFitStruct(cut_totFit);
-		sumTreeFitStruct(fitBrch, t, totFit, factor);
-		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, factor);
+		sumTreeFitStruct(fitBrch, t, totFit, 1);
+		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, 1);
 
 		cout << fitBrch.selEvents << endl;
 		cout << totFit.selEvents << endl;
 		//Set event nb
-		NSig = totFit.selEvents;
-		cut_NSig = cut_totFit.selEvents;
+		NSig += factor*totFit.selEvents;
+		cut_NSig = factor*cut_totFit.selEvents;
 
 		//Create histo
 		int index = dSig->size();

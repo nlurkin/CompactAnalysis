@@ -284,7 +284,7 @@ namespace Input {
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
 		initFitStruct(totFit);
-		sumTreeFitStruct(fitBrch, t, totFit);
+		sumTreeFitStruct(fitBrch, t, totFit, 1);
 
 		//Set event nb
 		//int nevt = totFit.selEvents;
@@ -326,7 +326,7 @@ namespace Input {
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
 		initFitStruct(totFit);
-		sumTreeFitStruct(fitBrch, t, totFit);
+		sumTreeFitStruct(fitBrch, t, totFit, factor);
 
 		//Set event nb
 		NSig = totFit.selEvents;

@@ -463,21 +463,33 @@ void loadBins(double *bins, int& nbins){
 	}
 }
 
-bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom){
+bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom, ROOTRawEvent *rawEvent){
 	TVector3 propPos, propPos2, propPos3;
 
 	/*if(rootBurst->period!=1){
 		fitBrch.selEvents--;
 		return;
 	}*/
-	/*propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
+	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->ep.parentTrack]);
 	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
-	if(distance2D(propPos, TVector3(0,0,0))<20 && distance2D(propPos2, TVector3(0,0,0))<20 ){
+	//e+ in square
+	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20){
 		fitBrch.selEvents--;
 		return false;
-	}*/
+	}
 
+	//e- in square
+	if(fabs(propPos2.X())<20 && fabs(propPos2.Y())<20){
+		fitBrch.selEvents--;
+		return false;
+	}
+
+	if(rawEvent->vtx[corrEvent->goodVertexID].position.Z() < -1700){
+		fitBrch.selEvents--;
+		cut_fitBrch.selEvents--;
+		return false;
+	}
 	if(evt->x <= 0.1 || evt->x > 1) {
 		fitBrch.selEvents--;
 		cut_fitBrch.selEvents--;
