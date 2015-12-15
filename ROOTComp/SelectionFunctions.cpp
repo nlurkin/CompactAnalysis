@@ -281,11 +281,7 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
 	double x2 = pow((tem+t2ep).M()/Mpi0,2.);
 
-	cout << "################################################" << tem.E() << " " << t1ep.E()<< endl;
-	cout << (tem.E()-t1ep.E()) << " " << Mpi0 << " " << Mpi0*(1-x1) << endl;
-	//double y1 = 2*(tem.E()-t1ep.E())/(Mpi0*(1-x1));
 	double y1 = 2*ee1*(t1ep-tem)/(pow(Mpi0,2)*(1-x1));
-	//double y2 = 2*(tem.E()-t2ep.E())/(Mpi0*(1-x2));
 	double y2 = 2*ee2*(t2ep-tem)/(pow(Mpi0,2)*(1-x2));
 
 	if(t==OptionsParser::K2PI){
