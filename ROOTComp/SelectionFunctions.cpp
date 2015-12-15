@@ -278,6 +278,11 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 
 	//diffk1 = 0;
 	//diffk2 = 0;
+	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
+	double x2 = pow((tem+t2ep).M()/Mpi0,2.);
+
+	double y1 = 2*(tem.E()-t1ep.E())/(Mpi0*(1-x1));
+	double y2 = 2*(tem.E()-t2ep.E())/(Mpi0*(1-x2));
 
 	if(t==OptionsParser::K2PI){
 		if(options.isOptDebug()){
@@ -287,7 +292,9 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 		}
 		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
 		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
-				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff){
+				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
+				&& x1<1 && x1>0
+				&& fabs(y1)<1 && fabs(y1)>0){
 			nCandidates++;
 			xCandidate = goodTrack2;
 		}
@@ -298,7 +305,10 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 		}
 		//if( (diffpi02<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk2<io.cutsDefinition.k2pi.maxKaonMassDiff){
 		if( ee2.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee2.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
-				&& k2.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k2.M() < io.cutsDefinition.k2pi.maxKaonMassDiff){
+				&& k2.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k2.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
+				&& x2<1 && x2>0
+				&& fabs(y2)<1 && fabs(y2)>0){
+
 			nCandidates++;
 			xCandidate = goodTrack1;
 		}
