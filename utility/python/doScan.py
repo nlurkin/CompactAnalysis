@@ -65,11 +65,11 @@ class myThread (threading.Thread):
     def run(self):
         printTo(self.tID+10, "\rRunning " + self.listFile)
         if self.final:
-            resultLine = runSSH("lxplus", "source env32.sh; cd {1}; ../fit {0} -g;".format(self.listFile, os.path.abspath(".")), self.tID, True)
+            resultLine = runSSH("lxplus", "source env32.sh; cd {1}; ~/Compact/utility/build/fit {0} -g;".format(self.listFile, os.path.abspath(".")), self.tID, True)
             with open("result.dat", "a") as fd:
                 fd.write("{0}={1}\n".format(self.scanID, resultLine))
         else:
-            runSSH("lxplus", "source env32.sh; cd {1}; ../fit {0};".format(self.listFile, os.path.abspath(".")), self.tID)
+            runSSH("lxplus", "source env32.sh; cd {1}; ~/Compact/utility/build/fit {0};".format(self.listFile, os.path.abspath(".")), self.tID)
         
         printTo(self.tID+10, "\rThread {0} finished for scan {1}".format(self.listFile, self.scanID))
         

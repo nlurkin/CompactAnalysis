@@ -98,7 +98,7 @@ namespace Input {
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch)) continue;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch)) continue;
 			x = eventBrch->x;
 
 			setVals.insert(x);
