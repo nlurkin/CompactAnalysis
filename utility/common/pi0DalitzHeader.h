@@ -474,7 +474,7 @@ bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEven
 	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z, corrEvent->pTrack[evt->em.parentTrack]);
 
 	//e+ in square
-	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20){
+/*	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20){
 		fitBrch.selEvents--;
 		return false;
 	}
@@ -483,7 +483,7 @@ bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEven
 	if(fabs(propPos2.X())<20 && fabs(propPos2.Y())<20){
 		fitBrch.selEvents--;
 		return false;
-	}
+	}*/
 
 	if(rawEvent->vtx[corrEvent->goodVertexID].position.Z() < -1700){
 		fitBrch.selEvents--;
