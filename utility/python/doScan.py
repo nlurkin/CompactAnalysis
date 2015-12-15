@@ -221,7 +221,7 @@ if __name__=="__main__":
         runParts(0)
         runFit(0)
     for scanV in range(startScan, nScan):
-        generateFiles(sample, scanV)
+        generateFiles(sample, scanV, False)
         runParts(scanV)
         runFit(scanV)
         mvFiles(scanV)
