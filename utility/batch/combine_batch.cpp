@@ -404,8 +404,8 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "Y_DCH4_gamma", ++i, v);
 
 	getHisto(fd, "Zvtx", ++i, v);
-	getHisto(fd, "Zvtx_low", ++i, v);
-	getHisto(fd, "Zvtx_high", ++i, v);
+//	getHisto(fd, "Zvtx_low", ++i, v);
+//	getHisto(fd, "Zvtx_high", ++i, v);
 	getHisto(fd, "Qvtx", ++i, v);
 	getHisto(fd, "CDAvtx", ++i, v);
 	getHisto(fd, "Pt2", ++i, v);
@@ -1495,8 +1495,8 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	if(maxPlots--==0) return;
 
 	doPlot(++i, "Zvtx", "Vertex Z", leg, mcColors);
-	doPlot(++i, "Zvtx_low", "Vertex Z", leg, mcColors);
-	doPlot(++i, "Zvtx_high", "Vertex Z", leg, mcColors);
+//	doPlot(++i, "Zvtx_low", "Vertex Z", leg, mcColors);
+//	doPlot(++i, "Zvtx_high", "Vertex Z", leg, mcColors);
 	doPlot(++i, "Qvtx", "Vertex Charge", leg, mcColors);
 	doPlot(++i, "CDAvtx", "Vertex CDA", leg, mcColors);
 	doPlot(++i, "Pt2", "Square transverse momentum", leg, mcColors);
