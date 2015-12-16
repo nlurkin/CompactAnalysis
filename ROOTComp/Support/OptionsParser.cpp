@@ -10,7 +10,7 @@
 
 OptionsParser::OptionsParser() :
 		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false),
-		doScan(false), doNegativePID(false), nScan(0), startEvent(0), selectionType(K2PI), desc("Allowed options") {
+		doScan(false), doNegativePID(false), doInvertTime(false), nScan(0), startEvent(0), selectionType(K2PI), desc("Allowed options") {
 	// Declare the supported options.
 	desc.add_options()("help,h", "produce help message")
 			("nevt,n", po::value<int>(), "max number of events")
@@ -20,6 +20,7 @@ OptionsParser::OptionsParser() :
 			("prefix,p", po::value<std::string>(), "prefix for output files")
 			("debug,d",	po::value<bool>()->implicit_value(true)->default_value(false), "Activate verbose debugging")
 			("negpid",	po::value<bool>()->implicit_value(true)->default_value(false), "Activate negative PID (assign pion to negative beam charge)")
+			("invertt",	po::value<bool>()->implicit_value(true)->default_value(false), "Invert cluster timing cut")
 			("filter,f", po::value<std::string>(), "Filter file")
 			("dooutput", po::value<bool>()->implicit_value(true)->default_value(false), "Activate output text files")
 			("period", po::value<int>()->default_value(0), "Keep only events from specified period")
@@ -82,6 +83,8 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 		optDebug = vm["debug"].as<bool>();
 	if (vm.count("negpid"))
 		doNegativePID = vm["negpid"].as<bool>();
+	if (vm.count("invertt"))
+		doInvertTime = vm["invertt"].as<bool>();
 	if (vm.count("period"))
 		periodKeep = vm["period"].as<int>();
 	if (vm.count("dooutput"))
@@ -138,6 +141,8 @@ void OptionsParser::printSummary(CompactIO &io) {
 		std::cout << "Export all events requested" << std::endl;
 	if (doNegativePID)
 		std::cout << "Negative PID activated" << std::endl;
+	if (doInvertTime)
+		std::cout << "Timing cut invert activated" << std::endl;
 	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 	std::cout << std::endl << std::endl;
 }

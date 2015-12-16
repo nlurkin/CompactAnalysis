@@ -580,8 +580,8 @@ int pi0d_tracksAcceptance(){
 		if(options.isOptDebug()) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-//		if(options.isOptDebug()) cout << "Track quality :\t\t" << rawEvent.track[t.trackID].quality << "< 0.7 : rejected" << endl;
-//		if(rawEvent.track[t.trackID].quality < 0.7) badTrack = true;
+		if(options.isOptDebug()) cout << "Track quality :\t\t" << rawEvent.track[t.trackID].quality << "< 0.7 : rejected" << endl;
+		if(rawEvent.track[t.trackID].quality < 0.7) badTrack = true;
 	}
 
 	//At least 1 e+/e- track in lkr acceptance
@@ -772,8 +772,17 @@ int pi0d_goodClusters_loose(){
 		// |t_g - t_vtx|<10ns
 		if(rootBurst.isData){
 			tDiff = fabs(rawEvent.cluster[c.clusterID].time - rawEvent.vtx[corrEvent.goodVertexID].time);
-			if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
-			if(tDiff<10) cond++;
+			if(options.isDoInvertTime()){
+				// at most 1 good cluster out of time and no good cluster in time
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t > 10 : ++" << endl;
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : reject event" << endl;
+				if(tDiff>10) cond++;
+				if(tDiff<10 && cond==(conditions-1)) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
+			}
+			else{
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
+				if(tDiff<10) cond++;
+			}
 		}
 
 		if(options.isOptDebug()) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
