@@ -453,16 +453,23 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 
 	diffk1 = fabs(k1.M()-Mk);
 
+	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
+
+	double y1 = 2*ee1*(t1ep-tem)/(pow(Mpi0,2)*(1-x1));
 
 	if(t==OptionsParser::K2PI){
 		if(options.isOptDebug()){
 			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
-			cout << " diffpi0:" << diffpi01 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
-			cout << " diffk:" << diffk1 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " M_pi0:" << ee1.M() << " <" << io.cutsDefinition.k2pi.minPi0MassDiff << " || " << ee1.M() << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " M_K:" << k1.M() << " <" << io.cutsDefinition.k2pi.minKaonMassDiff << " || " << k1.M() << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " x:" << x1 << " <0 || " << x1 << " >1 : rejected" << endl;
+			cout << " y:" << y1 << " <0 || " << y1 << " >1 : rejected" << endl;
 		}
 		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
 		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
-				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff){
+				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
+				&& x1<1 && x1>0
+				&& fabs(y1)<1 && fabs(y1)>0){
 			nCandidates++;
 		}
 	}
