@@ -97,7 +97,7 @@ def setNonBlocking(fd):
     fcntl.fcntl(fd, fcntl.F_SETFL, flags)
 
 def printTo(line, message):
-    print "\033[{0};0H{1}                                                  ".format(15+line, message)
+    print "\033[{0};0H{1}                                                  ".format(5+line, message)
     
 def clearScr():
     print "\033[2J"
@@ -225,4 +225,4 @@ if __name__=="__main__":
         runParts(scanV)
         runFit(scanV)
         mvFiles(scanV)
-        printTo(10, "Scan for {0} finished".format(scanV))
+        printTo(-5, "Scan for {0} finished".format(scanV))

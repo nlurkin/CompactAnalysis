@@ -485,11 +485,12 @@ bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEven
 		return false;
 	}
 
-	if(rawEvent->vtx[corrEvent->goodVertexID].position.Z() < -1700){
+	/*if(rawEvent->vtx[corrEvent->goodVertexID].position.Z() < -1700){
 		fitBrch.selEvents--;
 		cut_fitBrch.selEvents--;
 		return false;
-	}
+	}*/
+
 	if(evt->x <= 0.01 || evt->x > 1) {
 		fitBrch.selEvents--;
 		cut_fitBrch.selEvents--;
