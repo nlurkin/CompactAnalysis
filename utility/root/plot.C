@@ -461,9 +461,9 @@ void plot_only1(){
 	pt2NewRoot->SetLineColor(4);
 	pt2NewRoot->SetFillStyle(0);
 
-	pt2NewRootUncorr->SetMarkerStyle(23);
+	pt2NewRootUncorr->SetMarkerStyle(0);
 	pt2NewRootUncorr->SetMarkerColor(4);
-	pt2NewRootUncorr->SetLineColor(4);
+	pt2NewRootUncorr->SetLineColor(6);
 	pt2NewRootUncorr->SetFillStyle(0);
 
 	//Creation
@@ -481,29 +481,39 @@ void plot_only1(){
 
 	//Plotting
 	TCanvas *c = new TCanvas("plot");
-	c->SetGrid(1, 1);
+	TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
+	pad2->SetTopMargin(0);
+	pad2->SetBottomMargin(0.2);
+	pad2->SetGrid(); // vertical grid
+	pad2->Draw();
+	pad2->cd();
 
 	pt2NewRoot->SetTitle("FF Slope fit result");
 	pt2NewRoot->GetXaxis()->SetTitle("Cut value");
 	pt2NewRoot->GetYaxis()->SetTitle("FF Slope a");
 	pt2NewRoot->GetYaxis()->SetTitleOffset(1.5);
 
+	pt2NewRootUncorr->SetTitle("");
+	pt2NewRoot->SetTitle("");
+	pt2NewRoot->GetYaxis()->SetNdivisions(505);
+	pt2NewRoot->GetYaxis()->SetTitleSize(15);
+	pt2NewRoot->GetYaxis()->SetTitleFont(43);
+	pt2NewRoot->GetYaxis()->SetTitleOffset(1.4);
+	pt2NewRoot->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+	pt2NewRoot->GetYaxis()->SetLabelSize(15);
+
 	pt2NewRoot->Draw("AP");
+	pt2NewRootUncorr->Draw("PSAME");
 
-	TCanvas *c = new TCanvas("plotUncorr");
-	c->SetGrid(1, 1);
-
-	pt2NewRootUncorr->SetTitle("FF Slope fit result (Uncorrelated errors)");
-	pt2NewRootUncorr->GetXaxis()->SetTitle("Cut value");
-	pt2NewRootUncorr->GetYaxis()->SetTitle("FF Slope a");
-	pt2NewRootUncorr->GetYaxis()->SetTitleOffset(1.5);
-
-	pt2NewRootUncorr->Draw("AP");
+//	TCanvas *c = new TCanvas("plotUncorr");
+//	pt2NewRootUncorr->SetTitle("FF Slope fit result (Uncorrelated errors)");
+//	pt2NewRootUncorr->GetXaxis()->SetTitle("Cut value");
+//	pt2NewRootUncorr->GetYaxis()->SetTitle("FF Slope a");
+//	pt2NewRootUncorr->GetYaxis()->SetTitleOffset(1.5);
 
 	//Plotting
-	TCanvas *c = new TCanvas("Selected");
-	c->SetGrid(1, 1);
 
+	TCanvas *c = new TCanvas("Selected");
 	pt2Selected->SetTitle("Number of selected events");
 	pt2Selected->GetXaxis()->SetTitle("Cut value");
 	pt2Selected->GetYaxis()->SetTitle("Selected events");

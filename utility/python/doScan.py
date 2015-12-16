@@ -101,7 +101,10 @@ def printTo(line, message):
     
 def clearScr():
     #print "\033[2J"
-    print "\033[5:0H\033[J"
+    print "\033[5;0H\033[J"
+
+def clearScrAll():
+    print "\033[2J"
 
 def runSSH(host, command, tID, ignErr=False):
     cmd = ["ssh", host, command]
@@ -208,6 +211,7 @@ if __name__=="__main__":
         doScan.py sampleName nScan"""
         sys.exit(0)
 
+    clearScrAll()
     sample = sys.argv[1]
     nScan = int(sys.argv[2])
     startScan = 0

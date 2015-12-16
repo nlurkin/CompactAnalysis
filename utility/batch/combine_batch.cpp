@@ -203,6 +203,8 @@ void addAllHisto(vector<TH1D*> *v, vector<TH2D*> *vMap, int index){
 
 	//54
 	addHisto("Zvtx", index, v, 100, -2000, 9000);
+	addHisto("Zvtx_low", index, v, 100, -2100, 0);
+	addHisto("Zvtx_high", index, v, 100, 5000, 9500);
 	addHisto("Qvtx", index, v, 10, -5, 5);
 	addHisto("CDAvtx", index, v, 100, 0, 10);
 	addHisto("Pt2", index, v, 100, 0, 0.001);
@@ -402,6 +404,8 @@ void getAllHisto(TFile *fd, vector<TH1D*> *v, vector<TH2D*> *vMap){
 	getHisto(fd, "Y_DCH4_gamma", ++i, v);
 
 	getHisto(fd, "Zvtx", ++i, v);
+	getHisto(fd, "Zvtx_low", ++i, v);
+	getHisto(fd, "Zvtx_high", ++i, v);
 	getHisto(fd, "Qvtx", ++i, v);
 	getHisto(fd, "CDAvtx", ++i, v);
 	getHisto(fd, "Pt2", ++i, v);
@@ -765,6 +769,8 @@ void fillHistos(vector<TH1D*> *d, vector<TH2D*> *vMap, ROOTPhysicsEvent *evt, RO
 	d->at(++i)->Fill(propPos.X(), weight);
 	d->at(++i)->Fill(propPos.Y(), weight);
 
+	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
+	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
 	d->at(++i)->Fill(evt->pic.vertex.Z(), weight);
 	d->at(++i)->Fill(mrawEvent->vtx[evt->pic.parentVertex].charge, weight);
 	d->at(++i)->Fill(mrawEvent->vtx[evt->pic.parentVertex].cda, weight);
@@ -1192,7 +1198,7 @@ void prepareRatioPlot(TCanvas *c, THStack* mc, TLegend *leg, TH1D* data, TH1D* r
 	ratio->SetStats(0);      // No statistics on lower plot
 	ratio->Draw("ep");
 	ratio->SetMarkerColor(kRed);
-	ratio->GetYaxis()->SetRangeUser(0.85, 1.15);
+	ratio->GetYaxis()->SetRangeUser(0.89, 1.11);
 
 	// Y axis mc plot settings
 	mc->GetYaxis()->SetTitleSize(20);
@@ -1489,6 +1495,8 @@ void combine_show(TString inFile, int firstPlot, int maxPlots){
 	if(maxPlots--==0) return;
 
 	doPlot(++i, "Zvtx", "Vertex Z", leg, mcColors);
+	doPlot(++i, "Zvtx_low", "Vertex Z", leg, mcColors);
+	doPlot(++i, "Zvtx_high", "Vertex Z", leg, mcColors);
 	doPlot(++i, "Qvtx", "Vertex Charge", leg, mcColors);
 	doPlot(++i, "CDAvtx", "Vertex CDA", leg, mcColors);
 	doPlot(++i, "Pt2", "Square transverse momentum", leg, mcColors);
@@ -1653,6 +1661,6 @@ int main(int argc, char **argv){
 		if(argc>=5) maxPlots=atoi(argv[4]);
 		theApp = new TApplication("combine", &argc, argv);
 		combine_show(config, -firstPlots, maxPlots-1);
-		//theApp->Run();
+		theApp->Run();
 	}
 }
