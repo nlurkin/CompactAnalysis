@@ -100,7 +100,8 @@ def printTo(line, message):
     print "\033[{0};0H{1}                                                  ".format(5+line, message)
     
 def clearScr():
-    print "\033[2J"
+    #print "\033[2J"
+    print "\033[5:0H\033[J"
 
 def runSSH(host, command, tID, ignErr=False):
     cmd = ["ssh", host, command]
@@ -225,4 +226,4 @@ if __name__=="__main__":
         runParts(scanV)
         runFit(scanV)
         mvFiles(scanV)
-        printTo(-5, "Scan for {0} finished".format(scanV))
+        printTo(-4, "Scan for {0} finished".format(scanV))
