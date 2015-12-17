@@ -435,11 +435,72 @@ void plotpi0mass(){
 
 void plot_only1(){
 	int npoints = 		  12;
-	double cutValue		 [12] = 	{-2100,-2000,-1900,-1800,-1700,-1600,-1500,-1400,-1300,-1200,-1100,-1000};
-	double pointsNewRoot [12] = 	{0.0361575,0.0361575,0.0361575,0.0361575,0.0371057,0.0379628,0.0370318,0.0350169,0.0344579,0.035131,0.0354402,0.0340044};
-	double errNewRoot	 [12] = 	{0.00774705,0.00774705,0.00774705,0.00774705,0.0077795,0.00781397,0.00784396,0.00787361,0.00790872,0.00795052,0.00799469,0.00803385};
-	double pointsNEvents [12] = 	{331059,331059,331059,331059,328668,326136,323482,320743,317877,314904,311803,308644};
-	double errUncorrRoot [12] = 	{0.000709814,0.000709814,0.000709814,0.000709814,0,0.000733149,0.001003538,0.001213719,0.001423809,0.001640167,0.001842403,0.002005524};
+	double cutValue		 [12] = 	{-2100
+,-2000
+,-1900
+,-1800
+,-1700
+,-1600
+,-1500
+,-1400
+,-1300
+,-1200
+,-1100
+,-1000};
+
+	double pointsNewRoot [12] = 	{0.0360301
+,0.0360301
+,0.0360301
+,0.0360301
+,0.0360301
+,0.0370245
+,0.0373191
+,0.036028
+,0.0357782
+,0.0361409
+,0.0366737
+,0.0351411};
+
+	double errNewRoot	 [12] = 	{0.00560002
+,0.00560002
+,0.00560002
+,0.00560002
+,0.00560002
+,0.00562867
+,0.00565724
+,0.00568583
+,0.00571592
+,0.00575021
+,0.00578708
+,0.00582059};
+
+	double pointsNEvents [12] = 	{1054330
+,1054330
+,1054330
+,1054330
+,1054330
+,1044910
+,1035060
+,1024880
+,1014360
+,1003390
+,991841
+,980254};
+
+	double errUncorrRoot [12] = 	{0
+,0
+,0
+,0
+,0
+,0.000567188
+,0.000802584
+,0.000984093
+,0.001145215
+,0.001305638
+,0.001459476
+,0.00158715};
+
+
 	//Creation
 	TGraphErrors *pt2NewRoot = new TGraphErrors();
 	pt2NewRoot->SetName("pt2NewRoot");
@@ -495,12 +556,18 @@ void plot_only1(){
 
 	pt2NewRootUncorr->SetTitle("");
 	pt2NewRoot->SetTitle("");
+	pt2NewRoot->SetLineWidth(2);
+	pt2NewRootUncorr->SetLineWidth(2);
 	pt2NewRoot->GetYaxis()->SetNdivisions(505);
 	pt2NewRoot->GetYaxis()->SetTitleSize(15);
 	pt2NewRoot->GetYaxis()->SetTitleFont(43);
 	pt2NewRoot->GetYaxis()->SetTitleOffset(1.4);
 	pt2NewRoot->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
 	pt2NewRoot->GetYaxis()->SetLabelSize(15);
+	pt2NewRoot->GetXaxis()->SetLabelFont(43);
+	pt2NewRoot->GetXaxis()->SetLabelSize(15);
+	pt2NewRoot->GetYaxis()->SetRangeUser(0.025, 0.05);
+	pt2NewRootUncorr->GetYaxis()->SetRangeUser(0.025, 0.05);
 
 	pt2NewRoot->Draw("AP");
 	pt2NewRootUncorr->Draw("PSAME");

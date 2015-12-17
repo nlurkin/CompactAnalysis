@@ -48,7 +48,7 @@ double Mpi0 = 0.1349766;
 static double bins[BINS];
 //static double equiBins[BINS];
 static int nbins;
-static double NSig//, cut_NSig;
+static double NSig;//, cut_NSig;
 
 int nmc[2];
 //int cut_nmc[2];
@@ -259,7 +259,7 @@ void rebin(int binNumber = 0) {
 	//			"cut_" + TString(cut_dBeta->at(i)->GetName()) + "_reb", bins);
 	//	cut_dGamma->at(i) = (TH1D*) cut_dGamma->at(i)->Rebin(nbins,
 	//			"cut_" + TString(cut_dGamma->at(i)->GetName()) + "_reb", bins);
-	}
+	//}
 
 }
 
@@ -839,7 +839,7 @@ namespace Input {
 			if(cutsPass){
 				if(!cutsPass->at(scanID)){
 					fitBrch.selEvents--;
-					continue,
+					continue;
 					//passNormal = false;
 					//if(cutsPass->at(defaultScan))
 					//	passCut = true;
