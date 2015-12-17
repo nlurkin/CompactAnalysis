@@ -777,7 +777,7 @@ int pi0d_goodClusters_loose(){
 				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t > 10 : ++" << endl;
 				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : reject event" << endl;
 				if(tDiff>10) cond++;
-				if(tDiff<10/* && cond==(conditions-1)*/) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
+				if(tDiff<10 && cond==(conditions-1)) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
 			}
 			else{
 				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
@@ -877,7 +877,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t > 10 : ++" << endl;
 				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : reject event" << endl;
 				if(tDiff>10) cond++;
-				if(tDiff<10/* && cond==(conditions-1)*/) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
+				if(tDiff<10 && cond==(conditions-1)) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
 			}
 			else{
 				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
