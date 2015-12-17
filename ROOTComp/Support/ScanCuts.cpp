@@ -29,16 +29,16 @@ Cuts::Cuts(){
 	numBadTrackCombi = 0;
 	numXCandidates = 1;
 	boolBadECandidates = true;
-	minTrackMomentum = 2;
-	maxTrackMomentum = 74;
+	minTrackMomentum = 2.0;
+	maxTrackMomentum = 74.0;
 	numAddGoodCluster = 1;
 	lkrAcceptance = 0;
 	minGammaEnergy = 3;
 	minDeadCellDist = 2;
 	minGammaDCHRadius = 13;
 	unDeflectedElDist = 20;
-	k2pi.minTotalMomentum = 70;
-	k2pi.maxTotalMomentum = 78;
+	k2pi.minTotalMomentum = 70.0;
+	k2pi.maxTotalMomentum = 78.0;
 	kmu3.maxTotalMomentum = 78;
 	k2pi.maxPt = 0.0005;
 	kmu3.minPt = 0.0005;
@@ -202,10 +202,10 @@ bool ScanCuts::parseCuts(std::string fileName) {
 				cutsLists[id].boolBadECandidates = (value.compare("true")==0) ? true : false;
 			}
 			else if(name.compare("minTrackMomentum")==0){
-				cutsLists[id].minTrackMomentum = atoi(value.c_str());
+				cutsLists[id].minTrackMomentum = atof(value.c_str());
 			}
 			else if(name.compare("maxTrackMomentum")==0){
-				cutsLists[id].maxTrackMomentum = atoi(value.c_str());
+				cutsLists[id].maxTrackMomentum = atof(value.c_str());
 			}
 			else if(name.compare("numAddGoodCluster")==0){
 				cutsLists[id].numAddGoodCluster = atoi(value.c_str());
@@ -226,10 +226,10 @@ bool ScanCuts::parseCuts(std::string fileName) {
 				cutsLists[id].unDeflectedElDist = atoi(value.c_str());
 			}
 			else if(name.compare("k2pi.minTotalMomentum")==0){
-				cutsLists[id].k2pi.minTotalMomentum = atoi(value.c_str());
+				cutsLists[id].k2pi.minTotalMomentum = atof(value.c_str());
 			}
 			else if(name.compare("k2pi.maxTotalMomentum")==0){
-				cutsLists[id].k2pi.maxTotalMomentum = atoi(value.c_str());
+				cutsLists[id].k2pi.maxTotalMomentum = atof(value.c_str());
 			}
 			else if(name.compare("k2pi.maxPt")==0){
 				cutsLists[id].k2pi.maxPt = atof(value.c_str());

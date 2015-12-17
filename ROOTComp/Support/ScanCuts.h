@@ -26,8 +26,8 @@ public:
 	int numBadTrackCombi;
 	int numXCandidates;
 	bool boolBadECandidates;
-	int minTrackMomentum;
-	int maxTrackMomentum;
+	double minTrackMomentum;
+	double maxTrackMomentum;
 	int numAddGoodCluster;
 	int lkrAcceptance;
 	int minGammaEnergy;
@@ -36,8 +36,8 @@ public:
 	int unDeflectedElDist;
 	class k2pi_t: public TObject{
 	public:
-		int minTotalMomentum;
-		int maxTotalMomentum;
+		double minTotalMomentum;
+		double maxTotalMomentum;
 		double maxPt;
 		double minPi0MassDiff;
 		double maxPi0MassDiff;
