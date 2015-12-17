@@ -42,16 +42,16 @@ typedef struct fitResult_t {
 #define MAXEVENTS 0
 vector<TH1D*> *d1, *d2, *d3, *dSig, *dNew, *dAlpha, *dBeta, *dGamma;
 static TH1D *sig; //, *other;
-vector<TH1D*> *cut_d1, *cut_d2, *cut_d3, *cut_dSig, *cut_dNew, *cut_dAlpha, *cut_dBeta, *cut_dGamma;
-static TH1D *cut_sig; //, *other;
+//vector<TH1D*> *cut_d1, *cut_d2, *cut_d3, *cut_dSig, *cut_dNew, *cut_dAlpha, *cut_dBeta, *cut_dGamma;
+//static TH1D *cut_sig; //, *other;
 double Mpi0 = 0.1349766;
 static double bins[BINS];
 //static double equiBins[BINS];
 static int nbins;
-static double NSig, cut_NSig;
+static double NSig//, cut_NSig;
 
 int nmc[2];
-int cut_nmc[2];
+//int cut_nmc[2];
 
 namespace Fit{void minFct(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t flag);}
 
@@ -72,13 +72,13 @@ void initNewOutput(TFile **fdo, TString fileName) {
 	fitBrch.selEvents = 0;
 	fitBrch.totEvents = 0;
 
-	cut_fitTree = new TTree("cut_fitStruct", "fitStruct tree");
-	cut_fitTree->Branch("cut_fitStruct", &cut_fitBrch, "totEvents/I:selEvents:n1:nx:nxx");
-	cut_fitBrch.n1 = 0;
-	cut_fitBrch.nx = 0;
-	cut_fitBrch.nxx = 0;
-	cut_fitBrch.selEvents = 0;
-	cut_fitBrch.totEvents = 0;
+	//cut_fitTree = new TTree("cut_fitStruct", "fitStruct tree");
+	//cut_fitTree->Branch("cut_fitStruct", &cut_fitBrch, "totEvents/I:selEvents:n1:nx:nxx");
+	//cut_fitBrch.n1 = 0;
+	//cut_fitBrch.nx = 0;
+	//cut_fitBrch.nxx = 0;
+	//cut_fitBrch.selEvents = 0;
+	//cut_fitBrch.totEvents = 0;
 
 }
 
@@ -87,8 +87,8 @@ void closeMCOutput(TFile *fdo, int index) {
 		fdo->cd();
 		fitTree->Fill();
 		fitTree->Write();
-		cut_fitTree->Fill();
-		cut_fitTree->Write();
+		//cut_fitTree->Fill();
+		//cut_fitTree->Write();
 		d1->at(index)->Write();
 		d2->at(index)->Write();
 		d3->at(index)->Write();
@@ -97,13 +97,13 @@ void closeMCOutput(TFile *fdo, int index) {
 		dBeta->at(index)->Write();
 		dGamma->at(index)->Write();
 
-		cut_d1->at(index)->Write();
-		cut_d2->at(index)->Write();
-		cut_d3->at(index)->Write();
-		cut_dNew->at(index)->Write();
-		cut_dAlpha->at(index)->Write();
-		cut_dBeta->at(index)->Write();
-		cut_dGamma->at(index)->Write();
+		//cut_d1->at(index)->Write();
+		//cut_d2->at(index)->Write();
+		//cut_d3->at(index)->Write();
+		//cut_dNew->at(index)->Write();
+		//cut_dAlpha->at(index)->Write();
+		//cut_dBeta->at(index)->Write();
+		//cut_dGamma->at(index)->Write();
 
 		fdo->Close();
 
@@ -115,13 +115,13 @@ void closeMCOutput(TFile *fdo, int index) {
 		dBeta->at(index)->SetName(TString::Format("dBeta_%i", index));
 		dGamma->at(index)->SetName(TString::Format("dGamma_%i", index));
 
-		cut_d1->at(index)->SetName(TString::Format("cut_d1_%i", index));
-		cut_d2->at(index)->SetName(TString::Format("cut_d2_%i", index));
-		cut_d3->at(index)->SetName(TString::Format("cut_d3_%i", index));
-		cut_dNew->at(index)->SetName(TString::Format("cut_dNew_%i", index));
-		cut_dAlpha->at(index)->SetName(TString::Format("cut_dAlpha_%i", index));
-		cut_dBeta->at(index)->SetName(TString::Format("cut_dBeta_%i", index));
-		cut_dGamma->at(index)->SetName(TString::Format("cut_dGamma_%i", index));
+		//cut_d1->at(index)->SetName(TString::Format("cut_d1_%i", index));
+		//cut_d2->at(index)->SetName(TString::Format("cut_d2_%i", index));
+		//cut_d3->at(index)->SetName(TString::Format("cut_d3_%i", index));
+		//cut_dNew->at(index)->SetName(TString::Format("cut_dNew_%i", index));
+		//cut_dAlpha->at(index)->SetName(TString::Format("cut_dAlpha_%i", index));
+		//cut_dBeta->at(index)->SetName(TString::Format("cut_dBeta_%i", index));
+		//cut_dGamma->at(index)->SetName(TString::Format("cut_dGamma_%i", index));
 	}
 }
 
@@ -129,10 +129,10 @@ void closeDataOutput(TFile *fdo, int index) {
 	fdo->cd();
 	fitTree->Fill();
 	fitTree->Write();
-	cut_fitTree->Fill();
-	cut_fitTree->Write();
+	//cut_fitTree->Fill();
+	//cut_fitTree->Write();
 	dSig->at(0)->Write();
-	cut_dSig->at(0)->Write();
+	//cut_dSig->at(0)->Write();
 
 	fdo->Close();
 }
@@ -159,24 +159,24 @@ void scaleMC(fitStruct N, int index, double br) {
 	scale(dGamma->at(index), 1., N.totEvents, br);
 }
 
-void scaleMC_cut(fitStruct N, int index, double br) {
-	cout << "Rescaling" << endl;
-
-	// Rescale histo
-	double totN = N.n1 + N.nx + N.nxx;
-	double selRatio1 = (double) N.n1 / totN;
-	double selRatiox = (double) N.nx / totN;
-	double selRatioxx = (double) N.nxx / totN;
-
-	scale(cut_d1->at(index), selRatio1, N.totEvents, br);
-	scale(cut_d2->at(index), selRatiox, N.totEvents, br);
-	scale(cut_d3->at(index), selRatioxx, N.totEvents, br);
-
-	scale(cut_dNew->at(index), 1., N.totEvents, br);
-	scale(cut_dAlpha->at(index), 1., N.totEvents, br);
-	scale(cut_dBeta->at(index), 1., N.totEvents, br);
-	scale(cut_dGamma->at(index), 1., N.totEvents, br);
-}
+//void scaleMC_cut(fitStruct N, int index, double br) {
+//	cout << "Rescaling" << endl;
+//
+//	// Rescale histo
+//	double totN = N.n1 + N.nx + N.nxx;
+//	double selRatio1 = (double) N.n1 / totN;
+//	double selRatiox = (double) N.nx / totN;
+//	double selRatioxx = (double) N.nxx / totN;
+//
+//	scale(cut_d1->at(index), selRatio1, N.totEvents, br);
+//	scale(cut_d2->at(index), selRatiox, N.totEvents, br);
+//	scale(cut_d3->at(index), selRatioxx, N.totEvents, br);
+//
+//	scale(cut_dNew->at(index), 1., N.totEvents, br);
+//	scale(cut_dAlpha->at(index), 1., N.totEvents, br);
+//	scale(cut_dBeta->at(index), 1., N.totEvents, br);
+//	scale(cut_dGamma->at(index), 1., N.totEvents, br);
+//}
 
 double getNormalization(double a) {
 	double G = 0;
@@ -243,22 +243,22 @@ void rebin(int binNumber = 0) {
 
 
 	sig = (TH1D*) sig->Rebin(nbins, "sig_reb", bins);
-	cut_sig = (TH1D*) cut_sig->Rebin(nbins, "cut_sig_reb", bins);
-	for (int i = 0; i < inputMCNbr; ++i) {
-		cut_d1->at(i) = (TH1D*) cut_d1->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_d1->at(i)->GetName()) + "_reb", bins);
-		cut_d2->at(i) = (TH1D*) cut_d2->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_d2->at(i)->GetName()) + "_reb", bins);
-		cut_d3->at(i) = (TH1D*) cut_d3->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_d3->at(i)->GetName()) + "_reb", bins);
-		cut_dNew->at(i) = (TH1D*) cut_dNew->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_dNew->at(i)->GetName()) + "_reb", bins);
-		cut_dAlpha->at(i) = (TH1D*) cut_dAlpha->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_dAlpha->at(i)->GetName()) + "_reb", bins);
-		cut_dBeta->at(i) = (TH1D*) cut_dBeta->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_dBeta->at(i)->GetName()) + "_reb", bins);
-		cut_dGamma->at(i) = (TH1D*) cut_dGamma->at(i)->Rebin(nbins,
-				"cut_" + TString(cut_dGamma->at(i)->GetName()) + "_reb", bins);
+	//cut_sig = (TH1D*) cut_sig->Rebin(nbins, "cut_sig_reb", bins);
+	//for (int i = 0; i < inputMCNbr; ++i) {
+	//	cut_d1->at(i) = (TH1D*) cut_d1->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_d1->at(i)->GetName()) + "_reb", bins);
+	//	cut_d2->at(i) = (TH1D*) cut_d2->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_d2->at(i)->GetName()) + "_reb", bins);
+	//	cut_d3->at(i) = (TH1D*) cut_d3->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_d3->at(i)->GetName()) + "_reb", bins);
+	//	cut_dNew->at(i) = (TH1D*) cut_dNew->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_dNew->at(i)->GetName()) + "_reb", bins);
+	//	cut_dAlpha->at(i) = (TH1D*) cut_dAlpha->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_dAlpha->at(i)->GetName()) + "_reb", bins);
+	//	cut_dBeta->at(i) = (TH1D*) cut_dBeta->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_dBeta->at(i)->GetName()) + "_reb", bins);
+	//	cut_dGamma->at(i) = (TH1D*) cut_dGamma->at(i)->Rebin(nbins,
+	//			"cut_" + TString(cut_dGamma->at(i)->GetName()) + "_reb", bins);
 	}
 
 }
@@ -418,58 +418,58 @@ namespace Fit{
 		else
 			f = chi2;
 	}
-	void minFctNew_cut(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par,
-			Int_t flag) {
-		double chi2 = 0.;
-		double M_i, D_i, m_i;
-		double N = par[0];
-		double a = par[1];
-		double a_i, b_i, g_i;
-		double sigma2;
-		bool rootMethod = false;
-
-		TH1D *comp, *sigComp;
-		if (par[2] != 0) {
-			rootMethod = true;
-			comp = new TH1D("cut_comp", "comp", sig->GetNbinsX(), bins);
-			sigComp = new TH1D("cut_sigcomp", "sigcomp", sig->GetNbinsX(), bins);
-		}
-		for (int i = 0; i <= sig->GetNbinsX(); ++i) {
-			//if(sig->GetBinLowEdge(i+1)<0.1) continue;
-			M_i = 0;
-			a_i = 0;
-			b_i = 0;
-			g_i = 0;
-
-			for (int j = 0; j < inputMCNbr; ++j) {
-				M_i += cut_dNew->at(j)->GetBinContent(i);
-				a_i += cut_dAlpha->at(j)->GetBinContent(i);
-				b_i += cut_dBeta->at(j)->GetBinContent(i);
-				g_i += cut_dGamma->at(j)->GetBinContent(i);
-			}
-			D_i = cut_sig->GetBinContent(i);
-
-			m_i = funNew(N, a, a_i, b_i, g_i);
-
-			//cout << D_i << " " << m_i << " " << sigma2 << endl;
-			sigma2 = D_i * D_i / M_i + D_i;
-			//totSigma = sigma*sigma + sigMC*sigMC;
-			if (rootMethod){
-				comp->Fill(cut_sig->GetBinCenter(i), m_i);
-				sigComp->SetBinContent(i, D_i);
-			}
-			else if (D_i != 0)
-				chi2 += pow(D_i - m_i, 2) / sigma2;
-		}
-
-		if (rootMethod){
-			f = sigComp->Chi2Test(comp, "UW CHI2 P");
-			delete comp;
-			delete sigComp;
-		}
-		else
-			f = chi2;
-	}
+	//void minFctNew_cut(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par,
+	//		Int_t flag) {
+	//	double chi2 = 0.;
+	//	double M_i, D_i, m_i;
+	//	double N = par[0];
+	//	double a = par[1];
+	//	double a_i, b_i, g_i;
+	//	double sigma2;
+	//	bool rootMethod = false;
+    //
+	//	TH1D *comp, *sigComp;
+	//	if (par[2] != 0) {
+	//		rootMethod = true;
+	//		comp = new TH1D("cut_comp", "comp", sig->GetNbinsX(), bins);
+	//		sigComp = new TH1D("cut_sigcomp", "sigcomp", sig->GetNbinsX(), bins);
+	//	}
+	//	for (int i = 0; i <= sig->GetNbinsX(); ++i) {
+	//		//if(sig->GetBinLowEdge(i+1)<0.1) continue;
+	//		M_i = 0;
+	//		a_i = 0;
+	//		b_i = 0;
+	//		g_i = 0;
+    //
+	//		for (int j = 0; j < inputMCNbr; ++j) {
+	//			M_i += cut_dNew->at(j)->GetBinContent(i);
+	//			a_i += cut_dAlpha->at(j)->GetBinContent(i);
+	//			b_i += cut_dBeta->at(j)->GetBinContent(i);
+	//			g_i += cut_dGamma->at(j)->GetBinContent(i);
+	//		}
+	//		D_i = cut_sig->GetBinContent(i);
+    //
+	//		m_i = funNew(N, a, a_i, b_i, g_i);
+    //
+	//		//cout << D_i << " " << m_i << " " << sigma2 << endl;
+	//		sigma2 = D_i * D_i / M_i + D_i;
+	//		//totSigma = sigma*sigma + sigMC*sigMC;
+	//		if (rootMethod){
+	//			comp->Fill(cut_sig->GetBinCenter(i), m_i);
+	//			sigComp->SetBinContent(i, D_i);
+	//		}
+	//		else if (D_i != 0)
+	//			chi2 += pow(D_i - m_i, 2) / sigma2;
+	//	}
+    //
+	//	if (rootMethod){
+	//		f = sigComp->Chi2Test(comp, "UW CHI2 P");
+	//		delete comp;
+	//		delete sigComp;
+	//	}
+	//	else
+	//		f = chi2;
+	//}
 }
 
 /***************************
@@ -571,27 +571,27 @@ namespace Input {
 				xxxGamma->Sumw2();
 				dGamma->push_back(xxxGamma);
 
-				xxx1 = new TH1D("cut_d1", "sample 1", BINS, 0, MAX);
-				xxx1->Sumw2();
-				cut_d1->push_back(xxx1);
-				xxx2 = new TH1D("cut_d2", "sample x", BINS, 0, MAX);
-				xxx2->Sumw2();
-				cut_d2->push_back(xxx2);
-				xxx3 = new TH1D("cut_d3", "sample x^{2}", BINS, 0, MAX);
-				xxx3->Sumw2();
-				cut_d3->push_back(xxx3);
-				xxxNew = new TH1D("cut_dNew", "MC", BINS, 0, MAX);
-				xxxNew->Sumw2();
-				cut_dNew->push_back(xxxNew);
-				xxxAlpha = new TH1D("cut_dAlpha", "MC", BINS, 0, MAX);
-				xxxAlpha->Sumw2();
-				cut_dAlpha->push_back(xxxAlpha);
-				xxxBeta = new TH1D("cut_dBeta", "MC", BINS, 0, MAX);
-				xxxBeta->Sumw2();
-				cut_dBeta->push_back(xxxBeta);
-				xxxGamma = new TH1D("cut_dGamma", "MC", BINS, 0, MAX);
-				xxxGamma->Sumw2();
-				cut_dGamma->push_back(xxxGamma);
+				//xxx1 = new TH1D("cut_d1", "sample 1", BINS, 0, MAX);
+				//xxx1->Sumw2();
+				//cut_d1->push_back(xxx1);
+				//xxx2 = new TH1D("cut_d2", "sample x", BINS, 0, MAX);
+				//xxx2->Sumw2();
+				//cut_d2->push_back(xxx2);
+				//xxx3 = new TH1D("cut_d3", "sample x^{2}", BINS, 0, MAX);
+				//xxx3->Sumw2();
+				//cut_d3->push_back(xxx3);
+				//xxxNew = new TH1D("cut_dNew", "MC", BINS, 0, MAX);
+				//xxxNew->Sumw2();
+				//cut_dNew->push_back(xxxNew);
+				//xxxAlpha = new TH1D("cut_dAlpha", "MC", BINS, 0, MAX);
+				//xxxAlpha->Sumw2();
+				//cut_dAlpha->push_back(xxxAlpha);
+				//xxxBeta = new TH1D("cut_dBeta", "MC", BINS, 0, MAX);
+				//xxxBeta->Sumw2();
+				//cut_dBeta->push_back(xxxBeta);
+				//xxxGamma = new TH1D("cut_dGamma", "MC", BINS, 0, MAX);
+				//xxxGamma->Sumw2();
+				//cut_dGamma->push_back(xxxGamma);
 			}
 			else{
 				TH1D* xxx1 = new TH1D("d1", "sample 1", nbins-1, bins);
@@ -616,27 +616,27 @@ namespace Input {
 				xxxGamma->Sumw2();
 				dGamma->push_back(xxxGamma);
 
-				xxx1 = new TH1D("cut_d1", "sample 1", nbins-1, bins);
-				xxx1->Sumw2();
-				cut_d1->push_back(xxx1);
-				xxx2 = new TH1D("cut_d2", "sample x", nbins-1, bins);
-				xxx2->Sumw2();
-				cut_d2->push_back(xxx2);
-				xxx3 = new TH1D("cut_d3", "sample x^{2}", nbins-1, bins);
-				xxx3->Sumw2();
-				cut_d3->push_back(xxx3);
-				xxxNew = new TH1D("cut_dNew", "MC", nbins-1, bins);
-				xxxNew->Sumw2();
-				cut_dNew->push_back(xxxNew);
-				xxxAlpha = new TH1D("cut_dAlpha", "MC", nbins-1, bins);
-				xxxAlpha->Sumw2();
-				cut_dAlpha->push_back(xxxAlpha);
-				xxxBeta = new TH1D("cut_dBeta", "MC", nbins-1, bins);
-				xxxBeta->Sumw2();
-				cut_dBeta->push_back(xxxBeta);
-				xxxGamma = new TH1D("cut_dGamma", "MC", nbins-1, bins);
-				xxxGamma->Sumw2();
-				cut_dGamma->push_back(xxxGamma);
+				//xxx1 = new TH1D("cut_d1", "sample 1", nbins-1, bins);
+				//xxx1->Sumw2();
+				//cut_d1->push_back(xxx1);
+				//xxx2 = new TH1D("cut_d2", "sample x", nbins-1, bins);
+				//xxx2->Sumw2();
+				//cut_d2->push_back(xxx2);
+				//xxx3 = new TH1D("cut_d3", "sample x^{2}", nbins-1, bins);
+				//xxx3->Sumw2();
+				//cut_d3->push_back(xxx3);
+				//xxxNew = new TH1D("cut_dNew", "MC", nbins-1, bins);
+				//xxxNew->Sumw2();
+				//cut_dNew->push_back(xxxNew);
+				//xxxAlpha = new TH1D("cut_dAlpha", "MC", nbins-1, bins);
+				//xxxAlpha->Sumw2();
+				//cut_dAlpha->push_back(xxxAlpha);
+				//xxxBeta = new TH1D("cut_dBeta", "MC", nbins-1, bins);
+				//xxxBeta->Sumw2();
+				//cut_dBeta->push_back(xxxBeta);
+				//xxxGamma = new TH1D("cut_dGamma", "MC", nbins-1, bins);
+				//xxxGamma->Sumw2();
+				//cut_dGamma->push_back(xxxGamma);
 			}
 		}
 
@@ -650,8 +650,8 @@ namespace Input {
 		fitBrch.totEvents += totalChanEvents;
 		fitBrch.selEvents += nevt;
 
-		cut_fitBrch.totEvents += totalChanEvents;
-		cut_fitBrch.selEvents += nevt;
+		//cut_fitBrch.totEvents += totalChanEvents;
+		//cut_fitBrch.selEvents += nevt;
 
 		bool passNormal, passCut;
 		cout << "Filling " << nevt << endl;
@@ -665,15 +665,16 @@ namespace Input {
 //				cout << "ScanID:" << scanID << " defaultScan:" << defaultScan << endl;
 				if(!cutsPass->at(scanID)){
 					fitBrch.selEvents--;
+					continue;
 					passNormal = false;
 //					cout << "Pass default:" << cutsPass->at(defaultScan) << endl;
 					if(cutsPass->at(defaultScan))
 						passCut = true;
-					else
-						cut_fitBrch.selEvents--;
+					//else
+					//	cut_fitBrch.selEvents--;
 				}
-				else
-					cut_fitBrch.selEvents--;
+				//else
+					//cut_fitBrch.selEvents--;
 			}
 			if (!runIncluded(burstBrch->nrun, burstBrch->period))
 				continue;
@@ -698,12 +699,12 @@ namespace Input {
 				dBeta->at(index)->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
 				dGamma->at(index)->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
 			}
-			if(passCut){
-				cut_dNew->at(index)->Fill(x, bweight * aweight * weight);
-				cut_dAlpha->at(index)->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
-				cut_dBeta->at(index)->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
-				cut_dGamma->at(index)->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
-			}
+			//if(passCut){
+			//	cut_dNew->at(index)->Fill(x, bweight * aweight * weight);
+			//	cut_dAlpha->at(index)->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
+			//	cut_dBeta->at(index)->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
+			//	cut_dGamma->at(index)->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
+			//}
 			if (mod == 0 || mod == 1 || mod == 2) {
 				//TODO to check
 				aweight = 1.;
@@ -711,10 +712,10 @@ namespace Input {
 					fitBrch.n1++;
 					d1->at(index)->Fill(x, bweight * aweight * weight);
 				}
-				if(passCut){
-					cut_fitBrch.n1++;
-					cut_d1->at(index)->Fill(x, bweight * aweight * weight);
-				}
+				//if(passCut){
+				//	cut_fitBrch.n1++;
+				//	cut_d1->at(index)->Fill(x, bweight * aweight * weight);
+				//}
 			} else if (mod == 3) {
 				//TODO to check
 				aweight = xTrue;
@@ -722,10 +723,10 @@ namespace Input {
 					fitBrch.nx++;
 					d2->at(index)->Fill(x, bweight * aweight * weight);
 				}
-				if(passCut){
-					cut_fitBrch.nx++;
-					cut_d2->at(index)->Fill(x, bweight * aweight * weight);
-				}
+				//if(passCut){
+				//	cut_fitBrch.nx++;
+				//	cut_d2->at(index)->Fill(x, bweight * aweight * weight);
+				//}
 			} else if (mod == 4) {
 				//TODO to check
 				aweight = xTrue * xTrue;
@@ -733,10 +734,10 @@ namespace Input {
 					fitBrch.nxx++;
 					d3->at(index)->Fill(x, bweight * aweight * weight);
 				}
-				if(passCut){
-					cut_fitBrch.nxx++;
-					cut_d3->at(index)->Fill(x, bweight * aweight * weight);
-				}
+				//if(passCut){
+				//	cut_fitBrch.nxx++;
+				//	cut_d3->at(index)->Fill(x, bweight * aweight * weight);
+				//}
 			}
 			processedEvents++;
 		}
@@ -792,10 +793,10 @@ namespace Input {
 		nevt = (MAXEVENTS>0) ? min(MAXEVENTS, nevt) : nevt;
 		int processedEvents = 0;
 		NSig = nevt;
-		cut_NSig = nevt;
+		//cut_NSig = nevt;
 
 		fitBrch.selEvents += nevt;
-		cut_fitBrch.selEvents += nevt;
+		//cut_fitBrch.selEvents += nevt;
 
 		//Create histo
 
@@ -808,15 +809,15 @@ namespace Input {
 				TH1D* xxx = new TH1D("sig", "signal sample", BINS, 0, MAX);
 				dSig->push_back(xxx);
 
-				xxx = new TH1D("cut_sig", "signal sample", BINS, 0, MAX);
-				cut_dSig->push_back(xxx);
+				//xxx = new TH1D("cut_sig", "signal sample", BINS, 0, MAX);
+				//cut_dSig->push_back(xxx);
 			}
 			else{
 				TH1D* xxx = new TH1D("sig", "signal sample", nbins-1, bins);
 				dSig->push_back(xxx);
 
-				xxx = new TH1D("cut_sig", "signal sample", nbins-1, bins);
-				cut_dSig->push_back(xxx);
+				//xxx = new TH1D("cut_sig", "signal sample", nbins-1, bins);
+				//cut_dSig->push_back(xxx);
 			}
 		}
 
@@ -838,14 +839,15 @@ namespace Input {
 			if(cutsPass){
 				if(!cutsPass->at(scanID)){
 					fitBrch.selEvents--;
-					passNormal = false;
-					if(cutsPass->at(defaultScan))
-						passCut = true;
-					else
-						cut_fitBrch.selEvents--;
+					continue,
+					//passNormal = false;
+					//if(cutsPass->at(defaultScan))
+					//	passCut = true;
+					//else
+					//	cut_fitBrch.selEvents--;
 				}
-				else
-					cut_fitBrch.selEvents--;
+				//else
+				//	cut_fitBrch.selEvents--;
 			}
 
 			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch)) continue;
@@ -858,8 +860,8 @@ namespace Input {
 						/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
 			if(passNormal)
 				dSig->at(index)->Fill(x, weight * bweight);
-			if(passCut)
-				cut_dSig->at(index)->Fill(x, weight * bweight);
+			//if(passCut)
+			//	cut_dSig->at(index)->Fill(x, weight * bweight);
 			processedEvents++;
 		}
 
@@ -872,17 +874,17 @@ namespace Input {
 		TTree *t = (TTree*) fd->Get("fitStruct");
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
-		fitStruct cut_fitBrch, cut_totFit;
-		TTree *cut_t = (TTree*) fd->Get("cut_fitStruct");
-		cut_t->SetBranchAddress("cut_fitStruct", &cut_fitBrch);
+		//fitStruct cut_fitBrch, cut_totFit;
+		//TTree *cut_t = (TTree*) fd->Get("cut_fitStruct");
+		//cut_t->SetBranchAddress("cut_fitStruct", &cut_fitBrch);
 
 		initFitStruct(totFit);
-		initFitStruct(cut_totFit);
+		//initFitStruct(cut_totFit);
 		sumTreeFitStruct(fitBrch, t, totFit, 1);
-		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, 1);
+		//sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, 1);
 
 		nmc[index] = totFit.selEvents;
-		cut_nmc[index] = cut_totFit.selEvents;
+		//cut_nmc[index] = cut_totFit.selEvents;
 
 		//Set event nb
 		//int nevt = totFit.selEvents;
@@ -898,13 +900,13 @@ namespace Input {
 		TH1D* xxxB = (TH1D*) fd->Get("dBeta");
 		TH1D* xxxG = (TH1D*) fd->Get("dGamma");
 
-		TH1D* cut_xxx1 = (TH1D*) fd->Get("cut_d1");
-		TH1D* cut_xxx2 = (TH1D*) fd->Get("cut_d2");
-		TH1D* cut_xxx3 = (TH1D*) fd->Get("cut_d3");
-		TH1D* cut_xxx4 = (TH1D*) fd->Get("cut_dNew");
-		TH1D* cut_xxxA = (TH1D*) fd->Get("cut_dAlpha");
-		TH1D* cut_xxxB = (TH1D*) fd->Get("cut_dBeta");
-		TH1D* cut_xxxG = (TH1D*) fd->Get("cut_dGamma");
+		//TH1D* cut_xxx1 = (TH1D*) fd->Get("cut_d1");
+		//TH1D* cut_xxx2 = (TH1D*) fd->Get("cut_d2");
+		//TH1D* cut_xxx3 = (TH1D*) fd->Get("cut_d3");
+		//TH1D* cut_xxx4 = (TH1D*) fd->Get("cut_dNew");
+		//TH1D* cut_xxxA = (TH1D*) fd->Get("cut_dAlpha");
+		//TH1D* cut_xxxB = (TH1D*) fd->Get("cut_dBeta");
+		//TH1D* cut_xxxG = (TH1D*) fd->Get("cut_dGamma");
 
 		tempFD->cd();
 		d1->push_back((TH1D*) xxx1->Clone());
@@ -923,25 +925,24 @@ namespace Input {
 		dBeta->at(index)->SetName(TString::Format("dBeta_%i", index));
 		dGamma->at(index)->SetName(TString::Format("dGamma_%i", index));
 
-		cut_d1->push_back((TH1D*) cut_xxx1->Clone());
-		cut_d2->push_back((TH1D*) cut_xxx2->Clone());
-		cut_d3->push_back((TH1D*) cut_xxx3->Clone());
-		cut_dNew->push_back((TH1D*) cut_xxx4->Clone());
-		cut_dAlpha->push_back((TH1D*) cut_xxxA->Clone());
-		cut_dBeta->push_back((TH1D*) cut_xxxB->Clone());
-		cut_dGamma->push_back((TH1D*) cut_xxxG->Clone());
-		cut_d1->at(index)->SetName(TString::Format("cut_d1_%i", index));
-		cut_d2->at(index)->SetName(TString::Format("cut_d2_%i", index));
-		cut_d3->at(index)->SetName(TString::Format("cut_d3_%i", index));
-		cut_dNew->at(index)->SetName(TString::Format("cut_dNew_%i", index));
+		//cut_d1->push_back((TH1D*) cut_xxx1->Clone());
+		//cut_d2->push_back((TH1D*) cut_xxx2->Clone());
+		//cut_d3->push_back((TH1D*) cut_xxx3->Clone());
+		//cut_dNew->push_back((TH1D*) cut_xxx4->Clone());
+		//cut_dAlpha->push_back((TH1D*) cut_xxxA->Clone());
+		//cut_dBeta->push_back((TH1D*) cut_xxxB->Clone());
+		//cut_dGamma->push_back((TH1D*) cut_xxxG->Clone());
+		//cut_d1->at(index)->SetName(TString::Format("cut_d1_%i", index));
+		//cut_d2->at(index)->SetName(TString::Format("cut_d2_%i", index));
+		//cut_d3->at(index)->SetName(TString::Format("cut_d3_%i", index));
+		//cut_dNew->at(index)->SetName(TString::Format("cut_dNew_%i", index));
 
-		cut_dAlpha->at(index)->SetName(TString::Format("cut_dAlpha_%i", index));
-		cut_dBeta->at(index)->SetName(TString::Format("cut_dBeta_%i", index));
-		cut_dGamma->at(index)->SetName(TString::Format("cut_dGamma_%i", index));
+		//cut_dAlpha->at(index)->SetName(TString::Format("cut_dAlpha_%i", index));
+		//cut_dBeta->at(index)->SetName(TString::Format("cut_dBeta_%i", index));
+		//cut_dGamma->at(index)->SetName(TString::Format("cut_dGamma_%i", index));
 
-		cut_dNew->at(index)->SaveAs("toto.png");
 		scaleMC(totFit, index, br);
-		scaleMC_cut(cut_totFit, index, br);
+		//scaleMC_cut(cut_totFit, index, br);
 	}
 
 	int getInputDataGet(TFile *fd, double factor) {
@@ -949,21 +950,21 @@ namespace Input {
 		TTree *t = (TTree*) fd->Get("fitStruct");
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
-		fitStruct cut_fitBrch, cut_totFit;
-		TTree *cut_t = (TTree*) fd->Get("cut_fitStruct");
-		cut_t->SetBranchAddress("cut_fitStruct", &cut_fitBrch);
+		//fitStruct cut_fitBrch, cut_totFit;
+		//TTree *cut_t = (TTree*) fd->Get("cut_fitStruct");
+		//cut_t->SetBranchAddress("cut_fitStruct", &cut_fitBrch);
 
 		cout << fitBrch.selEvents << endl;
 		initFitStruct(totFit);
-		initFitStruct(cut_totFit);
+		//initFitStruct(cut_totFit);
 		sumTreeFitStruct(fitBrch, t, totFit, 1);
-		sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, 1);
+		//sumTreeFitStruct(cut_fitBrch, cut_t, cut_totFit, 1);
 
 		cout << fitBrch.selEvents << endl;
 		cout << totFit.selEvents << endl;
 		//Set event nb
 		NSig += factor*totFit.selEvents;
-		cut_NSig = factor*cut_totFit.selEvents;
+		//cut_NSig = factor*cut_totFit.selEvents;
 
 		//Create histo
 		int index = dSig->size();
@@ -974,12 +975,12 @@ namespace Input {
 
 		sig->Add(dSig->at(index), factor);
 
-		xxx = (TH1D*) fd->Get("cut_sig");
-		tempFD->cd();
-		cut_dSig->push_back((TH1D*) xxx->Clone());
-		cut_dSig->at(index)->SetName(TString::Format("cut_sig_%i", index));
+		//xxx = (TH1D*) fd->Get("cut_sig");
+		//tempFD->cd();
+		//cut_dSig->push_back((TH1D*) xxx->Clone());
+		//cut_dSig->at(index)->SetName(TString::Format("cut_sig_%i", index));
 
-		cut_sig->Add(cut_dSig->at(index), factor);
+		//cut_sig->Add(cut_dSig->at(index), factor);
 
 		return NSig;
 	}
@@ -1343,14 +1344,14 @@ void fit_batch(TString inFile) {
 	dBeta = new vector<TH1D*>;
 	dGamma = new vector<TH1D*>;
 
-	cut_d1 = new vector<TH1D*>;
-	cut_d2 = new vector<TH1D*>;
-	cut_d3 = new vector<TH1D*>;
-	cut_dNew = new vector<TH1D*>;
-	cut_dSig = new vector<TH1D*>;
-	cut_dAlpha = new vector<TH1D*>;
-	cut_dBeta = new vector<TH1D*>;
-	cut_dGamma = new vector<TH1D*>;
+	//cut_d1 = new vector<TH1D*>;
+	//cut_d2 = new vector<TH1D*>;
+	//cut_d3 = new vector<TH1D*>;
+	//cut_dNew = new vector<TH1D*>;
+	//cut_dSig = new vector<TH1D*>;
+	//cut_dAlpha = new vector<TH1D*>;
+	//cut_dBeta = new vector<TH1D*>;
+	//cut_dGamma = new vector<TH1D*>;
 
 	//sig = new TH1D("sig", "signal sample", BINS,0,MAX);
 
@@ -1390,26 +1391,26 @@ void fit_show(TString inFile) {
 	dBeta = new vector<TH1D*>;
 	dGamma = new vector<TH1D*>;
 
-	cut_d1 = new vector<TH1D*>;
-	cut_d2 = new vector<TH1D*>;
-	cut_d3 = new vector<TH1D*>;
-	cut_dNew = new vector<TH1D*>;
-	cut_dSig = new vector<TH1D*>;
-	cut_dAlpha = new vector<TH1D*>;
-	cut_dBeta = new vector<TH1D*>;
-	cut_dGamma = new vector<TH1D*>;
+	//cut_d1 = new vector<TH1D*>;
+	//cut_d2 = new vector<TH1D*>;
+	//cut_d3 = new vector<TH1D*>;
+	//cut_dNew = new vector<TH1D*>;
+	//cut_dSig = new vector<TH1D*>;
+	//cut_dAlpha = new vector<TH1D*>;
+	//cut_dBeta = new vector<TH1D*>;
+	//cut_dGamma = new vector<TH1D*>;
 
 	//Get Input
 	readConfig(inFile);
 
 	if(!withEqualBins){
 		sig = new TH1D("sig", "signal sample", BINS, 0, MAX);
-		cut_sig = new TH1D("cut_sig", "signal sample", BINS, 0, MAX);
+		//cut_sig = new TH1D("cut_sig", "signal sample", BINS, 0, MAX);
 	}
 	else{
 		loadBins(bins, nbins);
 		sig = new TH1D("sig", "signal sample", nbins-1, bins);
-		cut_sig = new TH1D("cut_sig", "signal sample", nbins-1, bins);
+		//cut_sig = new TH1D("cut_sig", "signal sample", nbins-1, bins);
 	}
 	cout << "Initial bins: " << nbins << endl;
 	readFilesGet();
@@ -1443,31 +1444,31 @@ void fit_show(TString inFile) {
 	}
 
 	//Scale MC to Data
-	totalMC = 0;
-	totalMCNew = 0;
-	totalGreek = 0;
-	for (int i = 0; i < inputMCNbr; ++i) {
-		//TODO to check
-		totalMC += cut_d1->at(i)->Integral();// + d2->at(i)->Integral() + d3->at(i)->Integral();
-		//totalMC += d1->at(i)->Integral() + d2->at(i)->Integral() + d3->at(i)->Integral();
-		totalMCNew += cut_dNew->at(i)->Integral();
-		totalGreek += cut_dAlpha->at(i)->Integral();
-	}
+	//totalMC = 0;
+	//totalMCNew = 0;
+	//totalGreek = 0;
+	//for (int i = 0; i < inputMCNbr; ++i) {
+	//	//TODO to check
+	//	totalMC += cut_d1->at(i)->Integral();// + d2->at(i)->Integral() + d3->at(i)->Integral();
+	//	//totalMC += d1->at(i)->Integral() + d2->at(i)->Integral() + d3->at(i)->Integral();
+	//	totalMCNew += cut_dNew->at(i)->Integral();
+	//	totalGreek += cut_dAlpha->at(i)->Integral();
+	//}
 
-	factor = ((double) (cut_NSig)) / totalMC;
-	factorNew = ((double) (cut_NSig)) / totalMCNew;
-	factorGreek = ((double) (cut_NSig)) / totalGreek;
-	//double factor = nsig/(d1->at(0)->Integral() + d2->at(0)->Integral() + d3->at(0)->Integral());
-	for (int i = 0; i < inputMCNbr; ++i) {
-		cout << PRINTVAR(factorNew) << endl;
-		cut_d1->at(i)->Scale(factor);
-		cut_d2->at(i)->Scale(factor);
-		cut_d3->at(i)->Scale(factor);
-		cut_dNew->at(i)->Scale(factorNew);
-		cut_dAlpha->at(i)->Scale(factorGreek);
-		cut_dBeta->at(i)->Scale(factorGreek);
-		cut_dGamma->at(i)->Scale(factorGreek);
-	}
+	//factor = ((double) (cut_NSig)) / totalMC;
+	//factorNew = ((double) (cut_NSig)) / totalMCNew;
+	//factorGreek = ((double) (cut_NSig)) / totalGreek;
+	////double factor = nsig/(d1->at(0)->Integral() + d2->at(0)->Integral() + d3->at(0)->Integral());
+	//for (int i = 0; i < inputMCNbr; ++i) {
+	//	cout << PRINTVAR(factorNew) << endl;
+	//	cut_d1->at(i)->Scale(factor);
+	//	cut_d2->at(i)->Scale(factor);
+	//	cut_d3->at(i)->Scale(factor);
+	//	cut_dNew->at(i)->Scale(factorNew);
+	//	cut_dAlpha->at(i)->Scale(factorGreek);
+	//	cut_dBeta->at(i)->Scale(factorGreek);
+	//	cut_dGamma->at(i)->Scale(factorGreek);
+	//}
 
 	Display::prepareInputHisto();
 

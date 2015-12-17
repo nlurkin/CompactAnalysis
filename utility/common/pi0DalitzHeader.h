@@ -84,8 +84,8 @@ vector<TString> modelFiles;
 TString binsFileName;
 bool withEqualBins;
 
-TTree* fitTree, *cut_fitTree;
-fitStruct fitBrch, cut_fitBrch;
+TTree* fitTree;//, *cut_fitTree;
+fitStruct fitBrch;//, cut_fitBrch;
 
 TString tempFileName;
 TFile *tempFD;
@@ -487,13 +487,13 @@ bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEven
 
 	if(rawEvent->vtx[corrEvent->goodVertexID].position.Z() < -1700){
 		fitBrch.selEvents--;
-		cut_fitBrch.selEvents--;
+		//cut_fitBrch.selEvents--;
 		return false;
 	}
 
 	if(evt->x <= 0.01 || evt->x > 1) {
 		fitBrch.selEvents--;
-		cut_fitBrch.selEvents--;
+		//cut_fitBrch.selEvents--;
 		return false;
 	}
 
