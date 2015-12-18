@@ -1,6 +1,7 @@
 #include "exportClasses.h"
 #include "TObject.h"
 #include "reader.h"
+//#include "compact-7.3.x"
 
 //##########################
 //###   RawObjects
@@ -27,6 +28,7 @@ ClassImp(NAbcog_params);
 ClassImp(NGeom);
 ClassImp(NDCH);
 ClassImp(Nxyz);
+ClassImp(NDETStatus);
 
 //##########################
 //###   Top nodes
@@ -41,7 +43,6 @@ ClassImp(ROOTMCEvent);
 NVtxTrack::NVtxTrack(vtxtracks &ref):
 		iTrack(ref.iTrack), bdxdz(ref.bdxdz), bdydz(ref.bdydz)
 {
-
 };
 
 NSuperTimeOffset& NSuperTimeOffset::operator=(superTimeOffset &ref){
@@ -112,6 +113,8 @@ ROOTRawEvent& ROOTRawEvent::operator=(superCmpEvent *ref){
 	for(unsigned int i=0; i<Nvtx; ++i){
 		vtx.push_back(NSCVertex(ref->vtx[i]));
 	}
+
+	DETStatus = &ref->DETstatus[0];
 	return *this;
 }
 
@@ -138,12 +141,16 @@ NSCVertex::NSCVertex(SCvertex &ref):
 }
 
 NTrak::NTrak(trak &ref):
-	q(ref.q),
-	vtxID(-1),
-	time(ref.time),
 	p(ref.p),
+	q(ref.q),
+	quality(ref.quality),
+	chi2(ref.chi2),
+	by(ref.by),
+	bx(ref.bx),
 	bdxdz(ref.bdxdz),
 	bdydz(ref.bdydz),
+	vtxID(-1),
+	time(ref.time),
 	dDeadCell(ref.dDeadCell),
 	bDetPos(ref.bx, ref.by, 0),
 	aDetPos(ref.x, ref.y, 0),
@@ -170,6 +177,30 @@ NGeom& NGeom::operator=(GeomCompact *ref){
 	Dch[3].PosChamber.SetXYZ(ref->Dch[3].PosChamber.x, ref->Dch[3].PosChamber.y, ref->Dch[3].PosChamber.z);
 
 	Lkr.SetXYZ(ref->Lkr.x, ref->Lkr.y, ref->Lkr.z);
+
+	return *this;
+}
+
+NDETStatus& NDETStatus::operator =(DETstatus* ref)
+{
+	//TAG = ref->TAG;
+	//AKS = ref->AKS;
+	AKL = ref->AKL;
+	DCH = ref->DCH;
+	HOD = ref->HOD;
+	HAC = ref->HAC;
+	LKR = ref->LKR;
+	NHO = ref->NHO;
+	MUV = ref->MUV;
+	MBX = ref->MBX;
+	NTR = ref->NTR;
+	LV3 = ref->LV3;
+	LV3Trig = ref->LV3Trig;
+	LV3TrigRare = ref->LV3TrigRare;
+	LV3ABTrig = ref->LV3ABTrig;
+	LV3ATrigRare = ref->LV3ATrigRare;
+	LV3BTrigRare = ref->LV3BTrigRare;
+	for(int i=0; i<10; i++) ChTrEff[i] = ref->ChTrEff[i];
 
 	return *this;
 }

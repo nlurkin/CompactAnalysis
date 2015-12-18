@@ -1,15 +1,13 @@
 #mcfiles=/afs/cern.ch/user/n/nlurkin/work/L2_L3/dflt/pi.root
 #mcIndex=0
-#mcout=mu.root
+#mcout=pi_uproot
 #mccolors=630 740 850
 #brs=2.066E-1
 #mclegends=K^{+}->#pi^{+}#pi^{0}_{d}
 
 datafiles= /afs/cern.ch/user/n/nlurkin/work/L2_L3/dflt/data.root
-dataout=data.root
+dataout=data_up.root
 datacolors=360
 datalegends=Data
 
 #These runs are included
-#runstart=20452
-#runend=20486

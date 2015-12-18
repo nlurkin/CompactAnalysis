@@ -156,7 +156,7 @@ void parseCutsValues(std::string fileName, cutsValues &cutsDefinition){
 	//Initialize with default values
 	cutsDefinition.triggerMask = 0x400;
 	cutsDefinition.numVertex3 = 1;
-	cutsDefinition.minZVertex = -1800;
+	cutsDefinition.minZVertex = -2100;
 	cutsDefinition.maxZVertex = 9000;
 	cutsDefinition.maxChi2Vertex = 25;
 	cutsDefinition.maxExtraTracks = 0;
@@ -165,7 +165,7 @@ void parseCutsValues(std::string fileName, cutsValues &cutsDefinition){
 	cutsDefinition.numBadTrackCombi = 0;
 	cutsDefinition.numPiCandidates = 1;
 	cutsDefinition.boolBadECandidates = true;
-	cutsDefinition.minTrackMomentum = 5;
+	cutsDefinition.minTrackMomentum = 2;
 	cutsDefinition.maxTrackMomentum = 74;
 	cutsDefinition.numAddGoodCluster = 1;
 	cutsDefinition.lkrAcceptance = 0;

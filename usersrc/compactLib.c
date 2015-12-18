@@ -388,14 +388,18 @@ NPhysicsCluster correctCluster(superCmpEvent* sevt, int i){
 void CreateTracks(superCmpEvent *sevt){
 	for(int i=0; i<sevt->Ntrack; i++){
 		NTrak x;
+		x.p = sevt->track[i].p;
+		x.q = sevt->track[i].q;
+		x.quality = sevt->track[i].quality;
+		x.chi2 = sevt->track[i].chi2;
+		x.by = sevt->track[i].by;
+		x.bx = sevt->track[i].bx;
 		x.bdxdz = sevt->track[i].bdxdz;
 		x.bdydz = sevt->track[i].bdydz;
 		x.bDetPos = TVector3(sevt->track[i].bx, sevt->track[i].by, Geom->DCH.bz);
 		x.aDetPos = TVector3(sevt->track[i].x, sevt->track[i].y, Geom->DCH.z);
 		x.bMomentum = TVector3(x.bdxdz, x.bdydz, 1).Unit();
 		x.aMomentum = TVector3(sevt->track[i].dxdz, sevt->track[i].dydz, 1).Unit();
-		x.p = sevt->track[i].p;
-		x.q = sevt->track[i].q;
 		x.time = sevt->track[i].time;
 		x.dDeadCell = sevt->track[i].dDeadCell;
 

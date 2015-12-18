@@ -13,6 +13,7 @@ struct SCvertex;
 struct trak;
 struct cluster;
 struct GeomCompact;
+struct DETstatus;
 
 //##########################
 //###   RawObjects
@@ -47,15 +48,19 @@ public:
 
 class NTrak : public TObject{
 public:
-	NTrak():q(999), vtxID(-1), time(0), p(0), bdxdz(0), bdydz(0), dDeadCell(0){};
+	NTrak():p(0), q(999), quality(0), chi2(0), by(0), bx(0), bdxdz(0), bdydz(0), vtxID(-1), time(0), dDeadCell(0){};
 	NTrak(trak &ref);
 public:
-	int q;
-	int vtxID;
-	float time;
 	float p;
+	int q;
+	float quality;
+	float chi2;
+	float by;
+	float bx;
 	float bdxdz;
 	float bdydz;
+	int vtxID;
+	float time;
 	float dDeadCell;
 	TVector3 bDetPos;
 	TVector3 aDetPos;
@@ -275,6 +280,34 @@ public:
 	ClassDefNV(NGeom, 1);
 };
 
+class NDETStatus : public TObject{
+public:
+	NDETStatus(){};
+	~NDETStatus(){};
+
+	NDETStatus& operator=(DETstatus *ref);
+public:
+	int TAG;
+	int AKS;
+	int AKL;
+	int DCH;
+	int HOD;
+	int HAC;
+	int LKR;
+	int NHO;
+	int MUV;
+	int MBX;
+	int NTR;
+	int LV3;
+	int LV3Trig;
+	int LV3TrigRare;
+	int LV3ABTrig;
+	int LV3ATrigRare;
+	int LV3BTrigRare;
+	int ChTrEff[10];
+	ClassDefNV(NDETStatus, 1);
+};
+
 //##########################
 //###   Top nodes
 //##########################
@@ -306,6 +339,7 @@ public:
 	std::vector<NSCVertex> vtx;
 	std::vector<NTrak> track;
 	std::vector<NCluster> cluster;
+	NDETStatus DETStatus;
 
 	ClassDefNV(ROOTRawEvent, 1);
 };
