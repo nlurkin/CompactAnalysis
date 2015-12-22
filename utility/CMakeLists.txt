@@ -2,6 +2,10 @@ cmake_minimum_required (VERSION 2.6 FATAL_ERROR)
 
 project (pi0d_tools)
 
+#require BOOST
+include_directories($ENV{BOOST}/include/boost-1_53)
+link_directories($ENV{BOOST}/lib)
+
 #require ROOT
 include(${PROJECT_SOURCE_DIR}/FindROOT.cmake)
 include_directories(${ROOT_INCLUDE_DIR})
@@ -27,17 +31,17 @@ add_executable(make_bins batch/make_bins.cpp)
 add_executable(prepareWeights batch/prepareWeights.cpp)
 add_executable(toyMC batch/toyMC.cpp)
 
-target_link_libraries(combine common funLib exportClasses ${ROOT_LIBRARIES})
-target_link_libraries(fit common funLib exportClasses Support ${ROOT_LIBRARIES} Minuit)
-target_link_libraries(make_bins common funLib exportClasses ${ROOT_LIBRARIES})
-target_link_libraries(prepareWeights common exportClasses ${ROOT_LIBRARIES})
-target_link_libraries(toyMC common funLib exportClasses ${ROOT_LIBRARIES} Minuit) 
+target_link_libraries(combine common funLib exportClasses ${ROOT_LIBRARIES} boost_program_options-gcc47-mt-1_53)
+target_link_libraries(fit common funLib exportClasses Support ${ROOT_LIBRARIES} Minuit boost_program_options-gcc47-mt-1_53)
+target_link_libraries(make_bins common funLib exportClasses ${ROOT_LIBRARIES} boost_program_options-gcc47-mt-1_53)
+target_link_libraries(prepareWeights common exportClasses ${ROOT_LIBRARIES} boost_program_options-gcc47-mt-1_53)
+target_link_libraries(toyMC common funLib exportClasses ${ROOT_LIBRARIES} Minuit boost_program_options-gcc47-mt-1_53)
 
-add_custom_command(TARGET combine
-                   POST_BUILD
-                   COMMAND ./gitcommit.sh
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   COMMENT "Running git commit")
+#add_custom_command(TARGET combine
+#                   POST_BUILD
+#                   COMMAND ./gitcommit.sh
+#                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+#                   COMMENT "Running git commit")
 
 install(TARGETS combine DESTINATION .)
 install(TARGETS fit DESTINATION .)
