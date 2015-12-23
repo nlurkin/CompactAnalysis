@@ -197,8 +197,7 @@ private:
 	std::vector<std::string> fMCLegendTitle, fDataLegendTitle;
 
 	std::vector<double> fBrs;
-	std::vector<std::string> fMCFileNames;
-	std::vector<std::string> fDataFileNames;
+	std::vector<std::string> fMCFileNames, fDataFileNames;
 	std::vector<int> fMCIndexes;
 	std::vector<double> fDataFactor;
 	std::vector<std::string> fMCOutputFiles;

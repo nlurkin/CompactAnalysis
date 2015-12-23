@@ -10,6 +10,8 @@
 #include <TString.h>
 #include <TObjArray.h>
 #include <TObjString.h>
+#include <sys/stat.h>
+
 namespace po = boost::program_options;
 
 using namespace std;
