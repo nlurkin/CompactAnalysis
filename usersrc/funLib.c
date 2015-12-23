@@ -11,7 +11,7 @@
 #ifdef OUTSIDECOMPACT
 #include "mystructs.h"
 
-extern ROOTRawEvent &rawEvent;
+//extern ROOTRawEvent &rawEvent;
 extern bool optDebug;
 extern bool noOutput;
 extern cutsValues cutsDefinition;
@@ -121,11 +121,11 @@ void propagateBefore(float &x, float &y, float &z, float zplane, trak t){
 	z = zplane;
 }
 #endif
-TVector3 propagateBefore(float zplane, NPhysicsTrack pt){
+TVector3 propagateBefore(float zplane, NPhysicsTrack &pt, ROOTRawEvent &rawEvent){
 	NTrak t = rawEvent.track[pt.trackID];
 	return t.bDetPos + t.bMomentum*((zplane-t.bDetPos.Z())/t.bMomentum.Z());
 }
-TVector3 propagateCorrBefore(float zplane, NPhysicsTrack pt){
+TVector3 propagateCorrBefore(float zplane, NPhysicsTrack &pt, ROOTRawEvent &rawEvent){
 	NTrak t = rawEvent.track[pt.trackID];
 	return t.bDetPos + pt.momentum*((zplane-t.bDetPos.Z())/pt.momentum.Z());
 }
@@ -136,11 +136,11 @@ void propagateAfter(float &x, float &y, float &z, float zplane, trak t){
 	z = zplane;
 }
 #endif
-TVector3 propagateAfter(float zplane, NPhysicsTrack pt){
+TVector3 propagateAfter(float zplane, NPhysicsTrack &pt, ROOTRawEvent &rawEvent){
 	NTrak &t = rawEvent.track[pt.trackID];
 	return t.aDetPos + t.aMomentum*((zplane-t.aDetPos.Z())/t.aMomentum.Z());
 }
-TVector3 propagate(float zplane, NPhysicsTrack pt){
+TVector3 propagate(float zplane, NPhysicsTrack &pt, ROOTRawEvent &rawEvent){
 	NTrak t = rawEvent.track[pt.trackID];
 	//Ou detBpos???
 	//return t->middlePos + pt.momentum*((zplane-t->middlePos.Z())/pt.momentum.Z());

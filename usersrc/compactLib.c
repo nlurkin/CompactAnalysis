@@ -407,7 +407,7 @@ void CreateTracks(superCmpEvent *sevt){
 
 		rawEvent.track.push_back(x);
 
-		TVector3 propPos = propagateAfter(Geom->Lkr.z, t);
+		TVector3 propPos = propagateAfter(Geom->Lkr.z, t, rawEvent);
 		t.lkr_acc = LKr_acc(rootBurst.nrun, propPos.X(), propPos.Y(), 8);
 
 		corrEvent.pTrack.push_back(t);
