@@ -150,3 +150,11 @@ void FitDataSample::initHisto(int nbins, double* bins) {
 
 void FitDataSample::scale() {
 }
+
+FitDataSample& operator +=(FitDataSample& first, const FitDataSample* other) {
+	operator +=((Sample&)first, (Sample*)other);
+
+	first.dSig->Add(other->dSig, other->fFactor);
+	return first;
+}
+

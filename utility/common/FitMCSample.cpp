@@ -17,8 +17,7 @@
 using namespace std;
 
 FitMCSample::FitMCSample(int index, ConfigFile &cfg) :
-	Sample(index, cfg)
-{
+		Sample(index, cfg) {
 
 }
 
@@ -61,7 +60,7 @@ void FitMCSample::doFill(TFile* inputFD, TFile* tempFD) {
 		t->SetBranchAddress("cutsResult", &cutsPass);
 		tc->SetBranchAddress("lists", &cutsLists);
 		tc->GetEntry(0);
-		if (fCfg.getScanId()== -1)
+		if (fCfg.getScanId() == -1)
 			scanID = cutsLists->getDefaultIndex();
 		else
 			scanID = fCfg.getScanId();
@@ -215,7 +214,7 @@ void FitMCSample::doSetName() {
 //	dGamma->SetName(TString::Format("dGamma_%i", fIndex));
 }
 
-void FitMCSample::initHisto(int nbins, double* bins){
+void FitMCSample::initHisto(int nbins, double* bins) {
 	if (fCfg.isWithEqualBins()) {
 		d1 = new TH1D("d1", "sample 1", nbins - 1, bins);
 		d1->Sumw2();
@@ -231,8 +230,7 @@ void FitMCSample::initHisto(int nbins, double* bins){
 		dBeta->Sumw2();
 		dGamma = new TH1D("dGamma", "MC", nbins - 1, bins);
 		dGamma->Sumw2();
-	}
-	else{
+	} else {
 		d1 = new TH1D("d1", "sample 1", NBINS, 0, MAXBIN);
 		d1->Sumw2();
 		d2 = new TH1D("d2", "sample x", NBINS, 0, MAXBIN);
@@ -261,8 +259,44 @@ void FitMCSample::scale() {
 	Sample::scale(d2, selRatiox);
 	Sample::scale(d3, selRatioxx);
 
-	Sample::scale(dNew,   1.);
+	Sample::scale(dNew, 1.);
 	Sample::scale(dAlpha, 1.);
-	Sample::scale(dBeta,  1.);
+	Sample::scale(dBeta, 1.);
 	Sample::scale(dGamma, 1.);
 }
+
+void FitMCSample::scaleToData(double nData) {
+	//Scale MC to Data
+	double totalMC = 0;
+	double totalMCNew = 0;
+	double totalGreek = 0;
+	totalMC += d1->Integral();
+	totalMCNew += dNew->Integral();
+	totalGreek += dAlpha->Integral();
+
+	double factor = ((double) (nData)) / totalMC;
+	double factorNew = ((double) (nData)) / totalMCNew;
+	double factorGreek = ((double) (nData)) / totalGreek;
+	d1->Scale(factor);
+	d2->Scale(factor);
+	d3->Scale(factor);
+	dNew->Scale(factorNew);
+	dAlpha->Scale(factorGreek);
+	dBeta->Scale(factorGreek);
+	dGamma->Scale(factorGreek);
+}
+
+FitMCSample& operator +=(FitMCSample &first, const FitMCSample* other) {
+	operator +=((Sample&) first, (Sample*) other);
+	first.d1->Add(other->d1, 1.);
+	first.d2->Add(other->d2, 1.);
+	first.d3->Add(other->d3, 1.);
+	first.dNew->Add(other->dNew, 1.);
+
+	first.dAlpha->Add(other->dAlpha, 1.);
+	first.dBeta->Add(other->dBeta, 1.);
+	first.dGamma->Add(other->dGamma, 1.);
+
+	return first;
+}
+

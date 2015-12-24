@@ -12,6 +12,7 @@
 
 class FitMCSample: public Sample {
 public:
+	FitMCSample();
 	FitMCSample(int index, ConfigFile &cfg);
 	virtual ~FitMCSample();
 
@@ -20,8 +21,11 @@ public:
 	virtual void doWrite();
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins);
+	virtual void scaleToData(double nData);
 
 	void scale();
+
+	friend FitMCSample& operator+=(FitMCSample &first, const FitMCSample* other);
 private:
 	TH1D *d1, *d2, *d3;
 	TH1D *dNew;
