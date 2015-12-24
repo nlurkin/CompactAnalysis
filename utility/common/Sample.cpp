@@ -131,3 +131,9 @@ void Sample::closeOutput(TFile* tempFD) {
 void Sample::scale(TH1 *histo, double scaleFactor){
 	histo->Scale(fBr/(fFitBrch.totEvents*scaleFactor));
 }
+
+Sample& operator +=(Sample &first, const Sample* other) {
+	first.fFitBrch += other->fFitBrch;
+	return first;
+}
+

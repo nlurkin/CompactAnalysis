@@ -24,6 +24,15 @@ typedef struct fitStruct_t {
 	int n1;
 	int nx;
 	int nxx;
+
+	fitStruct_t& operator+=(const fitStruct_t &other){
+		totEvents += other.totEvents;
+		selEvents += other.selEvents;
+		n1 += other.n1;
+		nx += other.nx;
+		nxx += other.nxx;
+		return *this;
+	}
 } fitStruct;
 
 void initFitStruct(fitStruct &s);
@@ -34,6 +43,7 @@ public:
 	static const int NBINS = 10000000;
 	static const int MAXBIN = 1;
 
+	Sample();
 	Sample(int index, ConfigFile &cfg);
 	virtual ~Sample();
 
@@ -50,6 +60,7 @@ public:
 	virtual void doWrite() = 0;
 	virtual void doSetName() = 0;
 	virtual void initHisto(int nbins, double* bins) = 0;
+	virtual void scaleToData(double nData) = 0;
 
 	double getBr() const {
 		return fBr;
@@ -87,6 +98,7 @@ public:
 		fWeights = weights;
 	}
 
+	friend Sample& operator+=(Sample &first, const Sample* other);
 protected:
 	int fIndex;
 	double fBr;
@@ -98,5 +110,4 @@ protected:
 	ConfigFile &fCfg;
 	const RunWeights *fWeights;
 };
-
 #endif /* COMMON_SAMPLE_H_ */
