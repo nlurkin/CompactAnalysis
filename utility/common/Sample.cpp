@@ -15,6 +15,32 @@
 
 using namespace std;
 
+void initFitStruct(fitStruct &s){
+	s.n1 = 0;
+	s.nx = 0;
+	s.nxx = 0;
+	s.selEvents = 0;
+	s.totEvents = 0;
+}
+
+void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor){
+	for(int i=0; i<t->GetEntries(); i++){
+		t->GetEntry(i);
+		out.n1 			+= factor*in.n1;
+		out.nx 			+= factor*in.nx;
+		out.nxx 		+= factor*in.nxx;
+		out.selEvents 	+= factor*in.selEvents;
+		out.totEvents 	+= factor*in.totEvents;
+	}
+
+	std::cout << "Total events: \t" << out.totEvents << std::endl;
+	std::cout << "Sel.  events: \t" << out.selEvents << std::endl;
+	std::cout << "n1    events: \t" << out.n1 << std::endl;
+	std::cout << "nx    events: \t" << out.nx << std::endl;
+	std::cout << "nxx   events: \t" << out.nxx << std::endl;
+}
+
+
 Sample::Sample(int index, ConfigFile &cfg) :
 		fIndex(index),
 		fCfg(cfg)
@@ -65,6 +91,19 @@ void Sample::fill(TFile* tempFD, int nbins, double* bins) {
 	closeOutput(tempFD);
 }
 
+void Sample::get(TFile* tempFD) {
+	TFile *inFileFD;
+	cout << "Sample " << fIndex << " with BR " << fBr << endl;
+	cout << "Opening file " << fOutputFile << endl;
+	inFileFD = TFile::Open(fOutputFile.c_str());
+
+	//Request the Histo reading function
+	doGet(inFileFD, tempFD);
+
+	//Close the input file
+	inFileFD->Close();
+}
+
 void Sample::initOutput() {
 	fOutputFD = TFile::Open(fOutputFile.c_str(), "RECREATE");
 	fFitTree = new TTree("fitStruct", "fitStruct tree");
@@ -87,4 +126,8 @@ void Sample::closeOutput(TFile* tempFD) {
 
 	tempFD->cd();
 	doSetName();
+}
+
+void Sample::scale(TH1 *histo, double scaleFactor){
+	histo->Scale(fBr/(fFitBrch.totEvents*scaleFactor));
 }

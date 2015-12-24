@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <TH1D.h>
+#include <TTree.h>
 #include "ConfigFile.h"
 #include "RunWeights.h"
 
@@ -18,12 +19,15 @@ class TTree;
 class TFile;
 
 typedef struct fitStruct_t {
-	unsigned int totEvents;
-	unsigned int selEvents;
+	int totEvents;
+	int selEvents;
 	int n1;
 	int nx;
 	int nxx;
 } fitStruct;
+
+void initFitStruct(fitStruct &s);
+void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor);
 
 class Sample {
 public:
@@ -35,10 +39,14 @@ public:
 
 	bool addFile(std::string);
 	void fill(TFile* tempFD, int nbins, double* bins);
+	void get(TFile* tempFD);
 	void initOutput();
 	void closeOutput(TFile* tempFD);
 
+	void scale(TH1 *histo, double scaleFactor);
+
 	virtual void doFill(TFile* inputFD, TFile* tempFD) = 0;
+	virtual void doGet(TFile* inputFD, TFile* tempFD) = 0;
 	virtual void doWrite() = 0;
 	virtual void doSetName() = 0;
 	virtual void initHisto(int nbins, double* bins) = 0;
