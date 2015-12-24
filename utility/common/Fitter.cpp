@@ -90,3 +90,11 @@ void Fitter::fillSamples() {
 
 	if(fDataSample) fDataSample->fill(fTempFile, fNBins, fBinning);
 }
+
+void Fitter::getSamples(){
+	for (auto mcSample : fMCSamples) {
+		mcSample->get(fTempFile);
+	}
+
+	if(fDataSample) fDataSample->get(fTempFile);
+}

@@ -22,6 +22,7 @@ public:
 
 	void prepareSamples(ConfigFile &cfg);
 	void fillSamples();
+	void getSamples();
 
 	void setBinning(int nbins, double* binning) {
 		fNBins = nbins;
