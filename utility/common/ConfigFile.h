@@ -182,6 +182,14 @@ public:
 		fWithEqualBins = withEqualBins;
 	}
 
+	const std::vector<int>& getDataIndexes() const {
+		return fDataIndexes;
+	}
+
+	void setDataIndexes(const std::vector<int>& dataIndexes) {
+		fDataIndexes = dataIndexes;
+	}
+
 private:
 	boost::program_options::options_description fDesc;
 	int fRunStart;
@@ -198,7 +206,7 @@ private:
 
 	std::vector<double> fBrs;
 	std::vector<std::string> fMCFileNames, fDataFileNames;
-	std::vector<int> fMCIndexes;
+	std::vector<int> fMCIndexes, fDataIndexes;
 	std::vector<double> fDataFactor;
 	std::vector<std::string> fMCOutputFiles;
 	std::vector<std::string> fDataOutputFiles;

@@ -30,6 +30,7 @@ ConfigFile::ConfigFile() :
 		("dataout", 	po::value< string>			(), 								"List of input MC files")
 		("datacolors", 	po::value< string>			(), 								"List of input MC files")
 		("datalegends", po::value< string>			(), 								"List of input MC files")
+		("dataIndex",	po::value< string>			(),				 					"List of input MC files")
 		("datafactor", 	po::value< string>			(), 								"List of input MC files")
 		("modelfile", 	po::value< string>			(), 								"Model file for ToyMC")
 		("runstart", 	po::value< int>				(&fRunStart)->default_value(0), 	"List of input MC files")
@@ -112,6 +113,10 @@ bool ConfigFile::readFile(string fileName){
 		tempVec = tokenize(vm["datalegends"].as<string>());
 		for(auto it : tempVec) fDataLegendTitle.push_back(it.ReplaceAll("\\", "#").Data());
 	}
+	if (vm.count("dataIndex")) {
+		tempVec = tokenize(vm["dataIndex"].as<string>());
+		for(auto it : tempVec) fDataIndexes.push_back(it.Atoi());
+	}
 	if (vm.count("datafactor")) {
 		tempVec = tokenize(vm["datafactor"].as<string>());
 		for(auto it : tempVec) fDataFactor.push_back(it.Atoi());
@@ -134,7 +139,7 @@ void ConfigFile::print(){
 
 	cout << "Data Options" << endl;
 	for(unsigned int i=0; i<fDataFileNames.size(); i++){
-		cout << fDataFileNames[i] << " " << fDataOutputFiles[i] << " " << fDataFactor[i] << " " << fDataColors[i] << " " << fDataLegendTitle[i] << endl;
+		cout << fDataFileNames[i] << " " << fDataIndexes[i] << " " << fDataOutputFiles[i] << " " << fDataFactor[i] << " " << fDataColors[i] << " " << fDataLegendTitle[i] << endl;
 	}
 
 	cout << "Other options" << endl;
