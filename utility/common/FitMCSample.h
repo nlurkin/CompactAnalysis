@@ -16,10 +16,12 @@ public:
 	virtual ~FitMCSample();
 
 	virtual void doFill(TFile* inputFD, TFile* tempFD);
+	virtual void doGet(TFile* inputFD, TFile* tempFD);
 	virtual void doWrite();
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins);
 
+	void scale();
 private:
 	TH1D *d1, *d2, *d3;
 	TH1D *dNew;

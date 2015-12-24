@@ -159,6 +159,42 @@ void FitMCSample::doFill(TFile* inputFD, TFile* tempFD) {
 	cout << endl << fFitBrch.selEvents << endl;
 }
 
+void FitMCSample::doGet(TFile* inputFD, TFile* tempFD) {
+	fitStruct fitBrch;
+	TTree *t = (TTree*) inputFD->Get("fitStruct");
+	t->SetBranchAddress("fitStruct", &fitBrch);
+
+	initFitStruct(fFitBrch);
+	sumTreeFitStruct(fitBrch, t, fFitBrch, 1);
+
+	//Create histo
+	TH1D* xxx1 = (TH1D*) inputFD->Get("d1");
+	TH1D* xxx2 = (TH1D*) inputFD->Get("d2");
+	TH1D* xxx3 = (TH1D*) inputFD->Get("d3");
+	TH1D* xxx4 = (TH1D*) inputFD->Get("dNew");
+	TH1D* xxxA = (TH1D*) inputFD->Get("dAlpha");
+	TH1D* xxxB = (TH1D*) inputFD->Get("dBeta");
+	TH1D* xxxG = (TH1D*) inputFD->Get("dGamma");
+
+	tempFD->cd();
+	d1 = ((TH1D*) xxx1->Clone());
+	d2 = ((TH1D*) xxx2->Clone());
+	d3 = ((TH1D*) xxx3->Clone());
+	dNew = ((TH1D*) xxx4->Clone());
+	dAlpha = ((TH1D*) xxxA->Clone());
+	dBeta = ((TH1D*) xxxB->Clone());
+	dGamma = ((TH1D*) xxxG->Clone());
+	d1->SetName(TString::Format("d1_%i", fIndex));
+	d2->SetName(TString::Format("d2_%i", fIndex));
+	d3->SetName(TString::Format("d3_%i", fIndex));
+	dNew->SetName(TString::Format("dNew_%i", fIndex));
+	dAlpha->SetName(TString::Format("dAlpha_%i", fIndex));
+	dBeta->SetName(TString::Format("dBeta_%i", fIndex));
+	dGamma->SetName(TString::Format("dGamma_%i", fIndex));
+
+	scale();
+}
+
 void FitMCSample::doWrite() {
 	d1->Write();
 	d2->Write();
@@ -212,4 +248,21 @@ void FitMCSample::initHisto(int nbins, double* bins){
 		dGamma = new TH1D("dGamma", "MC", NBINS, 0, MAXBIN);
 		dGamma->Sumw2();
 	}
+}
+
+void FitMCSample::scale() {
+	// Rescale histo
+	double totN = fFitBrch.n1 + fFitBrch.nx + fFitBrch.nxx;
+	double selRatio1 = (double) fFitBrch.n1 / totN;
+	double selRatiox = (double) fFitBrch.nx / totN;
+	double selRatioxx = (double) fFitBrch.nxx / totN;
+
+	Sample::scale(d1, selRatio1);
+	Sample::scale(d2, selRatiox);
+	Sample::scale(d3, selRatioxx);
+
+	Sample::scale(dNew,   1.);
+	Sample::scale(dAlpha, 1.);
+	Sample::scale(dBeta,  1.);
+	Sample::scale(dGamma, 1.);
 }

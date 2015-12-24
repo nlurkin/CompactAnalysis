@@ -16,9 +16,12 @@ public:
 	virtual ~FitDataSample();
 
 	virtual void doFill(TFile* inputFD, TFile* tempFD);
+	virtual void doGet(TFile* inputFD, TFile* tempFD);
 	virtual void doWrite();
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins);
+
+	void scale();
 
 	double getTestA() const {
 		return fTestA;
@@ -31,6 +34,7 @@ public:
 private:
 	TH1D *dSig;
 	double fTestA;
+	double fFactor;
 };
 
 #endif /* COMMON_FITDATASAMPLE_H_ */

@@ -116,6 +116,23 @@ void FitDataSample::doFill(TFile* inputFD, TFile* tempFD) {
 //	return processedEvents;
 }
 
+void FitDataSample::doGet(TFile* inputFD, TFile* tempFD) {
+	fitStruct fitBrch;
+	TTree *t = (TTree*) inputFD->Get("fitStruct");
+	t->SetBranchAddress("fitStruct", &fitBrch);
+
+	initFitStruct(fFitBrch);
+	sumTreeFitStruct(fitBrch, t, fFitBrch, fFactor);
+
+	//Create histo
+	TH1D* xxx = (TH1D*) inputFD->Get("sig");
+	tempFD->cd();
+	dSig = ((TH1D*) xxx->Clone());
+	dSig->SetName(TString::Format("sig_%i", fIndex));
+
+	//sig->Add(dSig->at(index), factor);
+}
+
 void FitDataSample::doWrite() {
 	dSig->Write();
 }
@@ -129,4 +146,7 @@ void FitDataSample::initHisto(int nbins, double* bins) {
 		dSig = new TH1D("sig", "signal sample", nbins - 1, bins);
 	else
 		dSig = new TH1D("sig", "signal sample", NBINS, 0, MAXBIN);
+}
+
+void FitDataSample::scale() {
 }
