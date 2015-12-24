@@ -23,6 +23,7 @@ public:
 	void prepareSamples(ConfigFile &cfg);
 	void fillSamples();
 	void getSamples();
+	void mergeSamples();
 
 	void setBinning(int nbins, double* binning) {
 		fNBins = nbins;
@@ -36,10 +37,13 @@ public:
 private:
 	TFile *fTempFile;
 	std::vector<FitMCSample*> fMCSamples;
-	FitDataSample *fDataSample;
+	std::vector<FitDataSample*> fDataSamples;
 	double *fBinning;
 	const RunWeights *fRunWeights;
 	int fNBins;
+
+	FitMCSample   fFinalMCSample;
+	FitDataSample fFinalDataSample;
 };
 
 #endif /* COMMON_FITTER_H_ */

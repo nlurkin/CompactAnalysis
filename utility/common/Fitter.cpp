@@ -15,11 +15,7 @@
 using namespace std;
 
 Fitter::Fitter() :
-		fDataSample(nullptr),
-		fBinning(nullptr),
-		fRunWeights(nullptr),
-		fNBins(0)
-{
+		fBinning(nullptr), fRunWeights(nullptr), fNBins(0) {
 	struct stat buffer;
 	srand(time(0));
 
@@ -64,37 +60,58 @@ void Fitter::prepareSamples(ConfigFile &cfg) {
 		}
 
 		//Open new input file
-		cout << cfg.getMcFileNames()[i] << endl;
 		tempSample->addFile(cfg.getMcFileNames()[i]);
 
 		fMCSamples.push_back(tempSample);
 	}
 
-	if (cfg.getDataFileNames().size() > 0){
-		fDataSample = new FitDataSample(0, cfg);
-		fDataSample->setBr(1);
-		fDataSample->setTestA(cfg.getTestA());
-		fDataSample->setWeights(fRunWeights);
-		fDataSample->setOutputFile(cfg.getDataOutputFiles()[0]);
-	}
-
+	FitDataSample *dataSample;
+	prevIndex = -1;
 	for (unsigned int i = 0; i < cfg.getDataFileNames().size(); ++i) {
-		fDataSample->addFile(cfg.getDataFileNames()[i]);
+		//TODO do this at ConfigFile level (align all vectors)
+		//If not enough index in index vector -> assume same as previous
+		if (i >= cfg.getDataIndexes().size())
+			newIndex = prevIndex;
+		else
+			newIndex = cfg.getDataIndexes()[i];
+		//If index is different from previous -> new sample
+		if (prevIndex != newIndex) {
+			dataSample = new FitDataSample(newIndex, cfg);
+			dataSample->setBr(1);
+			dataSample->setTestA(cfg.getTestA());
+			dataSample->setFactor(cfg.getDataFactor()[newIndex]);
+			dataSample->setWeights(fRunWeights);
+			dataSample->setOutputFile(cfg.getDataOutputFiles()[newIndex]);
+			prevIndex = newIndex;
+		}
+
+		dataSample->addFile(cfg.getDataFileNames()[i]);
+		fDataSamples.push_back(dataSample);
 	}
 }
 
 void Fitter::fillSamples() {
-	for (auto mcSample : fMCSamples) {
+	for (auto mcSample : fMCSamples)
 		mcSample->fill(fTempFile, fNBins, fBinning);
-	}
 
-	if(fDataSample) fDataSample->fill(fTempFile, fNBins, fBinning);
+	for (auto dataSample : fDataSamples)
+		dataSample->fill(fTempFile, fNBins, fBinning);
 }
 
-void Fitter::getSamples(){
-	for (auto mcSample : fMCSamples) {
+void Fitter::getSamples() {
+	for (auto mcSample : fMCSamples)
 		mcSample->get(fTempFile);
-	}
 
-	if(fDataSample) fDataSample->get(fTempFile);
+	for (auto dataSample : fDataSamples)
+		dataSample->get(fTempFile);
+}
+
+void Fitter::mergeSamples() {
+	for (auto sample : fDataSamples)
+		fFinalDataSample += sample;
+
+	for (auto sample : fMCSamples){
+		sample->scaleToData(fFinalDataSample.getTotalSize());
+		fFinalMCSample += sample;
+	}
 }
