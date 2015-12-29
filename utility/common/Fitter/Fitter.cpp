@@ -5,12 +5,16 @@
  *      Author: nlurkin
  */
 
-#include "Fitter.h"
+#include "../Fitter/Fitter.h"
+
 #include <TString.h>
 #include <TFile.h>
 #include <iostream>
 
-#include "FitMCSample.h"
+#include "../Fitter/MinuitFitterNewROOT.h"
+#include "../Samples/FitMCSample.h"
+#include "MinuitFitterNewChi2.h"
+#include "MinuitFitterNewROOT.h"
 
 using namespace std;
 
@@ -40,6 +44,9 @@ void Fitter::prepareSamples(ConfigFile &cfg) {
 	int prevIndex = -1;
 	int newIndex;
 
+	fFinalMCSample.setCfg(&cfg);
+	fFinalDataSample.setCfg(&cfg);
+
 	FitMCSample *tempSample;
 	//Getting MC
 	for (unsigned int i = 0; i < cfg.getMcFileNames().size(); ++i) {
@@ -52,7 +59,7 @@ void Fitter::prepareSamples(ConfigFile &cfg) {
 		//If index is different from previous -> new sample
 		if (prevIndex != newIndex) {
 			//New sample
-			tempSample = new FitMCSample(newIndex, cfg);
+			tempSample = new FitMCSample(newIndex, &cfg);
 			tempSample->setBr(cfg.getBrs()[newIndex]);
 			tempSample->setWeights(fRunWeights);
 			tempSample->setOutputFile(cfg.getMcOutputFiles()[newIndex]);
@@ -76,7 +83,7 @@ void Fitter::prepareSamples(ConfigFile &cfg) {
 			newIndex = cfg.getDataIndexes()[i];
 		//If index is different from previous -> new sample
 		if (prevIndex != newIndex) {
-			dataSample = new FitDataSample(newIndex, cfg);
+			dataSample = new FitDataSample(newIndex, &cfg);
 			dataSample->setBr(1);
 			dataSample->setTestA(cfg.getTestA());
 			dataSample->setFactor(cfg.getDataFactor()[newIndex]);
@@ -107,11 +114,48 @@ void Fitter::getSamples() {
 }
 
 void Fitter::mergeSamples() {
+	fFinalDataSample.initHisto(fNBins, fBinning);
+	fFinalMCSample.initHisto(fNBins, fBinning);
 	for (auto sample : fDataSamples)
 		fFinalDataSample += sample;
 
-	for (auto sample : fMCSamples){
+	for (auto sample : fMCSamples) {
 		sample->scaleToData(fFinalDataSample.getTotalSize());
 		fFinalMCSample += sample;
 	}
+}
+
+void Fitter::PrepareHistos(vector<int> allColors, vector<int> dataColors) {
+	//Color histos
+	InputFitDrawer drawer;
+	for (unsigned int i = 0; i < fMCSamples.size(); i++) {
+		vector<int> colors(allColors[i * 3], allColors[i * 3 + 2]);
+		fMCSamples[i]->setPlotStyle(colors);
+		fMCSamples[i]->populateStack(drawer);
+	}
+
+	for (unsigned int i = 0; i < fDataSamples.size(); i++) {
+		vector<int> colors(dataColors[i * 3], dataColors[i * 3 + 2]);
+		fDataSamples[i]->setPlotStyle(colors);
+		fDataSamples[i]->populateStack(drawer);
+	}
+
+	drawer.draw();
+}
+
+void Fitter::fit(bool, bool useROOT) {
+	MinuitFitter *minuit;
+	if (useROOT) {
+		minuit = new MinuitFitterNewROOT(fNBins);
+		static_cast<MinuitFitterNewROOT*>(minuit)->init(fBinning);
+		minuit->SetName("NewROOT");
+	} else {
+		minuit = new MinuitFitterNewChi2(fNBins);
+		minuit->SetName("NewChi2");
+	}
+	minuit->setSamples(&fFinalMCSample, &fFinalDataSample);
+	minuit->fit();
+
+	minuit->printResult();
+	minuit->drawResult(fMCSamples, fNBins, fBinning);
 }
