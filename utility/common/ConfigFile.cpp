@@ -131,7 +131,7 @@ bool ConfigFile::readFile(string fileName){
 	return true;
 }
 
-void ConfigFile::print(){
+void ConfigFile::print() const{
 	cout << "MC Options" << endl;
 	for(unsigned int i=0; i<fMCFileNames.size(); i++){
 		cout << fMCFileNames[i] << " " << fMCIndexes[i] << " " << fMCOutputFiles[i] << " " << fBrs[i] << " " << fMCColors[i] << " " << fMCLegendTitle[i] << endl;
@@ -154,7 +154,7 @@ void ConfigFile::print(){
 	cout << "Scan ID: " << fScanID << endl;
 }
 
-bool ConfigFile::testAllOutputFiles(){
+bool ConfigFile::testAllOutputFiles() const{
 	struct stat fStat;
 	bool error = true;
 
@@ -174,7 +174,7 @@ bool ConfigFile::testAllOutputFiles(){
 	return error;
 }
 
-bool ConfigFile::testUseRun(int run, int period){
+bool ConfigFile::testUseRun(int run, int period) const{
 	bool ret = true;
 	if(fRunStart!=0 && run<fRunStart) ret = false;
 	if(fRunEnd!=0 && run>fRunEnd) ret = false;

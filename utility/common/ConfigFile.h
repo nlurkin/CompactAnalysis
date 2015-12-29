@@ -18,9 +18,9 @@ public:
 	virtual ~ConfigFile();
 
 	bool readFile(std::string fileName);
-	void print();
-	bool testAllOutputFiles();
-	bool testUseRun(int run, int period);
+	void print() const;
+	bool testAllOutputFiles() const;
+	bool testUseRun(int run, int period) const;
 
 	const std::string& getBinsFileName() const {
 		return fBinsFileName;
