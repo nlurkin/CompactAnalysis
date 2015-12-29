@@ -12,8 +12,12 @@
 
 class FitDataSample: public Sample {
 public:
+	typedef struct bContent_t{
+		double dSig;
+	} bContent;
+
 	FitDataSample();
-	FitDataSample(int index, ConfigFile &cfg);
+	FitDataSample(int index, ConfigFile *cfg);
 	virtual ~FitDataSample();
 
 	virtual void doFill(TFile* inputFD, TFile* tempFD);
@@ -21,9 +25,16 @@ public:
 	virtual void doWrite();
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins);
-	virtual void scaleToData(double nData) {};
+	virtual void scaleToData(double) {};
+	virtual void setPlotStyle(std::vector<int> color);
+	virtual void populateStack(InputFitDrawer &drawer);
+	virtual void populateFit(FitResultDrawer &drawer, double norm, double a);
+
+	virtual TH1D* getMainHisto() { return dSig; }
 
 	void scale();
+
+	bContent getBinContent(int bin);
 
 	double getTestA() const {
 		return fTestA;

@@ -14,6 +14,8 @@
 #include <TTree.h>
 #include "ConfigFile.h"
 #include "RunWeights.h"
+#include "../Drawer/InputFitDrawer.h"
+#include "../Drawer/FitResultDrawer.h"
 
 class TTree;
 class TFile;
@@ -44,7 +46,7 @@ public:
 	static const int MAXBIN = 1;
 
 	Sample();
-	Sample(int index, ConfigFile &cfg);
+	Sample(int index, ConfigFile *cfg);
 	virtual ~Sample();
 
 	bool addFile(std::string);
@@ -61,6 +63,11 @@ public:
 	virtual void doSetName() = 0;
 	virtual void initHisto(int nbins, double* bins) = 0;
 	virtual void scaleToData(double nData) = 0;
+
+	virtual void setPlotStyle(std::vector<int> color) = 0;
+	virtual void populateStack(InputFitDrawer &drawer) = 0;
+	virtual void populateFit(FitResultDrawer &drawer, double norm, double a) = 0;
+	virtual TH1D* getMainHisto() = 0;
 
 	double getBr() const {
 		return fBr;
@@ -99,6 +106,11 @@ public:
 	}
 
 	friend Sample& operator+=(Sample &first, const Sample* other);
+
+	void setCfg(const ConfigFile* cfg) {
+		fCfg = cfg;
+	}
+
 protected:
 	int fIndex;
 	double fBr;
@@ -107,7 +119,8 @@ protected:
 	TTree* fFitTree;
 	fitStruct fFitBrch;
 	TFile *fOutputFD;
-	ConfigFile &fCfg;
+	const ConfigFile *fCfg;
 	const RunWeights *fWeights;
+	std::string fLegend;
 };
 #endif /* COMMON_SAMPLE_H_ */

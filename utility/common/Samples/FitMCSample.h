@@ -12,8 +12,12 @@
 
 class FitMCSample: public Sample {
 public:
+	typedef struct bContent_t{
+		double d1,d2,d3,dNew,dAlpha,dBeta,dGamma;
+	} bContent;
+
 	FitMCSample();
-	FitMCSample(int index, ConfigFile &cfg);
+	FitMCSample(int index, ConfigFile *cfg);
 	virtual ~FitMCSample();
 
 	virtual void doFill(TFile* inputFD, TFile* tempFD);
@@ -22,9 +26,14 @@ public:
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins);
 	virtual void scaleToData(double nData);
+	virtual void setPlotStyle(std::vector<int> color);
+	virtual void populateStack(InputFitDrawer &drawer);
+	virtual void populateFit(FitResultDrawer &drawer, double norm, double a);
+	virtual TH1D* getMainHisto() { return dAlpha; }
 
 	void scale();
 
+	bContent getBinContent(int bin);
 	friend FitMCSample& operator+=(FitMCSample &first, const FitMCSample* other);
 private:
 	TH1D *d1, *d2, *d3;

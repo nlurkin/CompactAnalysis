@@ -15,9 +15,13 @@
 #include "Functions.h"
 
 using namespace std;
-FitDataSample::FitDataSample(int index, ConfigFile &cfg) :
-		Sample(index, cfg) {
-	// TODO Auto-generated constructor stub
+FitDataSample::FitDataSample() :
+		dSig(nullptr), fTestA(0), fFactor(1) {
+
+}
+
+FitDataSample::FitDataSample(int index, ConfigFile *cfg) :
+		Sample(index, cfg), dSig(nullptr), fTestA(0), fFactor(1) {
 
 }
 
@@ -56,10 +60,10 @@ void FitDataSample::doFill(TFile* inputFD, TFile* tempFD) {
 		t->SetBranchAddress("cutsResult", &cutsPass);
 		tc->SetBranchAddress("lists", &cutsLists);
 		tc->GetEntry(0);
-		if (fCfg.getScanId() == -1)
+		if (fCfg->getScanId() == -1)
 			scanID = cutsLists->getDefaultIndex();
 		else
-			scanID = fCfg.getScanId();
+			scanID = fCfg->getScanId();
 		tc->GetEntry(scanID);
 		cutsLists->Cuts::print();
 	}
@@ -142,7 +146,7 @@ void FitDataSample::doSetName() {
 }
 
 void FitDataSample::initHisto(int nbins, double* bins) {
-	if (fCfg.isWithEqualBins())
+	if (fCfg->isWithEqualBins())
 		dSig = new TH1D("sig", "signal sample", nbins - 1, bins);
 	else
 		dSig = new TH1D("sig", "signal sample", NBINS, 0, MAXBIN);
@@ -151,10 +155,31 @@ void FitDataSample::initHisto(int nbins, double* bins) {
 void FitDataSample::scale() {
 }
 
+void FitDataSample::setPlotStyle(std::vector<int>) {
+	dSig->SetLineColor(kRed);
+}
+
+void FitDataSample::populateStack(InputFitDrawer& drawer) {
+	drawer.fSig->Add((TH1D*) dSig->Clone());
+	drawer.fLegSig->AddEntry(dSig, fLegend.c_str());
+}
+
+FitDataSample::bContent FitDataSample::getBinContent(int bin) {
+	bContent b;
+	b.dSig = dSig->GetBinContent(bin);
+	return  b;
+}
+
 FitDataSample& operator +=(FitDataSample& first, const FitDataSample* other) {
-	operator +=((Sample&)first, (Sample*)other);
+	operator +=((Sample&) first, (Sample*) other);
 
 	first.dSig->Add(other->dSig, other->fFactor);
 	return first;
+}
+void FitDataSample::populateFit(FitResultDrawer &drawer, double, double) {
+	TH1D *dSig_c = (TH1D*) dSig->Clone(
+			TString::Format("dSig_c%s%i", drawer.getTitle().c_str(), fIndex));
+	drawer.fLegFitSig->AddEntry(dSig_c, fLegend.c_str());
+	drawer.fFitSig->Add(dSig_c);
 }
 

@@ -41,11 +41,16 @@ void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor){
 }
 
 
-Sample::Sample(int index, ConfigFile &cfg) :
-		fIndex(index),
-		fCfg(cfg)
+Sample::Sample() :
+		fIndex(-1), fBr(1), fFitTree(nullptr),
+		fOutputFD(nullptr), fCfg(nullptr), fWeights(nullptr)
 {
-	// TODO Auto-generated constructor stub
+}
+
+Sample::Sample(int index, ConfigFile *cfg) :
+		fIndex(index), fBr(1), fFitTree(nullptr),
+		fOutputFD(nullptr), fCfg(cfg), fWeights(nullptr)
+{
 }
 
 Sample::~Sample() {

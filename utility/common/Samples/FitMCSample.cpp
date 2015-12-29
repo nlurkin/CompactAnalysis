@@ -13,11 +13,19 @@
 #include "FitMCSample.h"
 #include <iomanip>
 #include "Functions.h"
+#include <TStyle.h>
 
 using namespace std;
 
-FitMCSample::FitMCSample(int index, ConfigFile &cfg) :
-		Sample(index, cfg) {
+FitMCSample::FitMCSample() :
+		d1(nullptr), d2(nullptr), d3(nullptr), dNew(nullptr), dAlpha(nullptr), dBeta(
+				nullptr), dGamma(nullptr) {
+
+}
+
+FitMCSample::FitMCSample(int index, ConfigFile *cfg) :
+		Sample(index, cfg), d1(nullptr), d2(nullptr), d3(nullptr), dNew(
+				nullptr), dAlpha(nullptr), dBeta(nullptr), dGamma(nullptr) {
 
 }
 
@@ -60,10 +68,10 @@ void FitMCSample::doFill(TFile* inputFD, TFile* tempFD) {
 		t->SetBranchAddress("cutsResult", &cutsPass);
 		tc->SetBranchAddress("lists", &cutsLists);
 		tc->GetEntry(0);
-		if (fCfg.getScanId() == -1)
+		if (fCfg->getScanId() == -1)
 			scanID = cutsLists->getDefaultIndex();
 		else
-			scanID = fCfg.getScanId();
+			scanID = fCfg->getScanId();
 		tc->GetEntry(scanID);
 		cutsLists->Cuts::print();
 	}
@@ -108,7 +116,7 @@ void FitMCSample::doFill(TFile* inputFD, TFile* tempFD) {
 				passNormal = false;
 			}
 		}
-		if (!fCfg.testUseRun(burstBrch->nrun, burstBrch->period))
+		if (!fCfg->testUseRun(burstBrch->nrun, burstBrch->period))
 			continue;
 
 		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch))
@@ -215,7 +223,7 @@ void FitMCSample::doSetName() {
 }
 
 void FitMCSample::initHisto(int nbins, double* bins) {
-	if (fCfg.isWithEqualBins()) {
+	if (fCfg->isWithEqualBins()) {
 		d1 = new TH1D("d1", "sample 1", nbins - 1, bins);
 		d1->Sumw2();
 		d2 = new TH1D("d2", "sample x", nbins - 1, bins);
@@ -284,6 +292,67 @@ void FitMCSample::scaleToData(double nData) {
 	dAlpha->Scale(factorGreek);
 	dBeta->Scale(factorGreek);
 	dGamma->Scale(factorGreek);
+}
+
+void FitMCSample::setPlotStyle(vector<int> color) {
+	d1->SetFillColor(gStyle->GetColorPalette(color[0]));
+	d2->SetFillColor(gStyle->GetColorPalette(color[1]));
+	d3->SetFillColor(gStyle->GetColorPalette(color[2]));
+	dNew->SetFillColor(gStyle->GetColorPalette(color[0]));
+	dAlpha->SetFillColor(gStyle->GetColorPalette(color[0]));
+	dBeta->SetFillColor(gStyle->GetColorPalette(color[1]));
+	dGamma->SetFillColor(gStyle->GetColorPalette(color[2]));
+}
+
+void FitMCSample::populateStack(InputFitDrawer& drawer) {
+	drawer.fStd1->Add((TH1D*) d1->Clone());
+	drawer.fStdx->Add((TH1D*) d2->Clone());
+	drawer.fStdxx->Add((TH1D*) d3->Clone());
+	drawer.fStdNew->Add((TH1D*) dNew->Clone());
+	drawer.fStdAlpha->Add((TH1D*) dAlpha->Clone());
+	drawer.fStdBeta->Add((TH1D*) dBeta->Clone());
+	drawer.fStdGamma->Add((TH1D*) dGamma->Clone());
+	drawer.fLeg1->AddEntry(d1, fLegend.c_str());
+	drawer.fLegx->AddEntry(d2, fLegend.c_str());
+	drawer.fLegxx->AddEntry(d3, fLegend.c_str());
+	drawer.fLegNew->AddEntry(dNew, fLegend.c_str());
+	drawer.fLegAlpha->AddEntry(dAlpha, fLegend.c_str());
+	drawer.fLegBeta->AddEntry(dBeta, fLegend.c_str());
+	drawer.fLegGamma->AddEntry(dGamma, fLegend.c_str());
+}
+
+FitMCSample::bContent FitMCSample::getBinContent(int bin) {
+	bContent b;
+	b.d1 = d1->GetBinContent(bin);
+	b.d2 = d2->GetBinContent(bin);
+	b.d3 = d3->GetBinContent(bin);
+	b.dNew = dNew->GetBinContent(bin);
+	b.dAlpha = dAlpha->GetBinContent(bin);
+	b.dBeta = dBeta->GetBinContent(bin);
+	b.dGamma = dGamma->GetBinContent(bin);
+
+	return b;
+}
+
+void FitMCSample::populateFit(FitResultDrawer &drawer, double norm, double a) {
+	TH1D *dAlpha_c = (TH1D*) dAlpha->Clone(
+			TString::Format("dAlpha_c%s%i", drawer.getTitle().c_str(), fIndex));
+	drawer.fLegFit->AddEntry(dAlpha_c,
+			TString::Format("%s #alpha", fLegend.c_str()));
+	dAlpha_c->Scale(norm);
+	drawer.fFit->Add(dAlpha_c);
+	TH1D *dBeta_c = (TH1D*) dBeta->Clone(
+			TString::Format("dBeta_c%s%i", drawer.getTitle().c_str(), fIndex));
+	drawer.fLegFit->AddEntry(dBeta_c,
+			TString::Format("%s #beta", fLegend.c_str()));
+	dBeta_c->Scale(norm * 2. * a);
+	drawer.fFit->Add(dBeta_c);
+	TH1D *dGamma_c = (TH1D*) dGamma->Clone(
+			TString::Format("dGamma_c%s%i", drawer.getTitle().c_str(), fIndex));
+	drawer.fLegFit->AddEntry(dGamma_c,
+			TString::Format("%s #gamma", fLegend.c_str()));
+	dGamma_c->Scale(norm * a * a);
+	drawer.fFit->Add(dGamma_c);
 }
 
 FitMCSample& operator +=(FitMCSample &first, const FitMCSample* other) {
