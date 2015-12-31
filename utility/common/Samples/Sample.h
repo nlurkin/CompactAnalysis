@@ -62,7 +62,7 @@ public:
 	virtual void doWrite() = 0;
 	virtual void doSetName() = 0;
 	virtual void initHisto(int nbins, double* bins) = 0;
-	virtual void scaleToData(double nData) = 0;
+//	virtual void scaleToData(double nData) = 0;
 
 	virtual void setPlotStyle(std::vector<int> color) = 0;
 	virtual void populateStack(InputFitDrawer &drawer) = 0;
@@ -86,7 +86,7 @@ public:
 	}
 
 	int getTotalSize() const {
-		return fFitBrch.totEvents;
+		return fFitBrch.selEvents;
 	}
 
 	void setTotalSize(int totalSize) {

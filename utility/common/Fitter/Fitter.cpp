@@ -119,10 +119,17 @@ void Fitter::mergeSamples() {
 	for (auto sample : fDataSamples)
 		fFinalDataSample += sample;
 
+	FitMCSample::bContent b;
 	for (auto sample : fMCSamples) {
-		sample->scaleToData(fFinalDataSample.getTotalSize());
+		b += sample->getIntegrals();
 		fFinalMCSample += sample;
 	}
+
+	for (auto sample : fMCSamples) {
+		sample->scaleToData(b, fFinalDataSample.getTotalSize());
+	}
+
+	fFinalMCSample.scaleToData(b, fFinalDataSample.getTotalSize());
 }
 
 void Fitter::PrepareHistos(vector<int> allColors, vector<int> dataColors) {

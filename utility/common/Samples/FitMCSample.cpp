@@ -119,7 +119,7 @@ void FitMCSample::doFill(TFile* inputFD, TFile* tempFD) {
 		if (!fCfg->testUseRun(burstBrch->nrun, burstBrch->period))
 			continue;
 
-		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch))
+		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, fFitBrch))
 			continue;
 		weight = fWeights->applyWeights(burstBrch->nrun) * corrBrch->weight;
 
@@ -263,6 +263,7 @@ void FitMCSample::scale() {
 	double selRatiox = (double) fFitBrch.nx / totN;
 	double selRatioxx = (double) fFitBrch.nxx / totN;
 
+	cout << "NBefore scaling" << dAlpha->Integral() << endl;
 	Sample::scale(d1, selRatio1);
 	Sample::scale(d2, selRatiox);
 	Sample::scale(d3, selRatioxx);
@@ -271,20 +272,19 @@ void FitMCSample::scale() {
 	Sample::scale(dAlpha, 1.);
 	Sample::scale(dBeta, 1.);
 	Sample::scale(dGamma, 1.);
+	cout << "Nafter scaling" << dAlpha->Integral() << endl;
 }
 
-void FitMCSample::scaleToData(double nData) {
+void FitMCSample::scaleToData(bContent totalMC, double nData) {
 	//Scale MC to Data
-	double totalMC = 0;
-	double totalMCNew = 0;
-	double totalGreek = 0;
-	totalMC += d1->Integral();
-	totalMCNew += dNew->Integral();
-	totalGreek += dAlpha->Integral();
+	double totalMCNorm = totalMC.d1;
+	double totalMCNew = totalMC.dNew;
+	double totalGreek = totalMC.dAlpha;
 
-	double factor = ((double) (nData)) / totalMC;
+	double factor = ((double) (nData)) / totalMCNorm;
 	double factorNew = ((double) (nData)) / totalMCNew;
 	double factorGreek = ((double) (nData)) / totalGreek;
+
 	d1->Scale(factor);
 	d2->Scale(factor);
 	d3->Scale(factor);
@@ -369,3 +369,15 @@ FitMCSample& operator +=(FitMCSample &first, const FitMCSample* other) {
 	return first;
 }
 
+FitMCSample::bContent FitMCSample::getIntegrals() {
+	bContent b;
+	b.d1 = d1->Integral();
+	b.d2 = d2->Integral();
+	b.d3 = d3->Integral();
+	b.dNew = dNew->Integral();
+	b.dAlpha = dAlpha->Integral();
+	b.dBeta = dBeta->Integral();
+	b.dGamma = dGamma->Integral();
+
+	return b;
+}

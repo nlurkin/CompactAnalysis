@@ -45,12 +45,14 @@ Sample::Sample() :
 		fIndex(-1), fBr(1), fFitTree(nullptr),
 		fOutputFD(nullptr), fCfg(nullptr), fWeights(nullptr)
 {
+	initFitStruct(fFitBrch);
 }
 
 Sample::Sample(int index, ConfigFile *cfg) :
 		fIndex(index), fBr(1), fFitTree(nullptr),
 		fOutputFD(nullptr), fCfg(cfg), fWeights(nullptr)
 {
+	initFitStruct(fFitBrch);
 }
 
 Sample::~Sample() {
@@ -134,6 +136,7 @@ void Sample::closeOutput(TFile* tempFD) {
 }
 
 void Sample::scale(TH1 *histo, double scaleFactor){
+	cout << "Scaling " << histo->GetName() << " " << histo->GetEntries() << " " << histo->Integral() << " " << fBr << " " << fFitBrch.totEvents << " " << scaleFactor << endl;
 	histo->Scale(fBr/(fFitBrch.totEvents*scaleFactor));
 }
 

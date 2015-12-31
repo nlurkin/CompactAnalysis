@@ -101,7 +101,7 @@ void FitDataSample::doFill(TFile* inputFD, TFile* tempFD) {
 			}
 		}
 
-		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch))
+		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, fFitBrch))
 			continue;
 
 		x = eventBrch->x;
