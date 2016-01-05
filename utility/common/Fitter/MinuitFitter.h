@@ -29,7 +29,7 @@ public:
 
 
 	void printResult();
-	void drawResult(std::vector<FitMCSample*> mcSamples, int nbins, double *binning);
+	void drawResult(std::vector<Sample*> mcSamples, int nbins, double *binning);
 
 	static double chi2pValue(double chi2, int ndof);
 	void chi2Profile(TString name);

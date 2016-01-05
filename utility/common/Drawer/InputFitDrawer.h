@@ -8,7 +8,7 @@
 #ifndef COMMON_DRAWER_INPUTFITDRAWER_H_
 #define COMMON_DRAWER_INPUTFITDRAWER_H_
 
-#include "HistoDrawer.h"
+#include "../Interface/HistoDrawer.h"
 
 class InputFitDrawer: public HistoDrawer {
 public:

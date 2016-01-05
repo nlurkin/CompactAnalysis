@@ -8,7 +8,7 @@
 #ifndef COMMON_DRAWER_FITRESULTDRAWER_H_
 #define COMMON_DRAWER_FITRESULTDRAWER_H_
 
-#include "HistoDrawer.h"
+#include "../Interface/HistoDrawer.h"
 
 class FitResultDrawer: public HistoDrawer {
 public:

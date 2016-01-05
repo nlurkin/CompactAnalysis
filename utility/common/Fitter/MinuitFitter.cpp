@@ -74,15 +74,15 @@ void MinuitFitter::printResult() {
 			<< endl;
 }
 
-void MinuitFitter::drawResult(vector<FitMCSample*> mcSamples, int nbins, double *binning) {
+void MinuitFitter::drawResult(vector<Sample*> mcSamples, int nbins, double *binning) {
 	FitResultDrawer drawer;
 	drawer.setTitle(fName);
 
 	for (auto sample : mcSamples) {
-		sample->populateFit(drawer, fNorm, fFormFactor);
+		static_cast<FitMCSample*>(sample)->populateFit(&drawer, fNorm, fFormFactor);
 	}
 
-	fDataSamples->populateFit(drawer, fNorm, fFormFactor);
+	fDataSamples->populateFit(&drawer, fNorm, fFormFactor);
 
 	drawer.setBinning(nbins, binning);
 	drawer.setMc(fMCSamples->getMainHisto(), fDataSamples->getMainHisto());
