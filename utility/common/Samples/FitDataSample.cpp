@@ -16,12 +16,12 @@
 
 using namespace std;
 FitDataSample::FitDataSample() :
-		dSig(nullptr), fTestA(0), fFactor(1) {
+		dSig(nullptr){
 
 }
 
 FitDataSample::FitDataSample(int index, ConfigFile *cfg) :
-		Sample(index, cfg), dSig(nullptr), fTestA(0), fFactor(1) {
+		Sample(index, cfg), dSig(nullptr){
 
 }
 
@@ -159,9 +159,10 @@ void FitDataSample::setPlotStyle(std::vector<int>) {
 	dSig->SetLineColor(kRed);
 }
 
-void FitDataSample::populateStack(InputFitDrawer& drawer) {
-	drawer.fSig->Add((TH1D*) dSig->Clone());
-	drawer.fLegSig->AddEntry(dSig, fLegend.c_str());
+void FitDataSample::populateStack(HistoDrawer *drawer) {
+	InputFitDrawer* myDrawer = static_cast<InputFitDrawer*>(drawer);
+	myDrawer->fSig->Add((TH1D*) dSig->Clone());
+	myDrawer->fLegSig->AddEntry(dSig, fLegend.c_str());
 }
 
 FitDataSample::bContent FitDataSample::getBinContent(int bin) {
@@ -170,16 +171,21 @@ FitDataSample::bContent FitDataSample::getBinContent(int bin) {
 	return  b;
 }
 
-FitDataSample& operator +=(FitDataSample& first, const FitDataSample* other) {
-	operator +=((Sample&) first, (Sample*) other);
+FitDataSample* FitDataSample::Add(const FitDataSample* other) {
+	Sample::Add((Sample*) other);
 
-	first.dSig->Add(other->dSig, other->fFactor);
-	return first;
+	dSig->Add(other->dSig, other->fFactor);
+	return this;
 }
-void FitDataSample::populateFit(FitResultDrawer &drawer, double, double) {
+void FitDataSample::populateFit(HistoDrawer *drawer, double, double) {
+	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
+
 	TH1D *dSig_c = (TH1D*) dSig->Clone(
-			TString::Format("dSig_c%s%i", drawer.getTitle().c_str(), fIndex));
-	drawer.fLegFitSig->AddEntry(dSig_c, fLegend.c_str());
-	drawer.fFitSig->Add(dSig_c);
+			TString::Format("dSig_c%s%i", drawer->getTitle().c_str(), fIndex));
+	myDrawer->fLegFitSig->AddEntry(dSig_c, fLegend.c_str());
+	myDrawer->fFitSig->Add(dSig_c);
 }
 
+double FitDataSample::getFFIntegral(double) {
+	return dSig->Integral();
+}

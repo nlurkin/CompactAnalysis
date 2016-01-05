@@ -8,9 +8,10 @@
 #ifndef COMMON_FITDATASAMPLE_H_
 #define COMMON_FITDATASAMPLE_H_
 
-#include "Sample.h"
+#include "../Interface/DataSample.h"
+#include "../Interface/Sample.h"
 
-class FitDataSample: public Sample {
+class FitDataSample: public Sample, public DataSample{
 public:
 	typedef struct bContent_t{
 		double dSig;
@@ -27,8 +28,9 @@ public:
 	virtual void initHisto(int nbins, double* bins);
 	virtual void scaleToData(double) {};
 	virtual void setPlotStyle(std::vector<int> color);
-	virtual void populateStack(InputFitDrawer &drawer);
-	virtual void populateFit(FitResultDrawer &drawer, double norm, double a);
+	virtual void populateStack(HistoDrawer *drawer);
+	virtual void populateFit(HistoDrawer *drawer, double norm, double a);
+	virtual double getFFIntegral(double a);
 
 	virtual TH1D* getMainHisto() { return dSig; }
 
@@ -36,27 +38,9 @@ public:
 
 	bContent getBinContent(int bin);
 
-	double getTestA() const {
-		return fTestA;
-	}
-
-	void setTestA(double testA) {
-		fTestA = testA;
-	}
-
-	double getFactor() const {
-		return fFactor;
-	}
-
-	void setFactor(double factor) {
-		fFactor = factor;
-	}
-
-	friend FitDataSample& operator+=(FitDataSample &first, const FitDataSample* other);
+	FitDataSample* Add(const FitDataSample* other);
 private:
 	TH1D *dSig;
-	double fTestA;
-	double fFactor;
 };
 
 #endif /* COMMON_FITDATASAMPLE_H_ */

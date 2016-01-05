@@ -304,21 +304,23 @@ void FitMCSample::setPlotStyle(vector<int> color) {
 	dGamma->SetFillColor(gStyle->GetColorPalette(color[2]));
 }
 
-void FitMCSample::populateStack(InputFitDrawer& drawer) {
-	drawer.fStd1->Add((TH1D*) d1->Clone());
-	drawer.fStdx->Add((TH1D*) d2->Clone());
-	drawer.fStdxx->Add((TH1D*) d3->Clone());
-	drawer.fStdNew->Add((TH1D*) dNew->Clone());
-	drawer.fStdAlpha->Add((TH1D*) dAlpha->Clone());
-	drawer.fStdBeta->Add((TH1D*) dBeta->Clone());
-	drawer.fStdGamma->Add((TH1D*) dGamma->Clone());
-	drawer.fLeg1->AddEntry(d1, fLegend.c_str());
-	drawer.fLegx->AddEntry(d2, fLegend.c_str());
-	drawer.fLegxx->AddEntry(d3, fLegend.c_str());
-	drawer.fLegNew->AddEntry(dNew, fLegend.c_str());
-	drawer.fLegAlpha->AddEntry(dAlpha, fLegend.c_str());
-	drawer.fLegBeta->AddEntry(dBeta, fLegend.c_str());
-	drawer.fLegGamma->AddEntry(dGamma, fLegend.c_str());
+void FitMCSample::populateStack(HistoDrawer *drawer) {
+	InputFitDrawer *myDrawer = static_cast<InputFitDrawer*>(drawer);
+
+	myDrawer->fStd1->Add((TH1D*) d1->Clone());
+	myDrawer->fStdx->Add((TH1D*) d2->Clone());
+	myDrawer->fStdxx->Add((TH1D*) d3->Clone());
+	myDrawer->fStdNew->Add((TH1D*) dNew->Clone());
+	myDrawer->fStdAlpha->Add((TH1D*) dAlpha->Clone());
+	myDrawer->fStdBeta->Add((TH1D*) dBeta->Clone());
+	myDrawer->fStdGamma->Add((TH1D*) dGamma->Clone());
+	myDrawer->fLeg1->AddEntry(d1, fLegend.c_str());
+	myDrawer->fLegx->AddEntry(d2, fLegend.c_str());
+	myDrawer->fLegxx->AddEntry(d3, fLegend.c_str());
+	myDrawer->fLegNew->AddEntry(dNew, fLegend.c_str());
+	myDrawer->fLegAlpha->AddEntry(dAlpha, fLegend.c_str());
+	myDrawer->fLegBeta->AddEntry(dBeta, fLegend.c_str());
+	myDrawer->fLegGamma->AddEntry(dGamma, fLegend.c_str());
 }
 
 FitMCSample::bContent FitMCSample::getBinContent(int bin) {
@@ -334,39 +336,41 @@ FitMCSample::bContent FitMCSample::getBinContent(int bin) {
 	return b;
 }
 
-void FitMCSample::populateFit(FitResultDrawer &drawer, double norm, double a) {
+void FitMCSample::populateFit(HistoDrawer *drawer, double norm, double a) {
+	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
+
 	TH1D *dAlpha_c = (TH1D*) dAlpha->Clone(
-			TString::Format("dAlpha_c%s%i", drawer.getTitle().c_str(), fIndex));
-	drawer.fLegFit->AddEntry(dAlpha_c,
+			TString::Format("dAlpha_c%s%i", drawer->getTitle().c_str(), fIndex));
+	myDrawer->fLegFit->AddEntry(dAlpha_c,
 			TString::Format("%s #alpha", fLegend.c_str()));
 	dAlpha_c->Scale(norm);
-	drawer.fFit->Add(dAlpha_c);
+	myDrawer->fFit->Add(dAlpha_c);
 	TH1D *dBeta_c = (TH1D*) dBeta->Clone(
-			TString::Format("dBeta_c%s%i", drawer.getTitle().c_str(), fIndex));
-	drawer.fLegFit->AddEntry(dBeta_c,
+			TString::Format("dBeta_c%s%i", drawer->getTitle().c_str(), fIndex));
+	myDrawer->fLegFit->AddEntry(dBeta_c,
 			TString::Format("%s #beta", fLegend.c_str()));
 	dBeta_c->Scale(norm * 2. * a);
-	drawer.fFit->Add(dBeta_c);
+	myDrawer->fFit->Add(dBeta_c);
 	TH1D *dGamma_c = (TH1D*) dGamma->Clone(
-			TString::Format("dGamma_c%s%i", drawer.getTitle().c_str(), fIndex));
-	drawer.fLegFit->AddEntry(dGamma_c,
+			TString::Format("dGamma_c%s%i", drawer->getTitle().c_str(), fIndex));
+	myDrawer->fLegFit->AddEntry(dGamma_c,
 			TString::Format("%s #gamma", fLegend.c_str()));
 	dGamma_c->Scale(norm * a * a);
-	drawer.fFit->Add(dGamma_c);
+	myDrawer->fFit->Add(dGamma_c);
 }
 
-FitMCSample& operator +=(FitMCSample &first, const FitMCSample* other) {
-	operator +=((Sample&) first, (Sample*) other);
-	first.d1->Add(other->d1, 1.);
-	first.d2->Add(other->d2, 1.);
-	first.d3->Add(other->d3, 1.);
-	first.dNew->Add(other->dNew, 1.);
+FitMCSample* FitMCSample::Add(const FitMCSample* other) {
+	Sample::Add((Sample*) other);
+	d1->Add(other->d1, 1.);
+	d2->Add(other->d2, 1.);
+	d3->Add(other->d3, 1.);
+	dNew->Add(other->dNew, 1.);
 
-	first.dAlpha->Add(other->dAlpha, 1.);
-	first.dBeta->Add(other->dBeta, 1.);
-	first.dGamma->Add(other->dGamma, 1.);
+	dAlpha->Add(other->dAlpha, 1.);
+	dBeta->Add(other->dBeta, 1.);
+	dGamma->Add(other->dGamma, 1.);
 
-	return first;
+	return this;
 }
 
 FitMCSample::bContent FitMCSample::getIntegrals() {
@@ -380,4 +384,9 @@ FitMCSample::bContent FitMCSample::getIntegrals() {
 	b.dGamma = dGamma->Integral();
 
 	return b;
+}
+
+double FitMCSample::getFFIntegral(double a) {
+	return d1->Integral() * 1.0 + d2->Integral() * a * 2.
+					+ d3->Integral() * a * a;
 }

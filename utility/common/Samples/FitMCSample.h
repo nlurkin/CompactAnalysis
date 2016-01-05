@@ -8,9 +8,10 @@
 #ifndef COMMON_FITMCSAMPLE_H_
 #define COMMON_FITMCSAMPLE_H_
 
-#include "Sample.h"
+#include "../Interface/Sample.h"
+#include "../Interface/MCSample.h"
 
-class FitMCSample: public Sample {
+class FitMCSample: public Sample, public MCSample {
 public:
 	typedef struct bContent_t{
 		double d1,d2,d3,dNew,dAlpha,dBeta,dGamma;
@@ -39,16 +40,17 @@ public:
 	virtual void initHisto(int nbins, double* bins);
 	virtual void scaleToData(bContent totalMC, double nData);
 	virtual void setPlotStyle(std::vector<int> color);
-	virtual void populateStack(InputFitDrawer &drawer);
-	virtual void populateFit(FitResultDrawer &drawer, double norm, double a);
+	virtual void populateStack(HistoDrawer *drawer);
+	virtual void populateFit(HistoDrawer *drawer, double norm, double a);
 	virtual TH1D* getMainHisto() { return dAlpha; }
+	virtual double getFFIntegral(double a);
 
 	bContent getIntegrals();
 
 	void scale();
 
 	bContent getBinContent(int bin);
-	friend FitMCSample& operator+=(FitMCSample &first, const FitMCSample* other);
+	FitMCSample* Add(const FitMCSample* other);
 private:
 	TH1D *d1, *d2, *d3;
 	TH1D *dNew;
