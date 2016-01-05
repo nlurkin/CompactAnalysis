@@ -140,8 +140,8 @@ void Sample::scale(TH1 *histo, double scaleFactor){
 	histo->Scale(fBr/(fFitBrch.totEvents*scaleFactor));
 }
 
-Sample& operator +=(Sample &first, const Sample* other) {
-	first.fFitBrch += other->fFitBrch;
-	return first;
+Sample* Sample::Add(const Sample* other) {
+	fFitBrch += other->fFitBrch;
+	return this;
 }
 

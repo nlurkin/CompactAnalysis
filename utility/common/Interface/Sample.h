@@ -62,11 +62,12 @@ public:
 	virtual void doWrite() = 0;
 	virtual void doSetName() = 0;
 	virtual void initHisto(int nbins, double* bins) = 0;
+	virtual double getFFIntegral(double a) = 0;
 //	virtual void scaleToData(double nData) = 0;
 
 	virtual void setPlotStyle(std::vector<int> color) = 0;
-	virtual void populateStack(InputFitDrawer &drawer) = 0;
-	virtual void populateFit(FitResultDrawer &drawer, double norm, double a) = 0;
+	virtual void populateStack(HistoDrawer *drawer) = 0;
+	virtual void populateFit(HistoDrawer *drawer, double norm, double a) = 0;
 	virtual TH1D* getMainHisto() = 0;
 
 	double getBr() const {
@@ -105,7 +106,7 @@ public:
 		fWeights = weights;
 	}
 
-	friend Sample& operator+=(Sample &first, const Sample* other);
+	Sample* Add(const Sample* other);
 
 	void setCfg(const ConfigFile* cfg) {
 		fCfg = cfg;
