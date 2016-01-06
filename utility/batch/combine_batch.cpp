@@ -18,6 +18,7 @@
 #include <TGaxis.h>
 #include <iomanip>
 #include <TList.h>
+#include "../common/style.cpp"
 using namespace std;
 
 #define MAXEVENTS 0
@@ -604,7 +605,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-//	setStyle();
+	setStyle();
 
 	signal(SIGTERM, sighandler);
 	signal(SIGINT, sighandler);

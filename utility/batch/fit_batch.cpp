@@ -3,6 +3,7 @@
 #include <signal.h>
 
 #include <TStyle.h>
+#include "../common/style.cpp"
 #include "pi0DalitzHeader.h"
 #include "../common/Fitter/Fitter.h"
 #include "../common/Samples/FitMCSample.h"
@@ -299,7 +300,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-//	setStyle();
+	setStyle();
 	gStyle->SetOptStat("11");
 
 	signal(SIGTERM, sighandler);
