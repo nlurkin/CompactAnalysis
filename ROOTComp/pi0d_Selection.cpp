@@ -334,12 +334,12 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	NPhysicsTrack t_ep = corrEvent.pTrack[tempObj.piEvent.ep.parentTrack];
 	NPhysicsTrack t_em = corrEvent.pTrack[tempObj.piEvent.em.parentTrack];
 
-	propPos = propagateAfter(rootGeom.Lkr.z, t_ep);
+	propPos = propagateAfter(rootGeom.Lkr.z, t_ep, rawEvent);
 	goodPBWall = true;
 	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
 	if(t_ep.lkr_acc==0 && goodPBWall && rawEvent.track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
 
-	propPos = propagateAfter(rootGeom.Lkr.z, t_em);
+	propPos = propagateAfter(rootGeom.Lkr.z, t_em, rawEvent);
 	goodPBWall = true;
 	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
 	if(t_em.lkr_acc==0 && goodPBWall && rawEvent.track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
@@ -358,7 +358,15 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 
 	if(!pi0d_L3Trigger(t_ep) && !pi0d_L3Trigger(t_em)) return 19+firstCutIndex;
 
-	if(tempObj.piEvent.x <= 0.01) return 20+firstCutIndex;
+	if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
+
+	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep, rawEvent);
+	//e+ in square
+	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
+	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em, rawEvent);
+	//e- in square
+	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
+
 	return -1;
 }
 
