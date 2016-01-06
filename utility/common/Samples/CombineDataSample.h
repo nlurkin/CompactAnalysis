@@ -19,6 +19,7 @@ public:
 
 	virtual void doGet(TFile* inputFD, TFile* tempFD);
 	virtual void populateStack(HistoDrawer *drawer);
+	virtual void setPlotStyle(std::vector<int> color);
 
 	void fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
 				ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom,

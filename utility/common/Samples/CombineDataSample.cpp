@@ -44,7 +44,16 @@ void CombineDataSample::doGet(TFile* inputFD, TFile* tempFD) {
 void CombineDataSample::populateStack(HistoDrawer *drawer) {
 	CombineDrawer *myDrawer = static_cast<CombineDrawer*>(drawer);
 
+	myDrawer->addLegendData(d1[0], fLegend);
 	for (unsigned int i = 0; i < d1.size(); ++i) {
-		myDrawer->addHistoData(i, (TH1D*) (d1[i]->Clone()), fLegend);
+		myDrawer->addHistoData(i, d1[i]);
 	}
+}
+
+void CombineDataSample::setPlotStyle(std::vector<int>) {
+	for(auto plot : d1)
+		plot->SetLineColor(kRed);
+
+	for(auto plot : dMap)
+		plot->SetLineColor(kRed);
 }
