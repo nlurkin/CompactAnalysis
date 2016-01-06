@@ -44,6 +44,7 @@ public:
 	virtual void populateFit(HistoDrawer *drawer, double norm, double a);
 	virtual TH1D* getMainHisto() { return dAlpha; }
 	virtual double getFFIntegral(double a);
+	virtual void renameHisto() {};
 
 	bContent getIntegrals();
 

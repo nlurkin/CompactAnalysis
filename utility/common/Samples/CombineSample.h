@@ -48,6 +48,8 @@ public:
 					ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom,
 					ROOTBurst *rootBurst) = 0;
 	void scale();
+	virtual void renameHisto();
+	CombineSample* Add(const CombineSample *other);
 
 protected:
 	std::vector<TH1D*> d1;

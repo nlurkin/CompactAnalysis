@@ -495,8 +495,8 @@ void CombineSample::doGetHisto(TFile* inputFD, TFile* tempFD) {
 	getHisto(inputFD, tempFD, "Y_DCH4_gamma");
 
 	getHisto(inputFD, tempFD, "Zvtx");
-	//	getHisto(inputFD, tempFD, "Zvtx_low");
-	//	getHisto(inputFD, tempFD, "Zvtx_high");
+	getHisto(inputFD, tempFD, "Zvtx_low");
+	getHisto(inputFD, tempFD, "Zvtx_high");
 	getHisto(inputFD, tempFD, "Qvtx");
 	getHisto(inputFD, tempFD, "CDAvtx");
 	getHisto(inputFD, tempFD, "Pt2");
@@ -637,22 +637,26 @@ void CombineSample::doWrite() {
 }
 
 void CombineSample::doSetName() {
-//	for (auto histo : d1)
-//		histo->SetName(TString::Format("%s%i", histo->GetName(), fIndex));
-//
-//	for (auto histo : dMap)
-//		histo->SetName(TString::Format("%s%i", histo->GetName(), fIndex));
+//	renameHisto();
+}
+
+void CombineSample::renameHisto() {
+	for (auto histo : d1)
+		histo->SetName(TString::Format("%s%i", histo->GetName(), fIndex));
+
+	for (auto histo : dMap)
+		histo->SetName(TString::Format("%s%i", histo->GetName(), fIndex));
 }
 
 void CombineSample::addHisto(TString name, int bins, double min, double max) {
-	TH1D* xxx1 = new TH1D(name, "sample 1", bins, min, max);
+	TH1D* xxx1 = new TH1D(name, name, bins, min, max);
 	xxx1->Sumw2();
 	d1.push_back(xxx1);
 }
 
 void CombineSample::addHisto(TString name, int binsx, double minx, double maxx,
 		int binsy, double miny, double maxy) {
-	TH2D* xxx1 = new TH2D(name, "sample 1", binsx, minx, maxx, binsy, miny,
+	TH2D* xxx1 = new TH2D(name, name, binsx, minx, maxx, binsy, miny,
 			maxy);
 	xxx1->Sumw2();
 	dMap.push_back(xxx1);
@@ -888,8 +892,9 @@ void CombineSample::setPlotStyle(std::vector<int> color) {
 void CombineSample::populateStack(HistoDrawer *drawer) {
 	CombineDrawer *myDrawer = static_cast<CombineDrawer*>(drawer);
 
+	myDrawer->addLegendMC(d1[0], fLegend);
 	for (unsigned int i = 0; i < d1.size(); ++i) {
-		myDrawer->addHistoMC(i, (TH1D*) (d1[i]->Clone()), fLegend);
+		myDrawer->addHistoMC(i, d1[i]);
 	}
 }
 
@@ -901,3 +906,13 @@ TH1D* CombineSample::getMainHisto() {
 	return nullptr;
 }
 
+CombineSample* CombineSample::Add(const CombineSample* other) {
+	Sample::Add(other);
+	for(unsigned int i=0; i<d1.size(); i++){
+		d1[i]->Add(other->d1[i], 1.);
+	}
+	for(unsigned int i=0; i<dMap.size(); i++){
+		dMap[i]->Add(other->dMap[i], 1.);
+	}
+	return this;
+}

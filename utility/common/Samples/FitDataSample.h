@@ -31,6 +31,7 @@ public:
 	virtual void populateStack(HistoDrawer *drawer);
 	virtual void populateFit(HistoDrawer *drawer, double norm, double a);
 	virtual double getFFIntegral(double a);
+	virtual void renameHisto() {};
 
 	virtual TH1D* getMainHisto() { return dSig; }
 

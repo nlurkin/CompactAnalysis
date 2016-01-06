@@ -64,6 +64,7 @@ public:
 	virtual void initHisto(int nbins, double* bins) = 0;
 	virtual double getFFIntegral(double a) = 0;
 //	virtual void scaleToData(double nData) = 0;
+	virtual void renameHisto() = 0;
 
 	virtual void setPlotStyle(std::vector<int> color) = 0;
 	virtual void populateStack(HistoDrawer *drawer) = 0;
@@ -110,6 +111,10 @@ public:
 
 	void setCfg(const ConfigFile* cfg) {
 		fCfg = cfg;
+	}
+
+	void setLegend(const std::string& legend) {
+		fLegend = legend;
 	}
 
 protected:
