@@ -22,10 +22,11 @@ HistoDrawer::~HistoDrawer() {
 TH1D* HistoDrawer::buildRatio(int nbins, double* binning, TH1D* mc,
 		TH1D* data) {
 	TH1D* r;
+	TString rnd = rand() % 99999;
 	if (nbins != -1)
-		r = new TH1D("ratio", "ratio", nbins - 1, binning);
+		r = new TH1D("ratio" + rnd, "ratio", nbins - 1, binning);
 	else
-		r = new TH1D("ratio", "ratio", data->GetNbinsX(),
+		r = new TH1D("ratio" + rnd, "ratio", data->GetNbinsX(),
 				data->GetXaxis()->GetXmin(), data->GetXaxis()->GetXmax());
 
 	mc->SetFillColor(8);
