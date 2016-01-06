@@ -22,13 +22,13 @@ Combiner::~Combiner() {
 void Combiner::draw(vector<int> allColors, vector<int> dataColors) {
 	CombineDrawer drawer;
 	for (unsigned int i = 0; i < fMCSamples.size(); i++) {
-		vector<int> colors(allColors[i * 3], allColors[i * 3 + 2]);
+		vector<int> colors(allColors.begin() + (i*3), allColors.begin() + (i*3+3));
 		fMCSamples[i]->setPlotStyle(colors);
 		fMCSamples[i]->populateStack(&drawer);
 	}
 
 	for (unsigned int i = 0; i < fDataSamples.size(); i++) {
-		vector<int> colors(dataColors[i * 3], dataColors[i * 3 + 2]);
+		vector<int> colors(dataColors.begin() + (i*3), dataColors.begin() + (i*3+3));
 		fDataSamples[i]->setPlotStyle(colors);
 		fDataSamples[i]->populateStack(&drawer);
 	}
