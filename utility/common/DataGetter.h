@@ -54,8 +54,8 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 	int prevIndex = -1;
 	int newIndex;
 
-	fFinalMCSample = new TMCSample();
-	fFinalDataSample = new TDataSample();
+	fFinalMCSample = new TMCSample(998, &cfg);
+	fFinalDataSample = new TDataSample(999, &cfg);
 
 	static_cast<TMCSample*>(fFinalMCSample)->setCfg(&cfg);
 	static_cast<TDataSample*>(fFinalDataSample)->setCfg(&cfg);
@@ -76,6 +76,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 			tempSample->setBr(cfg.getBrs()[newIndex]);
 			tempSample->setWeights(fRunWeights);
 			tempSample->setOutputFile(cfg.getMcOutputFiles()[newIndex]);
+			tempSample->setLegend(cfg.getMcLegendTitle()[newIndex]);
 			prevIndex = newIndex;
 		}
 
@@ -102,6 +103,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 			dataSample->setFactor(cfg.getDataFactor()[newIndex]);
 			dataSample->setWeights(fRunWeights);
 			dataSample->setOutputFile(cfg.getDataOutputFiles()[newIndex]);
+			dataSample->setLegend(cfg.getDataLegendTitle()[newIndex]);
 			prevIndex = newIndex;
 		}
 
@@ -113,7 +115,9 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 template <class TMCSample, class TDataSample>
 void DataGetter::mergeSamples() {
 	static_cast<TDataSample*>(fFinalDataSample)->initHisto(fNBins, fBinning);
+	static_cast<TDataSample*>(fFinalDataSample)->renameHisto();
 	static_cast<TMCSample*>(fFinalMCSample)->initHisto(fNBins, fBinning);
+	static_cast<TDataSample*>(fFinalMCSample)->renameHisto();
 	for (auto sample : fDataSamples)
 		static_cast<TDataSample*>(fFinalDataSample)->Add(static_cast<TDataSample*>(sample));
 
