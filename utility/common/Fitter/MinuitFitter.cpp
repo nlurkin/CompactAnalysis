@@ -86,6 +86,7 @@ void MinuitFitter::drawResult(vector<Sample*> mcSamples, int nbins, double *binn
 
 	drawer.setBinning(nbins, binning);
 	drawer.setMc(fMCSamples->getMainHisto(), fDataSamples->getMainHisto());
+	drawer.setResult(fNorm, fFormFactor, fFormFactorErr);
 	drawer.draw();
 }
 
