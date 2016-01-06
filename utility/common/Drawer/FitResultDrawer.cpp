@@ -11,6 +11,8 @@
 #include <TPaveText.h>
 #include <TF1.h>
 
+using namespace std;
+
 FitResultDrawer::FitResultDrawer() {
 	fFit = new THStack("MC", "Stack MC");
 	fFitSig = new THStack("Signal", "Stack Signal");

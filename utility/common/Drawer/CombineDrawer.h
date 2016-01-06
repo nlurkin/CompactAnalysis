@@ -17,8 +17,10 @@ public:
 
 	virtual void draw();
 
-	void addHistoMC(unsigned int index, TH1* histo, std::string legend);
-	void addHistoData(unsigned int index, TH1* histo, std::string legend);
+	void addHistoMC(unsigned int index, TH1* histo);
+	void addHistoData(unsigned int index, TH1* histo);
+	void addLegendMC(TH1* histo, std::string legend);
+	void addLegendData(TH1* histo, std::string legend);
 private:
 	std::vector<THStack*> fStack, fDataStack;
 	std::vector<TH1D*> fSum, fDataSum;

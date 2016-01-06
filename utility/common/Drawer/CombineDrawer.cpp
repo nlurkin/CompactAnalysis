@@ -7,6 +7,7 @@
 
 #include "CombineDrawer.h"
 #include <TCanvas.h>
+#include <iostream>
 
 using namespace std;
 CombineDrawer::CombineDrawer() {
@@ -19,6 +20,7 @@ CombineDrawer::~CombineDrawer() {
 
 void CombineDrawer::draw() {
 	for (unsigned int iCanvas = 0; iCanvas < fStack.size(); iCanvas++) {
+		cout << fStack[iCanvas]->GetTitle() << endl;
 		TCanvas *c1 = new TCanvas(TString::Format("c%i", iCanvas),
 				fStack[iCanvas]->GetTitle());
 		TH1D* ratio = buildRatio(-1, nullptr, fSum[iCanvas], fDataSum[iCanvas]);
@@ -69,20 +71,21 @@ void CombineDrawer::draw() {
 		ratio->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
 		ratio->GetXaxis()->SetLabelSize(15);
 
-		++iCanvas;
 		c1->SaveAs(TString(fStack[iCanvas]->GetName()) + ".png");
 
-	c1->Close();
-	delete c1;
+		c1->Close();
+		delete c1;
+		++iCanvas;
 	}
 }
 
-void CombineDrawer::addHistoMC(unsigned int index, TH1* histo, string legend) {
+void CombineDrawer::addHistoMC(unsigned int index, TH1* histo) {
 	THStack *hStack;
 	TH1D* sumHisto;
 	if (fStack.size() <= index) {
 		hStack = new THStack(histo->GetName(), histo->GetTitle());
-		sumHisto = new TH1D(histo->GetName(), histo->GetTitle(), histo->GetNbinsX(),
+		sumHisto = new TH1D(Form("%s_mcsum", histo->GetName()),
+				histo->GetTitle(), histo->GetNbinsX(),
 				histo->GetXaxis()->GetXmin(), histo->GetXaxis()->GetXmax());
 		fStack.push_back(hStack);
 		fSum.push_back(sumHisto);
@@ -93,15 +96,19 @@ void CombineDrawer::addHistoMC(unsigned int index, TH1* histo, string legend) {
 
 	hStack->Add(histo);
 	sumHisto->Add(histo, 1.);
+}
+
+void CombineDrawer::addLegendMC(TH1* histo, string legend) {
 	fLegend->AddEntry(histo, legend.c_str(), "f");
 }
 
-void CombineDrawer::addHistoData(unsigned int index, TH1* histo, string legend) {
+void CombineDrawer::addHistoData(unsigned int index, TH1* histo) {
 	THStack *hStack;
 	TH1D* sumHisto;
 	if (fDataStack.size() <= index) {
 		hStack = new THStack(histo->GetName(), histo->GetTitle());
-		sumHisto = new TH1D(histo->GetName(), histo->GetTitle(), histo->GetNbinsX(),
+		sumHisto = new TH1D(Form("%s_datasum", histo->GetName()),
+				histo->GetTitle(), histo->GetNbinsX(),
 				histo->GetXaxis()->GetXmin(), histo->GetXaxis()->GetXmax());
 		fDataStack.push_back(hStack);
 		fDataSum.push_back(sumHisto);
@@ -112,5 +119,8 @@ void CombineDrawer::addHistoData(unsigned int index, TH1* histo, string legend) 
 
 	hStack->Add(histo);
 	sumHisto->Add(histo, 1.);
+}
+
+void CombineDrawer::addLegendData(TH1* histo, string legend) {
 	fLegend->AddEntry(histo, legend.c_str(), "lep");
 }
