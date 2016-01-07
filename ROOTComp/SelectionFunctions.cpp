@@ -304,6 +304,7 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 			cout << "Track2 pi0mass: " << ee2.M() << " kmass: " << k2.M() << endl;
 			cout << " diffpi0:" << diffpi02 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
 			cout << " diffk:" << diffk2 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " Must be " << io.cutsDefinition.k2pi.minKaonMassDiff << " < Mk < " << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 			cout << " x:" << x2 << " <0 || " << x2 << " >1 : rejected" << endl;
 			cout << " y:" << y2 << " <0 || " << y2 << " >1 : rejected" << endl;
 		}
