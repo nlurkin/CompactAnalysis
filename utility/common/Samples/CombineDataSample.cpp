@@ -9,7 +9,9 @@
 #include "../Drawer/CombineDrawer.h"
 #include <TFile.h>
 
-CombineDataSample::CombineDataSample() {
+CombineDataSample::CombineDataSample() :
+	fFactor(1)
+{
 	// TODO Auto-generated constructor stub
 
 }
@@ -19,7 +21,7 @@ CombineDataSample::~CombineDataSample() {
 }
 
 CombineDataSample::CombineDataSample(int index, ConfigFile* cfg) :
-		CombineSample(index, cfg) {
+		CombineSample(index, cfg), fFactor(1) {
 }
 
 void CombineDataSample::fillHisto(ROOTPhysicsEvent* evt, ROOTRawEvent* rawEvt,
