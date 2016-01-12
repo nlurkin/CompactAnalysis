@@ -94,8 +94,6 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 			d3->Fill(x, bweight * aweight * weight);
 		}
 	}
-
-	cout << endl << fFitBrch.selEvents << endl;
 }
 
 void FitMCSample::doGet(TFile* inputFD, TFile* tempFD) {
@@ -195,7 +193,6 @@ void FitMCSample::scale() {
 	double selRatiox = (double) fFitBrch.nx / totN;
 	double selRatioxx = (double) fFitBrch.nxx / totN;
 
-	cout << "NBefore scaling" << dAlpha->Integral() << endl;
 	SubSample::scale(d1, selRatio1);
 	SubSample::scale(d2, selRatiox);
 	SubSample::scale(d3, selRatioxx);
@@ -204,7 +201,6 @@ void FitMCSample::scale() {
 	SubSample::scale(dAlpha, 1.);
 	SubSample::scale(dBeta, 1.);
 	SubSample::scale(dGamma, 1.);
-	cout << "Nafter scaling" << dAlpha->Integral() << endl;
 }
 
 void FitMCSample::scaleToData(bContent totalMC, double nData) {

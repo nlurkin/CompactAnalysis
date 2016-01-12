@@ -45,15 +45,12 @@ void CombineMCSample::doGet(TFile* inputFD, TFile* tempFD) {
 
 void CombineMCSample::scaleToData(bContent totalMC, double nData) {
 	//Scale MC to Data
-	cout << "totalMC " << totalMC.val << " nData" << nData << endl;
 	double factor = nData/ totalMC.val;
 
-	cout << d1[0]->Integral() << endl;
 	for(auto plot : d1)
 		plot->Scale(factor);
 	for(auto plot : dMap)
 		plot->Scale(factor);
-	cout << d1[0]->Integral() << endl;
 }
 
 CombineMCSample::bContent CombineMCSample::getIntegrals() {

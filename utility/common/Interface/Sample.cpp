@@ -105,8 +105,15 @@ void Sample::closeOutput(TFile* tempFD) {
 	}
 	fFitTree->Write();
 
-	for (auto ss : fSubSamples)
+	int index=0;
+	for (auto ss : fSubSamples){
+		fOutputFD->mkdir(Form("%i", index));
+		fOutputFD->cd(Form("%i", index));
+		fOutputFD->ls();
 		ss->doWrite();
+		fOutputFD->cd();
+		++index;
+	}
 
 	fOutputFD->Close();
 

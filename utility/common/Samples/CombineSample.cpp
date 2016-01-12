@@ -818,9 +818,6 @@ void CombineSample::initHisto(int, double*, const ConfigFile *) {
 }
 
 void CombineSample::scale() {
-	cout << "Rescaling" << endl;
-	cout << fBr << " " << fFitBrch.selEvents << " " << fFitBrch.totEvents
-			<< endl;
 	// Rescale histo
 	for (unsigned int i = 0; i < d1.size(); ++i) {
 		SubSample::scale(d1.at(i), 1.);

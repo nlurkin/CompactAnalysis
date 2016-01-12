@@ -41,7 +41,7 @@ ConfigFile::ConfigFile() :
 		("binsfile", 	po::value< string>			(&fBinsFileName), 					"List of input MC files")
 		("equalbin", 	po::value< bool>			(&fWithEqualBins), 					"List of input MC files")
 		("scanid", 		po::value< int>				(&fScanID), 						"List of input MC files")
-		("nscan", 		po::value< int>				(&fNScan),	 						"List of input MC files")
+		("nscan", 		po::value< int>				(&fNScan)->default_value(1),	 	"List of input MC files")
 	;
 }
 

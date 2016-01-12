@@ -12,6 +12,7 @@
 #include "Interface/DataSample.h"
 #include "Interface/Sample.h"
 #include "ConfigFile.h"
+#include <iostream>
 
 class RunWeights;
 class TFile;

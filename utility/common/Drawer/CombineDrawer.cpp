@@ -20,7 +20,6 @@ CombineDrawer::~CombineDrawer() {
 
 void CombineDrawer::draw() {
 	for (unsigned int iCanvas = 0; iCanvas < fStack.size(); iCanvas++) {
-		cout << fStack[iCanvas]->GetTitle() << endl;
 		TCanvas *c1 = new TCanvas(TString::Format("c%i", iCanvas),
 				fStack[iCanvas]->GetTitle());
 		TH1D* ratio = buildRatio(-1, nullptr, fSum[iCanvas], fDataSum[iCanvas]);
