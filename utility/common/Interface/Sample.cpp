@@ -46,9 +46,9 @@ bool Sample::addFile(string fileName) {
 }
 
 void Sample::fill(TFile* tempFD, int nbins, double* bins) {
+	fOutputFD->cd();
 	initOutput();
-	for (auto ss : fSubSamples)
-		ss->initHisto(nbins, bins, fCfg);
+	initHisto(nbins, bins);
 	int iFile = 0;
 	double totalFiles = fListFiles.size();
 	TFile *inFileFD;
@@ -86,9 +86,10 @@ void Sample::initOutput() {
 	fOutputFD = TFile::Open(fOutputFile.c_str(), "RECREATE");
 	int index = 0;
 	for (auto ss : fSubSamples) {
-		fOutputFD->mkdir(Form("%i", index));
-		fOutputFD->cd(Form("%i", index));
+		mkdirCd(fOutputFD, Form("%i", index));
 		ss->initOutput();
+		fOutputFD->cd();
+		++index;
 	}
 }
 
@@ -97,7 +98,7 @@ void Sample::closeOutput(TFile* tempFD) {
 
 	int index = 0;
 	for (auto ss : fSubSamples) {
-		fOutputFD->cd(Form("%i", index));
+		mkdirCd(fOutputFD, Form("%i", index));
 		ss->writeTree();
 		ss->doWrite();
 		fOutputFD->cd();
@@ -188,7 +189,19 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 void Sample::doGet(TFile* inputFD, TFile* tempFD) {
 	int index = 0;
 	for (auto ss : fSubSamples) {
-		inputFD->cd(Form("%i", index));
+		mkdirCd(inputFD, Form("%i", index));
 		ss->doGet(gDirectory, tempFD);
+		inputFD->cd();
+		++index;
 	}
+}
+
+void Sample::initHisto(int nbins, double* bins) {
+	int index = 0;
+	for (auto ss : fSubSamples) {
+		mkdirCd(gFile, Form("%i", index));
+		ss->initHisto(nbins, bins, fCfg);
+		gFile->cd();
+		++index;
+	};
 }

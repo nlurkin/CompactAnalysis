@@ -29,7 +29,6 @@ DataGetter::DataGetter() :
 		tempFileName += ".root";
 	}
 	fTempFile = TFile::Open(tempFileName, "RECREATE");
-
 }
 
 DataGetter::~DataGetter() {

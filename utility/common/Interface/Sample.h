@@ -19,9 +19,14 @@
 #include "SubSample.h"
 #include "DataSample.h"
 #include "MCSample.h"
+#include <TFile.h>
 
 class TTree;
-class TFile;
+
+void inline mkdirCd(TDirectory *fd, TString name){
+	if(!fd->GetKey(name)) fd->mkdir(name);
+	fd->cd(name);
+}
 
 class Sample {
 public:
@@ -35,18 +40,31 @@ public:
 	void initOutput();
 	void closeOutput(TFile* tempFD);
 
-	template <class SSampleType>
+	template<class SSampleType>
 	void prepareNSubSamples(int N);
 
-	void initHisto(int nbins, double* bins) { for(auto ss : fSubSamples) ss->initHisto(nbins, bins, fCfg);};
-	void renameHisto() { for(auto ss : fSubSamples) ss->renameHisto();};
-	void setPlotStyle(std::vector<int> color) { for(auto ss : fSubSamples) ss->setPlotStyle(color);};
-	void populateStack(HistoDrawer *drawer) { for(auto ss : fSubSamples) ss->populateStack(drawer, fLegend);};
+	void initHisto(int nbins, double* bins);
+	void renameHisto() {
+		for (auto ss : fSubSamples)
+			ss->renameHisto();
+	}
+	;
+	void setPlotStyle(std::vector<int> color) {
+		for (auto ss : fSubSamples)
+			ss->setPlotStyle(color);
+	}
+	;
+	void populateStack(HistoDrawer *drawer) {
+		for (auto ss : fSubSamples)
+			ss->populateStack(drawer, fLegend);
+	}
+	;
 
-	template <class SSampleType>
+	template<class SSampleType>
 	std::vector<typename SSampleType::bContent> getIntegrals();
-	template <class SSampleType>
-	void scaleToData(const std::vector<typename SSampleType::bContent> totalMC, const std::vector<double> nData);
+	template<class SSampleType>
+	void scaleToData(const std::vector<typename SSampleType::bContent> totalMC,
+			const std::vector<double> nData);
 
 	virtual void doFill(TFile* inputFD, TFile* tempFD);
 	virtual void doGet(TFile* inputFD, TFile* tempFD);
@@ -69,7 +87,8 @@ public:
 
 	std::vector<double> getTotalSize() const {
 		std::vector<double> r;
-		for(auto ss : fSubSamples) r.push_back(ss->getTotalSize());
+		for (auto ss : fSubSamples)
+			r.push_back(ss->getTotalSize());
 		return r;
 	}
 
@@ -99,12 +118,22 @@ public:
 		fLegend = legend;
 	}
 
-	void setTestA(double testA) { for(auto ss : fSubSamples) dynamic_cast<DataSample*>(ss)->setTestA(testA);	}
+	void setTestA(double testA) {
+		for (auto ss : fSubSamples)
+			dynamic_cast<DataSample*>(ss)->setTestA(testA);
+	}
 
-	void setFactor(double factor) { for(auto ss : fSubSamples) dynamic_cast<DataSample*>(ss)->setFactor(factor); }
+	void setFactor(double factor) {
+		for (auto ss : fSubSamples)
+			dynamic_cast<DataSample*>(ss)->setFactor(factor);
+	}
 
-	SubSample * getSubSample(int i) { return fSubSamples[i]; }
-	int getNSubSample() { return fSubSamples.size(); }
+	SubSample * getSubSample(int i) {
+		return fSubSamples[i];
+	}
+	int getNSubSample() {
+		return fSubSamples.size();
+	}
 
 	const std::string& getLegend() const {
 		return fLegend;
@@ -125,10 +154,10 @@ protected:
 	int fMainSubSample;
 };
 
-template <class SSampleType>
+template<class SSampleType>
 void Sample::prepareNSubSamples(int N) {
 	SubSample *newSS;
-	for(int i=0; i<N; i++){
+	for (int i = 0; i < N; i++) {
 		newSS = new SSampleType();
 		newSS->setBr(fBr);
 		newSS->setIndex(fIndex);
@@ -137,21 +166,22 @@ void Sample::prepareNSubSamples(int N) {
 	}
 }
 
-template <class SSampleType>
-std::vector<typename SSampleType::bContent> Sample::getIntegrals(){
+template<class SSampleType>
+std::vector<typename SSampleType::bContent> Sample::getIntegrals() {
 	std::vector<typename SSampleType::bContent> r;
-	for(auto ss : fSubSamples) r.push_back(static_cast<SSampleType*>(ss)->getIntegrals());
+	for (auto ss : fSubSamples)
+		r.push_back(static_cast<SSampleType*>(ss)->getIntegrals());
 	return r;
 }
 
-template <class SSampleType>
-void Sample::scaleToData(const std::vector<typename SSampleType::bContent> totalMC, const std::vector<double> nData){
-	for(unsigned int i=0; i<fSubSamples.size(); i++){
-		static_cast<SSampleType*>(fSubSamples[i])->scaleToData(totalMC[i], nData[i]);
+template<class SSampleType>
+void Sample::scaleToData(
+		const std::vector<typename SSampleType::bContent> totalMC,
+		const std::vector<double> nData) {
+	for (unsigned int i = 0; i < fSubSamples.size(); i++) {
+		static_cast<SSampleType*>(fSubSamples[i])->scaleToData(totalMC[i],
+				nData[i]);
 	}
 }
-
-
-
 
 #endif /* COMMON_SAMPLE_H_ */

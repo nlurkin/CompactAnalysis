@@ -13,9 +13,9 @@
 #include "Interface/Sample.h"
 #include "ConfigFile.h"
 #include <iostream>
+#include <TFile.h>
 
 class RunWeights;
-class TFile;
 
 class DataGetter {
 public:
@@ -121,6 +121,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 
 template <class TMCSample, class TDataSample>
 void DataGetter::mergeSamples() {
+	fTempFile->cd();
 	fFinalDataSample->initHisto(fNBins, fBinning);
 	fFinalDataSample->renameHisto();
 	fFinalMCSample->initHisto(fNBins, fBinning);
