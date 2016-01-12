@@ -722,8 +722,8 @@ int pi0d_goodClusters_loose(){
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
 		//Ignore clusters outside acceptance
-		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
-		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
+//		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+//		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
 
 		//Ignore clusters behind Pb Wall
 		if(rootBurst.pbWall){
@@ -822,8 +822,8 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
 		//Ignore clusters outside acceptance
-		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
-		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
+//		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+//		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
 
 		//Ignore clusters behind Pb Wall
 		if(rootBurst.pbWall){
