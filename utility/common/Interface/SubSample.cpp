@@ -36,7 +36,8 @@ void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor) {
 	std::cout << "nxx   events: \t" << out.nxx << std::endl;
 }
 
-SubSample::SubSample() {
+SubSample::SubSample() :
+		fFitTree(nullptr) {
 	fFitBrch.n1 = 0;
 	fFitBrch.nx = 0;
 	fFitBrch.nxx = 0;
@@ -53,13 +54,30 @@ void SubSample::initNewFile(int totalChanEvents, int selEvents) {
 	fFitBrch.selEvents += selEvents;
 }
 
-void SubSample::scale(TH1 *histo, double scaleFactor){
-	cout << "Scaling " << histo->GetName() << " " << histo->GetEntries() << " " << histo->Integral() << " " << fBr << " " << fFitBrch.totEvents << " " << scaleFactor << endl;
-	histo->Scale(fBr/(fFitBrch.totEvents*scaleFactor));
+void SubSample::scale(TH1 *histo, double scaleFactor) {
+	cout << "Scaling " << histo->GetName() << " " << histo->GetEntries() << " "
+			<< histo->Integral() << " " << fBr << " " << fFitBrch.totEvents
+			<< " " << scaleFactor << endl;
+	histo->Scale(fBr / (fFitBrch.totEvents * scaleFactor));
 }
 
-SubSample *SubSample::Add(const SubSample *other){
+SubSample *SubSample::Add(const SubSample *other) {
 	fFitBrch += other->fFitBrch;
 
 	return this;
+}
+
+void SubSample::initOutput() {
+	fFitTree = new TTree("fitStruct", "fitStruct tree");
+	fFitTree->Branch("fitStruct", &fFitBrch, "totEvents/I:selEvents:n1:nx:nxx");
+	fFitBrch.n1 = 0;
+	fFitBrch.nx = 0;
+	fFitBrch.nxx = 0;
+	fFitBrch.selEvents = 0;
+	fFitBrch.totEvents = 0;
+}
+
+void SubSample::writeTree() {
+	fFitTree->Fill();
+	fFitTree->Write();
 }

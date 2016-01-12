@@ -52,13 +52,15 @@ public:
 
 	fitStruct getFitStruct() { return fFitBrch; };
 	void scale(TH1 *histo, double scaleFactor);
-	SubSample* Add(const SubSample* other);
+	virtual SubSample* Add(const SubSample* other);
+	void initOutput();
+	void writeTree();
 
 	virtual void processEvent(ROOTPhysicsEvent *eventBrch, ROOTBurst *burstBrch,
 			ROOTRawEvent *rawBrch, ROOTCorrectedEvent *corrBrch,
 			ROOTFileHeader *headerBrch, ROOTMCEvent *mcEvent, NGeom *geomBrch,
 			std::vector<bool> *cutsPass, const ConfigFile *cfg, const RunWeights *weights) = 0;
-	virtual void doGet(TFile* inputFD, TFile* tempFD) = 0;
+	virtual void doGet(TDirectory* inputFD, TFile* tempFD) = 0;
 	virtual void doWrite() = 0;
 	virtual void doSetName() = 0;
 	virtual void initHisto(int nbins, double* bins, const ConfigFile *cfg) = 0;
@@ -101,6 +103,7 @@ public:
 
 protected:
 	fitStruct fFitBrch;
+	TTree* fFitTree;
 	int fScanID;
 	int fIndex;
 	double fBr;

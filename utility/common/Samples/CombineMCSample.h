@@ -25,7 +25,7 @@ public:
 	CombineMCSample();
 	virtual ~CombineMCSample();
 
-	virtual void doGet(TFile* inputFD, TFile* tempFD);
+	virtual void doGet(TDirectory* inputFD, TFile* tempFD);
 	virtual void scaleToData(bContent totalMC, double nData);
 
 	void fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,

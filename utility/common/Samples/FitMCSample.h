@@ -36,7 +36,7 @@ public:
 			ROOTRawEvent *rawBrch, ROOTCorrectedEvent *corrBrch,
 			ROOTFileHeader *headerBrch, ROOTMCEvent *mcEvent, NGeom *geomBrch,
 			std::vector<bool> *cutsPass, const ConfigFile *cfg, const RunWeights *weights);
-	virtual void doGet(TFile* inputFD, TFile* tempFD);
+	virtual void doGet(TDirectory* inputFD, TFile* tempFD);
 	virtual void doWrite();
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins, const ConfigFile *cfg);
@@ -53,7 +53,7 @@ public:
 	void scale();
 
 	bContent getBinContent(int bin);
-	FitMCSample* Add(const FitMCSample* other);
+	virtual SubSample* Add(const SubSample* other);
 private:
 	TH1D *d1, *d2, *d3;
 	TH1D *dNew;

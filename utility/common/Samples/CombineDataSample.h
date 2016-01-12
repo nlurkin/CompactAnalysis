@@ -16,7 +16,7 @@ public:
 	CombineDataSample();
 	virtual ~CombineDataSample();
 
-	virtual void doGet(TFile* inputFD, TFile* tempFD);
+	virtual void doGet(TDirectory* inputFD, TFile* tempFD);
 	virtual void populateStack(HistoDrawer *drawer, std::string legend);
 	virtual void setPlotStyle(std::vector<int> color);
 

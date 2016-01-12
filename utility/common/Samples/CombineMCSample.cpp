@@ -30,7 +30,7 @@ void CombineMCSample::fillHisto(ROOTPhysicsEvent* evt, ROOTRawEvent* rawEvt,
 			rootBurst, weight);
 }
 
-void CombineMCSample::doGet(TFile* inputFD, TFile* tempFD) {
+void CombineMCSample::doGet(TDirectory* inputFD, TFile* tempFD) {
 	fitStruct totFit;
 	TTree *t = (TTree*) inputFD->Get("fitStruct");
 	t->SetBranchAddress("fitStruct", &fFitBrch);

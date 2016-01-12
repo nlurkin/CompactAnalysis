@@ -61,7 +61,7 @@ void FitDataSample::processEvent(ROOTPhysicsEvent *eventBrch,
 
 }
 
-void FitDataSample::doGet(TFile* inputFD, TFile* tempFD) {
+void FitDataSample::doGet(TDirectory* inputFD, TFile* tempFD) {
 	fitStruct fitBrch;
 	TTree *t = (TTree*) inputFD->Get("fitStruct");
 	t->SetBranchAddress("fitStruct", &fitBrch);
@@ -112,10 +112,11 @@ FitDataSample::bContent FitDataSample::getBinContent(int bin) {
 	return b;
 }
 
-FitDataSample* FitDataSample::Add(const FitDataSample* other) {
-	SubSample::Add((SubSample*) other);
+SubSample* FitDataSample::Add(const SubSample* other) {
+	SubSample::Add(other);
 
-	dSig->Add(other->dSig, other->fFactor);
+	const FitDataSample *myOther = static_cast<const FitDataSample*>(other);
+	dSig->Add(myOther->dSig, myOther->fFactor);
 	return this;
 }
 void FitDataSample::populateFit(HistoDrawer *drawer, double, double, string legend) {

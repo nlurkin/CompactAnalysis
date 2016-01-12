@@ -24,7 +24,7 @@ public:
 			ROOTRawEvent *rawBrch, ROOTCorrectedEvent *corrBrch,
 			ROOTFileHeader *headerBrch, ROOTMCEvent *mcEvent, NGeom *geomBrch,
 			std::vector<bool> *cutsPass, const ConfigFile *cfg, const RunWeights *weights);
-	virtual void doGet(TFile* inputFD, TFile* tempFD) = 0;
+	virtual void doGet(TDirectory* inputFD, TFile* tempFD) = 0;
 	virtual void doWrite();
 	virtual void doSetName();
 	virtual void initHisto(int nbins, double* bins, const ConfigFile *cfg);
@@ -39,9 +39,9 @@ public:
 	void addHisto(TString name, int binsx, double minx, double maxx, int binsy,
 			double miny, double maxy);
 
-	void getHisto(TFile* fd, TFile* tempFD, TString name);
-	void getHisto2(TFile* fd, TFile* tempFD, TString name);
-	void doGetHisto(TFile* inputFD, TFile* tempFD);
+	void getHisto(TDirectory* fd, TFile* tempFD, TString name);
+	void getHisto2(TDirectory* fd, TFile* tempFD, TString name);
+	void doGetHisto(TDirectory* inputFD, TFile* tempFD);
 
 	void fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
 				ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom,
@@ -51,7 +51,7 @@ public:
 					ROOTBurst *rootBurst, const RunWeights *weights) = 0;
 	void scale();
 	virtual void renameHisto();
-	CombineSample* Add(const CombineSample *other);
+	virtual SubSample* Add(const SubSample* other);
 
 protected:
 	std::vector<TH1D*> d1;

@@ -17,15 +17,13 @@
 using namespace std;
 
 Sample::Sample() :
-		fIndex(-1), fBr(1), fFitTree(nullptr), fOutputFD(nullptr), fCfg(
-				nullptr), fWeights(nullptr), fMainSubSample(0) {
-	initFitStruct (fFitBrchB);
+		fIndex(-1), fBr(1), fOutputFD(nullptr), fCfg(nullptr), fWeights(
+				nullptr), fMainSubSample(0) {
 }
 
 Sample::Sample(int index, ConfigFile *cfg) :
-		fIndex(index), fBr(1), fFitTree(nullptr), fOutputFD(nullptr), fCfg(cfg), fWeights(
-				nullptr), fMainSubSample(0) {
-	initFitStruct (fFitBrchB);
+		fIndex(index), fBr(1), fOutputFD(nullptr), fCfg(cfg), fWeights(nullptr), fMainSubSample(
+				0) {
 }
 
 Sample::~Sample() {
@@ -86,30 +84,21 @@ void Sample::get(TFile* tempFD) {
 
 void Sample::initOutput() {
 	fOutputFD = TFile::Open(fOutputFile.c_str(), "RECREATE");
-	fFitTree = new TTree("fitStruct", "fitStruct tree");
-	fFitTree->Branch("fitStruct", &fFitBrchB,
-			"totEvents/I:selEvents:n1:nx:nxx");
-	fFitBrchB.n1 = 0;
-	fFitBrchB.nx = 0;
-	fFitBrchB.nxx = 0;
-	fFitBrchB.selEvents = 0;
-	fFitBrchB.totEvents = 0;
+	int index = 0;
+	for (auto ss : fSubSamples) {
+		fOutputFD->mkdir(Form("%i", index));
+		fOutputFD->cd(Form("%i", index));
+		ss->initOutput();
+	}
 }
 
 void Sample::closeOutput(TFile* tempFD) {
 	fOutputFD->cd();
 
+	int index = 0;
 	for (auto ss : fSubSamples) {
-		fFitBrchB = ss->getFitStruct();
-		fFitTree->Fill();
-	}
-	fFitTree->Write();
-
-	int index=0;
-	for (auto ss : fSubSamples){
-		fOutputFD->mkdir(Form("%i", index));
 		fOutputFD->cd(Form("%i", index));
-		fOutputFD->ls();
+		ss->writeTree();
 		ss->doWrite();
 		fOutputFD->cd();
 		++index;
@@ -123,7 +112,7 @@ void Sample::closeOutput(TFile* tempFD) {
 }
 
 Sample* Sample::Add(const Sample* other) {
-	for (unsigned int i; i < fSubSamples.size(); i++)
+	for (unsigned int i=0; i < fSubSamples.size(); i++)
 		fSubSamples[i]->Add(other->fSubSamples[i]);
 	return this;
 }
@@ -193,5 +182,13 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 		for (auto ss : fSubSamples)
 			ss->processEvent(eventBrch, burstBrch, rawBrch, corrBrch,
 					headerBrch, mcEvent, geomBrch, cutsPass, fCfg, fWeights);
+	}
+}
+
+void Sample::doGet(TFile* inputFD, TFile* tempFD) {
+	int index = 0;
+	for (auto ss : fSubSamples) {
+		inputFD->cd(Form("%i", index));
+		ss->doGet(gDirectory, tempFD);
 	}
 }

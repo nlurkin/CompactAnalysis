@@ -49,7 +49,7 @@ public:
 	void scaleToData(const std::vector<typename SSampleType::bContent> totalMC, const std::vector<double> nData);
 
 	virtual void doFill(TFile* inputFD, TFile* tempFD);
-	virtual void doGet(TFile*, TFile* ) {};
+	virtual void doGet(TFile* inputFD, TFile* tempFD);
 
 	double getBr() const {
 		return fBr;
@@ -115,8 +115,8 @@ protected:
 	double fBr;
 	std::vector<std::string> fListFiles;
 	std::string fOutputFile;
-	TTree* fFitTree;
-	fitStruct fFitBrchB;
+	//TTree* fFitTree;
+	//fitStruct fFitBrchB;
 	TFile *fOutputFD;
 	const ConfigFile *fCfg;
 	const RunWeights *fWeights;

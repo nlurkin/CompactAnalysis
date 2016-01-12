@@ -113,7 +113,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 	}
 
 	fFinalDataSample->prepareNSubSamples<TDataSample>(cfg.getNScan());
-	fFinalDataSample->prepareNSubSamples<TMCSample>(cfg.getNScan());
+	fFinalMCSample->prepareNSubSamples<TMCSample>(cfg.getNScan());
 
 	for(auto sample : fDataSamples) sample->prepareNSubSamples<TDataSample>(cfg.getNScan());
 	for(auto sample : fMCSamples) sample->prepareNSubSamples<TMCSample>(cfg.getNScan());
@@ -131,7 +131,10 @@ void DataGetter::mergeSamples() {
 	std::vector<typename TMCSample::bContent> b;
 	for (auto sample : fMCSamples) {
 		std::vector<typename TMCSample::bContent> nVec = sample->getIntegrals<TMCSample>();
-		for(unsigned int i=0; i<nVec.size(); i++) b[i] += nVec[i];
+		for(unsigned int i=0; i<nVec.size(); i++) {
+			if(b.size()<=i) b.push_back(typename TMCSample::bContent(nVec[i]));
+			else b[i] += nVec[i];
+		}
 		fFinalMCSample->Add(sample);
 	}
 

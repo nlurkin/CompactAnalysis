@@ -96,7 +96,7 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	}
 }
 
-void FitMCSample::doGet(TFile* inputFD, TFile* tempFD) {
+void FitMCSample::doGet(TDirectory* inputFD, TFile* tempFD) {
 	fitStruct fitBrch;
 	TTree *t = (TTree*) inputFD->Get("fitStruct");
 	t->SetBranchAddress("fitStruct", &fitBrch);
@@ -289,16 +289,17 @@ void FitMCSample::populateFit(HistoDrawer *drawer, double norm, double a, string
 	myDrawer->fFit->Add(dGamma_c);
 }
 
-FitMCSample* FitMCSample::Add(const FitMCSample* other) {
-	SubSample::Add((SubSample*) other);
-	d1->Add(other->d1, 1.);
-	d2->Add(other->d2, 1.);
-	d3->Add(other->d3, 1.);
-	dNew->Add(other->dNew, 1.);
+SubSample* FitMCSample::Add(const SubSample* other) {
+	SubSample::Add(other);
+	const FitMCSample *myOther = static_cast<const FitMCSample*>(other);
+	d1->Add(myOther->d1, 1.);
+	d2->Add(myOther->d2, 1.);
+	d3->Add(myOther->d3, 1.);
+	dNew->Add(myOther->dNew, 1.);
 
-	dAlpha->Add(other->dAlpha, 1.);
-	dBeta->Add(other->dBeta, 1.);
-	dGamma->Add(other->dGamma, 1.);
+	dAlpha->Add(myOther->dAlpha, 1.);
+	dBeta->Add(myOther->dBeta, 1.);
+	dGamma->Add(myOther->dGamma, 1.);
 
 	return this;
 }

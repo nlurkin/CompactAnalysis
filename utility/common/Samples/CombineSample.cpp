@@ -380,20 +380,20 @@ void CombineSample::fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
 	dMap.at(++iMap)->Fill(propPos.X(), propPos.Y(), weight);
 }
 
-void CombineSample::getHisto(TFile* inputFD, TFile* tempFD, TString name) {
+void CombineSample::getHisto(TDirectory* inputFD, TFile* tempFD, TString name) {
 	TH1D* xxx = (TH1D*) inputFD->Get(name);
 	xxx->SetName(TString::Format("%s%i", name.Data(), fIndex));
 	tempFD->cd();
 	d1.push_back((TH1D*) xxx->Clone());
 }
-void CombineSample::getHisto2(TFile* inputFD, TFile* tempFD, TString name) {
+void CombineSample::getHisto2(TDirectory* inputFD, TFile* tempFD, TString name) {
 	TH2D* xxx = (TH2D*) inputFD->Get(name);
 	xxx->SetName(TString::Format("%s%i", name.Data(), fIndex));
 	tempFD->cd();
 	dMap.push_back((TH2D*) xxx->Clone());
 }
 
-void CombineSample::doGetHisto(TFile* inputFD, TFile* tempFD) {
+void CombineSample::doGetHisto(TDirectory* inputFD, TFile* tempFD) {
 	getHisto(inputFD, tempFD, "mK");
 
 	getHisto(inputFD, tempFD, "R_DCH1_ep");
@@ -856,13 +856,14 @@ TH1D* CombineSample::getMainHisto() {
 	return nullptr;
 }
 
-CombineSample* CombineSample::Add(const CombineSample* other) {
+SubSample* CombineSample::Add(const SubSample* other) {
 	SubSample::Add(other);
+	const CombineSample *myOther = static_cast<const CombineSample*>(other);
 	for (unsigned int i = 0; i < d1.size(); i++) {
-		d1[i]->Add(other->d1[i], 1.);
+		d1[i]->Add(myOther->d1[i], 1.);
 	}
 	for (unsigned int i = 0; i < dMap.size(); i++) {
-		dMap[i]->Add(other->dMap[i], 1.);
+		dMap[i]->Add(myOther->dMap[i], 1.);
 	}
 	return this;
 }
