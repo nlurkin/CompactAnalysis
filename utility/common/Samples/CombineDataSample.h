@@ -14,16 +14,15 @@
 class CombineDataSample: public CombineSample, public DataSample {
 public:
 	CombineDataSample();
-	CombineDataSample(int index, ConfigFile *cfg);
 	virtual ~CombineDataSample();
 
 	virtual void doGet(TFile* inputFD, TFile* tempFD);
-	virtual void populateStack(HistoDrawer *drawer);
+	virtual void populateStack(HistoDrawer *drawer, std::string legend);
 	virtual void setPlotStyle(std::vector<int> color);
 
 	void fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
 				ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent, NGeom *rootGeom,
-				ROOTBurst *rootBurst);
+				ROOTBurst *rootBurst, const RunWeights *weigths);
 
 	double getFactor() const {
 		return fFactor;

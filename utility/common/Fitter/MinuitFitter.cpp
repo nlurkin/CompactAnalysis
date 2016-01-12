@@ -79,10 +79,10 @@ void MinuitFitter::drawResult(vector<Sample*> mcSamples, int nbins, double *binn
 	drawer.setTitle(fName);
 
 	for (auto sample : mcSamples) {
-		static_cast<FitMCSample*>(sample)->populateFit(&drawer, fNorm, fFormFactor);
+		static_cast<FitMCSample*>(sample->getSubSample(0))->populateFit(&drawer, fNorm, fFormFactor, sample->getLegend());
 	}
 
-	fDataSamples->populateFit(&drawer, fNorm, fFormFactor);
+	fDataSamples->populateFit(&drawer, fNorm, fFormFactor, "xxxMyLegend TODO");
 
 	drawer.setBinning(nbins, binning);
 	drawer.setMc(fMCSamples->getMainHisto(), fDataSamples->getMainHisto());

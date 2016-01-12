@@ -9,27 +9,29 @@
 #define COMMON_FITDATASAMPLE_H_
 
 #include "../Interface/DataSample.h"
-#include "../Interface/Sample.h"
+#include "../Interface/SubSample.h"
 
-class FitDataSample: public Sample, public DataSample{
+class FitDataSample: public SubSample, public DataSample{
 public:
 	typedef struct bContent_t{
 		double dSig;
 	} bContent;
 
 	FitDataSample();
-	FitDataSample(int index, ConfigFile *cfg);
 	virtual ~FitDataSample();
 
-	virtual void doFill(TFile* inputFD, TFile* tempFD);
+	virtual void processEvent(ROOTPhysicsEvent *eventBrch, ROOTBurst *burstBrch,
+			ROOTRawEvent *rawBrch, ROOTCorrectedEvent *corrBrch,
+			ROOTFileHeader *headerBrch, ROOTMCEvent *mcEvent, NGeom *geomBrch,
+			std::vector<bool> *cutsPass, const ConfigFile *cfg, const RunWeights *weights);
 	virtual void doGet(TFile* inputFD, TFile* tempFD);
 	virtual void doWrite();
 	virtual void doSetName();
-	virtual void initHisto(int nbins, double* bins);
+	virtual void initHisto(int nbins, double* bins, const ConfigFile *cfg);
 	virtual void scaleToData(double) {};
 	virtual void setPlotStyle(std::vector<int> color);
-	virtual void populateStack(HistoDrawer *drawer);
-	virtual void populateFit(HistoDrawer *drawer, double norm, double a);
+	virtual void populateStack(HistoDrawer *drawer, std::string legend);
+	virtual void populateFit(HistoDrawer *drawer, double norm, double a, std::string legend);
 	virtual double getFFIntegral(double a);
 	virtual void renameHisto() {};
 

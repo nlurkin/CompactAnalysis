@@ -8,10 +8,10 @@
 #ifndef COMMON_FITMCSAMPLE_H_
 #define COMMON_FITMCSAMPLE_H_
 
-#include "../Interface/Sample.h"
+#include "../Interface/SubSample.h"
 #include "../Interface/MCSample.h"
 
-class FitMCSample: public Sample, public MCSample {
+class FitMCSample: public SubSample, public MCSample {
 public:
 	typedef struct bContent_t{
 		double d1,d2,d3,dNew,dAlpha,dBeta,dGamma;
@@ -30,18 +30,20 @@ public:
 	} bContent;
 
 	FitMCSample();
-	FitMCSample(int index, ConfigFile *cfg);
 	virtual ~FitMCSample();
 
-	virtual void doFill(TFile* inputFD, TFile* tempFD);
+	virtual void processEvent(ROOTPhysicsEvent *eventBrch, ROOTBurst *burstBrch,
+			ROOTRawEvent *rawBrch, ROOTCorrectedEvent *corrBrch,
+			ROOTFileHeader *headerBrch, ROOTMCEvent *mcEvent, NGeom *geomBrch,
+			std::vector<bool> *cutsPass, const ConfigFile *cfg, const RunWeights *weights);
 	virtual void doGet(TFile* inputFD, TFile* tempFD);
 	virtual void doWrite();
 	virtual void doSetName();
-	virtual void initHisto(int nbins, double* bins);
+	virtual void initHisto(int nbins, double* bins, const ConfigFile *cfg);
 	virtual void scaleToData(bContent totalMC, double nData);
 	virtual void setPlotStyle(std::vector<int> color);
-	virtual void populateStack(HistoDrawer *drawer);
-	virtual void populateFit(HistoDrawer *drawer, double norm, double a);
+	virtual void populateStack(HistoDrawer *drawer, std::string legend);
+	virtual void populateFit(HistoDrawer *drawer, double norm, double a, std::string legend);
 	virtual TH1D* getMainHisto() { return dAlpha; }
 	virtual double getFFIntegral(double a);
 	virtual void renameHisto() {};

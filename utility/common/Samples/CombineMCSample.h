@@ -23,7 +23,6 @@ public:
 	} bContent;
 
 	CombineMCSample();
-	CombineMCSample(int index, ConfigFile *cfg);
 	virtual ~CombineMCSample();
 
 	virtual void doGet(TFile* inputFD, TFile* tempFD);
@@ -31,7 +30,7 @@ public:
 
 	void fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
 			ROOTCorrectedEvent *corrEvent, ROOTMCEvent *mcEvent,
-			NGeom *rootGeom, ROOTBurst *rootBurst);
+			NGeom *rootGeom, ROOTBurst *rootBurst, const RunWeights *weights);
 
 	bContent getIntegrals();
 };

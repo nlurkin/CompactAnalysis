@@ -11,6 +11,7 @@
 #include <TMinuit.h>
 #include "../Samples/FitMCSample.h"
 #include "../Samples/FitDataSample.h"
+#include "../Interface/Sample.h"
 
 class MinuitFitter : public TMinuit {
 public:

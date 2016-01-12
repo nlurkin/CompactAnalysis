@@ -14,6 +14,9 @@ set(sampleSrc Interface/Sample.cpp Interface/DataSample.cpp Interface/MCSample.c
 set(sampleHdr ${sampleHdr} Samples/CombineSample.h Samples/CombineMCSample.h Samples/CombineDataSample.h)
 set(sampleSrc ${sampleSrc} Samples/CombineSample.cpp Samples/CombineMCSample.cpp Samples/CombineDataSample.cpp)
 
+set(sampleHdr ${sampleHdr} Interface/SubSample.h)
+set(sampleSrc ${sampleSrc} Interface/SubSample.cpp)
+
 add_library(Drawer ${drawerHdr} ${drawerSrc})
 add_library(Fitter ${fitterHdr} ${fitterSrc})
 add_library(Combiner Combiner.h Combiner.cpp)

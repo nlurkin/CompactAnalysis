@@ -16,35 +16,15 @@
 #include "RunWeights.h"
 #include "../Drawer/InputFitDrawer.h"
 #include "../Drawer/FitResultDrawer.h"
+#include "SubSample.h"
+#include "DataSample.h"
+#include "MCSample.h"
 
 class TTree;
 class TFile;
 
-typedef struct fitStruct_t {
-	int totEvents;
-	int selEvents;
-	int n1;
-	int nx;
-	int nxx;
-
-	fitStruct_t& operator+=(const fitStruct_t &other){
-		totEvents += other.totEvents;
-		selEvents += other.selEvents;
-		n1 += other.n1;
-		nx += other.nx;
-		nxx += other.nxx;
-		return *this;
-	}
-} fitStruct;
-
-void initFitStruct(fitStruct &s);
-void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor);
-
 class Sample {
 public:
-	static const int NBINS = 10000000;
-	static const int MAXBIN = 1;
-
 	Sample();
 	Sample(int index, ConfigFile *cfg);
 	virtual ~Sample();
@@ -55,21 +35,21 @@ public:
 	void initOutput();
 	void closeOutput(TFile* tempFD);
 
-	void scale(TH1 *histo, double scaleFactor);
+	template <class SSampleType>
+	void prepareNSubSamples(int N);
 
-	virtual void doFill(TFile* inputFD, TFile* tempFD) = 0;
-	virtual void doGet(TFile* inputFD, TFile* tempFD) = 0;
-	virtual void doWrite() = 0;
-	virtual void doSetName() = 0;
-	virtual void initHisto(int nbins, double* bins) = 0;
-	virtual double getFFIntegral(double a) = 0;
-//	virtual void scaleToData(double nData) = 0;
-	virtual void renameHisto() = 0;
+	void initHisto(int nbins, double* bins) { for(auto ss : fSubSamples) ss->initHisto(nbins, bins, fCfg);};
+	void renameHisto() { for(auto ss : fSubSamples) ss->renameHisto();};
+	void setPlotStyle(std::vector<int> color) { for(auto ss : fSubSamples) ss->setPlotStyle(color);};
+	void populateStack(HistoDrawer *drawer) { for(auto ss : fSubSamples) ss->populateStack(drawer, fLegend);};
 
-	virtual void setPlotStyle(std::vector<int> color) = 0;
-	virtual void populateStack(HistoDrawer *drawer) = 0;
-	virtual void populateFit(HistoDrawer *drawer, double norm, double a) = 0;
-	virtual TH1D* getMainHisto() = 0;
+	template <class SSampleType>
+	std::vector<typename SSampleType::bContent> getIntegrals();
+	template <class SSampleType>
+	void scaleToData(const std::vector<typename SSampleType::bContent> totalMC, const std::vector<double> nData);
+
+	virtual void doFill(TFile* inputFD, TFile* tempFD);
+	virtual void doGet(TFile*, TFile* ) {};
 
 	double getBr() const {
 		return fBr;
@@ -80,20 +60,22 @@ public:
 	}
 
 	int getSelSize() const {
-		return fFitBrch.selEvents;
+		return fSubSamples[fMainSubSample]->getSelSize();
 	}
 
-	void setSelSize(int selSize) {
-		fFitBrch.selEvents = selSize;
+//	void setSelSize(int selSize) {
+//		fFitBrch.selEvents = selSize;
+//	}
+
+	std::vector<double> getTotalSize() const {
+		std::vector<double> r;
+		for(auto ss : fSubSamples) r.push_back(ss->getTotalSize());
+		return r;
 	}
 
-	int getTotalSize() const {
-		return fFitBrch.selEvents;
-	}
-
-	void setTotalSize(int totalSize) {
-		fFitBrch.totEvents = totalSize;
-	}
+//	void setTotalSize(int totalSize) {
+//		fFitBrch.totEvents = totalSize;
+//	}
 
 	void setOutputFile(const std::string& outputFile) {
 		fOutputFile = outputFile;
@@ -117,16 +99,59 @@ public:
 		fLegend = legend;
 	}
 
+	void setTestA(double testA) { for(auto ss : fSubSamples) dynamic_cast<DataSample*>(ss)->setTestA(testA);	}
+
+	void setFactor(double factor) { for(auto ss : fSubSamples) dynamic_cast<DataSample*>(ss)->setFactor(factor); }
+
+	SubSample * getSubSample(int i) { return fSubSamples[i]; }
+	int getNSubSample() { return fSubSamples.size(); }
+
+	const std::string& getLegend() const {
+		return fLegend;
+	}
+
 protected:
 	int fIndex;
 	double fBr;
 	std::vector<std::string> fListFiles;
 	std::string fOutputFile;
 	TTree* fFitTree;
-	fitStruct fFitBrch;
+	fitStruct fFitBrchB;
 	TFile *fOutputFD;
 	const ConfigFile *fCfg;
 	const RunWeights *fWeights;
 	std::string fLegend;
+	std::vector<SubSample*> fSubSamples;
+	int fMainSubSample;
 };
+
+template <class SSampleType>
+void Sample::prepareNSubSamples(int N) {
+	SubSample *newSS;
+	for(int i=0; i<N; i++){
+		newSS = new SSampleType();
+		newSS->setBr(fBr);
+		newSS->setIndex(fIndex);
+		newSS->setScanId(i);
+		fSubSamples.push_back(newSS);
+	}
+}
+
+template <class SSampleType>
+std::vector<typename SSampleType::bContent> Sample::getIntegrals(){
+	std::vector<typename SSampleType::bContent> r;
+	for(auto ss : fSubSamples) r.push_back(static_cast<SSampleType*>(ss)->getIntegrals());
+	return r;
+}
+
+template <class SSampleType>
+void Sample::scaleToData(const std::vector<typename SSampleType::bContent> totalMC, const std::vector<double> nData){
+	for(unsigned int i=0; i<fSubSamples.size(); i++){
+		static_cast<SSampleType*>(fSubSamples[i])->scaleToData(totalMC[i], nData[i]);
+	}
+}
+
+
+
+
 #endif /* COMMON_SAMPLE_H_ */

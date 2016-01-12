@@ -20,69 +20,23 @@ using namespace std;
 CombineSample::CombineSample() {
 }
 
-CombineSample::CombineSample(int index, ConfigFile* cfg) :
-		Sample(index, cfg) {
-}
-
 CombineSample::~CombineSample() {
-	// TODO Auto-generated destructor stub
 }
 
-void CombineSample::doFill(TFile* inputFD, TFile* tempFD) {
-	//Get the TTree
-	//Input
-	ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
-	ROOTBurst *burstBrch = new ROOTBurst();
-	ROOTRawEvent *rawBrch = new ROOTRawEvent();
-	ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
-	ROOTFileHeader *headerBrch = new ROOTFileHeader();
-	ROOTMCEvent *mcEvent = 0;
-	TTree *t = (TTree*) inputFD->Get("event");
-	TTree *th = (TTree*) inputFD->Get("header");
-	if (t->GetListOfBranches()->Contains("mc"))
-		mcEvent = new ROOTMCEvent();
-	NGeom *geomBrch = new NGeom();
+void CombineSample::processEvent(ROOTPhysicsEvent *eventBrch,
+		ROOTBurst *burstBrch, ROOTRawEvent *rawBrch,
+		ROOTCorrectedEvent *corrBrch, ROOTFileHeader *, ROOTMCEvent *mcEvent,
+		NGeom *geomBrch, std::vector<bool> *, const ConfigFile *cfg,
+		const RunWeights * weights) {
 
-	t->SetBranchAddress("pi0dEvent", &eventBrch);
-	t->SetBranchAddress("rawBurst", &burstBrch);
-	t->SetBranchAddress("rawEvent", &rawBrch);
-	t->SetBranchAddress("corrEvent", &corrBrch);
-	th->SetBranchAddress("header", &headerBrch);
-	if (mcEvent)
-		t->SetBranchAddress("mc", &mcEvent);
-	th->SetBranchAddress("geom", &geomBrch);
+	if (!cfg->testUseRun(burstBrch->nrun, burstBrch->period))
+		return;
 
-	tempFD->cd();
-	//Set event nb
-	int nevt = t->GetEntries();
-	int totalChanEvents = 0;
-	for (int i = 0; i < th->GetEntries(); i++) {
-		th->GetEntry(i);
-		totalChanEvents += headerBrch->NProcessedEvents;
-	}
+	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
+			fFitBrch))
+		return;
 
-	th->GetEntry(0);
-
-	fFitBrch.totEvents += totalChanEvents;
-	fFitBrch.selEvents += nevt;
-
-	//Read events and fill histo
-	cout << "Filling " << nevt << endl;
-	for (int i = 0; i < nevt; ++i) {
-		if (i % 10000 == 0)
-			cout << setprecision(2) << i * 100. / (double) nevt << "% " << i
-					<< "/" << nevt << "\r";
-		cout.flush();
-		t->GetEntry(i);
-		if (!fCfg->testUseRun(burstBrch->nrun, burstBrch->period))
-			continue;
-
-		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
-				fFitBrch))
-			continue;
-
-		fillHisto(eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch);
-	}
+	fillHisto(eventBrch, rawBrch, corrBrch, mcEvent, geomBrch, burstBrch, weights);
 }
 
 void CombineSample::fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
@@ -656,13 +610,12 @@ void CombineSample::addHisto(TString name, int bins, double min, double max) {
 
 void CombineSample::addHisto(TString name, int binsx, double minx, double maxx,
 		int binsy, double miny, double maxy) {
-	TH2D* xxx1 = new TH2D(name, name, binsx, minx, maxx, binsy, miny,
-			maxy);
+	TH2D* xxx1 = new TH2D(name, name, binsx, minx, maxx, binsy, miny, maxy);
 	xxx1->Sumw2();
 	dMap.push_back(xxx1);
 }
 
-void CombineSample::initHisto(int, double*) {
+void CombineSample::initHisto(int, double*, const ConfigFile *) {
 	//1
 	addHisto("mK", 100, 0.47, 0.52);
 
@@ -870,10 +823,10 @@ void CombineSample::scale() {
 			<< endl;
 	// Rescale histo
 	for (unsigned int i = 0; i < d1.size(); ++i) {
-		Sample::scale(d1.at(i), 1.);
+		SubSample::scale(d1.at(i), 1.);
 	}
 	for (unsigned int i = 0; i < dMap.size(); ++i) {
-		Sample::scale(dMap.at(i), 1.);
+		SubSample::scale(dMap.at(i), 1.);
 	}
 }
 
@@ -882,23 +835,23 @@ double CombineSample::getFFIntegral(double) {
 }
 
 void CombineSample::setPlotStyle(std::vector<int> color) {
-	for(auto plot : d1)
+	for (auto plot : d1)
 		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
 
-	for(auto plot : dMap)
+	for (auto plot : dMap)
 		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
 }
 
-void CombineSample::populateStack(HistoDrawer *drawer) {
+void CombineSample::populateStack(HistoDrawer *drawer, string legend) {
 	CombineDrawer *myDrawer = static_cast<CombineDrawer*>(drawer);
 
-	myDrawer->addLegendMC(d1[0], fLegend);
+	myDrawer->addLegendMC(d1[0], legend);
 	for (unsigned int i = 0; i < d1.size(); ++i) {
 		myDrawer->addHistoMC(i, d1[i]);
 	}
 }
 
-void CombineSample::populateFit(HistoDrawer *, double, double) {
+void CombineSample::populateFit(HistoDrawer *, double, double, string) {
 	//FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
 }
 
@@ -907,11 +860,11 @@ TH1D* CombineSample::getMainHisto() {
 }
 
 CombineSample* CombineSample::Add(const CombineSample* other) {
-	Sample::Add(other);
-	for(unsigned int i=0; i<d1.size(); i++){
+	SubSample::Add(other);
+	for (unsigned int i = 0; i < d1.size(); i++) {
 		d1[i]->Add(other->d1[i], 1.);
 	}
-	for(unsigned int i=0; i<dMap.size(); i++){
+	for (unsigned int i = 0; i < dMap.size(); i++) {
 		dMap[i]->Add(other->dMap[i], 1.);
 	}
 	return this;

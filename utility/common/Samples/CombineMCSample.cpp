@@ -8,6 +8,7 @@
 #include "CombineMCSample.h"
 #include <TFile.h>
 #include <iostream>
+#include <TTree.h>
 
 using namespace std;
 
@@ -20,15 +21,11 @@ CombineMCSample::~CombineMCSample() {
 	// TODO Auto-generated destructor stub
 }
 
-CombineMCSample::CombineMCSample(int index, ConfigFile* cfg) :
-		CombineSample(index, cfg) {
-}
-
 void CombineMCSample::fillHisto(ROOTPhysicsEvent* evt, ROOTRawEvent* rawEvt,
 		ROOTCorrectedEvent* corrEvent, ROOTMCEvent* mcEvent, NGeom* rootGeom,
-		ROOTBurst* rootBurst) {
+		ROOTBurst* rootBurst, const RunWeights *weights) {
 
-	double weight = fWeights->applyWeights(rootBurst->nrun) * corrEvent->weight;
+	double weight = weights->applyWeights(rootBurst->nrun) * corrEvent->weight;
 	CombineSample::fillHisto(evt, rawEvt, corrEvent, mcEvent, rootGeom,
 			rootBurst, weight);
 }

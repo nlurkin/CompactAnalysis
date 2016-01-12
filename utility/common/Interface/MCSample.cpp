@@ -15,4 +15,3 @@ MCSample::MCSample() {
 MCSample::~MCSample() {
 	// TODO Auto-generated destructor stub
 }
-

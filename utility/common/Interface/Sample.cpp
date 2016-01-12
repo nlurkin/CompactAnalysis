@@ -12,47 +12,20 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include "ScanCuts.h"
 
 using namespace std;
 
-void initFitStruct(fitStruct &s){
-	s.n1 = 0;
-	s.nx = 0;
-	s.nxx = 0;
-	s.selEvents = 0;
-	s.totEvents = 0;
-}
-
-void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor){
-	for(int i=0; i<t->GetEntries(); i++){
-		t->GetEntry(i);
-		out.n1 			+= factor*in.n1;
-		out.nx 			+= factor*in.nx;
-		out.nxx 		+= factor*in.nxx;
-		out.selEvents 	+= factor*in.selEvents;
-		out.totEvents 	+= factor*in.totEvents;
-	}
-
-	std::cout << "Total events: \t" << out.totEvents << std::endl;
-	std::cout << "Sel.  events: \t" << out.selEvents << std::endl;
-	std::cout << "n1    events: \t" << out.n1 << std::endl;
-	std::cout << "nx    events: \t" << out.nx << std::endl;
-	std::cout << "nxx   events: \t" << out.nxx << std::endl;
-}
-
-
 Sample::Sample() :
-		fIndex(-1), fBr(1), fFitTree(nullptr),
-		fOutputFD(nullptr), fCfg(nullptr), fWeights(nullptr)
-{
-	initFitStruct(fFitBrch);
+		fIndex(-1), fBr(1), fFitTree(nullptr), fOutputFD(nullptr), fCfg(
+				nullptr), fWeights(nullptr), fMainSubSample(0) {
+	initFitStruct (fFitBrchB);
 }
 
 Sample::Sample(int index, ConfigFile *cfg) :
-		fIndex(index), fBr(1), fFitTree(nullptr),
-		fOutputFD(nullptr), fCfg(cfg), fWeights(nullptr)
-{
-	initFitStruct(fFitBrch);
+		fIndex(index), fBr(1), fFitTree(nullptr), fOutputFD(nullptr), fCfg(cfg), fWeights(
+				nullptr), fMainSubSample(0) {
+	initFitStruct (fFitBrchB);
 }
 
 Sample::~Sample() {
@@ -76,7 +49,8 @@ bool Sample::addFile(string fileName) {
 
 void Sample::fill(TFile* tempFD, int nbins, double* bins) {
 	initOutput();
-	initHisto(nbins, bins);
+	for (auto ss : fSubSamples)
+		ss->initHisto(nbins, bins, fCfg);
 	int iFile = 0;
 	double totalFiles = fListFiles.size();
 	TFile *inFileFD;
@@ -89,7 +63,6 @@ void Sample::fill(TFile* tempFD, int nbins, double* bins) {
 
 		//Request the TTree reading function
 		doFill(inFileFD, tempFD);
-		//Input::getInputMCFill(ffd, fdo, cfg.getBrs()[prevIndex], prevIndex);
 
 		//Close the input file
 		inFileFD->Close();
@@ -114,34 +87,104 @@ void Sample::get(TFile* tempFD) {
 void Sample::initOutput() {
 	fOutputFD = TFile::Open(fOutputFile.c_str(), "RECREATE");
 	fFitTree = new TTree("fitStruct", "fitStruct tree");
-	fFitTree->Branch("fitStruct", &fFitBrch, "totEvents/I:selEvents:n1:nx:nxx");
-	fFitBrch.n1 = 0;
-	fFitBrch.nx = 0;
-	fFitBrch.nxx = 0;
-	fFitBrch.selEvents = 0;
-	fFitBrch.totEvents = 0;
+	fFitTree->Branch("fitStruct", &fFitBrchB,
+			"totEvents/I:selEvents:n1:nx:nxx");
+	fFitBrchB.n1 = 0;
+	fFitBrchB.nx = 0;
+	fFitBrchB.nxx = 0;
+	fFitBrchB.selEvents = 0;
+	fFitBrchB.totEvents = 0;
 }
 
 void Sample::closeOutput(TFile* tempFD) {
 	fOutputFD->cd();
-	fFitTree->Fill();
+
+	for (auto ss : fSubSamples) {
+		fFitBrchB = ss->getFitStruct();
+		fFitTree->Fill();
+	}
 	fFitTree->Write();
 
-	doWrite();
+	for (auto ss : fSubSamples)
+		ss->doWrite();
 
 	fOutputFD->Close();
 
 	tempFD->cd();
-	doSetName();
-}
-
-void Sample::scale(TH1 *histo, double scaleFactor){
-	cout << "Scaling " << histo->GetName() << " " << histo->GetEntries() << " " << histo->Integral() << " " << fBr << " " << fFitBrch.totEvents << " " << scaleFactor << endl;
-	histo->Scale(fBr/(fFitBrch.totEvents*scaleFactor));
+	for (auto ss : fSubSamples)
+		ss->doSetName();
 }
 
 Sample* Sample::Add(const Sample* other) {
-	fFitBrch += other->fFitBrch;
+	for (unsigned int i; i < fSubSamples.size(); i++)
+		fSubSamples[i]->Add(other->fSubSamples[i]);
 	return this;
 }
 
+void Sample::doFill(TFile* inputFD, TFile* tempFD) {
+	//Get the TTree
+	//Input
+	ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
+	ROOTBurst *burstBrch = new ROOTBurst();
+	ROOTRawEvent *rawBrch = new ROOTRawEvent();
+	ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+	ROOTFileHeader *headerBrch = new ROOTFileHeader();
+	ROOTMCEvent *mcEvent = 0;
+	NGeom *geomBrch = new NGeom();
+	vector<bool> *cutsPass = 0;
+
+	TTree *t = (TTree*) inputFD->Get("event");
+	TTree *th = (TTree*) inputFD->Get("header");
+	if (t->GetListOfBranches()->Contains("mc"))
+		mcEvent = new ROOTMCEvent();
+	if (t->GetListOfBranches()->Contains("cutsResult")) {
+		cutsPass = new vector<bool>;
+	}
+
+	t->SetBranchAddress("pi0dEvent", &eventBrch);
+	t->SetBranchAddress("rawBurst", &burstBrch);
+	t->SetBranchAddress("rawEvent", &rawBrch);
+	t->SetBranchAddress("corrEvent", &corrBrch);
+	th->SetBranchAddress("header", &headerBrch);
+	th->SetBranchAddress("geom", &geomBrch);
+	if (mcEvent)
+		t->SetBranchAddress("mc", &mcEvent);
+	if (cutsPass) {
+		t->SetBranchAddress("cutsResult", &cutsPass);
+		if (fCfg->getScanId() == -1) {
+			TTree *tc = (TTree*) inputFD->Get("cutsDefinition");
+			ScanCuts *cutsLists = new ScanCuts();
+			tc->SetBranchAddress("lists", &cutsLists);
+			tc->GetEntry(0);
+			fMainSubSample = cutsLists->getDefaultIndex();
+		} else
+			fMainSubSample = fCfg->getScanId();
+	}
+
+	tempFD->cd();
+	//Set event nb
+	int nevt = t->GetEntries();
+	int totalChanEvents = 0;
+	for (int i = 0; i < th->GetEntries(); i++) {
+		th->GetEntry(i);
+		totalChanEvents += headerBrch->NProcessedEvents;
+	}
+
+	//Read events and fill histo
+	int i = 0;
+
+	for (auto ss : fSubSamples)
+		ss->initNewFile(totalChanEvents, nevt);
+
+	cout << "Filling " << nevt << endl;
+	for (; i < nevt; ++i) {
+		if (i % 10000 == 0)
+			cout << setprecision(2) << i * 100. / (double) nevt << "% " << i
+					<< "/" << nevt << "\r";
+		cout.flush();
+		t->GetEntry(i);
+		for (auto ss : fSubSamples)
+			ss->processEvent(eventBrch, burstBrch, rawBrch, corrBrch,
+					headerBrch, mcEvent, geomBrch, cutsPass, fCfg, fWeights);
+	}
+}

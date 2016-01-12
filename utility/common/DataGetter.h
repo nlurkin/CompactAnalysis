@@ -54,13 +54,13 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 	int prevIndex = -1;
 	int newIndex;
 
-	fFinalMCSample = new TMCSample(998, &cfg);
-	fFinalDataSample = new TDataSample(999, &cfg);
+	fFinalMCSample = new Sample(998, &cfg);
+	fFinalDataSample = new Sample(999, &cfg);
 
-	static_cast<TMCSample*>(fFinalMCSample)->setCfg(&cfg);
-	static_cast<TDataSample*>(fFinalDataSample)->setCfg(&cfg);
+	fFinalMCSample->setCfg(&cfg);
+	fFinalDataSample->setCfg(&cfg);
 
-	TMCSample *tempSample;
+	Sample *tempSample;
 	//Getting MC
 	for (unsigned int i = 0; i < cfg.getMcFileNames().size(); ++i) {
 		//TODO do this at ConfigFile level (align all vectors)
@@ -72,7 +72,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 		//If index is different from previous -> new sample
 		if (prevIndex != newIndex) {
 			//New sample
-			tempSample = new TMCSample(newIndex, &cfg);
+			tempSample = new Sample(newIndex, &cfg);
 			tempSample->setBr(cfg.getBrs()[newIndex]);
 			tempSample->setWeights(fRunWeights);
 			tempSample->setOutputFile(cfg.getMcOutputFiles()[newIndex]);
@@ -86,7 +86,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 		fMCSamples.push_back(tempSample);
 	}
 
-	TDataSample *dataSample;
+	Sample *dataSample;
 	prevIndex = -1;
 	for (unsigned int i = 0; i < cfg.getDataFileNames().size(); ++i) {
 		//TODO do this at ConfigFile level (align all vectors)
@@ -97,7 +97,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 			newIndex = cfg.getDataIndexes()[i];
 		//If index is different from previous -> new sample
 		if (prevIndex != newIndex) {
-			dataSample = new TDataSample(newIndex, &cfg);
+			dataSample = new Sample(newIndex, &cfg);
 			dataSample->setBr(1);
 			dataSample->setTestA(cfg.getTestA());
 			dataSample->setFactor(cfg.getDataFactor()[newIndex]);
@@ -110,28 +110,35 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 		dataSample->addFile(cfg.getDataFileNames()[i]);
 		fDataSamples.push_back(dataSample);
 	}
+
+	fFinalDataSample->prepareNSubSamples<TDataSample>(cfg.getNScan());
+	fFinalDataSample->prepareNSubSamples<TMCSample>(cfg.getNScan());
+
+	for(auto sample : fDataSamples) sample->prepareNSubSamples<TDataSample>(cfg.getNScan());
+	for(auto sample : fMCSamples) sample->prepareNSubSamples<TMCSample>(cfg.getNScan());
 }
 
 template <class TMCSample, class TDataSample>
 void DataGetter::mergeSamples() {
-	static_cast<TDataSample*>(fFinalDataSample)->initHisto(fNBins, fBinning);
-	static_cast<TDataSample*>(fFinalDataSample)->renameHisto();
-	static_cast<TMCSample*>(fFinalMCSample)->initHisto(fNBins, fBinning);
-	static_cast<TDataSample*>(fFinalMCSample)->renameHisto();
+	fFinalDataSample->initHisto(fNBins, fBinning);
+	fFinalDataSample->renameHisto();
+	fFinalMCSample->initHisto(fNBins, fBinning);
+	fFinalMCSample->renameHisto();
 	for (auto sample : fDataSamples)
-		static_cast<TDataSample*>(fFinalDataSample)->Add(static_cast<TDataSample*>(sample));
+		fFinalDataSample->Add(sample);
 
-	typename TMCSample::bContent b;
+	std::vector<typename TMCSample::bContent> b;
 	for (auto sample : fMCSamples) {
-		b += static_cast<TMCSample*>(sample)->getIntegrals();
-		static_cast<TMCSample*>(fFinalMCSample)->Add(static_cast<TMCSample*>(sample));
+		std::vector<typename TMCSample::bContent> nVec = sample->getIntegrals<TMCSample>();
+		for(unsigned int i=0; i<nVec.size(); i++) b[i] += nVec[i];
+		fFinalMCSample->Add(sample);
 	}
 
 	for (auto sample : fMCSamples) {
-		static_cast<TMCSample*>(sample)->scaleToData(b, static_cast<TDataSample*>(fFinalDataSample)->getTotalSize());
+		sample->scaleToData<TMCSample>(b, fFinalDataSample->getTotalSize());
 	}
 
-	static_cast<TMCSample*>(fFinalMCSample)->scaleToData(b, static_cast<TDataSample*>(fFinalDataSample)->getTotalSize());
+	fFinalMCSample->scaleToData<TMCSample>(b, fFinalDataSample->getTotalSize());
 }
 
 

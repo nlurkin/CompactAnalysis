@@ -23,144 +23,76 @@ FitMCSample::FitMCSample() :
 
 }
 
-FitMCSample::FitMCSample(int index, ConfigFile *cfg) :
-		Sample(index, cfg), d1(nullptr), d2(nullptr), d3(nullptr), dNew(
-				nullptr), dAlpha(nullptr), dBeta(nullptr), dGamma(nullptr) {
-
-}
-
 FitMCSample::~FitMCSample() {
 }
 
-void FitMCSample::doFill(TFile* inputFD, TFile* tempFD) {
-	//Get the TTree
-	//Input
-	int scanID;
-	ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
-	ROOTBurst *burstBrch = new ROOTBurst();
-	ROOTRawEvent *rawBrch = new ROOTRawEvent();
-	ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
-	ROOTFileHeader *headerBrch = new ROOTFileHeader();
-	ROOTMCEvent *mcEvent = 0;
-	NGeom *geomBrch = new NGeom();
-	vector<bool> *cutsPass = 0;
-	ScanCuts *cutsLists = 0;
-
-	TTree *t = (TTree*) inputFD->Get("event");
-	TTree *th = (TTree*) inputFD->Get("header");
-	TTree *tc = (TTree*) inputFD->Get("cutsDefinition");
-	if (t->GetListOfBranches()->Contains("mc"))
-		mcEvent = new ROOTMCEvent();
-	if (t->GetListOfBranches()->Contains("cutsResult")) {
-		cutsPass = new vector<bool>;
-		cutsLists = new ScanCuts();
-	}
-
-	t->SetBranchAddress("pi0dEvent", &eventBrch);
-	t->SetBranchAddress("rawBurst", &burstBrch);
-	t->SetBranchAddress("rawEvent", &rawBrch);
-	t->SetBranchAddress("corrEvent", &corrBrch);
-	th->SetBranchAddress("header", &headerBrch);
-	th->SetBranchAddress("geom", &geomBrch);
-	if (mcEvent)
-		t->SetBranchAddress("mc", &mcEvent);
-	if (cutsPass) {
-		t->SetBranchAddress("cutsResult", &cutsPass);
-		tc->SetBranchAddress("lists", &cutsLists);
-		tc->GetEntry(0);
-		if (fCfg->getScanId() == -1)
-			scanID = cutsLists->getDefaultIndex();
-		else
-			scanID = fCfg->getScanId();
-		tc->GetEntry(scanID);
-		cutsLists->Cuts::print();
-	}
-
-	cout << "mc=" << mcEvent << endl;
-
-	tempFD->cd();
-	//Set event nb
-	int nevt = t->GetEntries();
-	int totalChanEvents = 0;
-	for (int i = 0; i < th->GetEntries(); i++) {
-		th->GetEntry(i);
-		totalChanEvents += headerBrch->NProcessedEvents;
-	}
-	int processedEvents = 0;
+void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
+		ROOTBurst *burstBrch, ROOTRawEvent *rawBrch,
+		ROOTCorrectedEvent *corrBrch, ROOTFileHeader *,
+		ROOTMCEvent *mcEvent, NGeom *geomBrch, std::vector<bool> *cutsPass,
+		const ConfigFile *cfg, const RunWeights *weights) {
 
 	int divider = 5;
 
 	//Read events and fill histo
-	int i = 0;
 	double x, xTrue = -1;
 	double bweight = 1.;
 	double weight, aweight;
 	int mod;
 
-	fFitBrch.totEvents += totalChanEvents;
-	fFitBrch.selEvents += nevt;
-
 	bool passNormal;
-	cout << "Filling " << nevt << endl;
-	for (; i < nevt; ++i) {
-		if (i % 10000 == 0)
-			cout << setprecision(2) << i * 100. / (double) nevt << "% " << i
-					<< "/" << nevt << "\r";
-		cout.flush();
-		t->GetEntry(i);
-		passNormal = true;
-		if (cutsPass) {
-			if (!cutsPass->at(scanID)) {
-				fFitBrch.selEvents--;
-				continue;
-				passNormal = false;
-			}
+
+	passNormal = true;
+	if (cutsPass) {
+		if (!cutsPass->at(fScanID)) {
+			fFitBrch.selEvents--;
+			return;
+			passNormal = false;
 		}
-		if (!fCfg->testUseRun(burstBrch->nrun, burstBrch->period))
-			continue;
+	}
+	if (!cfg->testUseRun(burstBrch->nrun, burstBrch->period))
+		return;
 
-		if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, fFitBrch))
-			continue;
-		weight = fWeights->applyWeights(burstBrch->nrun) * corrBrch->weight;
+	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
+			fFitBrch))
+		return;
+	weight = weights->applyWeights(burstBrch->nrun) * corrBrch->weight;
 
-		x = eventBrch->x;
-		if (mcEvent)
-			xTrue = mcEvent->xTrue;
-		bweight = 1.
-				/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
-		mod = rawBrch->timeStamp % divider;
+	x = eventBrch->x;
+	if (mcEvent)
+		xTrue = mcEvent->xTrue;
+	bweight = 1. / (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
+	mod = rawBrch->timeStamp % divider;
 
+	aweight = 1.;
+
+	if (passNormal) {
+		dNew->Fill(x, bweight * aweight * weight);
+		dAlpha->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
+		dBeta->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
+		dGamma->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
+	}
+	if (mod == 0 || mod == 1 || mod == 2) {
+		//TODO to check
 		aweight = 1.;
-
 		if (passNormal) {
-			dNew->Fill(x, bweight * aweight * weight);
-			dAlpha->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
-			dBeta->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
-			dGamma->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
+			fFitBrch.n1++;
+			d1->Fill(x, bweight * aweight * weight);
 		}
-		if (mod == 0 || mod == 1 || mod == 2) {
-			//TODO to check
-			aweight = 1.;
-			if (passNormal) {
-				fFitBrch.n1++;
-				d1->Fill(x, bweight * aweight * weight);
-			}
-		} else if (mod == 3) {
-			//TODO to check
-			aweight = xTrue;
-			if (passNormal) {
-				fFitBrch.nx++;
-				d2->Fill(x, bweight * aweight * weight);
-			}
-		} else if (mod == 4) {
-			//TODO to check
-			aweight = xTrue * xTrue;
-			if (passNormal) {
-				fFitBrch.nxx++;
-				d3->Fill(x, bweight * aweight * weight);
-			}
+	} else if (mod == 3) {
+		//TODO to check
+		aweight = xTrue;
+		if (passNormal) {
+			fFitBrch.nx++;
+			d2->Fill(x, bweight * aweight * weight);
 		}
-		processedEvents++;
+	} else if (mod == 4) {
+		//TODO to check
+		aweight = xTrue * xTrue;
+		if (passNormal) {
+			fFitBrch.nxx++;
+			d3->Fill(x, bweight * aweight * weight);
+		}
 	}
 
 	cout << endl << fFitBrch.selEvents << endl;
@@ -222,8 +154,8 @@ void FitMCSample::doSetName() {
 //	dGamma->SetName(TString::Format("dGamma_%i", fIndex));
 }
 
-void FitMCSample::initHisto(int nbins, double* bins) {
-	if (fCfg->isWithEqualBins()) {
+void FitMCSample::initHisto(int nbins, double* bins, const ConfigFile *cfg) {
+	if (cfg->isWithEqualBins()) {
 		d1 = new TH1D("d1", "sample 1", nbins - 1, bins);
 		d1->Sumw2();
 		d2 = new TH1D("d2", "sample x", nbins - 1, bins);
@@ -264,14 +196,14 @@ void FitMCSample::scale() {
 	double selRatioxx = (double) fFitBrch.nxx / totN;
 
 	cout << "NBefore scaling" << dAlpha->Integral() << endl;
-	Sample::scale(d1, selRatio1);
-	Sample::scale(d2, selRatiox);
-	Sample::scale(d3, selRatioxx);
+	SubSample::scale(d1, selRatio1);
+	SubSample::scale(d2, selRatiox);
+	SubSample::scale(d3, selRatioxx);
 
-	Sample::scale(dNew, 1.);
-	Sample::scale(dAlpha, 1.);
-	Sample::scale(dBeta, 1.);
-	Sample::scale(dGamma, 1.);
+	SubSample::scale(dNew, 1.);
+	SubSample::scale(dAlpha, 1.);
+	SubSample::scale(dBeta, 1.);
+	SubSample::scale(dGamma, 1.);
 	cout << "Nafter scaling" << dAlpha->Integral() << endl;
 }
 
@@ -304,7 +236,7 @@ void FitMCSample::setPlotStyle(vector<int> color) {
 	dGamma->SetFillColor(gStyle->GetColorPalette(color[2]));
 }
 
-void FitMCSample::populateStack(HistoDrawer *drawer) {
+void FitMCSample::populateStack(HistoDrawer *drawer, string legend) {
 	InputFitDrawer *myDrawer = static_cast<InputFitDrawer*>(drawer);
 
 	myDrawer->fStd1->Add((TH1D*) d1->Clone());
@@ -314,13 +246,13 @@ void FitMCSample::populateStack(HistoDrawer *drawer) {
 	myDrawer->fStdAlpha->Add((TH1D*) dAlpha->Clone());
 	myDrawer->fStdBeta->Add((TH1D*) dBeta->Clone());
 	myDrawer->fStdGamma->Add((TH1D*) dGamma->Clone());
-	myDrawer->fLeg1->AddEntry(d1, fLegend.c_str());
-	myDrawer->fLegx->AddEntry(d2, fLegend.c_str());
-	myDrawer->fLegxx->AddEntry(d3, fLegend.c_str());
-	myDrawer->fLegNew->AddEntry(dNew, fLegend.c_str());
-	myDrawer->fLegAlpha->AddEntry(dAlpha, fLegend.c_str());
-	myDrawer->fLegBeta->AddEntry(dBeta, fLegend.c_str());
-	myDrawer->fLegGamma->AddEntry(dGamma, fLegend.c_str());
+	myDrawer->fLeg1->AddEntry(d1, legend.c_str());
+	myDrawer->fLegx->AddEntry(d2, legend.c_str());
+	myDrawer->fLegxx->AddEntry(d3, legend.c_str());
+	myDrawer->fLegNew->AddEntry(dNew, legend.c_str());
+	myDrawer->fLegAlpha->AddEntry(dAlpha, legend.c_str());
+	myDrawer->fLegBeta->AddEntry(dBeta, legend.c_str());
+	myDrawer->fLegGamma->AddEntry(dGamma, legend.c_str());
 }
 
 FitMCSample::bContent FitMCSample::getBinContent(int bin) {
@@ -336,31 +268,33 @@ FitMCSample::bContent FitMCSample::getBinContent(int bin) {
 	return b;
 }
 
-void FitMCSample::populateFit(HistoDrawer *drawer, double norm, double a) {
+void FitMCSample::populateFit(HistoDrawer *drawer, double norm, double a, string legend) {
 	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
 
 	TH1D *dAlpha_c = (TH1D*) dAlpha->Clone(
-			TString::Format("dAlpha_c%s%i", drawer->getTitle().c_str(), fIndex));
+			TString::Format("dAlpha_c%s%i", drawer->getTitle().c_str(),
+					fIndex));
 	myDrawer->fLegFit->AddEntry(dAlpha_c,
-			TString::Format("%s #alpha", fLegend.c_str()));
+			TString::Format("%s #alpha", legend.c_str()));
 	dAlpha_c->Scale(norm);
 	myDrawer->fFit->Add(dAlpha_c);
 	TH1D *dBeta_c = (TH1D*) dBeta->Clone(
 			TString::Format("dBeta_c%s%i", drawer->getTitle().c_str(), fIndex));
 	myDrawer->fLegFit->AddEntry(dBeta_c,
-			TString::Format("%s #beta", fLegend.c_str()));
+			TString::Format("%s #beta", legend.c_str()));
 	dBeta_c->Scale(norm * 2. * a);
 	myDrawer->fFit->Add(dBeta_c);
 	TH1D *dGamma_c = (TH1D*) dGamma->Clone(
-			TString::Format("dGamma_c%s%i", drawer->getTitle().c_str(), fIndex));
+			TString::Format("dGamma_c%s%i", drawer->getTitle().c_str(),
+					fIndex));
 	myDrawer->fLegFit->AddEntry(dGamma_c,
-			TString::Format("%s #gamma", fLegend.c_str()));
+			TString::Format("%s #gamma", legend.c_str()));
 	dGamma_c->Scale(norm * a * a);
 	myDrawer->fFit->Add(dGamma_c);
 }
 
 FitMCSample* FitMCSample::Add(const FitMCSample* other) {
-	Sample::Add((Sample*) other);
+	SubSample::Add((SubSample*) other);
 	d1->Add(other->d1, 1.);
 	d2->Add(other->d2, 1.);
 	d3->Add(other->d3, 1.);
@@ -388,5 +322,5 @@ FitMCSample::bContent FitMCSample::getIntegrals() {
 
 double FitMCSample::getFFIntegral(double a) {
 	return d1->Integral() * 1.0 + d2->Integral() * a * 2.
-					+ d3->Integral() * a * a;
+			+ d3->Integral() * a * a;
 }

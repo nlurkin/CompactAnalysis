@@ -41,6 +41,7 @@ ConfigFile::ConfigFile() :
 		("binsfile", 	po::value< string>			(&fBinsFileName), 					"List of input MC files")
 		("equalbin", 	po::value< bool>			(&fWithEqualBins), 					"List of input MC files")
 		("scanid", 		po::value< int>				(&fScanID), 						"List of input MC files")
+		("nscan", 		po::value< int>				(&fNScan),	 						"List of input MC files")
 	;
 }
 
@@ -152,6 +153,7 @@ void ConfigFile::print() const{
 	cout << "Bins file: " << fBinsFileName << endl;
 	cout << "With equal bins: " << fWithEqualBins << endl;
 	cout << "Scan ID: " << fScanID << endl;
+	cout << "# Scan: " << fNScan << endl;
 }
 
 bool ConfigFile::testAllOutputFiles() const{

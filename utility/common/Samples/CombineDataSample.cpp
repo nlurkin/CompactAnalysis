@@ -8,6 +8,9 @@
 #include "CombineDataSample.h"
 #include "../Drawer/CombineDrawer.h"
 #include <TFile.h>
+#include <TTree.h>
+
+using namespace std;
 
 CombineDataSample::CombineDataSample() :
 	fFactor(1)
@@ -20,13 +23,9 @@ CombineDataSample::~CombineDataSample() {
 	// TODO Auto-generated destructor stub
 }
 
-CombineDataSample::CombineDataSample(int index, ConfigFile* cfg) :
-		CombineSample(index, cfg), fFactor(1) {
-}
-
 void CombineDataSample::fillHisto(ROOTPhysicsEvent* evt, ROOTRawEvent* rawEvt,
 		ROOTCorrectedEvent* corrEvent, ROOTMCEvent* mcEvent, NGeom* rootGeom,
-		ROOTBurst* rootBurst) {
+		ROOTBurst* rootBurst, const RunWeights *) {
 
 	CombineSample::fillHisto(evt, rawEvt, corrEvent, mcEvent, rootGeom,
 			rootBurst, 1.);
@@ -43,10 +42,10 @@ void CombineDataSample::doGet(TFile* inputFD, TFile* tempFD) {
 	doGetHisto(inputFD, tempFD);
 }
 
-void CombineDataSample::populateStack(HistoDrawer *drawer) {
+void CombineDataSample::populateStack(HistoDrawer *drawer, string legend) {
 	CombineDrawer *myDrawer = static_cast<CombineDrawer*>(drawer);
 
-	myDrawer->addLegendData(d1[0], fLegend);
+	myDrawer->addLegendData(d1[0], legend);
 	for (unsigned int i = 0; i < d1.size(); ++i) {
 		myDrawer->addHistoData(i, d1[i]);
 	}

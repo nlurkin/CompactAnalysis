@@ -11,7 +11,6 @@
 class DataSample{
 public:
 	DataSample();
-
 	virtual ~DataSample();
 
 	double getTestA() const {

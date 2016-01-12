@@ -50,7 +50,7 @@ void Fitter::fit(bool, bool useROOT) {
 		minuit = new MinuitFitterNewChi2(fNBins);
 		minuit->setName("NewChi2");
 	}
-	minuit->setSamples(static_cast<FitMCSample*>(fFinalMCSample), static_cast<FitDataSample*>(fFinalDataSample));
+	minuit->setSamples(static_cast<FitMCSample*>(fFinalMCSample->getSubSample(0)), static_cast<FitDataSample*>(fFinalDataSample->getSubSample(0)));
 	minuit->fit();
 
 	minuit->printResult();
@@ -60,10 +60,10 @@ void Fitter::fit(bool, bool useROOT) {
 double Fitter::getNormalization(double a) {
 	double G = 0;
 	for (auto sample : fMCSamples)
-		G += sample->getFFIntegral(a);
+		G += sample->getSubSample(0)->getFFIntegral(a);
 	double NSig = 0;
 	for (auto sample : fDataSamples)
-		NSig += sample->getFFIntegral(a);
+		NSig += sample->getSubSample(0)->getFFIntegral(a);
 
 	return NSig / G;
 }
