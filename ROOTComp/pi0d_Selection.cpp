@@ -361,9 +361,11 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
 
 	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep);
+	cout << printVector3(propPos) << endl;
 	//e+ in square
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
 	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em);
+	cout << printVector3(propPos) << endl;
 	//e- in square
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
 
