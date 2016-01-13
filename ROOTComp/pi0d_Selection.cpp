@@ -362,9 +362,11 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 
 	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep);
 	//e+ in square
+	if(options.isOptDebug()) cout << fabs(propPos.X()) << "<20 && " << fabs(propPos.Y()) << "<20 : rejected" << endl;
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
 	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em);
 	//e- in square
+	if(options.isOptDebug()) cout << fabs(propPos.X()) << "<20 && " << fabs(propPos.Y()) << "<20 : rejected" << endl;
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
 
 	return -1;
