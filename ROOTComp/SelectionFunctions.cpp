@@ -723,6 +723,7 @@ int pi0d_goodClusters_loose(){
 
 		//Ignore clusters outside acceptance
 		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+		if(options.isOptDebug()) cout << "\td_deadcell " << rawEvent.cluster[c.clusterID].dDeadCell << " < 2 : reject" << endl;
 //		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
 
 		//Ignore clusters behind Pb Wall
