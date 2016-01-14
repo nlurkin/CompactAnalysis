@@ -90,8 +90,13 @@ void defineBeamCharge(superBurst *sbur){
 		rootBurst.period = 2;
 	}
 	//P3	+-
-	if(sbur->nrun>=20286 && sbur->nrun<=20324){
+	if(sbur->nrun>=20286 && sbur->nrun<=20303){
 		rootBurst.pbWall = true;
+		rootBurst.period = 3;
+	}
+	if(sbur->nrun>=20304 && sbur->nrun<=20324){
+		rootBurst.pbWall = true;
+		rootBurst.beamCharge = +1;
 		rootBurst.period = 3;
 	}
 
@@ -421,6 +426,7 @@ void CreateClusters(superCmpEvent *sevt){
 		x.dDeadCell = sevt->cluster[i].dDeadCell;
 		x.time = sevt->cluster[i].time;
 		x.lkr_acc = LKr_acc(rootBurst.nrun, sevt->cluster[i].x, sevt->cluster[i].y, 8);
+		x.iTrack = sevt->cluster[i].iTrack;
 
 		NPhysicsCluster t = correctCluster(sevt, i);
 

@@ -304,6 +304,7 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 			cout << "Track2 pi0mass: " << ee2.M() << " kmass: " << k2.M() << endl;
 			cout << " diffpi0:" << diffpi02 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
 			cout << " diffk:" << diffk2 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " Must be " << io.cutsDefinition.k2pi.minKaonMassDiff << " < Mk < " << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 			cout << " x:" << x2 << " <0 || " << x2 << " >1 : rejected" << endl;
 			cout << " y:" << y2 << " <0 || " << y2 << " >1 : rejected" << endl;
 		}
@@ -720,14 +721,23 @@ int pi0d_goodClusters_loose(){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
+		//Ignore clusters outside acceptance
+		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+		if(options.isOptDebug()) cout << "\td_deadcell " << rawEvent.cluster[c.clusterID].dDeadCell << " < 2 : reject" << endl;
+//		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
+
+		//Ignore clusters associated with tracks
+		if(options.isOptDebug()) cout << "\tAssoc track " << rawEvent.cluster[c.clusterID].iTrack << " != -1 : reject" << endl;
+		if(rawEvent.cluster[c.clusterID].iTrack != -1) continue;
+
 		//Ignore clusters behind Pb Wall
 		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
 		}
 		//Ignore clusters with low energy
-		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
-		if(c.E < 2.) continue;
+		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
+		if(rawEvent.cluster[c.clusterID].E < 2.) continue;
 
 		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
 		NPhysicsTrack t2 = corrEvent.pTrack[corrEvent.goodTracks[1]];
@@ -816,14 +826,22 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
+		//Ignore clusters outside acceptance
+		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+		if(options.isOptDebug()) cout << "\td_deadcell " << rawEvent.cluster[c.clusterID].dDeadCell << " < 2 : reject" << endl;
+//		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
+
+		if(options.isOptDebug()) cout << "\tAssoc track " << rawEvent.cluster[c.clusterID].iTrack << " != -1 : reject" << endl;
+		if(rawEvent.cluster[c.clusterID].iTrack != -1) continue;
+
 		//Ignore clusters behind Pb Wall
 		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
 		}
 		//Ignore clusters with low energy
-		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
-		if(c.E < 2.) continue;
+		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
+		if(rawEvent.cluster[c.clusterID].E < 2.) continue;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[event.ep.parentTrack];

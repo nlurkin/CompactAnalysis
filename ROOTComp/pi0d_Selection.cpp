@@ -118,10 +118,10 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t <= 3 : rejected" << endl;
 	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
-	// 8) D_deadcell>2cm
+	// 8) D_deadcell>=2cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
+	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t < 2 : rejected" << endl;
+	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
 
 	/*if(options.isOptDebug()) cout << "d_deadcell(t1) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
@@ -355,16 +355,18 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	if(options.isOptDebug()) cout << "E_LKr :\t\t\t\t" << E_lkr << "\t <14: rejected" << endl;
 	if(E_lkr < 14) return 18+firstCutIndex;
 
-
 	if(!pi0d_L3Trigger(t_ep) && !pi0d_L3Trigger(t_em)) return 19+firstCutIndex;
 
+	if(options.isOptDebug()) cout << tempObj.piEvent.x << " <= 0.01 || " << tempObj.piEvent.x << " > 1 : rejected" << endl;
 	if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
 
-	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep, rawEvent);
+	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep);
 	//e+ in square
+	if(options.isOptDebug()) cout << fabs(propPos.X()) << "<20 && " << fabs(propPos.Y()) << "<20 : rejected" << endl;
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
-	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em, rawEvent);
+	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em);
 	//e- in square
+	if(options.isOptDebug()) cout << fabs(propPos.X()) << "<20 && " << fabs(propPos.Y()) << "<20 : rejected" << endl;
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
 
 	return -1;
@@ -597,16 +599,24 @@ bool newEvent(int i, int &nevt){
 
 	// Filter events
 	if(options.getBadEventsList().size()>0){
+		if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
 		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, options.getBadEventsList())) return false;
+		if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
+		if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
+		if(i==0) cout << "First event: ";
+		cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
+		if(i==0) cout << endl;
+		if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
 	}
-
-	// Debugging info
-	if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
-	if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
-	if(i==0) cout << "First event: ";
-	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
-	if(i==0) cout << endl;
-	if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
+	else{
+		// Debugging info
+		if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
+		if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
+		if(i==0) cout << "First event: ";
+		if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
+		if(i==0) cout << endl;
+		if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
+	}
 
 	pid_res_pi.incTotal();
 	pid_res_mu.incTotal();

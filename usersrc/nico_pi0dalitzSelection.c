@@ -209,10 +209,12 @@ int nico_pi0DalitzSelect(){
 	bitset<32> triggMask(triggerMask);
 	bitset<32> comb(rawEvent.trigWord & triggerMask);
 	bitset<32> LV3(rawEvent.DETStatus.LV3ABTrig);
+	bitset<32> LV3Auto(rawEvent.DETStatus.LV3ABTrig);
 	if(optDebug) cout << "Word :\t " << triggBit << endl;
 	if(optDebug) cout << "Mask :\t " << triggMask << endl;
 	if(optDebug) cout << "comb :\t " << comb << endl;
 	if(optDebug) cout << "LV3ABTrig:\t " << LV3 << endl;
+	if(optDebug) cout << "LV3Trig:\t " << LV3Auto << endl;
 	if(optDebug) cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << dec << endl;
 	if(optDebug) cout << "L3 Trigger word :\t " << hex << (rawEvent.DETStatus.LV3ABTrig & 1) << "\t == 0: rejected" << dec << endl;
 	if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return -1;}
