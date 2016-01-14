@@ -6,7 +6,6 @@
  */
 
 #include "CombineDataSample.h"
-#include "../Drawer/CombineDrawer.h"
 #include <TFile.h>
 #include <TTree.h>
 
@@ -40,15 +39,6 @@ void CombineDataSample::doGet(TDirectory* inputFD, TFile* tempFD) {
 	sumTreeFitStruct(fFitBrch, t, totFit, fFactor);
 
 	doGetHisto(inputFD, tempFD);
-}
-
-void CombineDataSample::populateStack(HistoDrawer *drawer, string legend) {
-	CombineDrawer *myDrawer = static_cast<CombineDrawer*>(drawer);
-
-	myDrawer->addLegendData(d1[0], legend);
-	for (unsigned int i = 0; i < d1.size(); ++i) {
-		myDrawer->addHistoData(i, d1[i]);
-	}
 }
 
 void CombineDataSample::setPlotStyle(std::vector<int>) {

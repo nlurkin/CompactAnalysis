@@ -31,8 +31,6 @@ public:
 	virtual double getFFIntegral(double a);
 
 	virtual void setPlotStyle(std::vector<int> color);
-	virtual void populateStack(HistoDrawer *drawer, std::string legend);
-	virtual void populateFit(HistoDrawer *drawer, double norm, double a, std::string legend);
 	virtual TH1D* getMainHisto();
 
 	void addHisto(TString name, int bins, double min, double max);
@@ -52,6 +50,14 @@ public:
 	void scale();
 	virtual void renameHisto();
 	virtual SubSample* Add(const SubSample* other);
+
+	const std::vector<TH1D*>& getD1() const {
+		return d1;
+	}
+
+	const std::vector<TH2D*>& getMap() const {
+		return dMap;
+	}
 
 protected:
 	std::vector<TH1D*> d1;

@@ -14,8 +14,6 @@
 #include <TTree.h>
 #include "ConfigFile.h"
 #include "RunWeights.h"
-#include "../Drawer/InputFitDrawer.h"
-#include "../Drawer/FitResultDrawer.h"
 #include "SubSample.h"
 #include "DataSample.h"
 #include "MCSample.h"
@@ -48,17 +46,10 @@ public:
 		for (auto ss : fSubSamples)
 			ss->renameHisto();
 	}
-	;
 	void setPlotStyle(std::vector<int> color) {
 		for (auto ss : fSubSamples)
 			ss->setPlotStyle(color);
 	}
-	;
-	void populateStack(HistoDrawer *drawer) {
-		for (auto ss : fSubSamples)
-			ss->populateStack(drawer, fLegend);
-	}
-	;
 
 	template<class SSampleType>
 	std::vector<typename SSampleType::bContent> getIntegrals();

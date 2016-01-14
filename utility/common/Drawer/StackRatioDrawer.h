@@ -15,8 +15,8 @@ public:
 	StackRatioDrawer();
 	virtual ~StackRatioDrawer();
 
-	void AddHisto1(TH1* h, std::string legend);
-	void AddHisto2(TH1* h, std::string legend);
+	void AddHisto1(TH1* h, std::string legend, std::string option="");
+	void AddHisto2(TH1* h, std::string legend, std::string option="");
 	void SetSecondary(TH1* h) {
 		fSecondary = h;
 	}
@@ -24,6 +24,7 @@ public:
 	virtual void generate(TPad* pad);
 	virtual void draw();
 
+	static TH1D* buildRatio(TH1D* mc, TH1D* data);
 private:
 	THStack *fStack2;
 	TH1 *fSecondary;

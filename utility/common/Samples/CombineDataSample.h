@@ -17,7 +17,6 @@ public:
 	virtual ~CombineDataSample();
 
 	virtual void doGet(TDirectory* inputFD, TFile* tempFD);
-	virtual void populateStack(HistoDrawer *drawer, std::string legend);
 	virtual void setPlotStyle(std::vector<int> color);
 
 	void fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,

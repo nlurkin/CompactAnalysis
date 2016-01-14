@@ -67,11 +67,25 @@ void StackRatioDrawer::generate(TPad* pad) {
 	fSecondary->GetXaxis()->SetLabelSize(15);
 }
 
-void StackRatioDrawer::AddHisto1(TH1* h, std::string legend) {
-	AddHisto(h, legend);
+void StackRatioDrawer::AddHisto1(TH1* h, std::string legend, std::string option) {
+	AddHisto(h, legend, option.c_str());
 }
 
-void StackRatioDrawer::AddHisto2(TH1* h, std::string legend) {
+void StackRatioDrawer::AddHisto2(TH1* h, std::string legend, std::string option) {
 	fStack2->Add(h);
-	fLegend->AddEntry(h, legend.c_str());
+	fLegend->AddEntry(h, legend.c_str(), option.c_str());
+}
+
+
+TH1D* StackRatioDrawer::buildRatio(TH1D* mc, TH1D* data) {
+	TH1D* r;
+	TString rnd = rand() % 99999;
+	r = new TH1D("ratio" + rnd, "ratio", data->GetXaxis()->GetNbins(), data->GetXaxis()->GetXbins()->fArray);
+
+	mc->SetFillColor(8);
+
+	mc->Sumw2();
+	r->Sumw2();
+	r->Divide(data, mc, 1, 1, "B");
+	return r;
 }

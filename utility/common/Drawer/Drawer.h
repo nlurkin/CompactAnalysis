@@ -17,10 +17,10 @@ public:
 	Drawer();
 	virtual ~Drawer();
 
-	static TH1D* buildRatio(TH1D* mc, TH1D* data);
-
 	static void drawFitResult(MinuitFitter * fit, std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample);
 	static void drawFitPreparation(std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, std::string title);
+
+	static void drawCombineStack(std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample);
 };
 
 #endif /* COMMON_DRAWER_DRAWER_H_ */

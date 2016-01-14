@@ -38,7 +38,7 @@ void StackDrawer::free() {
 	}
 }
 
-void StackDrawer::AddHisto(TH1* h, std::string legend) {
+void StackDrawer::AddHisto(TH1* h, std::string legend, std::string option) {
 	fStack->Add(h);
-	fLegend->AddEntry(h, legend.c_str());
+	fLegend->AddEntry(h, legend.c_str(), option.c_str());
 }

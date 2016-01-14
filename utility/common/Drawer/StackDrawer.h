@@ -18,7 +18,7 @@ public:
 	StackDrawer();
 	virtual ~StackDrawer();
 
-	void AddHisto(TH1* h, std::string legend);
+	void AddHisto(TH1* h, std::string legend, std::string option="");
 
 	void setName(const std::string& name) {
 		fName = name;

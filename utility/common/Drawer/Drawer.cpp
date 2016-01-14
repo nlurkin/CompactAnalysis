@@ -7,6 +7,21 @@
 
 #include "Drawer.h"
 
+#include <TCanvas.h>
+#include <TH1.h>
+#include <TNamed.h>
+#include <TString.h>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "../Samples/CombineDataSample.h"
+#include "../Samples/CombineMCSample.h"
+#include "../Samples/CombineSample.h"
+#include "../Samples/FitDataSample.h"
+#include "../Samples/FitMCSample.h"
+#include "StackDrawer.h"
 #include "StackRatioDrawer.h"
 
 using namespace std;
@@ -48,23 +63,10 @@ void Drawer::drawFitResult(MinuitFitter* fit, std::vector<Sample*> mcSamples,
 			d.AddHisto2(dSig_c, sample->getLegend().c_str());
 		}
 
-	TH1D* ratio = buildRatio(finalMCSample->getSubSample(0)->getMainHisto(), finalDataSample->getSubSample(0)->getMainHisto());
+	TH1D* ratio = StackRatioDrawer::buildRatio(finalMCSample->getSubSample(0)->getMainHisto(), finalDataSample->getSubSample(0)->getMainHisto());
 	d.SetSecondary(ratio);
 
 	d.draw();
-}
-
-TH1D* Drawer::buildRatio(TH1D* mc, TH1D* data) {
-	TH1D* r;
-	TString rnd = rand() % 99999;
-	r = new TH1D("ratio" + rnd, "ratio", data->GetXaxis()->GetNbins(), data->GetXaxis()->GetXbins()->fArray);
-
-	mc->SetFillColor(8);
-
-	mc->Sumw2();
-	r->Sumw2();
-	r->Divide(data, mc, 1, 1, "B");
-	return r;
 }
 
 void Drawer::drawFitPreparation(std::vector<Sample*> mcSamples,
@@ -118,6 +120,37 @@ void Drawer::drawFitPreparation(std::vector<Sample*> mcSamples,
 	dAlpha.generate(static_cast<TPad*>(c3->GetPad(1)));
 	dBeta.generate(static_cast<TPad*>(c3->GetPad(1)));
 	dGamma.generate(static_cast<TPad*>(c3->GetPad(1)));
+}
+
+void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
+		std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample) {
+	vector<StackRatioDrawer*> d;
+
+	for(auto sample : mcSamples){
+		CombineMCSample *ssample = static_cast<CombineMCSample*>(sample->getSubSample(0));
+		vector<TH1D*>d1 = ssample->getD1();
+		for (unsigned int i = 0; i < d1.size(); ++i) {
+			if(d.size()<=i) d.push_back(new StackRatioDrawer());
+			d[i]->AddHisto1(d1[i], sample->getLegend(), "f");
+		}
+	}
+
+	for(auto sample : dataSamples){
+		CombineDataSample *ssample = static_cast<CombineDataSample*>(sample->getSubSample(0));
+		vector<TH1D*>d1 = ssample->getD1();
+		for (unsigned int i = 0; i < d1.size(); ++i) {
+			if(d.size()<=i) d.push_back(new StackRatioDrawer());
+			d[i]->AddHisto1(d1[i], sample->getLegend(), "lep");
+		}
+	}
+	vector<TH1D*> data= static_cast<CombineDataSample*>(finalDataSample->getSubSample(0))->getD1();
+	vector<TH1D*> mc= static_cast<CombineMCSample*>(finalMCSample->getSubSample(0))->getD1();
+	for(unsigned int iCanvas=0; iCanvas<data.size(); ++iCanvas){
+		//TCanvas *c = new TCanvas(TString::Format("c%i", iCanvas), data[iCanvas]->GetTitle());
+		TH1D* ratio = StackRatioDrawer::buildRatio(mc[iCanvas], data[iCanvas]);
+		d[iCanvas]->SetSecondary(ratio);
+		d[iCanvas]->draw();
+	}
 }
 
 

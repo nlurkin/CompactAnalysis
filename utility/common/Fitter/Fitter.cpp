@@ -25,21 +25,17 @@ Fitter::~Fitter() {
 
 void Fitter::PrepareHistos(vector<int> allColors, vector<int> dataColors) {
 	//Color histos
-//	InputFitDrawer drawer;
 	for (unsigned int i = 0; i < fMCSamples.size(); i++) {
 		vector<int> colors(allColors.begin() + (i*3), allColors.begin() + (i*3+3));
 		fMCSamples[i]->setPlotStyle(colors);
-		//fMCSamples[i]->populateStack(&drawer);
 	}
 
 	for (unsigned int i = 0; i < fDataSamples.size(); i++) {
 		vector<int> colors(dataColors.begin() + (i*3), dataColors.begin() + (i*3+3));
 		fDataSamples[i]->setPlotStyle(colors);
-		//fDataSamples[i]->populateStack(&drawer);
 	}
 
 	Drawer::drawFitPreparation(fMCSamples, fDataSamples, "Fitter");
-//	drawer.draw();
 }
 
 void Fitter::fit(bool, bool useROOT) {
@@ -57,7 +53,6 @@ void Fitter::fit(bool, bool useROOT) {
 
 	minuit->printResult();
 	Drawer::drawFitResult(minuit, fMCSamples, fDataSamples, fFinalMCSample, fFinalDataSample);
-	//minuit->drawResult(fMCSamples, fNBins, fBinning);
 }
 
 double Fitter::getNormalization(double a) {

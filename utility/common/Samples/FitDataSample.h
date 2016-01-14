@@ -30,8 +30,6 @@ public:
 	virtual void initHisto(int nbins, double* bins, const ConfigFile *cfg);
 	virtual void scaleToData(double) {};
 	virtual void setPlotStyle(std::vector<int> color);
-	virtual void populateStack(HistoDrawer *drawer, std::string legend);
-	virtual void populateFit(HistoDrawer *drawer, double norm, double a, std::string legend);
 	virtual double getFFIntegral(double a);
 	virtual void renameHisto() {};
 

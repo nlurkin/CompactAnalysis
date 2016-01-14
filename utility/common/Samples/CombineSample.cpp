@@ -13,7 +13,6 @@
 #include <iomanip>
 #include "Functions.h"
 #include <TStyle.h>
-#include "../Drawer/CombineDrawer.h"
 
 using namespace std;
 
@@ -837,19 +836,6 @@ void CombineSample::setPlotStyle(std::vector<int> color) {
 
 	for (auto plot : dMap)
 		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
-}
-
-void CombineSample::populateStack(HistoDrawer *drawer, string legend) {
-	CombineDrawer *myDrawer = static_cast<CombineDrawer*>(drawer);
-
-	myDrawer->addLegendMC(d1[0], legend);
-	for (unsigned int i = 0; i < d1.size(); ++i) {
-		myDrawer->addHistoMC(i, d1[i]);
-	}
-}
-
-void CombineSample::populateFit(HistoDrawer *, double, double, string) {
-	//FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
 }
 
 TH1D* CombineSample::getMainHisto() {

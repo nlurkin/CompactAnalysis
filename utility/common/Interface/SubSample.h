@@ -13,8 +13,6 @@
 
 #include "../ConfigFile.h"
 #include "RunWeights.h"
-#include "../Drawer/InputFitDrawer.h"
-#include "../Drawer/FitResultDrawer.h"
 
 class TTree;
 class TFile;
@@ -68,8 +66,6 @@ public:
 	virtual void renameHisto() = 0;
 
 	virtual void setPlotStyle(std::vector<int> color) = 0;
-	virtual void populateStack(HistoDrawer *drawer, std::string legend) = 0;
-	virtual void populateFit(HistoDrawer *drawer, double norm, double a, std::string legend) = 0;
 	virtual TH1D* getMainHisto() = 0;
 
 	void setBr(double br) {

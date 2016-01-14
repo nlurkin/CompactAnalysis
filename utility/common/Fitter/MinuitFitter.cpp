@@ -74,22 +74,6 @@ void MinuitFitter::printResult() {
 			<< endl;
 }
 
-void MinuitFitter::drawResult(vector<Sample*> mcSamples, int nbins, double *binning) {
-	FitResultDrawer drawer;
-	drawer.setTitle(fName);
-
-	for (auto sample : mcSamples) {
-		static_cast<FitMCSample*>(sample->getSubSample(0))->populateFit(&drawer, fNorm, fFormFactor, sample->getLegend());
-	}
-
-	fDataSamples->populateFit(&drawer, fNorm, fFormFactor, "xxxMyLegend TODO");
-
-	drawer.setBinning(nbins, binning);
-	drawer.setMc(fMCSamples->getMainHisto(), fDataSamples->getMainHisto());
-	drawer.setResult(fNorm, fFormFactor, fFormFactorErr);
-	drawer.draw();
-}
-
 double MinuitFitter::chi2pValue(double chi2, int ndof) {
 	double step = 0.0001;
 	double currChi2 = 0;
