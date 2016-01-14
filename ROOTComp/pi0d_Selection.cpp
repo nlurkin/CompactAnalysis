@@ -115,7 +115,8 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 
 	// 7) E_gamma>3GeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 7 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t < 3 : rejected" << endl;
+	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t < " << io.cutsDefinition.minGammaEnergy <<
+			" : rejected" << (tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) << endl;
 	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
 	// 8) D_deadcell>=2cm
