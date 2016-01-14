@@ -34,13 +34,14 @@ public:
 
 class NCluster : public TObject{
 public:
-	NCluster():time(0), dDeadCell(0), E(0), lkr_acc(false){};
+	NCluster():time(0), dDeadCell(0), E(0), lkr_acc(false), iTrack(-99){};
 	NCluster(cluster &ref);
 public:
 	float time;
 	float dDeadCell;
 	float E;
 	bool lkr_acc;
+	int iTrack;
 	TVector3 position;
 
 	ClassDefNV(NCluster, 1);
