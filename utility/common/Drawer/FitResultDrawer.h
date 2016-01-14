@@ -32,14 +32,13 @@ public:
 		fA = a;
 		fAErr = aerr;
 	}
-public:
+private:
 	TH1D *fMC, *fSig;
 	THStack *fFit;
 	THStack *fFitSig;
 	TLegend *fLegFit;
 	TLegend *fLegFitSig;
 
-private:
 	double *fBinning;
 	int fNBins;
 	double fNorm;

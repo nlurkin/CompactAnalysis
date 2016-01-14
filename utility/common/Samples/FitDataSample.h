@@ -42,6 +42,11 @@ public:
 	bContent getBinContent(int bin);
 
 	virtual SubSample* Add(const SubSample* other);
+
+	const TH1D* getSig() const {
+		return dSig;
+	}
+
 private:
 	TH1D *dSig;
 };

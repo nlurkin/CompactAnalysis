@@ -232,23 +232,23 @@ void FitMCSample::setPlotStyle(vector<int> color) {
 	dGamma->SetFillColor(gStyle->GetColorPalette(color[2]));
 }
 
-void FitMCSample::populateStack(HistoDrawer *drawer, string legend) {
-	InputFitDrawer *myDrawer = static_cast<InputFitDrawer*>(drawer);
+void FitMCSample::populateStack(HistoDrawer *, string) {
+//	InputFitDrawer *myDrawer = static_cast<InputFitDrawer*>(drawer);
 
-	myDrawer->fStd1->Add((TH1D*) d1->Clone());
-	myDrawer->fStdx->Add((TH1D*) d2->Clone());
-	myDrawer->fStdxx->Add((TH1D*) d3->Clone());
-	myDrawer->fStdNew->Add((TH1D*) dNew->Clone());
-	myDrawer->fStdAlpha->Add((TH1D*) dAlpha->Clone());
-	myDrawer->fStdBeta->Add((TH1D*) dBeta->Clone());
-	myDrawer->fStdGamma->Add((TH1D*) dGamma->Clone());
-	myDrawer->fLeg1->AddEntry(d1, legend.c_str());
-	myDrawer->fLegx->AddEntry(d2, legend.c_str());
-	myDrawer->fLegxx->AddEntry(d3, legend.c_str());
-	myDrawer->fLegNew->AddEntry(dNew, legend.c_str());
-	myDrawer->fLegAlpha->AddEntry(dAlpha, legend.c_str());
-	myDrawer->fLegBeta->AddEntry(dBeta, legend.c_str());
-	myDrawer->fLegGamma->AddEntry(dGamma, legend.c_str());
+//	myDrawer->fStd1->Add((TH1D*) d1->Clone());
+//	myDrawer->fStdx->Add((TH1D*) d2->Clone());
+//	myDrawer->fStdxx->Add((TH1D*) d3->Clone());
+//	myDrawer->fStdNew->Add((TH1D*) dNew->Clone());
+//	myDrawer->fStdAlpha->Add((TH1D*) dAlpha->Clone());
+//	myDrawer->fStdBeta->Add((TH1D*) dBeta->Clone());
+//	myDrawer->fStdGamma->Add((TH1D*) dGamma->Clone());
+//	myDrawer->fLeg1->AddEntry(d1, legend.c_str());
+//	myDrawer->fLegx->AddEntry(d2, legend.c_str());
+//	myDrawer->fLegxx->AddEntry(d3, legend.c_str());
+//	myDrawer->fLegNew->AddEntry(dNew, legend.c_str());
+//	myDrawer->fLegAlpha->AddEntry(dAlpha, legend.c_str());
+//	myDrawer->fLegBeta->AddEntry(dBeta, legend.c_str());
+//	myDrawer->fLegGamma->AddEntry(dGamma, legend.c_str());
 }
 
 FitMCSample::bContent FitMCSample::getBinContent(int bin) {
@@ -264,29 +264,29 @@ FitMCSample::bContent FitMCSample::getBinContent(int bin) {
 	return b;
 }
 
-void FitMCSample::populateFit(HistoDrawer *drawer, double norm, double a, string legend) {
-	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
-
-	TH1D *dAlpha_c = (TH1D*) dAlpha->Clone(
-			TString::Format("dAlpha_c%s%i", drawer->getTitle().c_str(),
-					fIndex));
-	myDrawer->fLegFit->AddEntry(dAlpha_c,
-			TString::Format("%s #alpha", legend.c_str()));
-	dAlpha_c->Scale(norm);
-	myDrawer->fFit->Add(dAlpha_c);
-	TH1D *dBeta_c = (TH1D*) dBeta->Clone(
-			TString::Format("dBeta_c%s%i", drawer->getTitle().c_str(), fIndex));
-	myDrawer->fLegFit->AddEntry(dBeta_c,
-			TString::Format("%s #beta", legend.c_str()));
-	dBeta_c->Scale(norm * 2. * a);
-	myDrawer->fFit->Add(dBeta_c);
-	TH1D *dGamma_c = (TH1D*) dGamma->Clone(
-			TString::Format("dGamma_c%s%i", drawer->getTitle().c_str(),
-					fIndex));
-	myDrawer->fLegFit->AddEntry(dGamma_c,
-			TString::Format("%s #gamma", legend.c_str()));
-	dGamma_c->Scale(norm * a * a);
-	myDrawer->fFit->Add(dGamma_c);
+void FitMCSample::populateFit(HistoDrawer *, double, double, string) {
+//	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
+//
+//	TH1D *dAlpha_c = (TH1D*) dAlpha->Clone(
+//			TString::Format("dAlpha_c%s%i", drawer->getTitle().c_str(),
+//					fIndex));
+//	myDrawer->fLegFit->AddEntry(dAlpha_c,
+//			TString::Format("%s #alpha", legend.c_str()));
+//	dAlpha_c->Scale(norm);
+//	myDrawer->fFit->Add(dAlpha_c);
+//	TH1D *dBeta_c = (TH1D*) dBeta->Clone(
+//			TString::Format("dBeta_c%s%i", drawer->getTitle().c_str(), fIndex));
+//	myDrawer->fLegFit->AddEntry(dBeta_c,
+//			TString::Format("%s #beta", legend.c_str()));
+//	dBeta_c->Scale(norm * 2. * a);
+//	myDrawer->fFit->Add(dBeta_c);
+//	TH1D *dGamma_c = (TH1D*) dGamma->Clone(
+//			TString::Format("dGamma_c%s%i", drawer->getTitle().c_str(),
+//					fIndex));
+//	myDrawer->fLegFit->AddEntry(dGamma_c,
+//			TString::Format("%s #gamma", legend.c_str()));
+//	dGamma_c->Scale(norm * a * a);
+//	myDrawer->fFit->Add(dGamma_c);
 }
 
 SubSample* FitMCSample::Add(const SubSample* other) {

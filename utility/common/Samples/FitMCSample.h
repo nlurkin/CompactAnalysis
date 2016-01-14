@@ -54,6 +54,35 @@ public:
 
 	bContent getBinContent(int bin);
 	virtual SubSample* Add(const SubSample* other);
+
+	const TH1D* getD1() const {
+		return d1;
+	}
+
+	const TH1D* getD2() const {
+		return d2;
+	}
+
+	const TH1D* getD3() const {
+		return d3;
+	}
+
+	const TH1D* getAlpha() const {
+		return dAlpha;
+	}
+
+	const TH1D* getBeta() const {
+		return dBeta;
+	}
+
+	const TH1D* getGamma() const {
+		return dGamma;
+	}
+
+	const TH1D* getNew() const {
+		return dNew;
+	}
+
 private:
 	TH1D *d1, *d2, *d3;
 	TH1D *dNew;

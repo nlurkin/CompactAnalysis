@@ -11,6 +11,8 @@
 #include <sys/stat.h>
 #include "../DataGetter.h"
 
+class MinuitFitter;
+
 class Fitter : public DataGetter{
 public:
 	Fitter();
@@ -23,6 +25,9 @@ public:
 	double getNormalization(double a);
 
 	static void minFunctionStatic(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par,	Int_t flag);
+
+private:
+	std::vector<MinuitFitter*> fFitters;
 };
 
 #endif /* COMMON_FITTER_H_ */

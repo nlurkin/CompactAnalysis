@@ -139,6 +139,10 @@ public:
 		return fLegend;
 	}
 
+	int getIndex() const {
+		return fIndex;
+	}
+
 protected:
 	int fIndex;
 	double fBr;

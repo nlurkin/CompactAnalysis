@@ -46,8 +46,8 @@ bool Sample::addFile(string fileName) {
 }
 
 void Sample::fill(TFile* tempFD, int nbins, double* bins) {
-	fOutputFD->cd();
 	initOutput();
+	fOutputFD->cd();
 	initHisto(nbins, bins);
 	int iFile = 0;
 	double totalFiles = fListFiles.size();

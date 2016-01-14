@@ -28,7 +28,6 @@ public:
 
 	static void minFunctionStatic(Int_t&, Double_t*, Double_t& f, Double_t* par, Int_t);
 
-
 	void printResult();
 	void drawResult(std::vector<Sample*> mcSamples, int nbins, double *binning);
 
@@ -37,6 +36,30 @@ public:
 
 	void setName(const std::string& name) {
 		fName = name;
+	}
+
+	double getFormFactor() const {
+		return fFormFactor;
+	}
+
+	double getFormFactorErr() const {
+		return fFormFactorErr;
+	}
+
+	double getMinimum() const {
+		return fMinimum;
+	}
+
+	double getNorm() const {
+		return fNorm;
+	}
+
+	double getNormErr() const {
+		return fNormErr;
+	}
+
+	const std::string& getName() const {
+		return fName;
 	}
 
 protected:

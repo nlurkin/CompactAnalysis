@@ -12,6 +12,7 @@
 
 #include "MinuitFitterNewChi2.h"
 #include "MinuitFitterNewROOT.h"
+#include "../Drawer/Drawer.h"
 
 using namespace std;
 
@@ -24,20 +25,21 @@ Fitter::~Fitter() {
 
 void Fitter::PrepareHistos(vector<int> allColors, vector<int> dataColors) {
 	//Color histos
-	InputFitDrawer drawer;
+//	InputFitDrawer drawer;
 	for (unsigned int i = 0; i < fMCSamples.size(); i++) {
 		vector<int> colors(allColors.begin() + (i*3), allColors.begin() + (i*3+3));
 		fMCSamples[i]->setPlotStyle(colors);
-		fMCSamples[i]->populateStack(&drawer);
+		//fMCSamples[i]->populateStack(&drawer);
 	}
 
 	for (unsigned int i = 0; i < fDataSamples.size(); i++) {
 		vector<int> colors(dataColors.begin() + (i*3), dataColors.begin() + (i*3+3));
 		fDataSamples[i]->setPlotStyle(colors);
-		fDataSamples[i]->populateStack(&drawer);
+		//fDataSamples[i]->populateStack(&drawer);
 	}
 
-	drawer.draw();
+	Drawer::drawFitPreparation(fMCSamples, fDataSamples, "Fitter");
+//	drawer.draw();
 }
 
 void Fitter::fit(bool, bool useROOT) {
@@ -54,7 +56,8 @@ void Fitter::fit(bool, bool useROOT) {
 	minuit->fit();
 
 	minuit->printResult();
-	minuit->drawResult(fMCSamples, fNBins, fBinning);
+	Drawer::drawFitResult(minuit, fMCSamples, fDataSamples, fFinalMCSample, fFinalDataSample);
+	//minuit->drawResult(fMCSamples, fNBins, fBinning);
 }
 
 double Fitter::getNormalization(double a) {
@@ -67,3 +70,4 @@ double Fitter::getNormalization(double a) {
 
 	return NSig / G;
 }
+

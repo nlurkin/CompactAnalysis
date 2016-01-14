@@ -100,10 +100,10 @@ void FitDataSample::setPlotStyle(std::vector<int>) {
 	dSig->SetLineColor(kRed);
 }
 
-void FitDataSample::populateStack(HistoDrawer *drawer, string legend) {
-	InputFitDrawer* myDrawer = static_cast<InputFitDrawer*>(drawer);
-	myDrawer->fSig->Add((TH1D*) dSig->Clone());
-	myDrawer->fLegSig->AddEntry(dSig, legend.c_str());
+void FitDataSample::populateStack(HistoDrawer *, string ) {
+	//InputFitDrawer* myDrawer = static_cast<InputFitDrawer*>(drawer);
+//	myDrawer->fSig->Add((TH1D*) dSig->Clone());
+//	myDrawer->fLegSig->AddEntry(dSig, legend.c_str());
 }
 
 FitDataSample::bContent FitDataSample::getBinContent(int bin) {
@@ -119,13 +119,13 @@ SubSample* FitDataSample::Add(const SubSample* other) {
 	dSig->Add(myOther->dSig, myOther->fFactor);
 	return this;
 }
-void FitDataSample::populateFit(HistoDrawer *drawer, double, double, string legend) {
-	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
-
-	TH1D *dSig_c = (TH1D*) dSig->Clone(
-			TString::Format("dSig_c%s%i", drawer->getTitle().c_str(), fIndex));
-	myDrawer->fLegFitSig->AddEntry(dSig_c, legend.c_str());
-	myDrawer->fFitSig->Add(dSig_c);
+void FitDataSample::populateFit(HistoDrawer *, double, double, string) {
+//	FitResultDrawer *myDrawer = static_cast<FitResultDrawer*>(drawer);
+//
+//	TH1D *dSig_c = (TH1D*) dSig->Clone(
+//			TString::Format("dSig_c%s%i", drawer->getTitle().c_str(), fIndex));
+//	myDrawer->fLegFitSig->AddEntry(dSig_c, legend.c_str());
+//	myDrawer->fFitSig->Add(dSig_c);
 }
 
 double FitDataSample::getFFIntegral(double) {
