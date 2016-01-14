@@ -118,10 +118,10 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t <= 3 : rejected" << endl;
 	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
-	// 8) D_deadcell>2cm
+	// 8) D_deadcell>=2cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t <= 2 : rejected" << endl;
-	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
+	if(options.isOptDebug()) cout << "d_deadcell :\t\t\t" << rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell << "\t < 2 : rejected" << endl;
+	if(rawEvent.cluster[corrEvent.pCluster[rootPhysics.gamma.parentCluster].clusterID].dDeadCell<io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
 
 	/*if(options.isOptDebug()) cout << "d_deadcell(t1) :\t\t\t" << rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell << "\t <= 2 : rejected" << endl;
 	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].dDeadCell<=io.cutsDefinition.minDeadCellDist) {pi0d_failCut(8+firstCutIndex); return false;}
@@ -596,6 +596,8 @@ bool nico_pi0DalitzSelect(){
 bool newEvent(int i, int &nevt){
 	//Clear the event
 	rootPhysics.clear();
+
+	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
 
 	// Filter events
 	if(options.getBadEventsList().size()>0){
