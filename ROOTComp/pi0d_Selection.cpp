@@ -100,7 +100,7 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(rootPhysics.gamma.parentCluster==-1){
 		return 0;
 	}
-	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(20) << corrEvent.pCluster[rootPhysics.gamma.parentCluster].E << endl;
+
 	tempObj.tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[corrEvent.goodVertexID].position).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
 
 	if(rootBurst.pbWall){
@@ -116,9 +116,9 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 
 	// 7) E_gamma>3GeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 7 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(20) << tempObj.tempGamma.E() << "\t < " << io.cutsDefinition.minGammaEnergy <<
-			" : rejected" << (tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) << endl;
-	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
+	double E = corrEvent.pCluster[rootPhysics.gamma.parentCluster].E; //Cannot use tempObj.tempGamma.E() because of rounding issue: 3.00000000000000000000 becomes 2.99999999999999955591
+	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << E << "\t < " << io.cutsDefinition.minGammaEnergy << " : rejected" << endl;
+	if(E<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
 	// 8) D_deadcell>=2cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
