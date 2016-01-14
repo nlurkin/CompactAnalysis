@@ -840,8 +840,8 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
 		}
 		//Ignore clusters with low energy
-		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
-		if(c.E < 2.) continue;
+		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
+		if(rawEvent.cluster[c.clusterID].E < 2.) continue;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[event.ep.parentTrack];

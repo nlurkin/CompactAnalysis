@@ -597,20 +597,26 @@ bool newEvent(int i, int &nevt){
 	//Clear the event
 	rootPhysics.clear();
 
-	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
-
 	// Filter events
 	if(options.getBadEventsList().size()>0){
+		if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
 		if(!isFilteredEvent(rootBurst.nrun, rootBurst.time, rawEvent.timeStamp, options.getBadEventsList())) return false;
+		if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
+		if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
+		if(i==0) cout << "First event: ";
+		cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
+		if(i==0) cout << endl;
+		if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
 	}
-
-	// Debugging info
-	if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
-	if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
-	if(i==0) cout << "First event: ";
-	if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
-	if(i==0) cout << endl;
-	if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
+	else{
+		// Debugging info
+		if(options.isOptDebug()) cout << "--------------------------------------------" << endl;
+		if(options.getPeriodKeep()!= 0 && rootBurst.period!=options.getPeriodKeep()) return false;
+		if(i==0) cout << "First event: ";
+		if(i % options.getOutputModulo() == 0) cout << i << " " << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << "                 \r" << flush;
+		if(i==0) cout << endl;
+		if(options.isOptDebug()) cout << endl << "--------------------------------------------" << endl;
+	}
 
 	pid_res_pi.incTotal();
 	pid_res_mu.incTotal();
