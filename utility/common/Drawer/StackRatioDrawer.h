@@ -15,8 +15,8 @@ public:
 	StackRatioDrawer();
 	virtual ~StackRatioDrawer();
 
-	void AddHisto1(TH1* h, std::string legend, std::string option="");
-	void AddHisto2(TH1* h, std::string legend, std::string option="");
+	void AddHisto1(TH1* h, std::string legend, std::string option="lpf");
+	void AddHisto2(TH1* h, std::string legend, std::string option="lpf");
 	void SetSecondary(TH1* h) {
 		fSecondary = h;
 	}

@@ -72,20 +72,12 @@ public:
 		return fSubSamples[fMainSubSample]->getSelSize();
 	}
 
-//	void setSelSize(int selSize) {
-//		fFitBrch.selEvents = selSize;
-//	}
-
 	std::vector<double> getTotalSize() const {
 		std::vector<double> r;
 		for (auto ss : fSubSamples)
 			r.push_back(ss->getTotalSize());
 		return r;
 	}
-
-//	void setTotalSize(int totalSize) {
-//		fFitBrch.totEvents = totalSize;
-//	}
 
 	void setOutputFile(const std::string& outputFile) {
 		fOutputFile = outputFile;
@@ -139,8 +131,6 @@ protected:
 	double fBr;
 	std::vector<std::string> fListFiles;
 	std::string fOutputFile;
-	//TTree* fFitTree;
-	//fitStruct fFitBrchB;
 	TFile *fOutputFD;
 	const ConfigFile *fCfg;
 	const RunWeights *fWeights;
