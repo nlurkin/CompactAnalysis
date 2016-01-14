@@ -100,6 +100,7 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(rootPhysics.gamma.parentCluster==-1){
 		return 0;
 	}
+	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(20) << corrEvent.pCluster[rootPhysics.gamma.parentCluster].E << endl;
 	tempObj.tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[corrEvent.goodVertexID].position).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
 
 	if(rootBurst.pbWall){
