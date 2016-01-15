@@ -278,5 +278,5 @@ void ScanCuts::generateLists(int number) {
 	cutsLists.resize(number);
 }
 
-double ScanCuts::getDiff() {
+double ScanCuts::getDiff() const {
 }

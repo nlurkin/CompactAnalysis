@@ -88,7 +88,7 @@ public:
 		this->defaultIndex = defaultIndex;
 	}
 
-	double getDiff();
+	double getDiff() const;
 
 private:
 	bool parseCuts(std::string fileName);
