@@ -31,7 +31,7 @@ MinuitFitter::MinuitFitter() :
 
 	// Chi2: 1.
 	// -logl: 0.5
-	SetErrorDef(0.5);
+	SetErrorDef(1);
 	SetFCN(minFunctionStatic);
 }
 

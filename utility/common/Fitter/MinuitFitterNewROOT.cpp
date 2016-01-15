@@ -33,10 +33,15 @@ void MinuitFitterNewROOT::fit() {
 
 double MinuitFitterNewROOT::minFunction(double, double a) {
 	double chi2 = 0.;
-	double M_i, D_i, m_i;
-	double a_i, b_i, g_i;
+	//double M_i, D_i, m_i;
+	//double a_i, b_i, g_i;
+	//double err;
 
-	for (int i = 0; i <= fNBins; ++i) {
+	fComp->Add(fMCSamples->getAlpha(), 1);
+	fComp->Add(fMCSamples->getBeta(), 2*a);
+	fComp->Add(fMCSamples->getGamma(), a*a);
+	fSigComp->Add(fDataSamples->getSig(), 1);
+	/*for (int i = 0; i <= fNBins; ++i) {
 		M_i = 0;
 		a_i = 0;
 		b_i = 0;
@@ -46,6 +51,13 @@ double MinuitFitterNewROOT::minFunction(double, double a) {
 		a_i += bins.dAlpha;
 		b_i += bins.dBeta;
 		g_i += bins.dGamma;
+		FitMCSample::bContent binsErr = fMCSamples->getBinError(i);
+		err = 0;
+		//err += binsErr.dNew;
+		err += binsErr.dAlpha;
+		err += binsErr.dBeta;
+		err += binsErr.dGamma;
+
 
 		D_i = 0;
 		D_i += fDataSamples->getBinContent(i).dSig;
@@ -53,8 +65,9 @@ double MinuitFitterNewROOT::minFunction(double, double a) {
 		m_i = function(1, a, a_i, b_i, g_i);
 
 		fComp->Fill(fComp->GetBinCenter(i), m_i);
+		fComp->SetBinError(i, err);
 		fSigComp->SetBinContent(i, D_i);
-	}
+	}*/
 
 	chi2 = fSigComp->Chi2Test(fComp, "UW CHI2 P");
 	fComp->Reset("M");
