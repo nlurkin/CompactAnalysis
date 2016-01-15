@@ -41,11 +41,11 @@ TH1D* gH(TString name);
 
 double		distance2D			(TVector3 v1, TVector3 v2);
 void 		propagateBefore		(float &x, float &y, float &z, float zplane, trak t);
-TVector3 	propagateBefore		(float zplane, NPhysicsTrack t);
-TVector3 	propagateCorrBefore	(float zplane, NPhysicsTrack t);
+TVector3 	propagateBefore		(float zplane, NPhysicsTrack &t, ROOTRawEvent &rawEvent);
+TVector3 	propagateCorrBefore	(float zplane, NPhysicsTrack &t, ROOTRawEvent &rawEvent);
 void 		propagateAfter		(float &x, float &y, float &z, float zplane, trak t);
-TVector3 	propagateAfter		(float zplane, NPhysicsTrack t);
-TVector3 	propagate			(float zplane, NPhysicsTrack t);
+TVector3 	propagateAfter		(float zplane, NPhysicsTrack &t, ROOTRawEvent &rawEvent);
+TVector3 	propagate			(float zplane, NPhysicsTrack &t, ROOTRawEvent &rawEvent);
 TVector3 	propagate			(float zplane, TVector3 pos, TVector3 p);
 
 double 	missMass2	(double m1, double m2, TVector3 p1, TVector3 p2);

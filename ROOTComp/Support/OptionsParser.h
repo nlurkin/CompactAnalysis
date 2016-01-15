@@ -69,6 +69,14 @@ public:
 		return selectionType;
 	}
 
+	bool isDoNegativePid() const {
+		return doNegativePID;
+	}
+
+	bool isDoInvertTime() const {
+		return doInvertTime;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -76,6 +84,8 @@ private:
 	int periodKeep;
 	bool exportAllEvents;
 	bool doScan;
+	bool doNegativePID;
+	bool doInvertTime;
 	int nScan;
 	int startEvent;
 	ESelectionType selectionType;

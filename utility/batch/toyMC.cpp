@@ -275,7 +275,7 @@ namespace Input {
 	}
 
 	int getInputDataFill(TFile *fd, TFile* fdout) {
-		return getInputDataGet(fd);
+		return getInputDataGet(fd, 1);
 	}
 
 	void getInputMCGet(TFile *fd, double br, unsigned int index) {
@@ -284,7 +284,7 @@ namespace Input {
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
 		initFitStruct(totFit);
-		sumTreeFitStruct(fitBrch, t, totFit);
+		sumTreeFitStruct(fitBrch, t, totFit, 1);
 
 		//Set event nb
 		//int nevt = totFit.selEvents;
@@ -320,13 +320,13 @@ namespace Input {
 		scaleMC(totFit, index, br);
 	}
 
-	int getInputDataGet(TFile *fd) {
+	int getInputDataGet(TFile *fd, double factor) {
 		fitStruct fitBrch, totFit;
 		TTree *t = (TTree*) fd->Get("fitStruct");
 		t->SetBranchAddress("fitStruct", &fitBrch);
 
 		initFitStruct(totFit);
-		sumTreeFitStruct(fitBrch, t, totFit);
+		sumTreeFitStruct(fitBrch, t, totFit, factor);
 
 		//Set event nb
 		NSig = totFit.selEvents;

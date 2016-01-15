@@ -90,8 +90,13 @@ void defineBeamCharge(superBurst *sbur){
 		rootBurst.period = 2;
 	}
 	//P3	+-
-	if(sbur->nrun>=20286 && sbur->nrun<=20324){
+	if(sbur->nrun>=20286 && sbur->nrun<=20303){
 		rootBurst.pbWall = true;
+		rootBurst.period = 3;
+	}
+	if(sbur->nrun>=20304 && sbur->nrun<=20324){
+		rootBurst.pbWall = true;
+		rootBurst.beamCharge = +1;
 		rootBurst.period = 3;
 	}
 
@@ -388,14 +393,18 @@ NPhysicsCluster correctCluster(superCmpEvent* sevt, int i){
 void CreateTracks(superCmpEvent *sevt){
 	for(int i=0; i<sevt->Ntrack; i++){
 		NTrak x;
+		x.p = sevt->track[i].p;
+		x.q = sevt->track[i].q;
+		x.quality = sevt->track[i].quality;
+		x.chi2 = sevt->track[i].chi2;
+		x.by = sevt->track[i].by;
+		x.bx = sevt->track[i].bx;
 		x.bdxdz = sevt->track[i].bdxdz;
 		x.bdydz = sevt->track[i].bdydz;
 		x.bDetPos = TVector3(sevt->track[i].bx, sevt->track[i].by, Geom->DCH.bz);
 		x.aDetPos = TVector3(sevt->track[i].x, sevt->track[i].y, Geom->DCH.z);
 		x.bMomentum = TVector3(x.bdxdz, x.bdydz, 1).Unit();
 		x.aMomentum = TVector3(sevt->track[i].dxdz, sevt->track[i].dydz, 1).Unit();
-		x.p = sevt->track[i].p;
-		x.q = sevt->track[i].q;
 		x.time = sevt->track[i].time;
 		x.dDeadCell = sevt->track[i].dDeadCell;
 
@@ -403,7 +412,7 @@ void CreateTracks(superCmpEvent *sevt){
 
 		rawEvent.track.push_back(x);
 
-		TVector3 propPos = propagateAfter(Geom->Lkr.z, t);
+		TVector3 propPos = propagateAfter(Geom->Lkr.z, t, rawEvent);
 		t.lkr_acc = LKr_acc(rootBurst.nrun, propPos.X(), propPos.Y(), 8);
 
 		corrEvent.pTrack.push_back(t);
@@ -417,6 +426,7 @@ void CreateClusters(superCmpEvent *sevt){
 		x.dDeadCell = sevt->cluster[i].dDeadCell;
 		x.time = sevt->cluster[i].time;
 		x.lkr_acc = LKr_acc(rootBurst.nrun, sevt->cluster[i].x, sevt->cluster[i].y, 8);
+		x.iTrack = sevt->cluster[i].iTrack;
 
 		NPhysicsCluster t = correctCluster(sevt, i);
 

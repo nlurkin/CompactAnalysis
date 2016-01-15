@@ -139,7 +139,7 @@ for i, h in enumerate(f.header):
     NFailedEvents += h.header.NFailedEvents
     NPassedEvents += h.header.NPassedEvents
 
-if hasattr(f, "pid_pi"):
+if hasattr(f, "pid_pi") or True:
     for i, event in enumerate(f.pid_pi):
         for index in range(cutsSize):
             pid_res.good[index] += event["pid_res.good"][index]
@@ -190,16 +190,16 @@ print "Processed events ->\t{0}".format(NProcessedEvents);
 print "Failed events ->\t{0}".format(NFailedEvents);
 print "Passed events ->\t{0}".format(NPassedEvents);
 
-
 print pid_res.total.prelim.ided.pass_t.events
 showIndex = ScanIndex
-for i,l in enumerate(f.cutsDefinition):
-#     if i==showIndex:
-    d = l.lists
+#for i,l in enumerate(f.cutsDefinition):
+i = 0
+if i==showIndex:
+    #d = l.lists
     showIndex = i
 #         print "\nShowing ScanIndex {0}: mpi={1}, mkmin={2}, mkmax={3}".format(i, d.maxPi0MassDiff, d.minKaonMassDiff, d.maxKaonMassDiff)
 
-    print "\nShowing ScanIndex {0}: cut: {1}".format(showIndex, d.unDeflectedElDist)
+    #print "\nShowing ScanIndex {0}: cut: {1}".format(showIndex, d.unDeflectedElDist)
     print "\nMC Association (track)\n--------------";
     #print "Good = {0}\t{1}".format(pid_res.good, pid_res.good*100./(pid_res.good+pid_res.bad))
     #print "Bad = {0}\t{1}".format(pid_res.bad, pid_res.bad*100./(pid_res.good+pid_res.bad))

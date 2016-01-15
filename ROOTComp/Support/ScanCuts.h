@@ -26,29 +26,34 @@ public:
 	int numBadTrackCombi;
 	int numXCandidates;
 	bool boolBadECandidates;
-	int minTrackMomentum;
-	int maxTrackMomentum;
+	double minTrackMomentum;
+	double maxTrackMomentum;
 	int numAddGoodCluster;
 	int lkrAcceptance;
 	int minGammaEnergy;
 	int minDeadCellDist;
 	int minGammaDCHRadius;
 	int unDeflectedElDist;
-	struct k2pi_t{
-		int minTotalMomentum;
-		int maxTotalMomentum;
+	class k2pi_t: public TObject{
+	public:
+		double minTotalMomentum;
+		double maxTotalMomentum;
 		double maxPt;
+		double minPi0MassDiff;
 		double maxPi0MassDiff;
 		double minKaonMassDiff;
 		double maxKaonMassDiff;
 		double pi0Mass2DiffCoarse;
+		ClassDefNV(k2pi_t, 1)
 	} k2pi;
-	struct kmu3_t{
+	class kmu3_t: public TObject{
+	public:
 		int maxTotalMomentum;
 		double minPt;
 		double maxPt;
 		double maxPi0MassDiff;
 		double maxMissMassSq;
+		ClassDefNV(kmu3_t, 1)
 	} kmu3;
 
 	ClassDefNV(Cuts, 1)

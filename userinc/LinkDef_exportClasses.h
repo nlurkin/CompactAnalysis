@@ -24,6 +24,7 @@
 #pragma link C++ class NGeom;
 #pragma link C++ class NPhysicsTrack;
 #pragma link C++ class NSuperTimeOffset;
+#pragma link C++ class NDETStatus;
 #pragma link C++ class vector<NSCVertex>;
 #pragma link C++ class vector<NTrak>;
 #pragma link C++ class vector<NCluster>;

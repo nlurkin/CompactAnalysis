@@ -278,14 +278,25 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 
 	//diffk1 = 0;
 	//diffk2 = 0;
+	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
+	double x2 = pow((tem+t2ep).M()/Mpi0,2.);
+
+	double y1 = 2*ee1*(t1ep-tem)/(pow(Mpi0,2)*(1-x1));
+	double y2 = 2*ee2*(t2ep-tem)/(pow(Mpi0,2)*(1-x2));
 
 	if(t==OptionsParser::K2PI){
 		if(options.isOptDebug()){
 			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
-			cout << " diffpi0:" << diffpi01 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
-			cout << " diffk:" << diffk1 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " M_pi0:" << ee1.M() << " <" << io.cutsDefinition.k2pi.minPi0MassDiff << " || " << ee1.M() << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " M_K:" << k1.M() << " <" << io.cutsDefinition.k2pi.minKaonMassDiff << " || " << k1.M() << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " x:" << x1 << " <0 || " << x1 << " >1 : rejected" << endl;
+			cout << " y:" << y1 << " <0 || " << y1 << " >1 : rejected" << endl;
 		}
-		if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
+				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
+				&& x1<1 && x1>0
+				&& fabs(y1)<1 && fabs(y1)>0){
 			nCandidates++;
 			xCandidate = goodTrack2;
 		}
@@ -293,8 +304,16 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 			cout << "Track2 pi0mass: " << ee2.M() << " kmass: " << k2.M() << endl;
 			cout << " diffpi0:" << diffpi02 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
 			cout << " diffk:" << diffk2 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " Must be " << io.cutsDefinition.k2pi.minKaonMassDiff << " < Mk < " << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " x:" << x2 << " <0 || " << x2 << " >1 : rejected" << endl;
+			cout << " y:" << y2 << " <0 || " << y2 << " >1 : rejected" << endl;
 		}
-		if( (diffpi02<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk2<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		//if( (diffpi02<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk2<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		if( ee2.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee2.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
+				&& k2.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k2.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
+				&& x2<1 && x2>0
+				&& fabs(y2)<1 && fabs(y2)>0){
+
 			nCandidates++;
 			xCandidate = goodTrack1;
 		}
@@ -380,9 +399,141 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 	return nCandidates;
 }
 
+int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t){
+	TLorentzVector tem;
+	TLorentzVector t1ep, t1x;
+	TLorentzVector ee1;
+	TLorentzVector k1;
+	double Mx;
+	int nCandidates = 0;
+	if(t==OptionsParser::K2PI) Mx = Mpic;
+	else if(t==OptionsParser::KMU3) Mx = Mmu;
+
+	int goodTrack1, goodTrack2;
+
+	int nNegative = 0;
+	int vtxCharge = rawEvent.vtx[corrEvent.goodVertexID].charge;
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 1;
+		goodTrack2 = 2;
+		xCandidate = 0;
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p, Mx);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 2;
+		xCandidate = 1;
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p, Mx);
+		nNegative++;
+	}
+	if(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].q==-1*vtxCharge){
+		goodTrack1 = 0;
+		goodTrack2 = 1;
+		xCandidate = 2;
+		t1x.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p, Mx);
+		nNegative++;
+	}
+
+	if(nNegative!=1) return 0;
+
+	//Try e = goodTrack1, x = goodTrack2
+	t1ep.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack1]].p, Me);
+	tem.SetVectM(corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[goodTrack2]].p, Me);
+	ee1 = tem+t1ep+gamma;
+	k1 = ee1+t1x;
+
+	double Mk;
+	double diffpi01;
+	double diffk1;
+
+	diffpi01 = fabs(ee1.M()-Mpi0);
+
+	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = MK;
+	else Mk = MK;
+
+	diffk1 = fabs(k1.M()-Mk);
+
+	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
+
+	double y1 = 2*ee1*(t1ep-tem)/(pow(Mpi0,2)*(1-x1));
+
+	if(t==OptionsParser::K2PI){
+		if(options.isOptDebug()){
+			cout << "Track1 pi0mass: " << ee1.M() << " kmass: " << k1.M() << endl;
+			cout << " M_pi0:" << ee1.M() << " <" << io.cutsDefinition.k2pi.minPi0MassDiff << " || " << ee1.M() << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " M_K:" << k1.M() << " <" << io.cutsDefinition.k2pi.minKaonMassDiff << " || " << k1.M() << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " x:" << x1 << " <0 || " << x1 << " >1 : rejected" << endl;
+			cout << " y:" << y1 << " <0 || " << y1 << " >1 : rejected" << endl;
+		}
+		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
+		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
+				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
+				&& x1<1 && x1>0
+				&& fabs(y1)<1 && fabs(y1)>0){
+			nCandidates++;
+		}
+	}
+	else if(t==OptionsParser::KMU3){
+		if( (diffpi01<io.cutsDefinition.kmu3.maxPi0MassDiff)){
+			nCandidates++;
+		}
+	}
+
+	meegTotal.Fill(ee1.M());
+	mkTotal.Fill(k1.M());
+	meegexTotal.Fill(ee1.M(), (tem+t1x).M());
+	meegkTotal.Fill(ee1.M(), k1.M());
+
+	if(!flBad){
+		//Good MC association, fill the plots
+		if(xPart==goodTrack2){
+			meegTrue.Fill(ee1.M());
+			mkTrue.Fill(k1.M());
+			meegexTrue.Fill(ee1.M(), (tem+t1x).M());
+			meegkTrue.Fill(ee1.M(), k1.M());
+
+			meegDiffTrue.Fill(ee1.M()-Mpi0);
+			mkDiffTrue.Fill(k1.M()-Mk);
+
+			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
+		}
+		else if(xPart==goodTrack1){
+			meegFalse.Fill(ee1.M());
+			mkFalse.Fill(k1.M());
+			meegexFalse.Fill(ee1.M(), (tem+t1x).M());
+			meegkFalse.Fill(ee1.M(), k1.M());
+
+			meegDiffFalse.Fill(ee1.M()-Mpi0);
+			mkDiffFalse.Fill(k1.M()-Mk);
+
+			xFalse = pow((tem+t1ep).M()/Mpi0, 2.);
+		}
+	}
+	return nCandidates;
+}
+
+bool pi0d_L3Trigger(NPhysicsTrack &t){
+	TVector3 propPos = propagateAfter(rootGeom.Lkr.z, t, rawEvent);
+	bool lkrAcceptance = t.lkr_acc;
+	bool goodAcceptance = false;
+	if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5.5 && " <<  t.E/t.p << " >0.8: ok" << endl;
+	if(lkrAcceptance==0 && t.p>=5.5 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
+
+	// Track position on LKr with Pb Wall
+	bool goodPBWall = true;
+	if(rootBurst.pbWall){
+		if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
+		if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
+	}
+
+	if(goodAcceptance && goodPBWall) return true;
+	return false;
+}
+
 //Selection
 int pi0d_tracksAcceptance(){
-	bool lkrAcceptance;
+	//bool lkrAcceptance;
 	TVector3 propPos;
 	bool badTrack = false;
 	double radius;
@@ -395,44 +546,47 @@ int pi0d_tracksAcceptance(){
 		int iGoodTrack = corrEvent.goodTracks[i];
 		NPhysicsTrack t = corrEvent.pTrack[iGoodTrack];
 
-		propPos = propagateAfter(rootGeom.Lkr.z, t);
-		lkrAcceptance = t.lkr_acc;
-		bool goodAcceptance = false;
-		//if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5 : ok" << endl;
+		//propPos = propagateAfter(rootGeom.Lkr.z, t);
+		//lkrAcceptance = t.lkr_acc;
+		//bool goodAcceptance = false;
+		//if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=6 && " <<  t.E/t.p << " >0.8: ok" << endl;
 		//to remove
 		//if(lkrAcceptance!=0) badTrack = true;
-		if(lkrAcceptance==0 && t.p>=6 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
-		goodAcceptance = true;
+		//if(lkrAcceptance==0 && t.p>=6 && t.E/t.p>0.8 && rawEvent.track[t.trackID].dDeadCell>2) goodAcceptance=true;
+		//goodAcceptance = true;
 
 		// Track position on LKr with Pb Wall
-		bool goodPBWall = true;
-		if(rootBurst.pbWall){
-			if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
+		//bool goodPBWall = true;
+		//if(rootBurst.pbWall){
+		//	if(options.isOptDebug()) cout << "\t\tPbWall y_LKr :\t\t-33.575 < " << propPos.Y() << " < -11.850: rejected" << endl;
 			//to remove
 			//if(propPos.Y()>-33.575 && propPos.Y() < -11.850) badTrack = true;
-			if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
-		}
+		//	if(propPos.Y()>-33.575 && propPos.Y() < -11.850) goodPBWall = false;
+		//}
 
-		if(goodAcceptance && goodPBWall) ntrackLkr++;
+		//if(goodAcceptance && goodPBWall) ntrackLkr++;
 
-		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t);
+		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t, rawEvent);
 		radius = distance2D(dch1, propPos);
 		if(options.isOptDebug()) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateBefore(rootGeom.Dch[1].PosChamber.z, t);
+		propPos = propagateBefore(rootGeom.Dch[1].PosChamber.z, t, rawEvent);
 		radius = distance2D(dch2, propPos);
 		if(options.isOptDebug()) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateAfter(rootGeom.Dch[3].PosChamber.z, t);
+		propPos = propagateAfter(rootGeom.Dch[3].PosChamber.z, t, rawEvent);
 		radius = distance2D(dch4, propPos);
 		if(options.isOptDebug()) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
+
+		if(options.isOptDebug()) cout << "Track quality :\t\t" << rawEvent.track[t.trackID].quality << "< 0.7 : rejected" << endl;
+		if(rawEvent.track[t.trackID].quality < 0.7) badTrack = true;
 	}
 
 	//At least 1 e+/e- track in lkr acceptance
-	if(ntrackLkr==0) badTrack = true;
+	//if(ntrackLkr==0) badTrack = true;
 	return badTrack;
 }
 
@@ -457,8 +611,8 @@ int pi0d_trackCombinationVeto_loose(){
 			if(options.isOptDebug()) cout << "\tTrying combination :\t" << i << " " << j << endl;
 
 			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2);
+			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1, rawEvent);
+			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2, rawEvent);
 
 			RDCH1 = distance2D(propPos1, propPos2);
 			if(options.isOptDebug()) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
@@ -508,8 +662,8 @@ int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
 			if(options.isOptDebug()) cout << "\tTrying combination :\t" << i << " " << j << endl;
 
 			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2);
+			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1, rawEvent);
+			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2, rawEvent);
 
 			RDCH1 = distance2D(propPos1, propPos2);
 			if(options.isOptDebug()) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
@@ -547,6 +701,7 @@ int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
 int pi0d_goodClusters_loose(){
 	TVector3 propPos;
 	double distance;
+	double trackR;
 	double tDiff;
 
 	int cond;
@@ -554,8 +709,8 @@ int pi0d_goodClusters_loose(){
 
 	int conditions;
 
-	if(rootBurst.isData) conditions = 7;
-	else conditions=6;
+	if(rootBurst.isData) 	conditions = 7;
+	else 					conditions = 6;
 
 	if(options.isOptDebug()) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
 	if(options.isOptDebug()) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
@@ -566,21 +721,34 @@ int pi0d_goodClusters_loose(){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
-		/*if(rootBurst.pbWall){
+		//Ignore clusters outside acceptance
+		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+		if(options.isOptDebug()) cout << "\td_deadcell " << rawEvent.cluster[c.clusterID].dDeadCell << " < 2 : reject" << endl;
+//		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
+
+		//Ignore clusters associated with tracks
+		if(options.isOptDebug()) cout << "\tAssoc track " << rawEvent.cluster[c.clusterID].iTrack << " != -1 : reject" << endl;
+		if(rawEvent.cluster[c.clusterID].iTrack != -1) continue;
+
+		//Ignore clusters behind Pb Wall
+		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
-		}*/
-		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
+		}
+		//Ignore clusters with low energy
+		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
+		if(rawEvent.cluster[c.clusterID].E <= 2.) continue;
 
 		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
 		NPhysicsTrack t2 = corrEvent.pTrack[corrEvent.goodTracks[1]];
 		NPhysicsTrack t3 = corrEvent.pTrack[corrEvent.goodTracks[2]];
 
 		// separation from x impact point >30cm
-		propPos = propagateAfter(rootGeom.Lkr.z, t1);
+		propPos = propagateAfter(rootGeom.Lkr.z, t1, rawEvent);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_1 :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		trackR = distance2D(propPos, TVector3(0,0,0));
+		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
+		if(distance>20 || trackR<10) cond++;
 
 		// separation from undeflected x trajectories >20cm
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t1.trackID].bDetPos, rawEvent.track[t1.trackID].bMomentum);
@@ -589,20 +757,22 @@ int pi0d_goodClusters_loose(){
 		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 
 		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(rootGeom.Lkr.z, t2);
+		propPos = propagateAfter(rootGeom.Lkr.z, t2, rawEvent);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		trackR = distance2D(propPos, TVector3(0,0,0));
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
+		if(distance>20 || trackR<10) cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t2.trackID].bDetPos, rawEvent.track[t2.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_2 :\t" << distance << "\t > " << io.cutsDefinition.unDeflectedElDist << " : ++" << endl;
 		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 
-		propPos = propagateAfter(rootGeom.Lkr.z, t3);
+		propPos = propagateAfter(rootGeom.Lkr.z, t3, rawEvent);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		trackR = distance2D(propPos, TVector3(0,0,0));
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
+		if(distance>20 || trackR<10) cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t3.trackID].bDetPos, rawEvent.track[t3.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
@@ -612,8 +782,17 @@ int pi0d_goodClusters_loose(){
 		// |t_g - t_vtx|<10ns
 		if(rootBurst.isData){
 			tDiff = fabs(rawEvent.cluster[c.clusterID].time - rawEvent.vtx[corrEvent.goodVertexID].time);
-			if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
-			if(tDiff<10) cond++;
+			if(options.isDoInvertTime()){
+				// at most 1 good cluster out of time and no good cluster in time
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t > 10 : ++" << endl;
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : reject event" << endl;
+				if(tDiff>10) cond++;
+				if(tDiff<10 && cond==(conditions-1)) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
+			}
+			else{
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
+				if(tDiff<10) cond++;
+			}
 		}
 
 		if(options.isOptDebug()) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
@@ -635,8 +814,8 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 
 	int conditions;
 
-	if(rootBurst.isData) conditions = 6;
-	else conditions=5;
+	if(rootBurst.isData) conditions = 7;
+	else conditions=6;
 
 	if(options.isOptDebug()) cout << "\tNumber of vclusters :\t" << corrEvent.pCluster.size() << endl;
 	if(options.isOptDebug()) cout << "\tNumber of clusters :\t" << rawEvent.Ncluster << endl;
@@ -647,34 +826,52 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
 
-		/*if(rootBurst.pbWall){
+		//Ignore clusters outside acceptance
+		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
+		if(options.isOptDebug()) cout << "\td_deadcell " << rawEvent.cluster[c.clusterID].dDeadCell << " < 2 : reject" << endl;
+//		if(rawEvent.cluster[c.clusterID].lkr_acc) continue;
+
+		if(options.isOptDebug()) cout << "\tAssoc track " << rawEvent.cluster[c.clusterID].iTrack << " != -1 : reject" << endl;
+		if(rawEvent.cluster[c.clusterID].iTrack != -1) continue;
+
+		//Ignore clusters behind Pb Wall
+		if(rootBurst.pbWall){
 			if(options.isOptDebug()) cout << "\tPbWall distance y_cluster :\t-33.575 < " << c.position.Y() << " < -11.850 : reject" << endl;
 			if(c.position.Y()>-33.575 && c.position.Y() < -11.850) continue;
-		}*/
-		if(options.isOptDebug()) cout << "\tEnergy :\t" << c.E << endl;
+		}
+		//Ignore clusters with low energy
+		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
+		if(rawEvent.cluster[c.clusterID].E <= 2.) continue;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[event.ep.parentTrack];
 		NPhysicsTrack em = corrEvent.pTrack[event.em.parentTrack];
 
 		// separation from x impact point >30cm
-		propPos = propagateAfter(rootGeom.Lkr.z, x);
+		propPos = propagateAfter(rootGeom.Lkr.z, x, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_x :\t\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>20) cond++;
+		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
+		//cond++;
+
+		// separation from undeflected x impact point >20cm
+		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[x.trackID].bDetPos, rawEvent.track[x.trackID].bMomentum);
+		distance = distance2D(propPos, c.position);
+		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_x :\t" << distance << "\t > 50 : ++" << endl;
+		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 		//cond++;
 
 		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(rootGeom.Lkr.z, ep);
+		propPos = propagateAfter(rootGeom.Lkr.z, ep, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
 		//cond++;
 
-		propPos = propagateAfter(rootGeom.Lkr.z, em);
+		propPos = propagateAfter(rootGeom.Lkr.z, em, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20) cond++;
+		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
 		//cond++;
 
 		// separation from undeflected e+ e- trajectories >20cm
@@ -693,8 +890,17 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		// |t_g - t_vtx|<10ns
 		if(rootBurst.isData){
 			tDiff = fabs(rawEvent.cluster[c.clusterID].time - rawEvent.vtx[corrEvent.goodVertexID].time);
-			if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
-			if(tDiff<10) cond++;
+			if(options.isDoInvertTime()){
+				// at most 1 good cluster out of time and no good cluster in time
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t > 10 : ++" << endl;
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : reject event" << endl;
+				if(tDiff>10) cond++;
+				if(tDiff<10 && cond==(conditions-1)) return 1000; //Bad event anyway, because we have at least 1 good cluster in time
+			}
+			else{
+				if(options.isOptDebug()) cout << "\t\t|t_g - t_vtx|:\t\t" << tDiff << "\t < 10 : ++" << endl;
+				if(tDiff<10) cond++;
+			}
 		}
 
 		if(options.isOptDebug()) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;

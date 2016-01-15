@@ -6,6 +6,8 @@
 
 #pragma link C++ class Cuts;
 #pragma link C++ class ScanCuts;
+#pragma link C++ class ScanCuts::k2pi_t;
+#pragma link C++ class ScanCuts::kmu3_t;
 
 #endif
 

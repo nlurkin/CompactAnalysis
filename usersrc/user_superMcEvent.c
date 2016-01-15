@@ -46,6 +46,7 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 		}
 	}
 	rootMC.xTrue = pow((rootMC.em.P+rootMC.ep.P).M()/Mpi0, 2.);
+	evt->scmpevt.DETstatus[0].LV3ABTrig = 1;
 
 
 	rootBurst.isData = false;
@@ -59,7 +60,7 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
     {
       printSuperMcEvent(evt,fprt);
       nuserevt++;
-    } 
+    }
 */
 
 /*----------- End of user C code -----------*/
