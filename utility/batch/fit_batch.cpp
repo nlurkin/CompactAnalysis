@@ -220,7 +220,7 @@ void fit_show() {
 
 	f->PrepareHistos(cfg.getMcColors(), cfg.getDataColors());
 
-	f->fit(true, false);
+	//f->fit(true, false);
 	f->fit(true, true);
 //	f->fit(false, false);
 //	f->fit(false, true);

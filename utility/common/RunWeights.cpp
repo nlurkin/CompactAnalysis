@@ -57,7 +57,6 @@ bool RunWeights::loadWeights(string fileName){
 }
 
 double RunWeights::applyWeights(int run) const{
-	return 1.;
 	map<int, double>::const_iterator it;
 
 	if((it = fRatioMap.find(run)) == fRatioMap.end()){
