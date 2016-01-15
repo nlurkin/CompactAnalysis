@@ -7,9 +7,14 @@
 
 #include "Drawer.h"
 
+#include <Rtypes.h>
+#include <TAttLine.h>
+#include <TAttMarker.h>
+#include <TAttText.h>
 #include <TCanvas.h>
+#include <TF1.h>
 #include <TH1.h>
-#include <TNamed.h>
+#include <TPaveText.h>
 #include <TString.h>
 #include <cmath>
 #include <iostream>
@@ -59,14 +64,32 @@ void Drawer::drawFitResult(MinuitFitter* fit, std::vector<Sample*> mcSamples,
 	for(Sample* sample : dataSamples){
 			FitDataSample *ssample = static_cast<FitDataSample*>(sample->getSubSample(0));
 			TH1D *dSig_c = (TH1D*) ssample->getSig()->Clone(TString::Format("dSig_c%s%i", fit->getName().c_str(), sample->getIndex()));
-			cout << dSig_c->GetBinContent(1) << endl;
 			d.AddHisto2(dSig_c, sample->getLegend().c_str());
 		}
 
 	TH1D* ratio = StackRatioDrawer::buildRatio(finalMCSample->getSubSample(0)->getMainHisto(), finalDataSample->getSubSample(0)->getMainHisto());
 	d.SetSecondary(ratio);
 
-	d.draw();
+	TCanvas* c1 = new TCanvas(fit->getName().c_str(), fit->getName().c_str());
+	d.generate(c1);
+	TPaveText *fitR = new TPaveText(0.47, 0.78, 0.77, 0.94, "NDC BR");
+	fitR->AddText("Fit result");
+	fitR->AddLine(0., 0.7, 1., 0.7);
+	fitR->AddText(Form("G = %f #pm %f", fit->getNorm(), fit->getNormErr()));
+	fitR->AddText(Form("FF = %f #pm %f", fit->getFormFactor(), fit->getFormFactorErr()));
+	fitR->SetTextAlign(12);
+	TF1 *f = new TF1("f", "[0]*(1+[1]*2.0*x+[1]*[1]*x*x)", 0., 1.);
+	f->SetParameter(0, fit->getNorm());
+	f->SetParameter(1, fit->getFormFactor());
+	f->SetLineColor(kRed);
+	c1->cd(1);
+	c1->cd(1)->SetLogx(true);
+	c1->cd(1)->SetLogy(true);
+	fitR->Draw();
+	c1->cd(2);
+	f->Draw("LSAME");
+	ratio->SetMarkerColor(kRed);
+	c1->cd(2)->SetLogx(true);
 }
 
 void Drawer::drawFitPreparation(std::vector<Sample*> mcSamples,
