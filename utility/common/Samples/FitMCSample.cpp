@@ -24,6 +24,7 @@ FitMCSample::FitMCSample() :
 }
 
 FitMCSample::~FitMCSample() {
+
 }
 
 void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
@@ -245,6 +246,18 @@ FitMCSample::bContent FitMCSample::getBinContent(int bin) {
 	return b;
 }
 
+FitMCSample::bContent FitMCSample::getBinError(int bin) {
+	bContent b;
+	b.d1 = d1->GetBinError(bin);
+	b.d2 = d2->GetBinError(bin);
+	b.d3 = d3->GetBinError(bin);
+	b.dNew = dNew->GetBinError(bin);
+	b.dAlpha = dAlpha->GetBinError(bin);
+	b.dBeta = dBeta->GetBinError(bin);
+	b.dGamma = dGamma->GetBinError(bin);
+
+	return b;
+}
 SubSample* FitMCSample::Add(const SubSample* other) {
 	SubSample::Add(other);
 	const FitMCSample *myOther = static_cast<const FitMCSample*>(other);

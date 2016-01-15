@@ -51,6 +51,7 @@ public:
 	void scale();
 
 	bContent getBinContent(int bin);
+	bContent getBinError(int bin);
 	virtual SubSample* Add(const SubSample* other);
 
 	const TH1D* getD1() const {
