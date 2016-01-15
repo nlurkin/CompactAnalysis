@@ -277,3 +277,6 @@ bool ScanCuts::parseCuts(std::string fileName) {
 void ScanCuts::generateLists(int number) {
 	cutsLists.resize(number);
 }
+
+double ScanCuts::getDiff() {
+}
