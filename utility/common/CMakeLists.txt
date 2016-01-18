@@ -1,9 +1,9 @@
 if(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "-g -std=c++11 -pedantic-errors -Wall -Wextra -Werror -Wfatal-errors -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing")
+  set(CMAKE_CXX_FLAGS "-g -std=c++11 -pedantic-errors -Wall -Wextra -Wfatal-errors -Wwrite-strings -Woverloaded-virtual -fno-nonansi-builtins -fno-gnu-keywords -fstrict-aliasing -Wunused-value")
 endif()
 
-set(drawerHdr Interface/HistoDrawer.h Drawer/Drawer.h Drawer/StackDrawer.h Drawer/StackRatioDrawer.h) 
-set(drawerSrc Interface/HistoDrawer.cpp Drawer/Drawer.cpp Drawer/StackDrawer.cpp Drawer/StackRatioDrawer.cpp)
+set(drawerHdr Interface/HistoDrawer.h Drawer/Drawer.h Drawer/StackDrawer.h Drawer/StackRatioDrawer.h Drawer/ScanDrawer.h) 
+set(drawerSrc Interface/HistoDrawer.cpp Drawer/Drawer.cpp Drawer/StackDrawer.cpp Drawer/StackRatioDrawer.cpp Drawer/ScanDrawer.cpp)
 
 set(fitterHdr Fitter/Fitter.h Fitter/MinuitFitter.h Fitter/MinuitFitterNewROOT.h Fitter/MinuitFitterNewChi2.h)
 set(fitterSrc Fitter/Fitter.cpp Fitter/MinuitFitter.cpp Fitter/MinuitFitterNewROOT.cpp Fitter/MinuitFitterNewChi2.cpp)
