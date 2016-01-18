@@ -794,6 +794,7 @@ int pi0d_goodClusters_loose(){
 //				if(tDiff<10) cond++;
 //			}
 //		}
+		cond++;
 
 		if(options.isOptDebug()) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
 		if(cond==conditions){
@@ -902,6 +903,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 //				if(tDiff<10) cond++;
 //			}
 //		}
+		cond++;
 
 		if(options.isOptDebug()) cout << "\tConditions :\t\t" << cond << "\t == " << conditions << " : Good cluster" << endl;
 		if(cond==conditions){
