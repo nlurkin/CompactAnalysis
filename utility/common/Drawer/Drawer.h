@@ -17,7 +17,9 @@ public:
 	Drawer();
 	virtual ~Drawer();
 
-	static void drawFitResult(MinuitFitter * fit, std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample);
+	static void drawFitScan(std::vector<MinuitFitter*> fit, std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample);
+
+	static void drawFitResult(std::vector<MinuitFitter*> fit, std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample, int index);
 	static void drawFitPreparation(std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, std::string title);
 
 	static void drawCombineStack(std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples, Sample* finalMCSample, Sample* finalDataSample);
