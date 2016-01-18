@@ -16,7 +16,7 @@
 
 using namespace std;
 
-Fitter::Fitter(){
+Fitter::Fitter() {
 }
 
 Fitter::~Fitter() {
@@ -26,33 +26,46 @@ Fitter::~Fitter() {
 void Fitter::PrepareHistos(vector<int> allColors, vector<int> dataColors) {
 	//Color histos
 	for (unsigned int i = 0; i < fMCSamples.size(); i++) {
-		vector<int> colors(allColors.begin() + (i*3), allColors.begin() + (i*3+3));
+		vector<int> colors(allColors.begin() + (i * 3),
+				allColors.begin() + (i * 3 + 3));
 		fMCSamples[i]->setPlotStyle(colors);
 	}
 
 	for (unsigned int i = 0; i < fDataSamples.size(); i++) {
-		vector<int> colors(dataColors.begin() + (i*3), dataColors.begin() + (i*3+3));
+		vector<int> colors(dataColors.begin() + (i * 3),
+				dataColors.begin() + (i * 3 + 3));
 		fDataSamples[i]->setPlotStyle(colors);
 	}
 
-	Drawer::drawFitPreparation(fMCSamples, fDataSamples, "Fitter");
+	//Drawer::drawFitPreparation(fMCSamples, fDataSamples, "Fitter");
 }
 
 void Fitter::fit(bool, bool useROOT) {
-	MinuitFitter *minuit;
-	if (useROOT) {
-		minuit = new MinuitFitterNewROOT(fNBins);
-		static_cast<MinuitFitterNewROOT*>(minuit)->init(fBinning);
-		minuit->setName("NewROOT");
-	} else {
-		minuit = new MinuitFitterNewChi2(fNBins);
-		minuit->setName("NewChi2");
-	}
-	minuit->setSamples(static_cast<FitMCSample*>(fFinalMCSample->getSubSample(0)), static_cast<FitDataSample*>(fFinalDataSample->getSubSample(0)));
-	minuit->fit();
+	std::vector<MinuitFitter*> vFitter;
+	MinuitFitter* minuit;
 
-	minuit->printResult();
-	Drawer::drawFitResult(minuit, fMCSamples, fDataSamples, fFinalMCSample, fFinalDataSample);
+	for (int i = 0; i < fFinalDataSample->getNSubSample(); ++i) {
+		if (useROOT) {
+			minuit = new MinuitFitterNewROOT(fNBins);
+			static_cast<MinuitFitterNewROOT*>(minuit)->init(fBinning);
+			minuit->setName("NewROOT");
+		} else {
+			minuit = new MinuitFitterNewChi2(fNBins);
+			minuit->setName("NewChi2");
+		}
+		minuit->setSamples(
+				static_cast<FitMCSample*>(fFinalMCSample->getSubSample(i)),
+				static_cast<FitDataSample*>(fFinalDataSample->getSubSample(i)));
+		minuit->fit();
+		vFitter.push_back(minuit);
+	}
+
+	for(auto f : vFitter) f->printResult();
+
+	Drawer::drawFitScan(vFitter, fMCSamples, fDataSamples, fFinalMCSample, fFinalDataSample);
+	//Drawer::drawFitResult(vFitter, fMCSamples, fDataSamples, fFinalMCSample,
+	//		fFinalDataSample, fDataSamples[0]->getMainSubSample());
+
 }
 
 double Fitter::getNormalization(double a) {
