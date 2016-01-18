@@ -126,6 +126,10 @@ public:
 		return fIndex;
 	}
 
+	int getMainSubSample() const {
+		return fMainSubSample;
+	}
+
 protected:
 	int fIndex;
 	double fBr;

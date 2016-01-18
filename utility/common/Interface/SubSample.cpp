@@ -80,4 +80,6 @@ void SubSample::initOutput() {
 void SubSample::writeTree() {
 	fFitTree->Fill();
 	fFitTree->Write();
+	if(fCutDef)
+		fCutDef->Write();
 }
