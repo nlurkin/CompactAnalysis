@@ -278,5 +278,36 @@ void ScanCuts::generateLists(int number) {
 	cutsLists.resize(number);
 }
 
-double ScanCuts::getDiff() const {
+double ScanCuts::getDiff(const ScanCuts* other) const {
+	if(triggerMask != other->triggerMask) return triggerMask;
+	else if(numVertex3 != other->numVertex3) return numVertex3;
+	else if(minZVertex != other->minZVertex) return minZVertex;
+	else if(maxZVertex != other->maxZVertex) return maxZVertex;
+	else if(maxChi2Vertex != other->maxChi2Vertex) return maxChi2Vertex;
+	else if(maxExtraTracks != other->maxExtraTracks) return maxExtraTracks;
+	else if(maxTrackTime != other->maxTrackTime) return maxTrackTime;
+	else if(numBadTrackCombi != other->numBadTrackCombi) return numBadTrackCombi;
+	else if(numXCandidates != other->numXCandidates) return numXCandidates;
+	else if(minTrackMomentum != other->minTrackMomentum) return minTrackMomentum;
+	else if(maxTrackMomentum != other->maxTrackMomentum) return maxTrackMomentum;
+	else if(numAddGoodCluster != other->numAddGoodCluster) return numAddGoodCluster;
+	else if(lkrAcceptance != other->lkrAcceptance) return lkrAcceptance;
+	else if(minGammaEnergy != other->minGammaEnergy) return minGammaEnergy;
+	else if(minDeadCellDist != other->minDeadCellDist) return minDeadCellDist;
+	else if(minGammaDCHRadius != other->minGammaDCHRadius) return minGammaDCHRadius;
+	else if(unDeflectedElDist != other->unDeflectedElDist) return unDeflectedElDist;
+	else if(k2pi.minTotalMomentum != other->k2pi.minTotalMomentum) return k2pi.minTotalMomentum;
+	else if(k2pi.maxTotalMomentum != other->k2pi.maxTotalMomentum) return k2pi.maxTotalMomentum;
+	else if(k2pi.maxPt != other->k2pi.maxPt) return k2pi.maxPt;
+	else if(k2pi.minPi0MassDiff != other->k2pi.minPi0MassDiff) return k2pi.minPi0MassDiff;
+	else if(k2pi.maxPi0MassDiff != other->k2pi.maxPi0MassDiff) return k2pi.maxPi0MassDiff;
+	else if(k2pi.minKaonMassDiff != other->k2pi.minKaonMassDiff) return k2pi.minKaonMassDiff;
+	else if(k2pi.maxKaonMassDiff != other->k2pi.maxKaonMassDiff) return k2pi.maxKaonMassDiff;
+	else if(k2pi.pi0Mass2DiffCoarse != other->k2pi.pi0Mass2DiffCoarse) return k2pi.pi0Mass2DiffCoarse;
+	else if(kmu3.maxTotalMomentum != other->kmu3.maxTotalMomentum) return kmu3.maxTotalMomentum;
+	else if(kmu3.minPt != other->kmu3.minPt) return kmu3.minPt;
+	else if(kmu3.maxPt != other->kmu3.maxPt) return kmu3.maxPt;
+	else if(kmu3.maxPi0MassDiff != other->kmu3.maxPi0MassDiff) return kmu3.maxPi0MassDiff;
+	else if(kmu3.maxMissMassSq != other->kmu3.maxMissMassSq) return kmu3.maxMissMassSq;
+	return 0;
 }
