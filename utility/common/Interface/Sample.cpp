@@ -146,7 +146,8 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 	t->SetBranchAddress("corrEvent", &corrBrch);
 	th->SetBranchAddress("header", &headerBrch);
 	th->SetBranchAddress("geom", &geomBrch);
-	tc->SetBranchAddress("lists", &cutsLists);
+	if(tc)
+		tc->SetBranchAddress("lists", &cutsLists);
 	if (mcEvent)
 		t->SetBranchAddress("mc", &mcEvent);
 	if (cutsPass) {
@@ -202,7 +203,8 @@ void Sample::doGet(TFile* inputFD, TFile* tempFD) {
 		fMainSubSample = fCfg->getScanId();
 	for (auto ss : fSubSamples) {
 		mkdirCd(inputFD, Form("%i", index));
-		ss->setCutDef(static_cast<ScanCuts*>(gDirectory->Get("ScanCuts")));
+		if(c)
+			ss->setCutDef(static_cast<ScanCuts*>(gDirectory->Get("ScanCuts")));
 		ss->doGet(gDirectory, tempFD);
 		inputFD->cd();
 		++index;
