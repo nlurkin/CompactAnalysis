@@ -6,6 +6,8 @@
  */
 
 #include "StackRatioDrawer.h"
+#include <iostream>
+using namespace std;
 
 StackRatioDrawer::StackRatioDrawer() :
 fSecondary(nullptr){
@@ -79,8 +81,11 @@ void StackRatioDrawer::AddHisto2(TH1* h, std::string legend, std::string option)
 
 TH1D* StackRatioDrawer::buildRatio(TH1D* mc, TH1D* data) {
 	TH1D* r;
-	TString rnd = rand() % 99999;
-	r = new TH1D("ratio" + rnd, "ratio", data->GetXaxis()->GetNbins(), data->GetXaxis()->GetXbins()->fArray);
+	int rnd = rand() % 99999;
+	if(data->GetXaxis()->GetXbins()->fArray)
+		r = new TH1D(Form("ratio%i", rnd), "ratio", data->GetXaxis()->GetNbins(), data->GetXaxis()->GetXbins()->fArray);
+	else
+		r = new TH1D(Form("ratio%i", rnd), "ratio", data->GetXaxis()->GetNbins(), data->GetXaxis()->GetXmin(), data->GetXaxis()->GetXmax());
 
 	mc->SetFillColor(8);
 

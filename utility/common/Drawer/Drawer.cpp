@@ -205,8 +205,11 @@ void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
 				static_cast<CombineMCSample*>(sample->getSubSample(0));
 		vector<TH1D*> d1 = ssample->getD1();
 		for (unsigned int i = 0; i < d1.size(); ++i) {
-			if (d.size() <= i)
+			if (d.size() <= i){
 				d.push_back(new StackRatioDrawer());
+				d[i]->setName(d1[i]->GetName());
+				d[i]->setTitle(d1[i]->GetTitle());
+			}
 			d[i]->AddHisto1(d1[i], sample->getLegend(), "f");
 		}
 	}
@@ -218,7 +221,7 @@ void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
 		for (unsigned int i = 0; i < d1.size(); ++i) {
 			if (d.size() <= i)
 				d.push_back(new StackRatioDrawer());
-			d[i]->AddHisto1(d1[i], sample->getLegend(), "lep");
+			d[i]->AddHisto2(d1[i], sample->getLegend(), "lep");
 		}
 	}
 	vector<TH1D*> data =
@@ -226,10 +229,10 @@ void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
 	vector<TH1D*> mc =
 			static_cast<CombineMCSample*>(finalMCSample->getSubSample(0))->getD1();
 	for (unsigned int iCanvas = 0; iCanvas < data.size(); ++iCanvas) {
-		//TCanvas *c = new TCanvas(TString::Format("c%i", iCanvas), data[iCanvas]->GetTitle());
 		TH1D* ratio = StackRatioDrawer::buildRatio(mc[iCanvas], data[iCanvas]);
 		d[iCanvas]->SetSecondary(ratio);
 		d[iCanvas]->draw();
+		d[iCanvas]->save();
 	}
 }
 
