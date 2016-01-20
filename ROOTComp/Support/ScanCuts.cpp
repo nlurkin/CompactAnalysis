@@ -78,6 +78,7 @@ void Cuts::print(){
 	std::cout << "minTotalMomentum\t--> " << k2pi.minTotalMomentum << std::endl;
 	std::cout << "maxTotalMomentum\t--> " << k2pi.maxTotalMomentum << std::endl;
 	std::cout << "maxPt\t\t\t--> " << k2pi.maxPt << std::endl;
+	std::cout << "minPi0MassDiff\t\t--> " << k2pi.minPi0MassDiff << std::endl;
 	std::cout << "maxPi0MassDiff\t\t--> " << k2pi.maxPi0MassDiff << std::endl;
 	std::cout << "minKaonMassDiff\t\t--> " << k2pi.minKaonMassDiff << std::endl;
 	std::cout << "maxKaonMassDiff\t\t--> " << k2pi.maxKaonMassDiff << std::endl;
