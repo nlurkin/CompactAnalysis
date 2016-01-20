@@ -237,6 +237,9 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			else if(name.compare("k2pi.maxPi0MassDiff")==0){
 				cutsLists[id].k2pi.maxPi0MassDiff = atof(value.c_str());
 			}
+			else if(name.compare("k2pi.minPi0MassDiff")==0){
+				cutsLists[id].k2pi.minPi0MassDiff = atof(value.c_str());
+			}
 			else if(name.compare("k2pi.minKaonMassDiff")==0){
 				cutsLists[id].k2pi.minKaonMassDiff = atof(value.c_str());
 			}
