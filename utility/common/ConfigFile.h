@@ -194,6 +194,18 @@ public:
 		return fNScan;
 	}
 
+	int getStartScan() const {
+		return fStartScan;
+	}
+
+	int getEndScan() const {
+		return fEndScan;
+	}
+
+	double getMaxLoss() const {
+		return fMaxLoss;
+	}
+
 private:
 	boost::program_options::options_description fDesc;
 	int fRunStart;
@@ -205,6 +217,9 @@ private:
 	double fTestA;
 	int fScanID;
 	int fNScan;
+	int fStartScan;
+	int fEndScan;
+	double fMaxLoss;
 
 	std::vector<int> fMCColors, fDataColors;
 	std::vector<std::string> fMCLegendTitle, fDataLegendTitle;

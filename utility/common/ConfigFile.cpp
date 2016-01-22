@@ -40,8 +40,11 @@ ConfigFile::ConfigFile() :
 		("testA", 		po::value< double>			(&fTestA)->default_value(0), 		"List of input MC files")
 		("binsfile", 	po::value< string>			(&fBinsFileName), 					"List of input MC files")
 		("equalbin", 	po::value< bool>			(&fWithEqualBins), 					"List of input MC files")
-		("scanid", 		po::value< int>				(&fScanID), 						"List of input MC files")
+		("scanid", 		po::value< int>				(&fScanID)->default_value(-1),		"List of input MC files")
 		("nscan", 		po::value< int>				(&fNScan)->default_value(1),	 	"List of input MC files")
+		("startscan", 	po::value< int>				(&fStartScan)->default_value(-1),	"List of input MC files")
+		("endscan", 	po::value< int>				(&fEndScan)->default_value(-1),	 	"List of input MC files")
+		("maxloss", 	po::value< double>			(&fMaxLoss)->default_value(0.2),	"List of input MC files")
 	;
 }
 
@@ -120,7 +123,7 @@ bool ConfigFile::readFile(string fileName){
 	}
 	if (vm.count("datafactor")) {
 		tempVec = tokenize(vm["datafactor"].as<string>());
-		for(auto it : tempVec) fDataFactor.push_back(it.Atoi());
+		for(auto it : tempVec) fDataFactor.push_back(it.Atof());
 	}
 
 
@@ -154,6 +157,7 @@ void ConfigFile::print() const{
 	cout << "With equal bins: " << fWithEqualBins << endl;
 	cout << "Scan ID: " << fScanID << endl;
 	cout << "# Scan: " << fNScan << endl;
+	cout << "Use scan from " << fStartScan << " to " << fEndScan << endl;
 }
 
 bool ConfigFile::testAllOutputFiles() const{
