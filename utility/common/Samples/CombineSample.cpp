@@ -25,9 +25,15 @@ CombineSample::~CombineSample() {
 void CombineSample::processEvent(ROOTPhysicsEvent *eventBrch,
 		ROOTBurst *burstBrch, ROOTRawEvent *rawBrch,
 		ROOTCorrectedEvent *corrBrch, ROOTFileHeader *, ROOTMCEvent *mcEvent,
-		NGeom *geomBrch, std::vector<bool> *, const ConfigFile *cfg,
+		NGeom *geomBrch, std::vector<bool> *cutsPass, const ConfigFile *cfg,
 		const RunWeights * weights) {
 
+	if (cutsPass) {
+		if (!cutsPass->at(fScanID)) {
+			fFitBrch.selEvents--;
+			return;
+		}
+	}
 	if (!cfg->testUseRun(burstBrch->nrun, burstBrch->period))
 		return;
 
@@ -508,27 +514,27 @@ void CombineSample::doGetHisto(TDirectory* inputFD, TFile* tempFD) {
 	getHisto(inputFD, tempFD, "L3_E_LKr_gamma");
 	getHisto(inputFD, tempFD, "L3_E_LKr");
 
-	getHisto2(inputFD, tempFD, "xMap");
-	getHisto2(inputFD, tempFD, "LKr_XY_ep");
-	getHisto2(inputFD, tempFD, "LKr_XY_em");
-	getHisto2(inputFD, tempFD, "LKr_XY_pip");
-	getHisto2(inputFD, tempFD, "LKr_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH1_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH1_XY_em");
-	getHisto2(inputFD, tempFD, "DCH1_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH1_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH2_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH2_XY_em");
-	getHisto2(inputFD, tempFD, "DCH2_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH2_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH3_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH3_XY_em");
-	getHisto2(inputFD, tempFD, "DCH3_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH3_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH4_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH4_XY_em");
-	getHisto2(inputFD, tempFD, "DCH4_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH4_XY_gamma");
+//	getHisto2(inputFD, tempFD, "xMap");
+//	getHisto2(inputFD, tempFD, "LKr_XY_ep");
+//	getHisto2(inputFD, tempFD, "LKr_XY_em");
+//	getHisto2(inputFD, tempFD, "LKr_XY_pip");
+//	getHisto2(inputFD, tempFD, "LKr_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_gamma");
 }
 
 void CombineSample::doWrite() {
@@ -730,9 +736,9 @@ void CombineSample::scale() {
 	for (unsigned int i = 0; i < d1.size(); ++i) {
 		SubSample::scale(d1.at(i), 1.);
 	}
-	for (unsigned int i = 0; i < dMap.size(); ++i) {
-		SubSample::scale(dMap.at(i), 1.);
-	}
+//	for (unsigned int i = 0; i < dMap.size(); ++i) {
+//		SubSample::scale(dMap.at(i), 1.);
+//	}
 }
 
 double CombineSample::getFFIntegral(double) {
@@ -743,8 +749,8 @@ void CombineSample::setPlotStyle(std::vector<int> color) {
 	for (auto plot : d1)
 		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
 
-	for (auto plot : dMap)
-		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
+//	for (auto plot : dMap)
+//		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
 }
 
 TH1D* CombineSample::getMainHisto() {
@@ -757,8 +763,8 @@ SubSample* CombineSample::Add(const SubSample* other) {
 	for (unsigned int i = 0; i < d1.size(); i++) {
 		d1[i]->Add(myOther->d1[i], 1.);
 	}
-	for (unsigned int i = 0; i < dMap.size(); i++) {
-		dMap[i]->Add(myOther->dMap[i], 1.);
-	}
+//	for (unsigned int i = 0; i < dMap.size(); i++) {
+//		dMap[i]->Add(myOther->dMap[i], 1.);
+//	}
 	return this;
 }
