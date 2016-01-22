@@ -171,16 +171,16 @@ void Drawer::drawFitPreparation(std::vector<Sample*> mcSamples,
 
 void Drawer::drawFitScan(std::vector<MinuitFitter*> fit,
 		std::vector<Sample*> mcSamples, std::vector<Sample*> dataSamples,
-		Sample* finalMCSample, Sample* finalDataSample) {
+		Sample* finalMCSample, Sample* finalDataSample, vector<int> use) {
 
 	ScanDrawer d;
-	d.setDefaultCutValue(mcSamples[0]->getMainSubSample());
+	d.setDefaultCutValue(std::find(use.begin(), use.end(), mcSamples[0]->getMainSubSample())-use.begin());
 	const ScanCuts *defaultCuts = mcSamples[0]->getSubSample(
 			mcSamples[0]->getMainSubSample())->getCutDef();
 	double diff;
 
-	for (unsigned int i = 0; i < fit.size(); ++i) {
-		if (i != d.getDefaultCutValue())
+	for (auto i : use) {
+		if (i != mcSamples[0]->getMainSubSample())
 			diff = mcSamples[0]->getSubSample(i)->getCutDef()->getDiff(
 					defaultCuts), fit[i]->getFormFactor();
 		else
@@ -193,6 +193,7 @@ void Drawer::drawFitScan(std::vector<MinuitFitter*> fit,
 	}
 	d.computeUncorrError();
 	d.draw();
+	d.print();
 }
 
 void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
@@ -200,9 +201,11 @@ void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
 		Sample* finalDataSample) {
 	vector<StackRatioDrawer*> d;
 
+	int mainSubSample = mcSamples[0]->getMainSubSample();
+
 	for (auto sample : mcSamples) {
 		CombineMCSample *ssample =
-				static_cast<CombineMCSample*>(sample->getSubSample(0));
+				static_cast<CombineMCSample*>(sample->getSubSample(mainSubSample));
 		vector<TH1D*> d1 = ssample->getD1();
 		for (unsigned int i = 0; i < d1.size(); ++i) {
 			if (d.size() <= i){
@@ -216,7 +219,7 @@ void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
 
 	for (auto sample : dataSamples) {
 		CombineDataSample *ssample =
-				static_cast<CombineDataSample*>(sample->getSubSample(0));
+				static_cast<CombineDataSample*>(sample->getSubSample(mainSubSample));
 		vector<TH1D*> d1 = ssample->getD1();
 		for (unsigned int i = 0; i < d1.size(); ++i) {
 			if (d.size() <= i)
@@ -225,9 +228,9 @@ void Drawer::drawCombineStack(std::vector<Sample*> mcSamples,
 		}
 	}
 	vector<TH1D*> data =
-			static_cast<CombineDataSample*>(finalDataSample->getSubSample(0))->getD1();
+			static_cast<CombineDataSample*>(finalDataSample->getSubSample(mainSubSample))->getD1();
 	vector<TH1D*> mc =
-			static_cast<CombineMCSample*>(finalMCSample->getSubSample(0))->getD1();
+			static_cast<CombineMCSample*>(finalMCSample->getSubSample(mainSubSample))->getD1();
 	for (unsigned int iCanvas = 0; iCanvas < data.size(); ++iCanvas) {
 		TH1D* ratio = StackRatioDrawer::buildRatio(mc[iCanvas], data[iCanvas]);
 		d[iCanvas]->SetSecondary(ratio);
