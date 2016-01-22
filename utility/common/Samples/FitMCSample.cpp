@@ -57,7 +57,7 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
 			fFitBrch))
 		return;
-	weight = weights->applyWeights(burstBrch->nrun) * corrBrch->weight;
+	weight = weights->applyWeights(burstBrch->nrun);// * corrBrch->weight;
 
 	x = eventBrch->x;
 	if (mcEvent)
@@ -68,10 +68,10 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	aweight = 1.;
 
 	if (passNormal) {
-		dNew->Fill(x, bweight * aweight * weight);
-		dAlpha->Fill(x, 1 / pow(1 + 0.032 * xTrue, 2.));
-		dBeta->Fill(x, xTrue / pow(1 + 0.032 * xTrue, 2.));
-		dGamma->Fill(x, pow(xTrue / (1 + 0.032 * xTrue), 2.));
+		dNew->Fill(x, 	bweight * aweight * weight);
+		dAlpha->Fill(x, (1 / pow(1 + 0.032 * xTrue, 2.) 		) * weight);
+		dBeta->Fill(x, 	(xTrue / pow(1 + 0.032 * xTrue, 2.) 	) * weight);
+		dGamma->Fill(x, (pow(xTrue / (1 + 0.032 * xTrue), 2.) 	) * weight);
 	}
 	if (mod == 0 || mod == 1 || mod == 2) {
 		//TODO to check
