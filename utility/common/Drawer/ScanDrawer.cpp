@@ -12,11 +12,16 @@
 #include <TAttMarker.h>
 #include <TAxis.h>
 #include <TCanvas.h>
+#include <TFile.h>
 #include <TGraphErrors.h>
+#include <THStack.h>
+#include <TLegend.h>
 #include <TPad.h>
-#include <cmath>
-#include <iostream>
 #include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
 
 using namespace std;
 
@@ -30,6 +35,7 @@ ScanDrawer::~ScanDrawer() {
 }
 
 void ScanDrawer::generateResult(TPad* pad) {
+
 	//Creation
 	TGraphErrors *scanWErr = new TGraphErrors();
 	TGraphErrors *scanwUncorr = new TGraphErrors();
@@ -72,11 +78,32 @@ void ScanDrawer::generateResult(TPad* pad) {
 	scanDefault->SetFillStyle(0);
 
 	//Plotting
-	pad->SetTopMargin(0.2);
-	pad->SetBottomMargin(0.2);
-	pad->SetGrid(); // vertical grid
-	pad->Draw();
-	pad->cd();
+	pad->Divide(1, 2);
+	pad->cd(1);
+	TPad* pad1 = static_cast<TPad*>(pad->GetPad(1));
+	pad1->SetPad(0, 0.3, 1, 1.0);
+	pad1->SetBottomMargin(3);
+	pad1->SetGrid();
+	pad1->cd();               // pad1 becomes the current pad
+
+	THStack* mcStack = getStackFromFile("mcStack");
+	THStack* dataStack = getStackFromFile("sigStack");
+	TLegend* legend = getLegendFromFile();
+	if(mcStack)
+		mcStack->Draw("HIST");
+	if(dataStack)
+		dataStack->Draw("SAME E P");
+	if(legend)
+		legend->Draw();
+	if(mcStack)
+		mcStack->GetXaxis()->SetRangeUser(scanWErr->GetXaxis()->GetXmin(), scanWErr->GetXaxis()->GetXmax());
+
+	TPad* pad2 = static_cast<TPad*>(pad->GetPad(2));
+	pad2->SetPad(0, 0.05, 1, 0.3);
+	pad2->SetTopMargin(0.2);
+	pad2->SetBottomMargin(0.2);
+	pad2->SetGrid(); // vertical grid
+	pad2->cd();
 
 	scanWErr->SetTitle("FF Slope fit result");
 	scanWErr->GetXaxis()->SetTitle("Cut value");
@@ -131,8 +158,7 @@ void ScanDrawer::generateNSelected(TPad* pad) {
 
 void ScanDrawer::draw() {
 	TCanvas *c1 = new TCanvas("plot");
-	TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
-	generateResult(pad2);
+	generateResult(c1);
 	TCanvas *c2 = new TCanvas("Selected");
 	generateNSelected(c2);
 }
@@ -149,4 +175,26 @@ void ScanDrawer::computeUncorrError() {
 
 	for(auto err : fResultErrors)
 		fUncorrErrors.push_back(sqrt(fabs(pow(err,2)-pow(deflt,2))));
+}
+
+void ScanDrawer::print() {
+	for(unsigned int i=0; i<fScanValues.size(); ++i){
+		cout << fixed << setprecision(3) << setw(10) << fScanValues[i] << setw(10) << fResultValues[i]*100 << setw(10) << fResultErrors[i]*100 << setw(10) << fUncorrErrors[i]*100 << setw(10) << fNSelected[i] << endl;
+	}
+}
+
+THStack* ScanDrawer::getStackFromFile(std::string name) {
+	TFile *fd = TFile::Open("distribRef.root", "READ");
+	if(!fd) return nullptr;
+	THStack *r = static_cast<THStack*>(fd->Get(name.c_str()));
+	fd->Close();
+	return r;
+}
+
+TLegend* ScanDrawer::getLegendFromFile() {
+	TFile *fd = TFile::Open("distribRef.root", "READ");
+	if(!fd) return nullptr;
+	TLegend *r = static_cast<TLegend*>(fd->Get("legend"));
+	fd->Close();
+	return r;
 }

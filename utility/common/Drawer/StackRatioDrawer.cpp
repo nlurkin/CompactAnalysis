@@ -6,7 +6,22 @@
  */
 
 #include "StackRatioDrawer.h"
-#include <iostream>
+
+#include <Rtypes.h>
+#include <TAttFill.h>
+#include <TAttMarker.h>
+#include <TAxis.h>
+#include <TCanvas.h>
+#include <TFile.h>
+#include <TH1.h>
+#include <THStack.h>
+#include <TLegend.h>
+#include <TNamed.h>
+#include <TPad.h>
+#include <TString.h>
+#include <cstdlib>
+#include <string>
+
 using namespace std;
 
 StackRatioDrawer::StackRatioDrawer() :
@@ -67,6 +82,14 @@ void StackRatioDrawer::generate(TPad* pad) {
 	fSecondary->GetXaxis()->SetTitleOffset(4.);
 	fSecondary->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
 	fSecondary->GetXaxis()->SetLabelSize(15);
+
+
+	TFile *fd = TFile::Open(Form("%s.root", fName.c_str()), "UPDATE");
+	fd->cd();
+	fStack->Write("mcStack");
+	fStack2->Write("sigStack");
+	fLegend->Write("legend");
+	fd->Close();
 }
 
 void StackRatioDrawer::AddHisto1(TH1* h, std::string legend, std::string option) {

@@ -9,8 +9,11 @@
 #define COMMON_DRAWER_SCANDRAWER_H_
 
 #include <vector>
+#include <string>
 
 class TPad;
+class THStack;
+class TLegend;
 
 class ScanDrawer {
 public:
@@ -20,6 +23,7 @@ public:
 	void generateResult(TPad* pad);
 	void generateNSelected(TPad* pad);
 	void draw();
+	void print();
 
 	void addScanValue(double val, double result, double err, int ndata);
 	void computeUncorrError();
@@ -33,6 +37,8 @@ public:
 	}
 
 private:
+	THStack* getStackFromFile(std::string name);
+	TLegend* getLegendFromFile();
 	std::vector<double> fScanValues;
 	std::vector<double> fResultValues;
 	std::vector<double> fResultErrors;

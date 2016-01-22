@@ -7,6 +7,10 @@
 
 #include "StackDrawer.h"
 
+#include <TNamed.h>
+#include <TString.h>
+#include <string>
+
 StackDrawer::StackDrawer() :
 fCanvas(nullptr){
 	fStack = new THStack("stack", "stack");
@@ -19,7 +23,7 @@ StackDrawer::~StackDrawer() {
 
 void StackDrawer::save() {
 	if (fCanvas)
-		fCanvas->SaveAs(TString(fStack->GetName()) + ".png");
+		fCanvas->SaveAs(Form("%s.png", fName.c_str()));
 }
 
 void StackDrawer::generate(TPad *pad) {
