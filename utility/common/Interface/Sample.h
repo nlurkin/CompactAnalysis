@@ -107,8 +107,12 @@ public:
 	}
 
 	void setFactor(double factor) {
+		fFactor = factor;
+	}
+
+	void applyFactor(){
 		for (auto ss : fSubSamples)
-			dynamic_cast<DataSample*>(ss)->setFactor(factor);
+			dynamic_cast<DataSample*>(ss)->setFactor(fFactor);
 	}
 
 	SubSample * getSubSample(int i) {
@@ -132,7 +136,7 @@ public:
 
 protected:
 	int fIndex;
-	double fBr;
+	double fBr, fFactor;
 	std::vector<std::string> fListFiles;
 	std::string fOutputFile;
 	TFile *fOutputFD;

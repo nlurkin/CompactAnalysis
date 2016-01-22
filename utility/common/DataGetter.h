@@ -115,7 +115,10 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 	fFinalDataSample->prepareNSubSamples<TDataSample>(cfg.getNScan());
 	fFinalMCSample->prepareNSubSamples<TMCSample>(cfg.getNScan());
 
-	for(auto sample : fDataSamples) sample->prepareNSubSamples<TDataSample>(cfg.getNScan());
+	for(auto sample : fDataSamples) {
+		sample->prepareNSubSamples<TDataSample>(cfg.getNScan());
+		sample->applyFactor();
+	}
 	for(auto sample : fMCSamples) sample->prepareNSubSamples<TMCSample>(cfg.getNScan());
 }
 
@@ -144,6 +147,7 @@ void DataGetter::mergeSamples() {
 	}
 
 	fFinalMCSample->scaleToData<TMCSample>(b, fFinalDataSample->getTotalSize());
+	std::cout << fFinalDataSample->getSubSample(0)->getFFIntegral(1) << std::endl;
 }
 
 
