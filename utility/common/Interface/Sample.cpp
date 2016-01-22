@@ -197,10 +197,12 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 void Sample::doGet(TFile* inputFD, TFile* tempFD) {
 	int index = 0;
 	ScanCuts* c = static_cast<ScanCuts*>(gDirectory->Get("0/ScanCuts"));
-	if(c)
+	if(fCfg->getScanId()!=-1)
+		fMainSubSample = fCfg->getScanId();
+	else if(c)
 		fMainSubSample = c->getDefaultIndex();
 	else
-		fMainSubSample = fCfg->getScanId();
+		fMainSubSample = 0;
 	for (auto ss : fSubSamples) {
 		mkdirCd(inputFD, Form("%i", index));
 		if(c)
