@@ -153,11 +153,12 @@ public:
 
 	void clear(){
 		vertex.SetXYZ(0,0,0);
+		decay.SetXYZ(0,0,0);
 		P.SetXYZM(0,0,0,0);
 	};
 public:
 	int pdgID;
-	TVector3 vertex;
+	TVector3 vertex, decay;
 	TLorentzVector P;
 
 	ClassDefNV(NMCParticle, 1);
@@ -455,7 +456,7 @@ public:
 
 class ROOTMCEvent: public TObject{
 public:
-	ROOTMCEvent(): xTrue(-1), ep(11), em(-11), k(321){};
+	ROOTMCEvent(): xTrue(-1), ep(11), em(-11), k(321), pip(211), gamma(22){};
 	~ROOTMCEvent(){};
 
 	void clear(){
@@ -463,12 +464,16 @@ public:
 		ep.clear();
 		em.clear();
 		k.clear();
+		pip.clear();
+		gamma.clear();
 	}
 public:
 	float xTrue;
 	NMCParticle ep;
 	NMCParticle em;
 	NMCParticle k;
+	NMCParticle pip;
+	NMCParticle gamma;
 
 	ClassDefNV(ROOTMCEvent, 1);
 };
