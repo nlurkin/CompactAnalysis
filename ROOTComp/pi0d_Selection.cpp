@@ -100,7 +100,6 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(rootPhysics.gamma.parentCluster==-1){
 		return 0;
 	}
-
 	tempObj.tempGamma.SetVectM((corrEvent.pCluster[rootPhysics.gamma.parentCluster].position - rawEvent.vtx[corrEvent.goodVertexID].position).Unit()*corrEvent.pCluster[rootPhysics.gamma.parentCluster].E, 0.0);
 
 	if(rootBurst.pbWall){
@@ -116,9 +115,8 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 
 	// 7) E_gamma>3GeV
 	if(options.isOptDebug()) cout << "~~~~ Cut 7 ~~~~" << endl;
-	double E = corrEvent.pCluster[rootPhysics.gamma.parentCluster].E; //Cannot use tempObj.tempGamma.E() because of rounding issue: 3.00000000000000000000 becomes 2.99999999999999955591
-	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << E << "\t < " << io.cutsDefinition.minGammaEnergy << " : rejected" << endl;
-	if(E<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
+	if(options.isOptDebug()) cout << "E_g :\t\t\t\t" << fixed << setprecision(7) << tempObj.tempGamma.E() << "\t <= 3 : rejected" << endl;
+	if(tempObj.tempGamma.E()<io.cutsDefinition.minGammaEnergy) {pi0d_failCut(7+firstCutIndex); return false;}
 
 	// 8) D_deadcell>=2cm
 	if(options.isOptDebug()) cout << "~~~~ Cut 8 ~~~~" << endl;
@@ -336,12 +334,12 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	NPhysicsTrack t_ep = corrEvent.pTrack[tempObj.piEvent.ep.parentTrack];
 	NPhysicsTrack t_em = corrEvent.pTrack[tempObj.piEvent.em.parentTrack];
 
-	propPos = propagateAfter(rootGeom.Lkr.z, t_ep, rawEvent);
+	propPos = propagateAfter(rootGeom.Lkr.z, t_ep);
 	goodPBWall = true;
 	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
 	if(t_ep.lkr_acc==0 && goodPBWall && rawEvent.track[t_ep.trackID].dDeadCell>2.) ELKr_ep = t_ep.p;
 
-	propPos = propagateAfter(rootGeom.Lkr.z, t_em, rawEvent);
+	propPos = propagateAfter(rootGeom.Lkr.z, t_em);
 	goodPBWall = true;
 	if(rootBurst.pbWall && (propPos.Y()>-33.575 && propPos.Y() < -11.850)) goodPBWall = false;
 	if(t_em.lkr_acc==0 && goodPBWall && rawEvent.track[t_em.trackID].dDeadCell>2.) ELKr_em = t_em.p;
@@ -362,11 +360,11 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	if(options.isOptDebug()) cout << tempObj.piEvent.x << " <= 0.01 || " << tempObj.piEvent.x << " > 1 : rejected" << endl;
 	if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
 
-	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep, rawEvent);
+	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep);
 	//e+ in square
 	if(options.isOptDebug()) cout << fabs(propPos.X()) << "<20 && " << fabs(propPos.Y()) << "<20 : rejected" << endl;
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;
-	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em, rawEvent);
+	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_em);
 	//e- in square
 	if(options.isOptDebug()) cout << fabs(propPos.X()) << "<20 && " << fabs(propPos.Y()) << "<20 : rejected" << endl;
 	if(fabs(propPos.X())<20 && fabs(propPos.Y())<20) return 21+firstCutIndex;

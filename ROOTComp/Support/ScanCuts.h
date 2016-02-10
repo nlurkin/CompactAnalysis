@@ -88,8 +88,6 @@ public:
 		this->defaultIndex = defaultIndex;
 	}
 
-	double getDiff(const ScanCuts* other) const;
-
 private:
 	bool parseCuts(std::string fileName);
 	int defaultIndex;
