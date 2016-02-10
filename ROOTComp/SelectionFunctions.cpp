@@ -514,7 +514,7 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 }
 
 bool pi0d_L3Trigger(NPhysicsTrack &t){
-	TVector3 propPos = propagateAfter(rootGeom.Lkr.z, t);
+	TVector3 propPos = propagateAfter(rootGeom.Lkr.z, t, rawEvent);
 	bool lkrAcceptance = t.lkr_acc;
 	bool goodAcceptance = false;
 	if(options.isOptDebug()) cout << "LKr acceptance :\t\t" << lkrAcceptance << "\t == 0 && " << t.p << " >=5.5 && " <<  t.E/t.p << " >0.8: ok" << endl;
@@ -566,17 +566,17 @@ int pi0d_tracksAcceptance(){
 
 		//if(goodAcceptance && goodPBWall) ntrackLkr++;
 
-		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t);
+		propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t, rawEvent);
 		radius = distance2D(dch1, propPos);
 		if(options.isOptDebug()) cout << "DCH1 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateBefore(rootGeom.Dch[1].PosChamber.z, t);
+		propPos = propagateBefore(rootGeom.Dch[1].PosChamber.z, t, rawEvent);
 		radius = distance2D(dch2, propPos);
 		if(options.isOptDebug()) cout << "DCH2 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
 
-		propPos = propagateAfter(rootGeom.Dch[3].PosChamber.z, t);
+		propPos = propagateAfter(rootGeom.Dch[3].PosChamber.z, t, rawEvent);
 		radius = distance2D(dch4, propPos);
 		if(options.isOptDebug()) cout << "DCH4 radius :\t\t" << radius << "\t <12 || > 110 : rejected" << endl;
 		if(radius<12 || radius>110) badTrack = true;
@@ -611,8 +611,8 @@ int pi0d_trackCombinationVeto_loose(){
 			if(options.isOptDebug()) cout << "\tTrying combination :\t" << i << " " << j << endl;
 
 			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2);
+			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1, rawEvent);
+			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2, rawEvent);
 
 			RDCH1 = distance2D(propPos1, propPos2);
 			if(options.isOptDebug()) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
@@ -662,8 +662,8 @@ int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
 			if(options.isOptDebug()) cout << "\tTrying combination :\t" << i << " " << j << endl;
 
 			// Track-to-Track distance in DCH1 plane >1cm
-			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1);
-			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2);
+			propPos1 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t1, rawEvent);
+			propPos2 = propagateBefore(rootGeom.Dch[0].PosChamber.z, t2, rawEvent);
 
 			RDCH1 = distance2D(propPos1, propPos2);
 			if(options.isOptDebug()) cout << "\t\tR_DCH1 :\t" << RDCH1 << "\t <2: rejected" << endl;
@@ -737,14 +737,14 @@ int pi0d_goodClusters_loose(){
 		}
 		//Ignore clusters with low energy
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
-		if(rawEvent.cluster[c.clusterID].E < 2.) continue;
+		if(rawEvent.cluster[c.clusterID].E <= 2.) continue;
 
 		NPhysicsTrack t1 = corrEvent.pTrack[corrEvent.goodTracks[0]];
 		NPhysicsTrack t2 = corrEvent.pTrack[corrEvent.goodTracks[1]];
 		NPhysicsTrack t3 = corrEvent.pTrack[corrEvent.goodTracks[2]];
 
 		// separation from x impact point >30cm
-		propPos = propagateAfter(rootGeom.Lkr.z, t1);
+		propPos = propagateAfter(rootGeom.Lkr.z, t1, rawEvent);
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
 		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
@@ -757,7 +757,7 @@ int pi0d_goodClusters_loose(){
 		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 
 		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(rootGeom.Lkr.z, t2);
+		propPos = propagateAfter(rootGeom.Lkr.z, t2, rawEvent);
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
 		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
@@ -768,7 +768,7 @@ int pi0d_goodClusters_loose(){
 		if(options.isOptDebug()) cout << "\t\tUndeflected R_LKr_2 :\t" << distance << "\t > " << io.cutsDefinition.unDeflectedElDist << " : ++" << endl;
 		if(distance>io.cutsDefinition.unDeflectedElDist) cond++;
 
-		propPos = propagateAfter(rootGeom.Lkr.z, t3);
+		propPos = propagateAfter(rootGeom.Lkr.z, t3, rawEvent);
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
 		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
@@ -841,14 +841,14 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		}
 		//Ignore clusters with low energy
 		if(options.isOptDebug()) cout << "\tEnergy :\t" << rawEvent.cluster[c.clusterID].E << endl;
-		if(rawEvent.cluster[c.clusterID].E < 2.) continue;
+		if(rawEvent.cluster[c.clusterID].E <= 2.) continue;
 
 		NPhysicsTrack x = corrEvent.pTrack[xParticle.parentTrack];
 		NPhysicsTrack ep = corrEvent.pTrack[event.ep.parentTrack];
 		NPhysicsTrack em = corrEvent.pTrack[event.em.parentTrack];
 
 		// separation from x impact point >30cm
-		propPos = propagateAfter(rootGeom.Lkr.z, x);
+		propPos = propagateAfter(rootGeom.Lkr.z, x, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_x :\t\t" << distance << "\t > 50 : ++" << endl;
 		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
@@ -862,13 +862,13 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		//cond++;
 
 		// separation from e+ e- impact point >10cm
-		propPos = propagateAfter(rootGeom.Lkr.z, ep);
+		propPos = propagateAfter(rootGeom.Lkr.z, ep, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
 		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
 		//cond++;
 
-		propPos = propagateAfter(rootGeom.Lkr.z, em);
+		propPos = propagateAfter(rootGeom.Lkr.z, em, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
 		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
