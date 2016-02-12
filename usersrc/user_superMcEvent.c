@@ -61,13 +61,14 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 			rootMC.em.decay.SetXYZ(evt->part[i].dvertex[0], evt->part[i].dvertex[1], evt->part[i].dvertex[2]);
 			em = true;
 		}
-		if(evt->part[i].type==8 && !pip){
+		if(abs(evt->part[i].type)==8 && !pip){
 			rootMC.pip.P.SetXYZT(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3], evt->part[i].p[0]);
 			rootMC.pip.vertex.SetXYZ(evt->part[i].pvertex[0], evt->part[i].pvertex[1], evt->part[i].pvertex[2]);
 			rootMC.pip.decay.SetXYZ(evt->part[i].dvertex[0], evt->part[i].dvertex[1], evt->part[i].dvertex[2]);
 			pip = true;
 		}
 		if(evt->part[i].type==16 && !g){
+			if(evt->part[i].type==-16) rootMC.k.pdgID = -16;
 			rootMC.gamma.P.SetXYZT(evt->part[i].p[1], evt->part[i].p[2], evt->part[i].p[3], evt->part[i].p[0]);
 			rootMC.gamma.vertex.SetXYZ(evt->part[i].pvertex[0], evt->part[i].pvertex[1], evt->part[i].pvertex[2]);
 			rootMC.gamma.decay.SetXYZ(evt->part[i].dvertex[0], evt->part[i].dvertex[1], evt->part[i].dvertex[2]);
