@@ -134,6 +134,11 @@ public:
 		return fMainSubSample;
 	}
 
+	void setUsePk(bool usePk) {
+		for (auto ss : fSubSamples)
+			dynamic_cast<MCSample*>(ss)->setUsePk(usePk);
+	}
+
 protected:
 	int fIndex;
 	double fBr, fFactor;

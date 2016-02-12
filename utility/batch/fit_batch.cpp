@@ -186,8 +186,7 @@ void fit_batch() {
 
 	Fitter f;
 	RunWeights weights;
-	weights.loadWeights(
-			"/afs/cern.ch/user/n/nlurkin/Compact/pi0dalitz_weights.dat");
+	weights.loadWeights(cfg.getWeightFile());
 	f.setRunWeights(&weights);
 	if (cfg.isWithEqualBins()) {
 		loadBins(bins, nbins);

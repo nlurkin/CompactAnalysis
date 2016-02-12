@@ -64,7 +64,7 @@ double RunWeights::applyWeights(int run) const{
 		return -1;
 	}
 	double ratio = (*it).second;
-	return ratio;
+	//return ratio;
 	double weight = fAverageRatio / ratio;
 	return weight;
 }

@@ -83,6 +83,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 
 		//Open new input file
 		tempSample->addFile(cfg.getMcFileNames()[i]);
+		tempSample->setUsePk(cfg.isUsePk());
 
 		fMCSamples.push_back(tempSample);
 	}

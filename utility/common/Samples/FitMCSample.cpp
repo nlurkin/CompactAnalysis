@@ -57,7 +57,10 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
 			fFitBrch))
 		return;
-	weight = weights->applyWeights(burstBrch->nrun);// * corrBrch->weight;
+
+	weight = weights->applyWeights(burstBrch->nrun);
+	if(fUsePk)
+		weight *= corrBrch->weight;
 
 	x = eventBrch->x;
 	if (mcEvent)
