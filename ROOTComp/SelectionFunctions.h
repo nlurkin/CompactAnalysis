@@ -116,6 +116,9 @@ void pi0d_passSelection();
 vector<float> sortEOP();
 int pi0d_identifyPiEOP(int &piCandidate, bool &badElectron);
 bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_mu=NULL);
+int pi0d_countVtx3Tracks(int &ivtx);
+double pi0d_getVertexTime(int ivtx);
+int pi0d_extraTrackVeto(int ivtx, double vertexTime);
 
 void savePlots();
 

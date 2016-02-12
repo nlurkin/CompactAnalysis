@@ -54,6 +54,42 @@ int pi0d_countVtx3Tracks(int &ivtx){
 	return vtxNb;
 }
 
+void pi0d_compactTrakCompute(){
+	double tDiff;
+
+	//For CDA
+	double p1[3], p2[3], v1[3], v2[3];
+	float dmin;
+	float vertex[3];
+	float corrdxdz, corrdydz;
+
+	int vtxIndex = 0;
+
+	for(int i=0; i<corrEvent.pTrack.size(); i++){
+		NPhysicsTrack &pt = corrEvent.pTrack[i];
+		NTrak &t = rawEvent.track[pt.trackID];
+
+		//wrt to z axis
+		p1[0] = 0;
+		p1[1] = 0;
+		p1[2] = 0;
+		v1[0] = 0;
+		v1[1] = 0;
+		v1[2] = 1;
+
+		p2[0] = t.bDetPos.X();
+		p2[1] = t.bDetPos.Y();
+		p2[2] = Geom->DCH.bz;
+		v2[0] = rawEvent.track[pt.trackID].bdxdz;
+		v2[1] = rawEvent.track[pt.trackID].bdydz;
+		v2[2] = 1;
+		closestApproach(p1, p2, v1, v2, &dmin, vertex);
+
+		pt.cda = dmin;
+		pt.vertexCDA.SetXYZ(vertex[0], vertex[1], vertex[2]);
+	}
+}
+
 int pi0d_extraTrackVeto(int ivtx, double vertexTime){
 
 	int extra = 0;
@@ -204,74 +240,78 @@ int nico_pi0DalitzSelect(){
 	if(rootBurst.nrun<20209) triggerMask = 0x800;
 	else triggerMask = cutsDefinition.triggerMask;
 
-	if(optDebug) cout << "~~~~ Cut 1 ~~~~" << endl;
-	bitset<32> triggBit(rawEvent.trigWord);
-	bitset<32> triggMask(triggerMask);
-	bitset<32> comb(rawEvent.trigWord & triggerMask);
-	bitset<32> LV3(rawEvent.DETStatus.LV3ABTrig);
-	bitset<32> LV3Auto(rawEvent.DETStatus.LV3ABTrig);
-	if(optDebug) cout << "Word :\t " << triggBit << endl;
-	if(optDebug) cout << "Mask :\t " << triggMask << endl;
-	if(optDebug) cout << "comb :\t " << comb << endl;
-	if(optDebug) cout << "LV3ABTrig:\t " << LV3 << endl;
-	if(optDebug) cout << "LV3Trig:\t " << LV3Auto << endl;
-	if(optDebug) cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << dec << endl;
-	if(optDebug) cout << "L3 Trigger word :\t " << hex << (rawEvent.DETStatus.LV3ABTrig & 1) << "\t == 0: rejected" << dec << endl;
-	if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return -1;}
+	//if(optDebug) cout << "~~~~ Cut 1 ~~~~" << endl;
+	//bitset<32> triggBit(rawEvent.trigWord);
+	//bitset<32> triggMask(triggerMask);
+	//bitset<32> comb(rawEvent.trigWord & triggerMask);
+	//bitset<32> LV3(rawEvent.DETStatus.LV3ABTrig);
+	//bitset<32> LV3Auto(rawEvent.DETStatus.LV3ABTrig);
+	//if(optDebug) cout << "Word :\t " << triggBit << endl;
+	//if(optDebug) cout << "Mask :\t " << triggMask << endl;
+	//if(optDebug) cout << "comb :\t " << comb << endl;
+	//if(optDebug) cout << "LV3ABTrig:\t " << LV3 << endl;
+	//if(optDebug) cout << "LV3Trig:\t " << LV3Auto << endl;
+	//if(optDebug) cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << dec << endl;
+	//if(optDebug) cout << "L3 Trigger word :\t " << hex << (rawEvent.DETStatus.LV3ABTrig & 1) << "\t == 0: rejected" << dec << endl;
+	//if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return -1;}
 
-	if(! (rawEvent.DETStatus.LV3ABTrig & 1)) {pi0d_failCut(1); return -1;}
+	//if(! (rawEvent.DETStatus.LV3ABTrig & 1)) {pi0d_failCut(1); return -1;}
+
 	// 2) Exactly one 3-track vertex with correct charge
-	if(optDebug) cout << "~~~~ Cut 2 ~~~~" << endl;
-	vtxNb = pi0d_countVtx3Tracks(ivtx);
-	if(optDebug) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
-	if(vtxNb!=cutsDefinition.numVertex3) {pi0d_failCut(2); return -1;}
-	corrEvent.goodVertexID = ivtx;
+	//if(optDebug) cout << "~~~~ Cut 2 ~~~~" << endl;
+	//vtxNb = pi0d_countVtx3Tracks(ivtx);
+	//if(optDebug) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
+	//if(vtxNb!=cutsDefinition.numVertex3) {pi0d_failCut(2); return -1;}
+	//corrEvent.goodVertexID = ivtx;
 
 	//corrEvent.zVtx = corrEvent.vtx[ivtx].z;
 
-	if(rawEvent.vtx[ivtx].charge==1){
-		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
-		corrEvent.kaonP = abcog_params.pkp*(1+abcog_params.beta);
-	}
-	else{
-		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzm, abcog_params.pkdydzm, 1.).Unit();
-		corrEvent.kaonP = abcog_params.pkm*(1+abcog_params.beta);
-	}
+	//if(rawEvent.vtx[ivtx].charge==1){
+	//	corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
+	//	corrEvent.kaonP = abcog_params.pkp*(1+abcog_params.beta);
+	//}
+	//else{
+	//	corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzm, abcog_params.pkdydzm, 1.).Unit();
+	//	corrEvent.kaonP = abcog_params.pkm*(1+abcog_params.beta);
+	//}
 
-	if(rootBurst.isMC){
-		weight = 1 + rootBurst.alpha*pow(rootMC.k.P.Vect().Mag()-74.,2);
-	}
-	corrEvent.weight = weight;
+	//if(rootBurst.isMC){
+	//	weight = 1 + rootBurst.alpha*pow(rootMC.k.P.Vect().Mag()-74.,2);
+	//}
+	//corrEvent.weight = weight;
 
-	vertexTime = pi0d_getVertexTime(corrEvent.goodVertexID);
-	rawEvent.vtx[corrEvent.goodVertexID].time = vertexTime;
-
-	gH("vertexZ")->Fill(rawEvent.vtx[corrEvent.goodVertexID].position.Z(), corrEvent.weight);
-	gH("vertexChi2")->Fill(rawEvent.vtx[corrEvent.goodVertexID].chi2, corrEvent.weight);
-	gH("vertexQ")->Fill(rawEvent.vtx[corrEvent.goodVertexID].charge, corrEvent.weight);
+	//vertexTime = pi0d_getVertexTime(corrEvent.goodVertexID);
+	//rawEvent.vtx[corrEvent.goodVertexID].time = vertexTime;
+    //
+	//gH("vertexZ")->Fill(rawEvent.vtx[corrEvent.goodVertexID].position.Z(), corrEvent.weight);
+	//gH("vertexChi2")->Fill(rawEvent.vtx[corrEvent.goodVertexID].chi2, corrEvent.weight);
+	//gH("vertexQ")->Fill(rawEvent.vtx[corrEvent.goodVertexID].charge, corrEvent.weight);
 
 	// 3) Vertex position -18m<Z_vtx<90m
-	if(optDebug) cout << "~~~~ Cut 3 ~~~~" << endl;
-	if(optDebug) cout << "vertex Z :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].position.Z() << "\t <-1800 || >9000 : rejected" << endl;
-	if(rawEvent.vtx[corrEvent.goodVertexID].position.Z()<=cutsDefinition.minZVertex || rawEvent.vtx[corrEvent.goodVertexID].position.Z()>=cutsDefinition.maxZVertex) {pi0d_failCut(3); return -1;}
+//	if(optDebug) cout << "~~~~ Cut 3 ~~~~" << endl;
+//	if(optDebug) cout << "vertex Z :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].position.Z() << "\t <-1800 || >9000 : rejected" << endl;
+//	if(rawEvent.vtx[corrEvent.goodVertexID].position.Z()<=cutsDefinition.minZVertex || rawEvent.vtx[corrEvent.goodVertexID].position.Z()>=cutsDefinition.maxZVertex) {pi0d_failCut(3); return -1;}
 
 
 	// 4) Vertex quality chi2<25
-	if(optDebug) cout << "~~~~ Cut 4 ~~~~" << endl;
-	if(optDebug) cout << "vertex chi2 :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].chi2 << "\t\t > 25: rejected" << endl;
-	if(rawEvent.vtx[corrEvent.goodVertexID].chi2>=cutsDefinition.maxChi2Vertex) {pi0d_failCut(4); return -1;}
+//	if(optDebug) cout << "~~~~ Cut 4 ~~~~" << endl;
+//	if(optDebug) cout << "vertex chi2 :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].chi2 << "\t\t > 25: rejected" << endl;
+//	if(rawEvent.vtx[corrEvent.goodVertexID].chi2>=cutsDefinition.maxChi2Vertex) {pi0d_failCut(4); return -1;}
 
 	// 5) No extra track
-	if(optDebug) cout << "~~~~ Cut 5 ~~~~" << endl;
-	extraTracks = pi0d_extraTrackVeto(corrEvent.goodVertexID, vertexTime);
-	if(optDebug) cout << "Extra tracks :\t\t\t" << extraTracks << "\t > 0 : rejected" << endl;
-	if(extraTracks>cutsDefinition.maxExtraTracks) {pi0d_failCut(5); return -1;}
+//	if(optDebug) cout << "~~~~ Cut 5 ~~~~" << endl;
+//	extraTracks = pi0d_extraTrackVeto(corrEvent.goodVertexID, vertexTime);
+//	if(optDebug) cout << "Extra tracks :\t\t\t" << extraTracks << "\t > 0 : rejected" << endl;
+//	if(extraTracks>cutsDefinition.maxExtraTracks) {pi0d_failCut(5); return -1;}
+	//instead :
+	pi0d_compactTrakCompute();
 
-	if(rootBurst.isData){
-		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
-		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
-		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
-	}
+
+//	if(rootBurst.isData){
+//		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
+//		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
+//		gH("trackDCHTime")->Fill(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[2]].trackID].time - rootBurst.tOffst.Dch), corrEvent.weight);
+//	}
 
 	pi0d_passSelection();
 	return 0;

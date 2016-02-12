@@ -2,6 +2,7 @@
 
 /// Std include
 #include <iomanip>
+#include <bitset>
 using namespace std;
 
 /// Compact includes
@@ -47,10 +48,71 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	}
 	if(options.isOptDebug()) cout << endl;
 
-	// -2)Redo z_vertex
-	if(options.isOptDebug()) cout << "~~~~ Cut -1 ~~~~" << endl;
+	//Compact pre-selection
+	// 1) Trigger
+	int triggerMask;
+	if(rootBurst.nrun<20209) triggerMask = 0x800;
+	else triggerMask = io.cutsDefinition.triggerMask;
+
+	if(options.isOptDebug()) cout << "~~~~ Cut 1 ~~~~" << endl;
+	bitset<32> triggBit(rawEvent.trigWord);
+	bitset<32> triggMask(triggerMask);
+	bitset<32> comb(rawEvent.trigWord & triggerMask);
+	bitset<32> LV3(rawEvent.DETStatus.LV3ABTrig);
+	bitset<32> LV3Auto(rawEvent.DETStatus.LV3ABTrig);
+	if(options.isOptDebug()){
+		cout << "Word :\t " << triggBit << endl;
+		cout << "Mask :\t " << triggMask << endl;
+		cout << "comb :\t " << comb << endl;
+		cout << "LV3ABTrig:\t " << LV3 << endl;
+		cout << "LV3Trig:\t " << LV3Auto << endl;
+		cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << dec << endl;
+		cout << "L3 Trigger word :\t " << hex << (rawEvent.DETStatus.LV3ABTrig & 1) << "\t == 0: rejected" << dec << endl;
+	}
+	if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return false;}
+	if(! (rawEvent.DETStatus.LV3ABTrig & 1)) {pi0d_failCut(1); return false;}
+
+	// 2) Exactly one 3-track vertex with correct charge
+	if(options.isOptDebug()) cout << "~~~~ Cut 2 ~~~~" << endl;
+	int ivtx;
+	int vtxNb = pi0d_countVtx3Tracks(ivtx);
+	if(options.isOptDebug()) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
+	if(vtxNb!=io.cutsDefinition.numVertex3) {pi0d_failCut(2); return false;}
+	corrEvent.goodVertexID = ivtx;
+
+	if(rawEvent.vtx[ivtx].charge==1){
+		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzp, abcog_params.pkdydzp, 1.).Unit();
+		corrEvent.kaonP = abcog_params.pkp*(1+abcog_params.beta);
+	}
+	else{
+		corrEvent.kaonMomentum = TVector3(abcog_params.pkdxdzm, abcog_params.pkdydzm, 1.).Unit();
+		corrEvent.kaonP = abcog_params.pkm*(1+abcog_params.beta);
+	}
+
+	double weight;
+	if(rootBurst.isMC){
+		weight = 1 + rootBurst.alpha*pow(rootMC.k.P.Vect().Mag()-74.,2);
+	}
+	corrEvent.weight = weight;
+
+	double vertexTime = pi0d_getVertexTime(corrEvent.goodVertexID);
+	rawEvent.vtx[corrEvent.goodVertexID].time = vertexTime;
+
+	// 3) Vertex position -18m<Z_vtx<90m
+	if(options.isOptDebug()) cout << "~~~~ Cut 3 ~~~~" << endl;
 	if(options.isOptDebug()) cout << "vertex Z :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].position.Z() << "\t <" << io.cutsDefinition.minZVertex << " || >" << io.cutsDefinition.maxZVertex << ": rejected" << endl;
-	if(rawEvent.vtx[corrEvent.goodVertexID].position.Z() < io.cutsDefinition.minZVertex || rawEvent.vtx[corrEvent.goodVertexID].position.Z() > io.cutsDefinition.maxZVertex) {pi0d_failCut(3); return false;}
+	if(rawEvent.vtx[corrEvent.goodVertexID].position.Z()<=io.cutsDefinition.minZVertex || rawEvent.vtx[corrEvent.goodVertexID].position.Z()>=io.cutsDefinition.maxZVertex) {pi0d_failCut(3); return false;}
+
+	// 4) Vertex quality chi2<25
+	if(options.isOptDebug()) cout << "~~~~ Cut 4 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "vertex chi2 :\t\t\t" << rawEvent.vtx[corrEvent.goodVertexID].chi2 << "\t\t > 25: rejected" << endl;
+	if(rawEvent.vtx[corrEvent.goodVertexID].chi2>=io.cutsDefinition.maxChi2Vertex) {pi0d_failCut(4); return false;}
+
+	// 5) No extra track
+	if(options.isOptDebug()) cout << "~~~~ Cut 5 ~~~~" << endl;
+	int extraTracks = pi0d_extraTrackVeto(corrEvent.goodVertexID, vertexTime);
+	if(options.isOptDebug()) cout << "Extra tracks :\t\t\t" << extraTracks << "\t > 0 : rejected" << endl;
+	if(extraTracks>io.cutsDefinition.maxExtraTracks) {pi0d_failCut(5); return false;}
 
 	// 1) Track DCH time
 	if(options.isOptDebug()) cout << "~~~~ Cut 1 ~~~~" << endl;

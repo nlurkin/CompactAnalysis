@@ -77,15 +77,17 @@ public:
 class NPhysicsTrack : public TObject{
 public:
 	NPhysicsTrack():
-		trackID(-1), clusterID(-1), p(0), E(0), lkr_acc(false){};
+		trackID(-1), clusterID(-1), p(0), E(0), cda(0), lkr_acc(false){};
 	~NPhysicsTrack(){};
 public:
 	int trackID;
 	int clusterID;
 	float p;
 	float E;
+	double cda;
 	bool lkr_acc;
 	TVector3 momentum;
+	TVector3 vertexCDA;
 
 	ClassDefNV(NPhysicsTrack, 1);
 };

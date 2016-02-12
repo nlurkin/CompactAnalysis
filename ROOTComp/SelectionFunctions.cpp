@@ -264,20 +264,13 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 
 	double Mk;
 	double diffpi01, diffpi02;
-	double diffk1, diffk2;
 
 	diffpi01 = fabs(ee1.M()-Mpi0);
 	diffpi02 = fabs(ee2.M()-Mpi0);
 
 	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = MK;
-	//else Mk = abcog_params.mkn;
 	else Mk = MK;
 
-	diffk1 = fabs(k1.M()-Mk);
-	diffk2 = fabs(k2.M()-Mk);
-
-	//diffk1 = 0;
-	//diffk2 = 0;
 	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
 	double x2 = pow((tem+t2ep).M()/Mpi0,2.);
 
@@ -302,9 +295,8 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 		}
 		if(options.isOptDebug()){
 			cout << "Track2 pi0mass: " << ee2.M() << " kmass: " << k2.M() << endl;
-			cout << " diffpi0:" << diffpi02 << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
-			cout << " diffk:" << diffk2 << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
-			cout << " Must be " << io.cutsDefinition.k2pi.minKaonMassDiff << " < Mk < " << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
+			cout << " M_pi0:" << ee2.M() << " <" << io.cutsDefinition.k2pi.minPi0MassDiff << " || " << ee2.M() << " >" << io.cutsDefinition.k2pi.maxPi0MassDiff << " && " << endl;
+			cout << " M_K:" << k2.M() << " <" << io.cutsDefinition.k2pi.minKaonMassDiff << " || " << k2.M() << " >" << io.cutsDefinition.k2pi.maxKaonMassDiff << " : rejected" << endl;
 			cout << " x:" << x2 << " <0 || " << x2 << " >1 : rejected" << endl;
 			cout << " y:" << y2 << " <0 || " << y2 << " >1 : rejected" << endl;
 		}
@@ -445,14 +437,11 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 
 	double Mk;
 	double diffpi01;
-	double diffk1;
 
 	diffpi01 = fabs(ee1.M()-Mpi0);
 
 	if(rawEvent.vtx[corrEvent.goodVertexID].charge==1) Mk = MK;
 	else Mk = MK;
-
-	diffk1 = fabs(k1.M()-Mk);
 
 	double x1 = pow((tem+t1ep).M()/Mpi0,2.);
 
@@ -466,7 +455,6 @@ int pid_opposite_sign(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESe
 			cout << " x:" << x1 << " <0 || " << x1 << " >1 : rejected" << endl;
 			cout << " y:" << y1 << " <0 || " << y1 << " >1 : rejected" << endl;
 		}
-		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
 		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
 				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
 				&& x1<1 && x1>0
@@ -541,7 +529,6 @@ int pi0d_tracksAcceptance(){
 	TVector3 dch2(rootGeom.Dch[1].PosChamber.x,rootGeom.Dch[1].PosChamber.y,rootGeom.Dch[1].PosChamber.z);
 	TVector3 dch4(rootGeom.Dch[3].PosChamber.x,rootGeom.Dch[3].PosChamber.y,rootGeom.Dch[3].PosChamber.z);
 
-	int ntrackLkr = 0;
 	for(unsigned int i=0; i<corrEvent.goodTracks.size(); ++i){
 		int iGoodTrack = corrEvent.goodTracks[i];
 		NPhysicsTrack t = corrEvent.pTrack[iGoodTrack];
@@ -594,7 +581,7 @@ int pi0d_trackCombinationVeto_loose(){
 	int ntracks = 3;
 
 	TVector3 propPos1, propPos2;
-	double RDCH1, RLKr;
+	double RDCH1;
 	double tDiff;
 
 	bool bad = false;
@@ -642,10 +629,10 @@ int pi0d_trackCombinationVeto_loose(){
 	return badCombis;
 }
 
-int pi0d_trackCombinationVeto_tight(NRecoParticle &xParticle){
+int pi0d_trackCombinationVeto_tight(NRecoParticle &){
 	int ntracks = 3;
 	TVector3 propPos1, propPos2;
-	double RDCH1, RLKr;
+	double RDCH1;
 	double tDiff;
 
 	bool bad = false;
@@ -1102,4 +1089,103 @@ bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_
 	}
 
 	return flBad;
+}
+
+
+int pi0d_countVtx3Tracks(int &ivtx){
+	int vtxNb = 0;
+
+	if(options.isOptDebug()) cout << "Total Number of vertices :\t" << rawEvent.Nvtx << " ==1" << endl;
+	if(rawEvent.Nvtx!=1) return rawEvent.Nvtx;
+	for(unsigned int i=0; i<rawEvent.Nvtx; i++){
+		if(options.isOptDebug()) cout << "\tTrying vertex :\t\t" << i << endl;
+		if(options.isOptDebug()) cout << "\tNumber of tracks:\t" << rawEvent.vtx[i].Nvtxtrack << endl;
+
+		if(rawEvent.vtx[i].Nvtxtrack==3){
+			if(options.isOptDebug()) cout << "\tTotal charge :\t" << rawEvent.vtx[i].charge << endl;
+			if(rawEvent.vtx[i].charge==rootBurst.beamCharge || rootBurst.beamCharge==-99){
+				vtxNb++;
+				ivtx = i;
+			}
+		}
+	}
+
+	return vtxNb;
+}
+
+double pi0d_getVertexTime(int ivtx){
+	double mean = 0;
+
+	for(unsigned int i=0; i<rawEvent.vtx[ivtx].Nvtxtrack; i++){
+		mean += rawEvent.track[corrEvent.pTrack[rawEvent.vtx[ivtx].vtxtrack[i].iTrack].trackID].time;
+	}
+
+	return mean/(double)rawEvent.vtx[ivtx].Nvtxtrack;
+}
+
+int pi0d_extraTrackVeto(int ivtx, double vertexTime){
+
+	int extra = 0;
+	int extraCond = 0;
+
+	double tDiff;
+
+	int conditions;
+	int vtxIndex = 0;
+
+	if(rootBurst.isData) conditions=5;
+	else conditions=4;
+
+	if(options.isOptDebug()) cout << "Vertex tracks are :\t\t" << rawEvent.vtx[ivtx].vtxtrack[0].iTrack << " " << rawEvent.vtx[ivtx].vtxtrack[1].iTrack << " " << rawEvent.vtx[ivtx].vtxtrack[2].iTrack << endl;
+
+	for(int i=0; i<(int)corrEvent.pTrack.size(); i++){
+		NPhysicsTrack &pt = corrEvent.pTrack[i];
+		NTrak &t = rawEvent.track[pt.trackID];
+		extraCond = 0;
+
+		//Is it one of the vertex track?
+		if(options.isOptDebug()) cout << "\tTrying track :\t\t" << i << "\t\t not vertex track: ++" <<  endl;
+
+		if( (rawEvent.vtx[ivtx].vtxtrack[0].iTrack==i) ||
+				(rawEvent.vtx[ivtx].vtxtrack[1].iTrack==i) ||
+				(rawEvent.vtx[ivtx].vtxtrack[2].iTrack==i)){
+
+			t.vtxID = ivtx;
+
+			if(rawEvent.vtx[ivtx].vtxtrack[0].iTrack==i) vtxIndex=0;
+			else if(rawEvent.vtx[ivtx].vtxtrack[1].iTrack==i) vtxIndex=1;
+			else if(rawEvent.vtx[ivtx].vtxtrack[2].iTrack==i) vtxIndex=2;
+
+			pt.momentum = TVector3(rawEvent.vtx[ivtx].vtxtrack[vtxIndex].bdxdz, rawEvent.vtx[ivtx].vtxtrack[vtxIndex].bdydz, 1).Unit();
+
+			corrEvent.goodTracks.push_back(i);
+		}
+		else{
+			extraCond++;
+		}
+
+		// |t-t_vtx|<20ns
+		if(rootBurst.isData){
+			tDiff = fabs(rawEvent.track[pt.trackID].time - vertexTime);
+			if(options.isOptDebug()) cout << "\t\t|t-t_vtx| :\t" << tDiff << "\t\t <20: ++" << endl;
+			if(tDiff<20) extraCond++;
+		}
+
+		// p<74GeV/c
+		if(options.isOptDebug()) cout << "\t\tp :\t\t" << pt.p << "\t\t <74: ++" << endl;
+		if(options.isOptDebug()) cout << "\t\tq :\t\t" << rawEvent.track[pt.trackID].q << "\t\t <74: ++" << endl;
+		if(pt.p<74) extraCond++;
+
+		//wrt to z axis
+		if(options.isOptDebug()) cout << "\t\tZ_vtx :\t\t" << pt.vertexCDA.Z() << "\t\t >-2000 || <9000: ++" << endl;
+		if(pt.vertexCDA.Z()>-2000 && pt.vertexCDA.Z()<9000) extraCond++;
+
+		// cda<10cm
+		if(options.isOptDebug()) cout << "\t\tCDA :\t\t" << pt.cda << "\t\t <10: ++" << endl;
+		if(pt.cda<10) extraCond++;
+
+		if(options.isOptDebug()) cout << "\tExtraCond :\t\t" << extraCond << "\t ==" << conditions << ": extra" << endl;
+		if(extraCond==conditions) extra++;
+	}
+	return extra;
 }

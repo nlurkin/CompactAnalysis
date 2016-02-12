@@ -28,12 +28,14 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 	if(!opts["filter"].empty())
 			if(!isFilteredEvent(sbur->nrun, sbur->time, evt->scmpevt.timeStamp, badEventsList)) return 0;
 
-	cout << "======SuperMCDecay======" << endl;
-	cout << "KType: " << evt->decay.Ktype << "\t DType: " << evt->decay.Dtype << endl;
-	cout << "Vertex: (" << evt->decay.dvertex[0] << "," << evt->decay.dvertex[1] << "," << evt->decay.dvertex[2] << ")" << endl;
-	cout << "p_k: (" << evt->decay.p[0] << "," << evt->decay.p[1] << "," << evt->decay.p[2] << "," << evt->decay.p[3] << ")" << endl;
-	cout << "======------------======" << endl;
-	cout << "======  Particle  ======" << endl;
+	if(optDebug){
+		cout << "======SuperMCDecay======" << endl;
+		cout << "KType: " << evt->decay.Ktype << "\t DType: " << evt->decay.Dtype << endl;
+		cout << "Vertex: (" << evt->decay.dvertex[0] << "," << evt->decay.dvertex[1] << "," << evt->decay.dvertex[2] << ")" << endl;
+		cout << "p_k: (" << evt->decay.p[0] << "," << evt->decay.p[1] << "," << evt->decay.p[2] << "," << evt->decay.p[3] << ")" << endl;
+		cout << "======------------======" << endl;
+		cout << "======  Particle  ======" << endl;
+	}
 
 	bool ep = false;
 	bool em = false;
@@ -74,14 +76,17 @@ int user_superMcEvent(superBurst *sbur,superMcEvent *evt) {
 			rootMC.gamma.decay.SetXYZ(evt->part[i].dvertex[0], evt->part[i].dvertex[1], evt->part[i].dvertex[2]);
 			g = true;
 		}
-		cout << " ###### " << endl;
-		cout << "\tType: " << evt->part[i].type << endl;
-		cout << "\tp_i:   (" << evt->part[i].p[0] << "," << evt->part[i].p[1] << "," << evt->part[i].p[2] << "," << evt->part[i].p[3] << ")" << endl;
-		cout << "\tProd:  (" << evt->part[i].pvertex[0] << "," << evt->part[i].pvertex[1] << "," << evt->part[i].pvertex[2] << ")" << endl;
-		cout << "\tDecay: (" << evt->part[i].dvertex[0] << "," << evt->part[i].dvertex[1] << "," << evt->part[i].dvertex[2] << ")" << endl;
-		cout << " ##### " << endl;
+		if(optDebug){
+			cout << " ###### " << endl;
+			cout << "\tType: " << evt->part[i].type << endl;
+			cout << "\tp_i:   (" << evt->part[i].p[0] << "," << evt->part[i].p[1] << "," << evt->part[i].p[2] << "," << evt->part[i].p[3] << ")" << endl;
+			cout << "\tProd:  (" << evt->part[i].pvertex[0] << "," << evt->part[i].pvertex[1] << "," << evt->part[i].pvertex[2] << ")" << endl;
+			cout << "\tDecay: (" << evt->part[i].dvertex[0] << "," << evt->part[i].dvertex[1] << "," << evt->part[i].dvertex[2] << ")" << endl;
+			cout << " ##### " << endl;
+		}
 	}
-	cout << "======------------======" << endl;
+	if(optDebug)
+		cout << "======------------======" << endl;
 
 	rootMC.xTrue = pow((rootMC.em.P+rootMC.ep.P).M()/Mpi0, 2.);
 	evt->scmpevt.DETstatus[0].LV3ABTrig = 1;
