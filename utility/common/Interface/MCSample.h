@@ -12,6 +12,13 @@ class MCSample{
 public:
 	MCSample();
 	virtual ~MCSample();
+
+	void setUsePk(bool usePk) {
+		fUsePk = usePk;
+	}
+
+protected:
+	bool fUsePk;
 };
 
 #endif /* COMMON_SAMPLES_MCSAMPLE_H_ */

@@ -37,7 +37,7 @@ void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor) {
 }
 
 SubSample::SubSample() :
-		fFitTree(nullptr) {
+		fFitTree(nullptr), fScanID(-1), fIndex(-1), fBr(1), fCutDef(nullptr){
 	fFitBrch.n1 = 0;
 	fFitBrch.nx = 0;
 	fFitBrch.nxx = 0;
@@ -80,4 +80,6 @@ void SubSample::initOutput() {
 void SubSample::writeTree() {
 	fFitTree->Fill();
 	fFitTree->Write();
+	if(fCutDef)
+		fCutDef->Write();
 }

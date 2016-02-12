@@ -186,8 +186,7 @@ void fit_batch() {
 
 	Fitter f;
 	RunWeights weights;
-	weights.loadWeights(
-			"/afs/cern.ch/user/n/nlurkin/Compact/pi0dalitz_weights.dat");
+	weights.loadWeights(cfg.getWeightFile());
 	f.setRunWeights(&weights);
 	if (cfg.isWithEqualBins()) {
 		loadBins(bins, nbins);
@@ -221,7 +220,7 @@ void fit_show() {
 	f->PrepareHistos(cfg.getMcColors(), cfg.getDataColors());
 
 	//f->fit(true, false);
-	f->fit(true, true);
+	f->fit(true, true, cfg.getMaxLoss(), cfg.getStartScan(), cfg.getEndScan());
 //	f->fit(false, false);
 //	f->fit(false, true);
 

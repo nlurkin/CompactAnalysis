@@ -21,11 +21,12 @@ using namespace std;
 map<int, double> mcRunMap, dataRunMap;
 void buildRatioMap();
 void readConfig(TString confFile);
-void buildRunMap(TFile *fd, map<int,double> &runMap);
+void buildRunMap(TFile *fd, map<int,double> &runMap, bool usePk);
 
 void readConfig(TString confFile){
 	vector<TString> mcFileNames;
 	vector<TString> dataFileNames;
+	bool usePk;
 
 	//read list file
 	ifstream listFile(confFile.Data());
@@ -43,6 +44,7 @@ void readConfig(TString confFile){
 			cout << entry << endl;
 			if(key.CompareTo("mcfiles")==0) mcFileNames.push_back(entry);
 			else if(key.CompareTo("datafiles")==0) dataFileNames.push_back(entry);
+			else if(key.CompareTo("usepk")==0) usePk = entry.CompareTo("true", TString::kIgnoreCase) ? true : false;
 			delete tok->At(i);
 		}
 	}
@@ -50,29 +52,37 @@ void readConfig(TString confFile){
 	TFile *fd;
 	for(unsigned int i=0; i<mcFileNames.size(); ++i){
 		fd = TFile::Open(mcFileNames[i], "READ");
-		buildRunMap(fd, mcRunMap);
+		buildRunMap(fd, mcRunMap, usePk);
 		fd->Close();
 	}
 	for(unsigned int i=0; i<dataFileNames.size(); ++i){
 		fd = TFile::Open(dataFileNames[i], "READ");
-		buildRunMap(fd, dataRunMap);
+		buildRunMap(fd, dataRunMap, usePk);
 		fd->Close();
 	}
 }
 
-void buildRunMap(TFile *fd, map<int,double> &runMap){
+void buildRunMap(TFile *fd, map<int,double> &runMap, bool usePk){
 	//Get the TTree
 	//Input
 	TTree *t = (TTree*)fd->Get("event");
 	ROOTBurst *burstBrch = new ROOTBurst();
+	ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 	t->SetBranchAddress("rawBurst", &burstBrch);
+	t->SetBranchAddress("corrEvent", &corrBrch);
 
 	int nevt = t->GetEntries();
 	cout << nevt << endl;
+	int weight;
 	for(int i=0; i< nevt; ++i){
 		t->GetEntry(i);
-		if(runMap.count(burstBrch->nrun)>0) runMap[burstBrch->nrun] += 1;
-		else runMap.insert(make_pair(burstBrch->nrun, 1.));
+		if(usePk)
+			weight = corrBrch->weight;
+		else
+			weight = 1.;
+
+		if(runMap.count(burstBrch->nrun)>0) runMap[burstBrch->nrun] += 1.*weight;
+		else runMap.insert(make_pair(burstBrch->nrun, 1.*weight));
 	}
 }
 

@@ -53,9 +53,9 @@ void FitDataSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	if (mcEvent)
 		xTrue = mcEvent->xTrue;
 	weight = 1.;	//+2.*a*x+a*a*x*x;
-	if (a != 0)
-		bweight = (1. + 2. * a * xTrue + a * a * xTrue * xTrue)
-				/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
+//	if (a != 0)
+//		bweight = (1. + 2. * a * xTrue + a * a * xTrue * xTrue)
+//				/ (1. + 2. * 0.032 * xTrue + 0.032 * 0.032 * xTrue * xTrue);
 	if (passNormal)
 		dSig->Fill(x, weight * bweight);
 

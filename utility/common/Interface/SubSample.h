@@ -13,6 +13,7 @@
 
 #include "../ConfigFile.h"
 #include "RunWeights.h"
+#include "ScanCuts.h"
 
 class TTree;
 class TFile;
@@ -96,6 +97,13 @@ public:
 		fFitBrch.totEvents = totalSize;
 	}
 
+	const ScanCuts* getCutDef() const {
+		return fCutDef;
+	}
+
+	void setCutDef(const ScanCuts* cutDef) {
+		fCutDef = new ScanCuts(*cutDef);
+	}
 
 protected:
 	fitStruct fFitBrch;
@@ -103,6 +111,7 @@ protected:
 	int fScanID;
 	int fIndex;
 	double fBr;
+	const ScanCuts *fCutDef;
 };
 
 #endif /* COMMON_INTERFACE_SUBSAMPLE_H_ */

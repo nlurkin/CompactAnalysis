@@ -28,7 +28,7 @@ public:
 
 	static void minFunctionStatic(Int_t&, Double_t*, Double_t& f, Double_t* par, Int_t);
 
-	void printResult();
+	void printResult(int color);
 
 	static double chi2pValue(double chi2, int ndof);
 	void chi2Profile(TString name);

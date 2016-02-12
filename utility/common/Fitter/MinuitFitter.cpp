@@ -64,14 +64,25 @@ void MinuitFitter::minFunctionStatic(Int_t&, Double_t*, Double_t& f,
 	f = gTemp->minFunction(par[0], par[1]);
 }
 
-void MinuitFitter::printResult() {
+void MinuitFitter::printResult(int color) {
+	if(color==1)
+		cout << "\033[" << 32 << "m"; //default green
+	else if(color==2)
+		cout << "\033[" << 31 << "m"; //red (max)
+	else if(color==3)
+		cout << "\033[" << 34 << "m"; //blue (max)
+	else if(color==4)
+		cout << "\033[" << 35 << "m"; //magenta (not used)
 	double chi2Prob = TMath::Prob(fMinimum, 50 - 2);
 	cout << "######## Procedure result #########" << endl
 			<< "-------------------------------------" << endl;
 	cout << "Global normalization : " << fNorm << "+-" << fNormErr << endl;
 	cout << "Slope a : " << fFormFactor << "+-" << fFormFactorErr << endl;
-	cout << "Chi2 : " << fMinimum << " prob : " << chi2Prob << " p-value : "
-			<< endl;
+	cout << "Chi2 : " << fMinimum << " prob : " << chi2Prob << " p-value : ";
+	if(color!=0)
+		cout << "\033[" << 0 << "m"; //reset
+	cout << endl;
+
 }
 
 double MinuitFitter::chi2pValue(double chi2, int ndof) {
@@ -112,3 +123,4 @@ void MinuitFitter::chi2Profile(TString) {
 ////	new TCanvas("chi2Profile" + name, "chi2Profile");
 //	profile->Draw("A*");
 }
+

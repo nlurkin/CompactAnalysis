@@ -129,9 +129,11 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 	ROOTMCEvent *mcEvent = 0;
 	NGeom *geomBrch = new NGeom();
 	vector<bool> *cutsPass = 0;
+	ScanCuts *cutsLists = new ScanCuts();
 
 	TTree *t = (TTree*) inputFD->Get("event");
 	TTree *th = (TTree*) inputFD->Get("header");
+	TTree *tc = (TTree*) inputFD->Get("cutsDefinition");
 	if (t->GetListOfBranches()->Contains("mc"))
 		mcEvent = new ROOTMCEvent();
 	if (t->GetListOfBranches()->Contains("cutsResult")) {
@@ -144,19 +146,25 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 	t->SetBranchAddress("corrEvent", &corrBrch);
 	th->SetBranchAddress("header", &headerBrch);
 	th->SetBranchAddress("geom", &geomBrch);
+	if(tc)
+		tc->SetBranchAddress("lists", &cutsLists);
 	if (mcEvent)
 		t->SetBranchAddress("mc", &mcEvent);
 	if (cutsPass) {
 		t->SetBranchAddress("cutsResult", &cutsPass);
 		if (fCfg->getScanId() == -1) {
-			TTree *tc = (TTree*) inputFD->Get("cutsDefinition");
-			ScanCuts *cutsLists = new ScanCuts();
-			tc->SetBranchAddress("lists", &cutsLists);
 			tc->GetEntry(0);
 			fMainSubSample = cutsLists->getDefaultIndex();
 		} else
 			fMainSubSample = fCfg->getScanId();
+		int i=0;
+		for(auto ss : fSubSamples){
+			tc->GetEntry(i);
+			ss->setCutDef(cutsLists);
+			++i;
+		}
 	}
+
 
 	tempFD->cd();
 	//Set event nb
@@ -188,8 +196,17 @@ void Sample::doFill(TFile* inputFD, TFile* tempFD) {
 
 void Sample::doGet(TFile* inputFD, TFile* tempFD) {
 	int index = 0;
+	ScanCuts* c = static_cast<ScanCuts*>(gDirectory->Get("0/ScanCuts"));
+	if(fCfg->getScanId()!=-1)
+		fMainSubSample = fCfg->getScanId();
+	else if(c)
+		fMainSubSample = c->getDefaultIndex();
+	else
+		fMainSubSample = 0;
 	for (auto ss : fSubSamples) {
 		mkdirCd(inputFD, Form("%i", index));
+		if(c)
+			ss->setCutDef(static_cast<ScanCuts*>(gDirectory->Get("ScanCuts")));
 		ss->doGet(gDirectory, tempFD);
 		inputFD->cd();
 		++index;

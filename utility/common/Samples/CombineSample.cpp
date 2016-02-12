@@ -25,9 +25,15 @@ CombineSample::~CombineSample() {
 void CombineSample::processEvent(ROOTPhysicsEvent *eventBrch,
 		ROOTBurst *burstBrch, ROOTRawEvent *rawBrch,
 		ROOTCorrectedEvent *corrBrch, ROOTFileHeader *, ROOTMCEvent *mcEvent,
-		NGeom *geomBrch, std::vector<bool> *, const ConfigFile *cfg,
+		NGeom *geomBrch, std::vector<bool> *cutsPass, const ConfigFile *cfg,
 		const RunWeights * weights) {
 
+	if (cutsPass) {
+		if (!cutsPass->at(fScanID)) {
+			fFitBrch.selEvents--;
+			return;
+		}
+	}
 	if (!cfg->testUseRun(burstBrch->nrun, burstBrch->period))
 		return;
 
@@ -299,16 +305,6 @@ void CombineSample::fillHisto(ROOTPhysicsEvent *evt, ROOTRawEvent *rawEvt,
 	d1.at(++i)->Fill(evt->gamma.P.E(), weight);
 	d1.at(++i)->Fill(ELKr_ep + ELKr_em + evt->gamma.P.E(), weight);
 
-	propPos = propagateBefore(rootGeom->Dch[0].PosChamber.z,
-			corrEvent->pTrack[evt->ep.parentTrack], *rawEvt);
-	propPos2 = propagateBefore(rootGeom->Dch[0].PosChamber.z,
-			corrEvent->pTrack[evt->em.parentTrack], *rawEvt);
-	i += int((propPos.Y() + 150.) / 30.) * 4;
-	d1.at(++i)->Fill(distance2D(propPos, TVector3(0, 0, 0)), weight);
-	d1.at(++i)->Fill(propPos.X(), weight);
-	d1.at(++i)->Fill(propPos.Y(), weight);
-	d1.at(++i)->Fill(distance2D(propPos, propPos2), weight);
-
 	if (mcEvent)
 		dMap.at(++iMap)->Fill(mcEvent->xTrue, evt->x, weight);
 	else
@@ -518,67 +514,27 @@ void CombineSample::doGetHisto(TDirectory* inputFD, TFile* tempFD) {
 	getHisto(inputFD, tempFD, "L3_E_LKr_gamma");
 	getHisto(inputFD, tempFD, "L3_E_LKr");
 
-	getHisto(inputFD, tempFD, "R_DCH1_ep_0");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_0");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_0");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_0");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_1");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_1");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_1");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_1");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_2");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_2");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_2");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_2");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_3");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_3");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_3");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_3");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_4");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_4");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_4");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_4");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_5");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_5");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_5");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_5");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_6");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_6");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_6");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_6");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_7");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_7");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_7");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_7");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_8");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_8");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_8");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_8");
-	getHisto(inputFD, tempFD, "R_DCH1_ep_9");
-	getHisto(inputFD, tempFD, "X_DCH1_ep_9");
-	getHisto(inputFD, tempFD, "Y_DCH1_ep_9");
-	getHisto(inputFD, tempFD, "t_epem_DCH1_9");
-	getHisto2(inputFD, tempFD, "xMap");
-	getHisto2(inputFD, tempFD, "LKr_XY_ep");
-	getHisto2(inputFD, tempFD, "LKr_XY_em");
-	getHisto2(inputFD, tempFD, "LKr_XY_pip");
-	getHisto2(inputFD, tempFD, "LKr_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH1_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH1_XY_em");
-	getHisto2(inputFD, tempFD, "DCH1_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH1_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH2_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH2_XY_em");
-	getHisto2(inputFD, tempFD, "DCH2_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH2_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH3_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH3_XY_em");
-	getHisto2(inputFD, tempFD, "DCH3_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH3_XY_gamma");
-	getHisto2(inputFD, tempFD, "DCH4_XY_ep");
-	getHisto2(inputFD, tempFD, "DCH4_XY_em");
-	getHisto2(inputFD, tempFD, "DCH4_XY_pip");
-	getHisto2(inputFD, tempFD, "DCH4_XY_gamma");
+//	getHisto2(inputFD, tempFD, "xMap");
+//	getHisto2(inputFD, tempFD, "LKr_XY_ep");
+//	getHisto2(inputFD, tempFD, "LKr_XY_em");
+//	getHisto2(inputFD, tempFD, "LKr_XY_pip");
+//	getHisto2(inputFD, tempFD, "LKr_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH1_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH2_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH3_XY_gamma");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_ep");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_em");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_pip");
+//	getHisto2(inputFD, tempFD, "DCH4_XY_gamma");
 }
 
 void CombineSample::doWrite() {
@@ -619,60 +575,60 @@ void CombineSample::initHisto(int, double*, const ConfigFile *) {
 	addHisto("mK", 100, 0.47, 0.52);
 
 	//13
-	addHisto("R_DCH1_ep", 150, 0, 150);
-	addHisto("X_DCH1_ep", 300, -150, 150);
-	addHisto("Y_DCH1_ep", 300, -150, 150);
-	addHisto("R_DCH1_em", 150, 0, 150);
-	addHisto("X_DCH1_em", 300, -150, 150);
-	addHisto("Y_DCH1_em", 300, -150, 150);
-	addHisto("R_DCH1_pip", 150, 0, 150);
-	addHisto("X_DCH1_pip", 300, -150, 150);
-	addHisto("Y_DCH1_pip", 300, -150, 150);
-	addHisto("R_DCH1_gamma", 150, 0, 150);
-	addHisto("X_DCH1_gamma", 300, -150, 150);
-	addHisto("Y_DCH1_gamma", 300, -150, 150);
+	addHisto("R_DCH1_ep", 	75, 0, 150);
+	addHisto("X_DCH1_ep", 	150, -150, 150);
+	addHisto("Y_DCH1_ep",	150, -150, 150);
+	addHisto("R_DCH1_em", 	75, 0, 150);
+	addHisto("X_DCH1_em", 	150, -150, 150);
+	addHisto("Y_DCH1_em", 	150, -150, 150);
+	addHisto("R_DCH1_pip", 	75, 0, 150);
+	addHisto("X_DCH1_pip", 	150, -150, 150);
+	addHisto("Y_DCH1_pip", 	150, -150, 150);
+	addHisto("R_DCH1_gamma",75, 0, 150);
+	addHisto("X_DCH1_gamma",150, -150, 150);
+	addHisto("Y_DCH1_gamma",150, -150, 150);
 
 	//25
-	addHisto("R_DCH2_ep", 150, 0, 150);
-	addHisto("X_DCH2_ep", 300, -150, 150);
-	addHisto("Y_DCH2_ep", 300, -150, 150);
-	addHisto("R_DCH2_em", 150, 0, 150);
-	addHisto("X_DCH2_em", 300, -150, 150);
-	addHisto("Y_DCH2_em", 300, -150, 150);
-	addHisto("R_DCH2_pip", 150, 0, 150);
-	addHisto("X_DCH2_pip", 300, -150, 150);
-	addHisto("Y_DCH2_pip", 300, -150, 150);
-	addHisto("R_DCH2_gamma", 150, 0, 150);
-	addHisto("X_DCH2_gamma", 300, -150, 150);
-	addHisto("Y_DCH2_gamma", 300, -150, 150);
+	addHisto("R_DCH2_ep", 	75,  0, 150);
+	addHisto("X_DCH2_ep", 	150, -150, 150);
+	addHisto("Y_DCH2_ep", 	150, -150, 150);
+	addHisto("R_DCH2_em", 	75,  0, 150);
+	addHisto("X_DCH2_em", 	150, -150, 150);
+	addHisto("Y_DCH2_em", 	150, -150, 150);
+	addHisto("R_DCH2_pip", 	75,  0, 150);
+	addHisto("X_DCH2_pip", 	150, -150, 150);
+	addHisto("Y_DCH2_pip", 	150, -150, 150);
+	addHisto("R_DCH2_gamma",75,  0, 150);
+	addHisto("X_DCH2_gamma",150, -150, 150);
+	addHisto("Y_DCH2_gamma",150, -150, 150);
 
 	//37
-	addHisto("R_DCH3_ep", 150, 0, 150);
-	addHisto("X_DCH3_ep", 300, -150, 150);
-	addHisto("Y_DCH3_ep", 300, -150, 150);
-	addHisto("R_DCH3_em", 150, 0, 150);
-	addHisto("X_DCH3_em", 300, -150, 150);
-	addHisto("Y_DCH3_em", 300, -150, 150);
-	addHisto("R_DCH3_pip", 150, 0, 150);
-	addHisto("X_DCH3_pip", 300, -150, 150);
-	addHisto("Y_DCH3_pip", 300, -150, 150);
-	addHisto("R_DCH3_gamma", 150, 0, 150);
-	addHisto("X_DCH3_gamma", 300, -150, 150);
-	addHisto("Y_DCH3_gamma", 300, -150, 150);
+	addHisto("R_DCH3_ep", 	75,  0, 150);
+	addHisto("X_DCH3_ep", 	150, -150, 150);
+	addHisto("Y_DCH3_ep", 	150, -150, 150);
+	addHisto("R_DCH3_em", 	75,  0, 150);
+	addHisto("X_DCH3_em", 	150, -150, 150);
+	addHisto("Y_DCH3_em", 	150, -150, 150);
+	addHisto("R_DCH3_pip", 	75,  0, 150);
+	addHisto("X_DCH3_pip", 	150, -150, 150);
+	addHisto("Y_DCH3_pip", 	150, -150, 150);
+	addHisto("R_DCH3_gamma",75,  0, 150);
+	addHisto("X_DCH3_gamma",150, -150, 150);
+	addHisto("Y_DCH3_gamma",150, -150, 150);
 
 	//49
-	addHisto("R_DCH4_ep", 150, 0, 150);
-	addHisto("X_DCH4_ep", 300, -150, 150);
-	addHisto("Y_DCH4_ep", 300, -150, 150);
-	addHisto("R_DCH4_em", 150, 0, 150);
-	addHisto("X_DCH4_em", 300, -150, 150);
-	addHisto("Y_DCH4_em", 300, -150, 150);
-	addHisto("R_DCH4_pip", 150, 0, 150);
-	addHisto("X_DCH4_pip", 300, -150, 150);
-	addHisto("Y_DCH4_pip", 300, -150, 150);
-	addHisto("R_DCH4_gamma", 150, 0, 150);
-	addHisto("X_DCH4_gamma", 300, -150, 150);
-	addHisto("Y_DCH4_gamma", 300, -150, 150);
+	addHisto("R_DCH4_ep", 	75,  0, 150);
+	addHisto("X_DCH4_ep", 	150, -150, 150);
+	addHisto("Y_DCH4_ep", 	150, -150, 150);
+	addHisto("R_DCH4_em", 	75,  0, 150);
+	addHisto("X_DCH4_em", 	150, -150, 150);
+	addHisto("Y_DCH4_em", 	150, -150, 150);
+	addHisto("R_DCH4_pip", 	75,  0, 150);
+	addHisto("X_DCH4_pip", 	150, -150, 150);
+	addHisto("Y_DCH4_pip", 	150, -150, 150);
+	addHisto("R_DCH4_gamma",75,  0, 150);
+	addHisto("X_DCH4_gamma",150, -150, 150);
+	addHisto("Y_DCH4_gamma",150, -150, 150);
 
 	//54
 	addHisto("Zvtx", 100, -2000, 9000);
@@ -689,9 +645,9 @@ void CombineSample::initHisto(int, double*, const ConfigFile *) {
 	//Photon
 	//60
 	addHisto("gEnergy", 80, 0, 80);
-	addHisto("gPositionX", 300, -150, 150);
-	addHisto("gPositionY", 300, -150, 150);
-	addHisto("gRadius", 150, 0, 150);
+	addHisto("gPositionX", 150, -150, 150);
+	addHisto("gPositionY", 150, -150, 150);
+	addHisto("gRadius", 75, 0, 150);
 	addHisto("gP", 60, 0, 60);
 
 	//e+/e-
@@ -702,9 +658,9 @@ void CombineSample::initHisto(int, double*, const ConfigFile *) {
 	addHisto("epPz", 110, 0, 1.1);
 	addHisto("epEnergy", 60, 0, 60);
 	addHisto("epeop", 100, 0, 1.5);
-	addHisto("epLKrX", 300, -150, 150);
-	addHisto("epLKrY", 300, -150, 150);
-	addHisto("epLKrR", 300, -150, 150);
+	addHisto("epLKrX", 150, -150, 150);
+	addHisto("epLKrY", 150, -150, 150);
+	addHisto("epLKrR", 75, 0, 150);
 
 	//78
 	addHisto("emPMag", 60, 0, 60);
@@ -713,85 +669,44 @@ void CombineSample::initHisto(int, double*, const ConfigFile *) {
 	addHisto("emPz", 110, 0, 1.1);
 	addHisto("emEnergy", 60, 0, 60);
 	addHisto("emeop", 100, 0, 1.5);
-	addHisto("emLKrX", 300, -150, 150);
-	addHisto("emLKrY", 300, -150, 150);
-	addHisto("emLKrR", 300, -150, 150);
+	addHisto("emLKrX", 150, -150, 150);
+	addHisto("emLKrY", 150, -150, 150);
+	addHisto("emLKrR", 75, 00, 150);
 
 	//79
 	addHisto("mee", 140, 0, 0.14);
 
 	//pi+
 	//85
-	addHisto("pipPMag", 60, 0, 60);
+	addHisto("pipPMag", 70, 0, 70);
 	addHisto("pipPx", 60, -0.015, 0.015);
 	addHisto("pipPy", 60, -0.015, 0.015);
 	addHisto("pipPz", 110, 0, 1.1);
-	addHisto("pipEnergy", 60, 0, 60);
+	addHisto("pipEnergy", 70, 0, 70);
 	addHisto("pieop", 100, 0, 1.5);
 
-	addHisto("t_epem_DCH", 150, 0, 150);
-	addHisto("t_eppip_DCH", 150, 0, 150);
-	addHisto("t_empip_DCH", 150, 0, 150);
-	addHisto("t_epem_LKr", 400, 0, 400);
-	addHisto("t_eppip_LKr", 400, 0, 400);
-	addHisto("t_empip_LKr", 400, 0, 400);
+	addHisto("t_epem_DCH", 75, 0, 150);
+	addHisto("t_eppip_DCH", 100, 0, 200);
+	addHisto("t_empip_DCH", 100, 0, 200);
+	addHisto("t_epem_LKr", 125, 0, 250);
+	addHisto("t_eppip_LKr", 125, 0, 250);
+	addHisto("t_empip_LKr", 125, 0, 250);
 
-	addHisto("t_gep_DCH", 150, 0, 150);
-	addHisto("t_gem_DCH", 150, 0, 150);
-	addHisto("t_gpip_DCH", 150, 0, 150);
-	addHisto("t_gep_LKr", 400, 0, 400);
-	addHisto("t_gem_LKr", 400, 0, 400);
-	addHisto("t_gpip_LKr", 400, 0, 400);
+	addHisto("t_gep_DCH", 100, 0, 200);
+	addHisto("t_gem_DCH", 100, 0, 200);
+	addHisto("t_gpip_DCH", 100, 0, 200);
+	addHisto("t_gep_LKr", 125, 0, 250);
+	addHisto("t_gem_LKr", 125, 0, 250);
+	addHisto("t_gpip_LKr", 125, 0, 250);
 
-	addHisto("undeft_gep_LKr", 400, 0, 400);
-	addHisto("undeft_gem_LKr", 400, 0, 400);
-	addHisto("undeft_gpip_LKr", 400, 0, 400);
+	addHisto("undeft_gep_LKr", 100, 0, 200);
+	addHisto("undeft_gem_LKr", 100, 0, 200);
+	addHisto("undeft_gpip_LKr", 125, 0, 250);
 
-	addHisto("L3_E_LKr_ep", 160, 0, 80);
-	addHisto("L3_E_LKr_em", 160, 0, 80);
-	addHisto("L3_E_LKr_gamma", 160, 0, 80);
-	addHisto("L3_E_LKr", 160, 0, 80);
-
-	addHisto("R_DCH1_ep_0", 150, 0, 150);
-	addHisto("X_DCH1_ep_0", 300, -150, 150);
-	addHisto("Y_DCH1_ep_0", 300, -150, 150);
-	addHisto("t_epem_DCH1_0", 150, 0, 150);
-	addHisto("R_DCH1_ep_1", 150, 0, 150);
-	addHisto("X_DCH1_ep_1", 300, -150, 150);
-	addHisto("Y_DCH1_ep_1", 300, -150, 150);
-	addHisto("t_epem_DCH1_1", 150, 0, 150);
-	addHisto("R_DCH1_ep_2", 150, 0, 150);
-	addHisto("X_DCH1_ep_2", 300, -150, 150);
-	addHisto("Y_DCH1_ep_2", 300, -150, 150);
-	addHisto("t_epem_DCH1_2", 150, 0, 150);
-	addHisto("R_DCH1_ep_3", 150, 0, 150);
-	addHisto("X_DCH1_ep_3", 300, -150, 150);
-	addHisto("Y_DCH1_ep_3", 300, -150, 150);
-	addHisto("t_epem_DCH1_3", 150, 0, 150);
-	addHisto("R_DCH1_ep_4", 150, 0, 150);
-	addHisto("X_DCH1_ep_4", 300, -150, 150);
-	addHisto("Y_DCH1_ep_4", 300, -150, 150);
-	addHisto("t_epem_DCH1_4", 150, 0, 150);
-	addHisto("R_DCH1_ep_5", 150, 0, 150);
-	addHisto("X_DCH1_ep_5", 300, -150, 150);
-	addHisto("Y_DCH1_ep_5", 300, -150, 150);
-	addHisto("t_epem_DCH1_5", 150, 0, 150);
-	addHisto("R_DCH1_ep_6", 150, 0, 150);
-	addHisto("X_DCH1_ep_6", 300, -150, 150);
-	addHisto("Y_DCH1_ep_6", 300, -150, 150);
-	addHisto("t_epem_DCH1_6", 150, 0, 150);
-	addHisto("R_DCH1_ep_7", 150, 0, 150);
-	addHisto("X_DCH1_ep_7", 300, -150, 150);
-	addHisto("Y_DCH1_ep_7", 300, -150, 150);
-	addHisto("t_epem_DCH1_7", 150, 0, 150);
-	addHisto("R_DCH1_ep_8", 150, 0, 150);
-	addHisto("X_DCH1_ep_8", 300, -150, 150);
-	addHisto("Y_DCH1_ep_8", 300, -150, 150);
-	addHisto("t_epem_DCH1_8", 150, 0, 150);
-	addHisto("R_DCH1_ep_9", 150, 0, 150);
-	addHisto("X_DCH1_ep_9", 300, -150, 150);
-	addHisto("Y_DCH1_ep_9", 300, -150, 150);
-	addHisto("t_epem_DCH1_9", 150, 0, 150);
+	addHisto("L3_E_LKr_ep", 120, 0, 80);
+	addHisto("L3_E_LKr_em", 120, 0, 80);
+	addHisto("L3_E_LKr_gamma", 120, 0, 80);
+	addHisto("L3_E_LKr", 120, 0, 80);
 
 	addHisto("xMap", 1000, 0, 1, 1000, 0, 1);
 	addHisto("LKr_XY_ep", 600, -120, 120, 600, -120, 120);
@@ -821,9 +736,9 @@ void CombineSample::scale() {
 	for (unsigned int i = 0; i < d1.size(); ++i) {
 		SubSample::scale(d1.at(i), 1.);
 	}
-	for (unsigned int i = 0; i < dMap.size(); ++i) {
-		SubSample::scale(dMap.at(i), 1.);
-	}
+//	for (unsigned int i = 0; i < dMap.size(); ++i) {
+//		SubSample::scale(dMap.at(i), 1.);
+//	}
 }
 
 double CombineSample::getFFIntegral(double) {
@@ -834,8 +749,8 @@ void CombineSample::setPlotStyle(std::vector<int> color) {
 	for (auto plot : d1)
 		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
 
-	for (auto plot : dMap)
-		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
+//	for (auto plot : dMap)
+//		plot->SetFillColor(gStyle->GetColorPalette(color[0]));
 }
 
 TH1D* CombineSample::getMainHisto() {
@@ -848,8 +763,8 @@ SubSample* CombineSample::Add(const SubSample* other) {
 	for (unsigned int i = 0; i < d1.size(); i++) {
 		d1[i]->Add(myOther->d1[i], 1.);
 	}
-	for (unsigned int i = 0; i < dMap.size(); i++) {
-		dMap[i]->Add(myOther->dMap[i], 1.);
-	}
+//	for (unsigned int i = 0; i < dMap.size(); i++) {
+//		dMap[i]->Add(myOther->dMap[i], 1.);
+//	}
 	return this;
 }
