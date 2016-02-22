@@ -44,10 +44,10 @@ int pi0d_countVtx3Tracks(int &ivtx){
 		gH("trackN")->Fill(rawEvent.vtx[i].Nvtxtrack, corrEvent.weight);
 		if(rawEvent.vtx[i].Nvtxtrack==3){
 			if(optDebug) cout << "\tTotal charge :\t" << rawEvent.vtx[i].charge << endl;
-			if(rawEvent.vtx[i].charge==rootBurst.beamCharge || rootBurst.beamCharge==-99){
+//			if(rawEvent.vtx[i].charge==rootBurst.beamCharge || rootBurst.beamCharge==-99){
 				vtxNb++;
 				ivtx = i;
-			}
+//			}
 		}
 	}
 
@@ -240,27 +240,28 @@ int nico_pi0DalitzSelect(){
 	if(rootBurst.nrun<20209) triggerMask = 0x800;
 	else triggerMask = cutsDefinition.triggerMask;
 
-	//if(optDebug) cout << "~~~~ Cut 1 ~~~~" << endl;
-	//bitset<32> triggBit(rawEvent.trigWord);
-	//bitset<32> triggMask(triggerMask);
-	//bitset<32> comb(rawEvent.trigWord & triggerMask);
-	//bitset<32> LV3(rawEvent.DETStatus.LV3ABTrig);
-	//bitset<32> LV3Auto(rawEvent.DETStatus.LV3ABTrig);
-	//if(optDebug) cout << "Word :\t " << triggBit << endl;
-	//if(optDebug) cout << "Mask :\t " << triggMask << endl;
-	//if(optDebug) cout << "comb :\t " << comb << endl;
-	//if(optDebug) cout << "LV3ABTrig:\t " << LV3 << endl;
-	//if(optDebug) cout << "LV3Trig:\t " << LV3Auto << endl;
-	//if(optDebug) cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << dec << endl;
-	//if(optDebug) cout << "L3 Trigger word :\t " << hex << (rawEvent.DETStatus.LV3ABTrig & 1) << "\t == 0: rejected" << dec << endl;
-	//if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return -1;}
+	if(optDebug) cout << "~~~~ Cut 1 ~~~~" << endl;
+	bitset<32> triggBit(rawEvent.trigWord);
+	bitset<32> triggMask(triggerMask);
+	bitset<32> comb(rawEvent.trigWord & triggerMask);
+	bitset<32> LV3(rawEvent.DETStatus.LV3ABTrig);
+	bitset<32> LV3Auto(rawEvent.DETStatus.LV3ABTrig);
+	if(optDebug) cout << "Word :\t " << triggBit << endl;
+	if(optDebug) cout << "Mask :\t " << triggMask << endl;
+	if(optDebug) cout << "comb :\t " << comb << endl;
+	if(optDebug) cout << "LV3ABTrig:\t " << LV3 << endl;
+	if(optDebug) cout << "LV3Trig:\t " << LV3Auto << endl;
+	if(optDebug) cout << "L2 Trigger word :\t " << hex << (rawEvent.trigWord & triggerMask) << dec << "\t == 0: rejected" << dec << endl;
+	if(optDebug) cout << "L3 Trigger word :\t " << hex << (rawEvent.DETStatus.LV3ABTrig & 1) << "\t == 0: rejected" << dec << endl;
+	if(rootBurst.isData && ((rawEvent.trigWord & triggerMask) ==0)) {pi0d_failCut(1); return -1;}
 
-	//if(! (rawEvent.DETStatus.LV3ABTrig & 1)) {pi0d_failCut(1); return -1;}
+	if(! (rawEvent.DETStatus.LV3ABTrig & 1)) {pi0d_failCut(1); return -1;}
 
 	// 2) Exactly one 3-track vertex with correct charge
-	//if(optDebug) cout << "~~~~ Cut 2 ~~~~" << endl;
-	//vtxNb = pi0d_countVtx3Tracks(ivtx);
-	//if(optDebug) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
+	if(optDebug) cout << "~~~~ Cut 2 ~~~~" << endl;
+	vtxNb = pi0d_countVtx3Tracks(ivtx);
+	if(optDebug) cout << "3-track vertex :\t\t" << vtxNb << "\t != 1 : rejected" << endl;
+	if(vtxNb==0) {pi0d_failCut(2); return -1;}
 	//if(vtxNb!=cutsDefinition.numVertex3) {pi0d_failCut(2); return -1;}
 	//corrEvent.goodVertexID = ivtx;
 
