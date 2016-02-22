@@ -1,5 +1,6 @@
 #!/bin/sh
 
+exit
 currBranch=`git branch -v | grep "*" | cut -f 2 -d " "`
 
 git checkout automatic
