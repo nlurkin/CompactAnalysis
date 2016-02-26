@@ -690,6 +690,7 @@ int pi0d_goodClusters_loose(){
 	double distance;
 	double trackR;
 	double tDiff;
+	double cutDistance;
 
 	int cond;
 	int goodClusters = 0;
@@ -734,8 +735,12 @@ int pi0d_goodClusters_loose(){
 		propPos = propagateAfter(rootGeom.Lkr.z, t1, rawEvent);
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
-		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
-		if(distance>20 || trackR<10) cond++;
+		if(rawEvent.track[t1.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
+			cutDistance = 20;
+		else
+			cutDistance = 10;
+		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > " << cutDistance << " || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
+		if(distance>cutDistance || trackR<10) cond++;
 
 		// separation from undeflected x trajectories >20cm
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t1.trackID].bDetPos, rawEvent.track[t1.trackID].bMomentum);
@@ -747,8 +752,12 @@ int pi0d_goodClusters_loose(){
 		propPos = propagateAfter(rootGeom.Lkr.z, t2, rawEvent);
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
-		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
-		if(distance>20 || trackR<10) cond++;
+		if(rawEvent.track[t2.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
+			cutDistance = 20;
+		else
+			cutDistance = 10;
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > " << cutDistance << " || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
+		if(distance>cutDistance || trackR<10) cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t2.trackID].bDetPos, rawEvent.track[t2.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
@@ -758,8 +767,12 @@ int pi0d_goodClusters_loose(){
 		propPos = propagateAfter(rootGeom.Lkr.z, t3, rawEvent);
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
-		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > 20 || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
-		if(distance>20 || trackR<10) cond++;
+		if(rawEvent.track[t3.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
+			cutDistance = 20;
+		else
+			cutDistance = 10;
+		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > " << cutDistance << " || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
+		if(distance>cutDistance || trackR<10) cond++;
 
 		propPos = propagate(rootGeom.Lkr.z, rawEvent.track[t3.trackID].bDetPos, rawEvent.track[t3.trackID].bMomentum);
 		distance = distance2D(propPos, c.position);
@@ -795,6 +808,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 	TVector3 propPos;
 	double distance;
 	double tDiff;
+	double cutDistance;
 
 	int cond;
 	int goodClusters = 0;
@@ -851,14 +865,22 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		// separation from e+ e- impact point >10cm
 		propPos = propagateAfter(rootGeom.Lkr.z, ep, rawEvent);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
+		if(rawEvent.track[ep.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
+			cutDistance = 20;
+		else
+			cutDistance = 10;
+		if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > " << cutDistance << " : ++" << endl;
+		if(distance>cutDistance || distance2D(propPos, TVector3(0,0,0))<10) cond++;
 		//cond++;
 
 		propPos = propagateAfter(rootGeom.Lkr.z, em, rawEvent);
 		distance = distance2D(propPos, c.position);
-		if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > 20 : ++" << endl;
-		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
+		if(rawEvent.track[em.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
+			cutDistance = 20;
+		else
+			cutDistance = 10;
+		if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > " << cutDistance << " : ++" << endl;
+		if(distance>cutDistance || distance2D(propPos, TVector3(0,0,0))<10) cond++;
 		//cond++;
 
 		// separation from undeflected e+ e- trajectories >20cm
