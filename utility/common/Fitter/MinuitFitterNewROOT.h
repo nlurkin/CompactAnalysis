@@ -17,6 +17,7 @@ public:
 	virtual ~MinuitFitterNewROOT();
 
 	void init(double*binning);
+	void clean();
 
 	void fit();
 	double minFunction(double n, double a);

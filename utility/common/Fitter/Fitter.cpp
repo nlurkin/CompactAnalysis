@@ -66,6 +66,8 @@ void Fitter::fit(bool, bool useROOT, double maxLoss, int start, int end) {
 				static_cast<FitDataSample*>(fFinalDataSample->getSubSample(i)));
 		minuit->fit();
 		fFitters.push_back(minuit);
+		if(useROOT)
+			static_cast<MinuitFitterNewROOT*>(minuit)->clean();
 	}
 
 	int dflt = fMCSamples[0]->getMainSubSample();

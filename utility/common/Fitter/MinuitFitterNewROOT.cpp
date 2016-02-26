@@ -20,6 +20,11 @@ void MinuitFitterNewROOT::init(double* binning) {
 	fSigComp = new TH1D("sigcomp", "sigcomp", fNBins-1, binning);
 }
 
+void MinuitFitterNewROOT::clean(){
+	delete fComp;
+	delete fSigComp;
+}
+
 MinuitFitterNewROOT::~MinuitFitterNewROOT() {
 	// TODO Auto-generated destructor stub
 }
@@ -41,6 +46,7 @@ double MinuitFitterNewROOT::minFunction(double, double a) {
 	fComp->Add(fMCSamples->getBeta(), 2*a);
 	fComp->Add(fMCSamples->getGamma(), a*a);
 	fSigComp->Add(fDataSamples->getSig(), 1);
+
 	/*for (int i = 0; i <= fNBins; ++i) {
 		M_i = 0;
 		a_i = 0;
