@@ -25,7 +25,7 @@ public:
 	void draw();
 	void print();
 
-	void addScanValue(double val, double result, double err, int ndata);
+	void addScanValue(double val, double result, double err, int ndata, int npi, int nmu);
 	void computeUncorrError();
 
 	int getDefaultCutValue() const {
@@ -44,6 +44,8 @@ private:
 	std::vector<double> fResultErrors;
 	std::vector<double> fUncorrErrors;
 	std::vector<int> fNSelected;
+	std::vector<int> fPiSelected;
+	std::vector<int> fMuSelected;
 	int fDefaultCutValue;
 };
 

@@ -189,7 +189,7 @@ void Drawer::drawFitScan(std::vector<MinuitFitter*> fit,
 
 		d.addScanValue(diff, fit[i]->getFormFactor(),
 				fit[i]->getFormFactorErr(),
-				finalDataSample->getSubSample(i)->getSelSize());
+				finalDataSample->getSubSample(i)->getSelSize(), mcSamples[0]->getSubSample(i)->getSelSize(), mcSamples.size()>0 ? mcSamples[1]->getSubSample(i)->getSelSize() : 0);
 	}
 	d.computeUncorrError();
 	d.draw();
