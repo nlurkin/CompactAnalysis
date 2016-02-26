@@ -35,7 +35,7 @@ Cuts::Cuts(){
 	lkrAcceptance = 0;
 	minGammaEnergy = 3;
 	minDeadCellDist = 2;
-	minGammaDCHRadius = 13;
+	minGammaDCHRadius = 11;
 	unDeflectedElDist = 20;
 	k2pi.minTotalMomentum = 70.0;
 	k2pi.maxTotalMomentum = 78.0;
