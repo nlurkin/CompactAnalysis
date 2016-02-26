@@ -57,7 +57,7 @@ void readConfig(TString confFile){
 	}
 	for(unsigned int i=0; i<dataFileNames.size(); ++i){
 		fd = TFile::Open(dataFileNames[i], "READ");
-		buildRunMap(fd, dataRunMap, usePk);
+		buildRunMap(fd, dataRunMap, false);
 		fd->Close();
 	}
 }
@@ -68,15 +68,23 @@ void buildRunMap(TFile *fd, map<int,double> &runMap, bool usePk){
 	TTree *t = (TTree*)fd->Get("event");
 	ROOTBurst *burstBrch = new ROOTBurst();
 	ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+	vector<bool> *cutsPass = 0;
 	t->SetBranchAddress("rawBurst", &burstBrch);
 	t->SetBranchAddress("corrEvent", &corrBrch);
+	if (t->GetListOfBranches()->Contains("cutsResult")) {
+		cutsPass = new vector<bool>;
+		t->SetBranchAddress("cutsResult", &cutsPass);
+	}
 
 	int nevt = t->GetEntries();
 	cout << nevt << endl;
-	int weight;
-	for(int i=0; i< nevt; ++i){
+	double weight;
+	for (int i = 0; i < nevt; ++i) {
 		t->GetEntry(i);
-		if(usePk)
+		if (cutsPass)
+			if (!cutsPass->at(0))
+				continue;
+		if (usePk)
 			weight = corrBrch->weight;
 		else
 			weight = 1.;
