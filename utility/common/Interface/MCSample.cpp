@@ -7,7 +7,9 @@
 
 #include "MCSample.h"
 
-MCSample::MCSample() {
+MCSample::MCSample() :
+	fUsePk(false)
+{
 	// TODO Auto-generated constructor stub
 
 }
