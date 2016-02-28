@@ -103,6 +103,7 @@ public:
 
 	void setCutDef(const ScanCuts* cutDef) {
 		fCutDef = new ScanCuts(*cutDef);
+		((Cuts*)fCutDef)->print();
 	}
 
 protected:

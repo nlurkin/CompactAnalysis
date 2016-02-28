@@ -83,7 +83,6 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 
 		//Open new input file
 		tempSample->addFile(cfg.getMcFileNames()[i]);
-		tempSample->setUsePk(cfg.isUsePk());
 
 		fMCSamples.push_back(tempSample);
 	}
@@ -120,7 +119,10 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 		sample->prepareNSubSamples<TDataSample>(cfg.getNScan());
 		sample->applyFactor();
 	}
-	for(auto sample : fMCSamples) sample->prepareNSubSamples<TMCSample>(cfg.getNScan());
+	for(auto sample : fMCSamples){
+		sample->prepareNSubSamples<TMCSample>(cfg.getNScan());
+		sample->setUsePk(cfg.isUsePk());
+	}
 }
 
 template <class TMCSample, class TDataSample>

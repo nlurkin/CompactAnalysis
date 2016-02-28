@@ -160,6 +160,8 @@ void ConfigFile::print() const{
 	cout << "Scan ID: " << fScanID << endl;
 	cout << "# Scan: " << fNScan << endl;
 	cout << "Use scan from " << fStartScan << " to " << fEndScan << endl;
+	cout << "Use pk " << (fUsePk ? "True" : "False") << endl;
+	cout << "Weights file " << fWeightFile << endl;
 }
 
 bool ConfigFile::testAllOutputFiles() const{
