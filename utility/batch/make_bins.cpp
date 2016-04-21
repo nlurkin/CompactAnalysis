@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <iomanip>
 #define __CINT_NICO__ 1
 
 #include "pi0DalitzHeader.h"
@@ -26,6 +27,12 @@
 #include <TMath.h>
 #include <TGraph.h>
 #include "../userinc/exportClasses.h"
+
+#include "../common/style.cpp"
+#include "../common/Fitter/Fitter.h"
+#include "../common/Samples/FitMCSample.h"
+#include "../common/Samples/FitDataSample.h"
+
 using namespace std;
 
 #define BINS 10000000
@@ -36,39 +43,12 @@ double Mpi0 = 0.1349766;
 
 multiset<double> setVals;
 
-//ROOTRawEvent *xxx = new ROOTRawEvent();
-//ROOTRawEvent &rawEvent = *xxx;
+TString tempFileName;
+TFile *tempFD;
+ROOTRawEvent *xxx = new ROOTRawEvent();
+ROOTRawEvent &rawEvent = *xxx;
 
-/***************************
- * Mandatory from header
- * Opening/Closing files
- ***************************/
-void initNewChannel() {
-}
-
-void initNewOutput(TFile **fdo, TString fileName) {
-	//*fdo = TFile::Open(fileName, "RECREATE");
-}
-
-void closeMCOutput(TFile *fdo, int index) {
-}
-
-void closeDataOutput(TFile *fdo, int index) {
-	//fdo->cd();
-	//fdo->Close();
-}
-
-/*************************
- * Utility
- *************************/
-/***************************
- * Input
- ****************************/
-namespace Input {
-	void getInputMCFill(TFile *fd, TFile *fdout, double br, unsigned int index) {
-	}
-
-	int getInputDataFill(TFile *fd, TFile* fdout) {
+	int getInputDataFill(TFile *fd) {
 		//Input
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
@@ -86,19 +66,18 @@ namespace Input {
 
 		// Set Number of events
 		int nevt = t->GetEntries();
-		if (MAXEVENTS > 0 && nevt > MAXEVENTS)
-			nevt = MAXEVENTS;
 		NSig = nevt;
 
 		//Read event and fill histo
 		int i = 0;
 		double x;
 
+		fitStruct fStruct;
 		cout << "Filling data " << endl;
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch)) continue;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, fStruct)) continue;
 			x = eventBrch->x;
 
 			setVals.insert(x);
@@ -106,20 +85,14 @@ namespace Input {
 		return NSig;
 	}
 
-	void getInputMCGet(TFile *fd, double br, unsigned int index) {
-
-	}
-
-	int getInputDataGet(TFile *fd, double factor) {
-		return 0;
-	}
-}
-
 /************************
  * Mains
  ************************/
 
-void make_bins(TString inFile) {
+void make_bins() {
+
+	gStyle->SetOptFit(1);
+
 	struct stat buffer;
 	srand(time(NULL));
 	gStyle->SetOptFit(1);
@@ -135,15 +108,19 @@ void make_bins(TString inFile) {
 	tempFD = TFile::Open(tempFileName, "RECREATE");
 
 	//Get Input
-	readConfig(inFile);
 
-	mcFileNames.clear();
-	readFilesFill();
+	TFile *fdROOT;
+	for(auto it : cfg.getDataFileNames()){
+		fdROOT = TFile::Open(it.c_str(), "READ");
+		getInputDataFill(fdROOT);
+		fdROOT->Close();
+	}
+
 
 	//int binAmount = 50;
 	//int nbins = ceil(setVals.size()/double(binAmount));
 
-	int nbins = 50;
+	int nbins = 200;
 	int binAmount = ceil(setVals.size()/double(nbins));
 	multiset<double>::reverse_iterator it;
 	int i = nbins;
@@ -171,7 +148,7 @@ void make_bins(TString inFile) {
 
 	cout << "#Data: " << setVals.size() << endl;
 	cout << "nbins: " << nbins << endl;
-	ofstream fd(binsFileName);
+	ofstream fd(cfg.getBinsFileName());
 	for(int i=0; i<=nbins; ++i){
 		cout << std::fixed << std::setprecision(6) << bins[i] << endl;
 		fd << std::fixed << std::setprecision(6) <<  bins[i] << endl;
@@ -193,7 +170,10 @@ int main(int argc, char **argv) {
 	signal(SIGINT, sighandler);
 	signal(SIGABRT, sighandler);
 
-	TString config(argv[1]);
+	if (!cfg.readFile(argv[1]))
+		return -1;
+	cfg.print();
+
 	if (argc == 2)
-		make_bins(config);
+		make_bins();
 }
