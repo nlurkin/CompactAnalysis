@@ -19,9 +19,12 @@ Combiner::~Combiner() {
 	// TODO Auto-generated destructor stub
 }
 
-void Combiner::draw(vector<int> allColors, vector<int> dataColors) {
+void Combiner::draw(vector<int> allColors, vector<int> dataColors, int first, int last) {
 	for (unsigned int i = 0; i < fMCSamples.size(); i++) {
 		vector<int> colors(allColors.begin() + (i*3), allColors.begin() + (i*3+3));
+		std::cout << "toto" << endl;
+		for(auto it: colors) std::cout << it << " ";
+		std::cout << std::endl;
 		fMCSamples[i]->setPlotStyle(colors);
 	}
 
@@ -30,5 +33,5 @@ void Combiner::draw(vector<int> allColors, vector<int> dataColors) {
 		fDataSamples[i]->setPlotStyle(colors);
 	}
 
-	Drawer::drawCombineStack(fMCSamples, fDataSamples, fFinalMCSample, fFinalDataSample);
+	Drawer::drawCombineStack(fMCSamples, fDataSamples, fFinalMCSample, fFinalDataSample, first, last);
 }

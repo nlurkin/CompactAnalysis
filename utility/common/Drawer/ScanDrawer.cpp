@@ -143,12 +143,19 @@ void ScanDrawer::generateResult(TPad* pad) {
 void ScanDrawer::generateNSelected(TPad* pad) {
 	//Creation
 	TGraph *scanSelected = new TGraph();
+	TGraphErrors *scanDefault = new TGraphErrors();
 	scanSelected->SetName("NSelected");
+	scanDefault->SetName("scanDefault");
 
 	//Points
 	for (unsigned int i = 0; i < fScanValues.size(); ++i) {
 		scanSelected->SetPoint(i, fScanValues[i], fNSelected[i]);
+		scanDefault->SetPoint(i, fScanValues[i], 0);
 	}
+
+	scanDefault->SetPoint(fDefaultCutValue, fScanValues[fDefaultCutValue],
+			fNSelected[fDefaultCutValue]);
+	scanDefault->SetPointError(fDefaultCutValue, 0, 99999999);
 
 	//Style
 	scanSelected->SetMarkerStyle(20);
@@ -156,13 +163,23 @@ void ScanDrawer::generateNSelected(TPad* pad) {
 	scanSelected->SetLineColor(4);
 	scanSelected->SetFillStyle(0);
 
+	scanDefault->SetMarkerStyle(0);
+	scanDefault->SetLineStyle(7);
+	scanDefault->SetLineWidth(2);
+	scanDefault->SetLineColor(8);
+	scanDefault->SetFillStyle(0);
+
 	//Plotting
+	pad->SetTopMargin(0.2);
+	pad->SetBottomMargin(0.2);
+	pad->SetGrid(); // vertical grid
 	pad->cd();
-	scanSelected->SetTitle("Number of selected events");
+	//scanSelected->SetTitle("Number of selected events");
 	scanSelected->GetXaxis()->SetTitle("Cut value");
 	scanSelected->GetYaxis()->SetTitle("Selected events");
 	scanSelected->GetYaxis()->SetTitleOffset(1.5);
 	scanSelected->Draw("APL");
+	scanDefault->Draw("PSAME");
 }
 
 void ScanDrawer::draw() {

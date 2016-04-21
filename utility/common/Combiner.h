@@ -17,7 +17,7 @@ public:
 	Combiner();
 	virtual ~Combiner();
 
-	void draw(std::vector<int> allColors, std::vector<int> dataColors);
+	void draw(std::vector<int> allColors, std::vector<int> dataColors, int first, int last);
 };
 
 #endif /* COMMON_COMBINER_H_ */

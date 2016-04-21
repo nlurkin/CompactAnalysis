@@ -572,7 +572,7 @@ void CombineSample::addHisto(TString name, int binsx, double minx, double maxx,
 
 void CombineSample::initHisto(int, double*, const ConfigFile *) {
 	//1
-	addHisto("mK", 100, 0.47, 0.52);
+	addHisto("mK", 200, 0.45, 0.53);
 
 	//13
 	addHisto("R_DCH1_ep", 	75, 0, 150);

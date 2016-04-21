@@ -44,8 +44,12 @@ void StackRatioDrawer::generate(TPad* pad) {
 	pad1->SetBottomMargin(3);
 	pad1->SetGrid();
 	pad1->cd();               // pad1 becomes the current pad
+//	pad1->SetLogy();
+//	fStack->SetMinimum(5);
 	fStack->Draw("HIST");    // Draw h1
+//	fStack->GetXaxis()->SetRangeUser(0.46, 0.52);
 	fStack2->Draw("SAME E P");    // Draw h2 on top of h1
+//	fStack2->GetXaxis()->SetRangeUser(0.46, 0.52);
 	fLegend->Draw();
 
 	TPad* pad2 = static_cast<TPad*>(pad->GetPad(2));
@@ -58,6 +62,7 @@ void StackRatioDrawer::generate(TPad* pad) {
 	fSecondary->Draw("ep");
 	fSecondary->SetMarkerColor(kRed);
 	fSecondary->GetYaxis()->SetRangeUser(0.89, 1.11);
+//	fSecondary->GetXaxis()->SetRangeUser(0.46, 0.52);
 
 	// Y axis mc plot settings
 	fStack->GetYaxis()->SetTitleSize(20);

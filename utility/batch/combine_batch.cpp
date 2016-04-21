@@ -271,8 +271,7 @@ void combine_batch() {
 	Combiner combine;
 
 	RunWeights weights;
-	weights.loadWeights(
-			"/afs/cern.ch/user/n/nlurkin/Compact/pi0dalitz_weights.dat");
+	weights.loadWeights(cfg.getWeightFile());
 	combine.setRunWeights(&weights);
 
 	combine.prepareSamples<CombineMCSample, CombineDataSample>(cfg);
@@ -285,15 +284,14 @@ void combine_show(int firstPlot, int maxPlots) {
 	Combiner combine;
 
 	RunWeights weights;
-	weights.loadWeights(
-			"/afs/cern.ch/user/n/nlurkin/Compact/pi0dalitz_weights.dat");
+	weights.loadWeights(cfg.getWeightFile());
 	combine.setRunWeights(&weights);
 
 	combine.prepareSamples<CombineMCSample, CombineDataSample>(cfg);
 	combine.getSamples();
 
 	combine.mergeSamples<CombineMCSample, CombineDataSample>();
-	combine.draw(cfg.getMcColors(), cfg.getDataColors());
+	combine.draw(cfg.getMcColors(), cfg.getDataColors(), firstPlot, firstPlot+maxPlots);
 
 //	TLegend *leg = new TLegend(.7, 0.75, 0.9, 0.95);
 //
@@ -611,7 +609,7 @@ int main(int argc, char **argv) {
 	signal(SIGINT, sighandler);
 	signal(SIGABRT, sighandler);
 
-	int firstPlots = 1;
+	int firstPlots = 0;
 	int maxPlots = -1;
 
 	if (!cfg.readFile(argv[1]))
@@ -625,7 +623,7 @@ int main(int argc, char **argv) {
 		if (argc >= 5)
 			maxPlots = atoi(argv[4]);
 		theApp = new TApplication("combine", &argc, argv);
-		combine_show(-firstPlots, maxPlots - 1);
+		combine_show(firstPlots, maxPlots);
 		theApp->Run();
 	}
 }
