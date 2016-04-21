@@ -14,30 +14,10 @@
 #include "../ConfigFile.h"
 #include "RunWeights.h"
 #include "ScanCuts.h"
+#include "Functions.h"
 
 class TTree;
 class TFile;
-
-typedef struct fitStruct_t {
-	int totEvents;
-	int selEvents;
-	int n1;
-	int nx;
-	int nxx;
-
-	fitStruct_t& operator+=(const fitStruct_t &other){
-		totEvents += other.totEvents;
-		selEvents += other.selEvents;
-		n1 += other.n1;
-		nx += other.nx;
-		nxx += other.nxx;
-		return *this;
-	}
-} fitStruct;
-
-void initFitStruct(fitStruct &s);
-void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor);
-
 
 class SubSample {
 public:

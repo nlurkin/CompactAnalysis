@@ -22,4 +22,4 @@ add_library(Fitter ${fitterHdr} ${fitterSrc})
 add_library(Combiner Combiner.h Combiner.cpp)
 add_library(Samples ${sampleHdr} ${sampleSrc})
 
-add_library(common pi0DalitzHeader.h style.cpp ConfigFile.h ConfigFile.cpp RunWeights.cpp RunWeights.h DataGetter.h DataGetter.cpp)
+add_library(common pi0DalitzHeader.h style.cpp ConfigFile.h ConfigFile.cpp RunWeights.cpp RunWeights.h DataGetter.h DataGetter.cpp Functions.h pk_corr.cpp)

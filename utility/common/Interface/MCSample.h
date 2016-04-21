@@ -13,12 +13,12 @@ public:
 	MCSample();
 	virtual ~MCSample();
 
-	void setUsePk(bool usePk) {
+	void setUsePk(int usePk) {
 		fUsePk = usePk;
 	}
 
 protected:
-	bool fUsePk;
+	int fUsePk;
 };
 
 #endif /* COMMON_SAMPLES_MCSAMPLE_H_ */

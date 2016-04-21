@@ -59,8 +59,10 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 		return;
 
 	weight = weights->applyWeights(burstBrch->nrun);
-	if(fUsePk)
+	if(fUsePk==1)
 		weight *= corrBrch->weight;
+	else if(fUsePk==2)
+		weight *= secondOrder_Pk(burstBrch->nrun, mcEvent->k.P.Vect().Mag(), mcEvent->k.pdgID);
 
 	x = eventBrch->x;
 	if (mcEvent)

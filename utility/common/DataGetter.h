@@ -121,7 +121,7 @@ void DataGetter::prepareSamples(ConfigFile& cfg) {
 	}
 	for(auto sample : fMCSamples){
 		sample->prepareNSubSamples<TMCSample>(cfg.getNScan());
-		sample->setUsePk(cfg.isUsePk());
+		sample->setUsePk(cfg.getUsePk());
 	}
 }
 

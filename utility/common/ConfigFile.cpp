@@ -45,7 +45,7 @@ ConfigFile::ConfigFile() :
 		("startscan", 	po::value< int>				(&fStartScan)->default_value(-1),	"List of input MC files")
 		("endscan", 	po::value< int>				(&fEndScan)->default_value(-1),	 	"List of input MC files")
 		("maxloss", 	po::value< double>			(&fMaxLoss)->default_value(0.2),	"List of input MC files")
-		("usepk", 		po::value< bool>			(&fUsePk)->default_value(false),	"List of input MC files")
+		("usepk", 		po::value< int>				(&fUsePk)->default_value(0),	"List of input MC files")
 		("weightsfile", po::value< string>			(&fWeightFile)->default_value("pi0dalits_weights.dat"),	"List of input MC files")
 	;
 }
@@ -160,7 +160,7 @@ void ConfigFile::print() const{
 	cout << "Scan ID: " << fScanID << endl;
 	cout << "# Scan: " << fNScan << endl;
 	cout << "Use scan from " << fStartScan << " to " << fEndScan << endl;
-	cout << "Use pk " << (fUsePk ? "True" : "False") << endl;
+	cout << "Use pk " << fUsePk << endl;
 	cout << "Weights file " << fWeightFile << endl;
 }
 

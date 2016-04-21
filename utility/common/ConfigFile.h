@@ -206,7 +206,7 @@ public:
 		return fMaxLoss;
 	}
 
-	bool isUsePk() const {
+	int getUsePk() const {
 		return fUsePk;
 	}
 
@@ -228,7 +228,7 @@ private:
 	int fStartScan;
 	int fEndScan;
 	double fMaxLoss;
-	bool fUsePk;
+	int fUsePk;
 
 	std::string fWeightFile;
 

@@ -134,7 +134,7 @@ public:
 		return fMainSubSample;
 	}
 
-	void setUsePk(bool usePk) {
+	void setUsePk(int usePk) {
 		for (auto ss : fSubSamples)
 			dynamic_cast<MCSample*>(ss)->setUsePk(usePk);
 	}
