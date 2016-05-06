@@ -112,11 +112,11 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 	if(options.isOptDebug()) cout << "~~~~ Cut 5 ~~~~" << endl;
 	int extraTracks = pi0d_extraTrackVeto(corrEvent.goodVertexID, vertexTime);
 	if(options.isOptDebug()) cout << "Extra tracks :\t\t\t" << extraTracks << "\t > 0 : rejected" << endl;
-	if(extraTracks>io.cutsDefinition.maxExtraTracks) {pi0d_failCut(5); return false;}
+	if(options.isDoExtraTrack() && extraTracks>io.cutsDefinition.maxExtraTracks) {pi0d_failCut(5); return false;}
 
 	// 1) Track DCH time
 	if(options.isOptDebug()) cout << "~~~~ Cut 1 ~~~~" << endl;
-	if(rootBurst.isData){
+	if(rootBurst.isData && options.isDoTrackTiming()){
 		if(options.isOptDebug()) cout << "|t_1| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;
 		if(fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[0]].trackID].time - rootBurst.tOffst.Dch)>io.cutsDefinition.maxTrackTime) {pi0d_failCut(1+firstCutIndex); return false;}
 		if(options.isOptDebug()) cout << "|t_2| :\t\t\t\t" << fabs(rawEvent.track[corrEvent.pTrack[corrEvent.goodTracks[1]].trackID].time - rootBurst.tOffst.Dch) << "\t\t > 25: rejected" << endl;

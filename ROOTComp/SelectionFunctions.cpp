@@ -1124,8 +1124,8 @@ int pi0d_countVtx3Tracks(int &ivtx){
 		if(options.isOptDebug()) cout << "\tNumber of tracks:\t" << rawEvent.vtx[i].Nvtxtrack << endl;
 
 		if(rawEvent.vtx[i].Nvtxtrack==3){
-			if(options.isOptDebug()) cout << "\tTotal charge :\t" << rawEvent.vtx[i].charge << endl;
-			if(rawEvent.vtx[i].charge==rootBurst.beamCharge || rootBurst.beamCharge==-99){
+			if(options.isOptDebug()) cout << "\tTotal charge :\t" << rawEvent.vtx[i].charge << "( beam " << rootBurst.beamCharge << ")" << endl;
+			if(rawEvent.vtx[i].charge==rootBurst.beamCharge || rootBurst.beamCharge==-99 || !options.isDoVertexCharge()){
 				vtxNb++;
 				ivtx = i;
 			}
