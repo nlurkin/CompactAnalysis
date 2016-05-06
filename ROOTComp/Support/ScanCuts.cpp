@@ -46,8 +46,8 @@ Cuts::Cuts(){
 	k2pi.minPi0MassDiff = 0.115;
 	k2pi.maxPi0MassDiff = 0.145;
 	kmu3.maxPi0MassDiff = 0.01;
-	k2pi.minKaonMassDiff = 0.465;
-	k2pi.maxKaonMassDiff = 0.510;
+	k2pi.minKaonMassDiff = 0.46;
+	k2pi.maxKaonMassDiff = 0.52;
 	kmu3.maxMissMassSq = 0.01;
 	k2pi.pi0Mass2DiffCoarse = 0.01;
 }
