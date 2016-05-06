@@ -9,26 +9,43 @@
 #include "CompactIO.h"
 
 OptionsParser::OptionsParser() :
-		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(false),
-		doScan(false), doNegativePID(false), doInvertTime(false), nScan(0), startEvent(0), selectionType(K2PI), desc("Allowed options") {
+		maxEvents(-1), optDebug(false), outputModulo(1), periodKeep(0), exportAllEvents(
+				false), doScan(false), doNegativePID(false), doInvertTime(
+				false), nScan(0), startEvent(0), doTrackTiming(true), doVertexCharge(
+				true), doExtraTrack(true), selectionType(K2PI), desc(
+				"Allowed options") {
 	// Declare the supported options.
-	desc.add_options()("help,h", "produce help message")
-			("nevt,n", po::value<int>(), "max number of events")
-			("start,s", po::value<int>(), "First event to process")
-			("file,i",po::value<std::string>(), "input file name")
-			("list,l", po::value<std::string>(), "list of input files")
-			("prefix,p", po::value<std::string>(), "prefix for output files")
-			("debug,d",	po::value<bool>()->implicit_value(true)->default_value(false), "Activate verbose debugging")
-			("negpid",	po::value<bool>()->implicit_value(true)->default_value(false), "Activate negative PID (assign pion to negative beam charge)")
-			("invertt",	po::value<bool>()->implicit_value(true)->default_value(false), "Invert cluster timing cut")
-			("filter,f", po::value<std::string>(), "Filter file")
-			("dooutput", po::value<bool>()->implicit_value(true)->default_value(false), "Activate output text files")
-			("period", po::value<int>()->default_value(0), "Keep only events from specified period")
-			("mod,m", po::value<int>()->default_value(1), "Event number printing modulo")
-			("cuts,c", po::value<std::string>(), "Cuts file")
-			("sel", po::value<std::string>(), "Selection type")
-			("scan", po::value<int>()->default_value(0), "Do a scan with n values")
-			("eall,e", po::value<bool>()->implicit_value(true)->default_value(false), "Export all events, even failed");
+	desc.add_options()("help,h", "produce help message")("nevt,n",
+			po::value<int>(), "max number of events")("start,s",
+			po::value<int>(), "First event to process")("file,i",
+			po::value<std::string>(), "input file name")("list,l",
+			po::value<std::string>(), "list of input files")("prefix,p",
+			po::value<std::string>(), "prefix for output files")("debug,d",
+			po::value<bool>()->implicit_value(true)->default_value(false),
+			"Activate verbose debugging")("negpid",
+			po::value<bool>()->implicit_value(true)->default_value(false),
+			"Activate negative PID (assign pion to negative beam charge)")(
+			"invertt",
+			po::value<bool>()->implicit_value(true)->default_value(false),
+			"Invert cluster timing cut")("filter,f", po::value<std::string>(),
+			"Filter file")("dooutput",
+			po::value<bool>()->implicit_value(true)->default_value(false),
+			"Activate output text files")("period",
+			po::value<int>()->default_value(0),
+			"Keep only events from specified period")("mod,m",
+			po::value<int>()->default_value(1), "Event number printing modulo")(
+			"cuts,c", po::value<std::string>(), "Cuts file")("sel",
+			po::value<std::string>(), "Selection type")("scan",
+			po::value<int>()->default_value(0), "Do a scan with n values")(
+			"eall,e",
+			po::value<bool>()->implicit_value(true)->default_value(false),
+			"Export all events, even failed")("tracktime",
+			po::value<bool>()->implicit_value(false)->default_value(true),
+			"Don't check track timing")("vtxcharge",
+			po::value<bool>()->implicit_value(false)->default_value(true),
+			"Don't check vertex charge")("extratrack",
+			po::value<bool>()->implicit_value(false)->default_value(true),
+			"DonAllow extra track");
 }
 
 OptionsParser::~OptionsParser() {
@@ -70,14 +87,16 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 	/// String options
 	if (vm.count("prefix"))
 		io.output.setPrefix(vm["prefix"].as<std::string>());
-	if (vm.count("sel")){
-			std::string selType = vm["sel"].as<string>();
-			if(selType.compare("k2pi")==0) selectionType = K2PI;
-			else if(selType.compare("kmu3")==0) selectionType = KMU3;
-			else {
-				std::cerr << "Unknown selection type: " << selType << std::endl;
-				return false;
-			}
+	if (vm.count("sel")) {
+		std::string selType = vm["sel"].as<string>();
+		if (selType.compare("k2pi") == 0)
+			selectionType = K2PI;
+		else if (selType.compare("kmu3") == 0)
+			selectionType = KMU3;
+		else {
+			std::cerr << "Unknown selection type: " << selType << std::endl;
+			return false;
+		}
 	}
 	if (vm.count("debug"))
 		optDebug = vm["debug"].as<bool>();
@@ -95,9 +114,15 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 		cutsFile = vm["cuts"].as<std::string>();
 	if (vm.count("eall"))
 		exportAllEvents = vm["eall"].as<bool>();
-	if (vm.count("scan")){
-			nScan = vm["scan"].as<int>();
-			doScan = nScan > 0;
+	if (vm.count("tracktime"))
+		doTrackTiming = vm["tracktime"].as<bool>();
+	if (vm.count("vtxcharge"))
+		doVertexCharge = vm["vtxcharge"].as<bool>();
+	if (vm.count("extratrack"))
+		doExtraTrack = vm["extratrack"].as<bool>();
+	if (vm.count("scan")) {
+		nScan = vm["scan"].as<int>();
+		doScan = nScan > 0;
 	}
 	if (vm.count("filter"))
 		filterFile = vm["filter"].as<std::string>();

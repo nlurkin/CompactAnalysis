@@ -77,6 +77,18 @@ public:
 		return doInvertTime;
 	}
 
+	bool isDoTrackTiming() const {
+		return doTrackTiming;
+	}
+
+	bool isDoVertexCharge() const {
+		return doVertexCharge;
+	}
+
+	bool isDoExtraTrack() const {
+		return doExtraTrack;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -88,6 +100,9 @@ private:
 	bool doInvertTime;
 	int nScan;
 	int startEvent;
+	bool doTrackTiming;
+	bool doVertexCharge;
+	bool doExtraTrack;
 	ESelectionType selectionType;
 	po::options_description desc;
 	std::string optString;
