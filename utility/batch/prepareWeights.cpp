@@ -16,17 +16,18 @@
 #include <TPaveText.h>
 #include <fstream>
 #include "../userinc/exportClasses.h"
+#include "Functions.h"
 using namespace std;
 
 map<int, double> mcRunMap, dataRunMap;
 void buildRatioMap();
 void readConfig(TString confFile);
-void buildRunMap(TFile *fd, map<int, double> &runMap, bool usePk);
+void buildRunMap(TFile *fd, map<int, double> &runMap, int usePk);
 
 void readConfig(TString confFile) {
 	vector<TString> mcFileNames;
 	vector<TString> dataFileNames;
-	bool usePk;
+	int usePk;
 
 	//read list file
 	ifstream listFile(confFile.Data());
@@ -47,12 +48,11 @@ void readConfig(TString confFile) {
 			else if (key.CompareTo("datafiles") == 0)
 				dataFileNames.push_back(entry);
 			else if (key.CompareTo("usepk") == 0)
-				usePk = entry.CompareTo("true", TString::kIgnoreCase) == 0 ?
-						true : false;
+				usePk = entry.Atoi();
 			delete tok->At(i);
 		}
 	}
-
+	cout << usePk << endl;
 	TFile *fd;
 	for (unsigned int i = 0; i < mcFileNames.size(); ++i) {
 		fd = TFile::Open(mcFileNames[i], "READ");
@@ -61,20 +61,23 @@ void readConfig(TString confFile) {
 	}
 	for (unsigned int i = 0; i < dataFileNames.size(); ++i) {
 		fd = TFile::Open(dataFileNames[i], "READ");
-		buildRunMap(fd, dataRunMap, false);
+		buildRunMap(fd, dataRunMap, 0);
 		fd->Close();
 	}
 }
 
-void buildRunMap(TFile *fd, map<int, double> &runMap, bool usePk) {
+void buildRunMap(TFile *fd, map<int, double> &runMap, int usePk) {
 	//Get the TTree
 	//Input
 	TTree *t = (TTree*) fd->Get("event");
 	ROOTBurst *burstBrch = new ROOTBurst();
 	ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
+	ROOTMCEvent *mcEvent = new ROOTMCEvent();
+
 	vector<bool> *cutsPass = 0;
 	t->SetBranchAddress("rawBurst", &burstBrch);
 	t->SetBranchAddress("corrEvent", &corrBrch);
+	t->SetBranchAddress("mc", &mcEvent);
 	if (t->GetListOfBranches()->Contains("cutsResult")) {
 		cutsPass = new vector<bool>;
 		t->SetBranchAddress("cutsResult", &cutsPass);
@@ -88,8 +91,10 @@ void buildRunMap(TFile *fd, map<int, double> &runMap, bool usePk) {
 		if (cutsPass)
 			if (!cutsPass->at(0))
 				continue;
-		if (usePk)
+		if (usePk==1)
 			weight = corrBrch->weight;
+		else if (usePk==2)
+			weight = secondOrder_Pk(burstBrch->nrun, mcEvent->k.P.Vect().Mag(), mcEvent->k.pdgID);
 		else
 			weight = 1.;
 
