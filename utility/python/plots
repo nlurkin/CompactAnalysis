@@ -1,0 +1,255 @@
+ - shortName : pk
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/release_p_tot_delta
+   varName   : pi0dEvent.kaon.P.fP.Mag()
+   nbins     : 120
+   xmin      : 68
+   xmax      : 80
+   cut       : 13
+   usewpk    : True
+   ytitle    : Events/(0.1 GeV/c)
+   doRatio   : True
+   xtitle    : p_{K} [GeV/c]
+   rmin      : 0.89
+   rmax      : 1.11
+   arrowLoc  : ~
+   log       : False
+   
+ - shortName : pk_nowpk
+   path      :  xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/release_p_tot_delta/
+   varName   : pi0dEvent.kaon.P.fP.Mag()
+   nbins     : 120
+   xmin      : 68
+   xmax      : 80
+   cut       : 13
+   usewpk    : False
+   ytitle    : Events/(0.1 GeV/c)
+   xtitle    : p_{K} [GeV/c]
+   
+ - shortName : vtx_z
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/vtx_z
+   varName   : pi0dEvent.pic.vertex.fZ
+   nbins     : 100
+   xmin      : -2000
+   xmax      : 8000
+   cut       : 0
+   usewpk    : True
+   ytitle    : Events/(100 cm)
+   xtitle    : Vtx_{z} [cm]
+   arrowLoc  : [-1700]
+               
+ - shortName : xDalitz_zoom_low
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/MinReco
+   varName   : pi0dEvent.x
+   nbins     : 100
+   xmin      : 0
+   xmax      : 0.1
+   usewpk    : True
+   ytitle    : Events/(0.001)
+   xtitle    : x
+   arrowLoc  : [0.01]
+
+ - shortName : ep_p_full
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/release_max_p
+   varName   : pi0dEvent.ep.P.fP.Mag()
+   nbins     : 65
+   xmin      : 0
+   xmax      : 65
+   cut       : 10
+   usewpk    : True
+   ytitle    : Events/(1 GeV/c)
+   xtitle    : p_{e^{+}}
+   arrowLoc  : [2]
+   
+ - shortName : em_p_full
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/release_max_p
+   varName   : pi0dEvent.em.P.fP.Mag()
+   nbins     : 65
+   xmin      : 0
+   xmax      : 65
+   cut       : 10
+   usewpk    : True
+   ytitle    : Events/(1 GeV/c)
+   xtitle    : p_{e^{-}}
+   arrowLoc  : [2]
+
+ - shortName : pic_p_full
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/release_max_p
+   varName   : pi0dEvent.pic.P.fP.Mag()
+   nbins     : 65
+   xmin      : 0
+   xmax      : 65
+   cut       : 10
+   usewpk    : True
+   ytitle    : Events/(1 GeV/c)
+   xtitle    : p_{#pi^{+}}
+   arrowLoc  : [2]
+   
+ - shortName : xDalitz
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/Dflt
+   varName   : pi0dEvent.x
+   nbins     : 100
+   xmin      : 0
+   xmax      : 1
+   usewpk    : True
+   ytitle    : Events/(0.01)
+   xtitle    : x
+   doRatio   : False
+   log       : True
+
+ - shortName : mk
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/kMassLarge
+   varName   : pi0dEvent.kaon.P.M()
+   nbins     : 140
+   xmin      : 0.42
+   xmax      : 0.56
+   usewpk    : True
+   ytitle    : Events/(1 Mev/c^{2})
+   xtitle    : M_{#pi#pi} [Gev/c^{2}]
+   doRatio   : False
+   log       : True
+   arrowLoc  : [0.46, 0.52]
+  
+ - shortName : mk_ratio
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/kMassLarge
+   varName   : pi0dEvent.kaon.P.M()
+   nbins     : 120
+   xmin      : 0.46
+   xmax      : 0.52
+   usewpk    : True
+   ytitle    : Events/(0.5 Mev/c^{2})
+   xtitle    : M_{#pi#pi} [Gev/c^{2}]
+   doRatio   : True
+   log       : False
+   
+ - shortName : mpi0
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/pi0MassLarge
+   varName   : pi0dEvent.pi0.P.M()
+   nbins     : 140
+   xmin      : 0.10
+   xmax      : 0.17
+   usewpk    : True
+   ytitle    : Events/(0.5 Mev/c^{2})
+   xtitle    : M_{ee#gamma} [Gev/c^{2}]
+   doRatio   : False
+   log       : True
+   arrowLoc  : [0.115, 0.145]
+
+ - shortName : mpi0_ratio
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/pi0MassLarge
+   varName   : pi0dEvent.pi0.P.M()
+   nbins     : 150
+   xmin      : 0.115
+   xmax      : 0.145
+   usewpk    : True
+   ytitle    : Events/(0.2 Mev/c^{2})
+   xtitle    : M_{ee#gamma} [Gev/c^{2}]
+   doRatio   : True
+   log       : False
+   
+ - shortName : dch1_r_ep
+   path      : /afs/cern.ch/user/n/nlurkin/Compact/utility/build/ExtRange/Dflt_plots
+   varName   : R_DCH1_ep
+   nbins     : 75
+   xmin      : 0
+   xmax      : 150
+   usewpk    : True
+   ytitle    : Events/(2 cm)
+   xtitle    : R_{e^{+},DCH1}
+   doRatio   : True
+   extract   : True
+
+ - shortName : dch1_r_em
+   path      : /afs/cern.ch/user/n/nlurkin/Compact/utility/build/ExtRange/Dflt_plots
+   varName   : R_DCH1_em
+   nbins     : 75
+   xmin      : 0
+   xmax      : 150
+   usewpk    : True
+   ytitle    : Events/(2 cm)
+   xtitle    : R_{e^{-},DCH1}
+   doRatio   : True
+   extract   : True
+   
+ - shortName : square_dch1_r_em
+   path      : /afs/cern.ch/user/n/nlurkin/Compact/utility/build/ExtRange/NoDCHSquare
+   varName   : R_DCH1_em
+   nbins     : 75
+   xmin      : 0
+   xmax      : 150
+   usewpk    : True
+   ytitle    : Events/(2 cm)
+   xtitle    : R_{e^{-},DCH1}
+   doRatio   : True
+   extract   : True
+
+ - shortName : square_dch1_r_ep
+   path      : /afs/cern.ch/user/n/nlurkin/Compact/utility/build/ExtRange/NoDCHSquare
+   varName   : R_DCH1_ep
+   nbins     : 75
+   xmin      : 0
+   xmax      : 150
+   usewpk    : True
+   ytitle    : Events/(2 cm)
+   xtitle    : R_{e^{+},DCH1}
+   doRatio   : True
+   extract   : True
+
+ - shortName : dch1_r_epem_before
+   path      : /afs/cern.ch/user/n/nlurkin/Compact/utility/build/ExtRange/NoDCHSquare
+   varName   : t_epem_DCH
+   nbins     : 75
+   xmin      : 0
+   xmax      : 150
+   usewpk    : True
+   ytitle    : Events/(2 cm)
+   xtitle    : d_{ee,DCH1}
+   doRatio   : True
+   extract   : True
+
+ - shortName : dch1_r_epem_after
+   path      : /afs/cern.ch/user/n/nlurkin/Compact/utility/build/ExtRange/Dflt_plots
+   varName   : t_epem_DCH
+   nbins     : 75
+   xmin      : 0
+   xmax      : 150
+   usewpk    : True
+   ytitle    : Events/(2 cm)
+   xtitle    : d_{ee,DCH1}
+   doRatio   : True
+   extract   : True
+
+ - shortName : two_hypo
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/rndpid
+   varName   : pi0dEvent.x
+   nbins     : 100
+   xmin      : 0
+   xmax      : 1
+   usewpk    : True
+   ytitle    : Events/(0.01)
+   xtitle    : x
+   doRatio   : False
+
+ - shortName : lnv_x
+   path      : /afs/cern.ch/user/n/nlurkin/work/MinCompactExtRange/bckg
+   varName   : pi0dEvent.x
+   nbins     : 100
+   xmin      : 0
+   xmax      : 1
+   usewpk    : True
+   ytitle    : Events/(0.01)
+   xtitle    : x
+   doRatio   : False
+   samples   : ["data", "pi"]
+
+ - shortName : pk_wpk2
+   force     : True
+   path      : xroot://castorpublic.cern.ch//castor/cern.ch/user/n/nlurkin/Stage2_MinCompactExtRange/release_p_tot_delta/
+   varName   : pi0dEvent.kaon.P.fP.Mag()
+   nbins     : 120
+   xmin      : 68
+   xmax      : 80
+   cut       : 13
+   usewpk    : 2
+   ytitle    : Events/(0.1 GeV/c)
+   xtitle    : p_{K} [GeV/c]
+   
