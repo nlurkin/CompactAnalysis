@@ -244,26 +244,31 @@ if i==showIndex:
 if not hasattr(f, "cutsDefinition"):
     sys.exit(0)
     
-cut = [0]
-for val in f.cutsDefinition:
-    cut.append(val.lists.unDeflectedElDist)
+#cut = [0]
+#for val in f.cutsDefinition:
+#    cut.append(val.lists.unDeflectedElDist)
     
-passed = Hist1D(320, 10, 70)
-for i, val  in enumerate(f.cutsDefinition):
-    passed.Fill(val.lists.unDeflectedElDist, pid_res.total.prelim.ided.pass_t.events[i])
+#passed = Hist1D(320, 10, 70)
+#print len(pid_res.total.prelim.ided.pass_t.events)
+#for i, val  in enumerate(f.cutsDefinition):
+#    if i==len(pid_res.total.prelim.ided.pass_t.events):
+#        continue
+#    print i, val.lists.unDeflectedElDist
+    #passed.Fill(val.lists.unDeflectedElDist, pid_res.total.prelim.ided.pass_t.events[i])
 
-c1 = Canvas()
-passed.Draw()
-wait()
+#c1 = Canvas()
+#passed.Draw()
+#wait()
 
-sys.exit(0)
+#sys.exit(0)
 cuts1 = [0]
 cuts2 = [0]
-cuts3 = [0]
-for val in f.cutsDefinition:
-    cuts1.append(val.lists.maxPi0MassDiff)
-    cuts2.append(val.lists.maxKaonMassDiff)
-    cuts3.append(val.lists.minKaonMassDiff)
+for i, val in enumerate(f.cutsDefinition):
+    if i>= cutsSize-1:
+        break
+
+    cuts1.append((val.lists.k2pi.maxPi0MassDiff-val.lists.k2pi.minPi0MassDiff)/2.)
+    cuts2.append((val.lists.k2pi.maxKaonMassDiff-val.lists.k2pi.minKaonMassDiff)/2.)
     
 cuts1 = list(set(cuts1))
 cuts1.sort()
@@ -271,15 +276,11 @@ cuts1.sort()
 cuts2 = list(set(cuts2))
 cuts2.sort()
 
-cuts3 = list(set(cuts3))
-cuts3.sort()
-
 lastCuts1 = cuts1[-1]
 lastCuts2 = cuts2[-1]
 
 print cuts1
 print cuts2
-print cuts3
 
 bins1 = []
 bins2 = []
@@ -298,6 +299,10 @@ bins2.append(lastCuts2 + (lastCuts2-bins2[-1]))
 #bins1 = [0.00255, 0.0066, 0.0141, 0.0301, 0.0501, 0.0701, 0.0901, 0.1251, 0.175, 0.2251, 0.2751, 1]
 #bins1 = [0, 1]
 #test = Hist1D(bins1)
+print bins1
+print bins2
+total = Hist2D(bins1, bins2)
+total.SetTitle("Total")
 #passed = Graph2D(ScanIndex)
 passed = Hist2D(bins1, bins2)
 #passed = Hist1D(bins1)
@@ -311,33 +316,79 @@ noid.SetTitle("noid")
 #manyid = Graph2D(ScanIndex)
 manyid = Hist2D(bins1, bins2)
 manyid.SetTitle("manyid")
+badid = Hist2D(bins1, bins2)
+badid.SetTitle("bad")
 for i, val  in enumerate(f.cutsDefinition):
-    if i>= cutsSize:
+    if i>= cutsSize-1:
         break
+    if i==0:
+        continue
+    pi0diff = (val.lists.k2pi.maxPi0MassDiff-val.lists.k2pi.minPi0MassDiff)/2.
+    kdiff = (val.lists.k2pi.maxKaonMassDiff-val.lists.k2pi.minKaonMassDiff)/2.
+    
+    total_events = pid_res.total.prelim.associated.ided.events[i] + pid_res.total.prelim.associated.manyID.events[i] + pid_res.total.prelim.associated.noID.events[i] 
+    total.Fill(pi0diff, kdiff, total_events)
+    
+    passed.Fill(pi0diff, kdiff, pid_res.total.prelim.associated.ided.events[i])
+    
+    manyid.Fill(pi0diff, kdiff, pid_res.total.prelim.associated.manyID.events[i])
+    print pid_res.total.prelim.associated.manyID.events[i]
+    noid.Fill(pi0diff, kdiff, pid_res.total.prelim.associated.noID.events[i])
+    badid.Fill(pi0diff, kdiff, pid_res.total.prelim.associated.ided.bad.events[i])
+    
+    
+#    if i>= cutsSize:
+#        break
 #    if i==0:
 #        continue
-    if val.lists.minKaonMassDiff==0.43 and val.lists.maxKaonMassDiff==0.51:
-        continue
+    #if val.lists.k2pi.minKaonMassDiff==0.43 and val.lists.k2pi.maxKaonMassDiff==0.51:
+    #    continue
     #print val.lists.maxPi0MassDiff, val.lists.minKaonMassDiff, val.lists.maxKaonMassDiff
     #passed.SetPoint(i, val.lists.maxPi0MassDiff, val.lists.minKaonMassDiff, pid_res.total.prelim.ided.pass_t.events[i])
-    passed.Fill(val.lists.maxPi0MassDiff, val.lists.maxKaonMassDiff, pid_res.total.prelim.ided.pass_t.events[i])
+    #passed.Fill(val.lists.k2pi.maxPi0MassDiff, val.lists.k2pi.maxKaonMassDiff, pid_res.total.prelim.ided.pass_t.events[i])
     #passed.Fill(val.lists.maxPi0MassDiff, pid_res.total.prelim.ided.pass_t.events[i])
     
     #if(val.lists.maxKaonMassDiff>0.05 and val.lists.maxKaonMassDiff<0.12):
     #    print val.lists.maxPi0MassDiff, val.lists.minKaonMassDiff, val.lists.maxKaonMassDiff, pid_res.total.prelim.ided.pass_t.events[i]
     #ided.SetPoint(i, val.lists.maxPi0MassDiff, val.lists.minKaonMassDiff, pid_res.total.prelim.ided.events[i])
-    ided.Fill(val.lists.maxPi0MassDiff, val.lists.maxKaonMassDiff, pid_res.total.prelim.ided.events[i])
+    #ided.Fill(val.lists.k2pi.maxPi0MassDiff, val.lists.k2pi.maxKaonMassDiff, pid_res.total.prelim.ided.events[i])
     #noid.SetPoint(i, val.lists.maxPi0MassDiff, val.lists.minKaonMassDiff, pid_res.total.prelim.noID.events[i])
-    noid.Fill(val.lists.maxPi0MassDiff, val.lists.maxKaonMassDiff, pid_res.total.prelim.noID.events[i])
+    #noid.Fill(val.lists.k2pi.maxPi0MassDiff, val.lists.k2pi.maxKaonMassDiff, pid_res.total.prelim.noID.events[i])
     #manyid.SetPoint(i, val.lists.maxPi0MassDiff, val.lists.minKaonMassDiff, pid_res.total.prelim.manyID.events[i])
-    manyid.Fill(val.lists.maxPi0MassDiff, val.lists.maxKaonMassDiff, pid_res.total.prelim.manyID.events[i])
-c1 = Canvas()
-passed.Draw("colTEXT")
-c2 = Canvas()
-ided.Draw("colTEXT")
+    #manyid.Fill(val.lists.k2pi.maxPi0MassDiff, val.lists.k2pi.maxKaonMassDiff, pid_res.total.prelim.manyID.events[i])
+#c0 = Canvas()
+#total.Draw("colTEXT")
+#c1 = Canvas()
+#passed.Draw("colTEXT")
+#c2 = Canvas()
+#ided.Draw("colTEXT")
+#c3 = Canvas()
+#noid.Draw("colTEXT")
 c3 = Canvas()
-noid.Draw("colTEXT")
-c4 = Canvas()
-#manyid.Draw("surf1")
 manyid.Draw("colTEXT")
+
+badid.Divide(passed)
+passed.Divide(total)
+manyid.Divide(total)
+noid.Divide(total)
+
+c4 = Canvas()
+manyid.Draw("colTEXT")
+wait()
+def minmax(hist2d):
+    vals = []
+    for x in range(0, hist2d.GetNbinsX()):
+        for y in range(0, hist2d.GetNbinsY()):
+            vals.append(hist2d.GetBinContent(hist2d.GetBin(x,y)))
+    vals = [v for v in vals if v!=0]
+    if len(vals)>0:
+        return (min(vals), max(vals))
+    else:
+        return (0,0)
+
+print "Passed MinMax=", minmax(passed)
+print "ManyID MinMax=", minmax(manyid)
+print "NoID MinMax=", minmax(noid)
+print "BadID MinMax=", minmax(badid)
+
 wait()
