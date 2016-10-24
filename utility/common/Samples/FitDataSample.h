@@ -47,6 +47,7 @@ public:
 
 private:
 	TH1D *dSig;
+	TH1D *dXDiff;
 };
 
 #endif /* COMMON_FITDATASAMPLE_H_ */

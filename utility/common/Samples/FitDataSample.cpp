@@ -13,11 +13,13 @@
 #include <iostream>
 #include <iomanip>
 #include "Functions.h"
+#include "funLib.h"
+
+extern double Mpi0;
 
 using namespace std;
 FitDataSample::FitDataSample() :
-		dSig(nullptr) {
-
+		dSig(nullptr), dXDiff(nullptr) {
 }
 
 FitDataSample::~FitDataSample() {
@@ -25,7 +27,7 @@ FitDataSample::~FitDataSample() {
 }
 
 void FitDataSample::processEvent(ROOTPhysicsEvent *eventBrch,
-		ROOTBurst *, ROOTRawEvent *rawBrch,
+		ROOTBurst *burstBrch, ROOTRawEvent *rawBrch,
 		ROOTCorrectedEvent *corrBrch, ROOTFileHeader *,
 		ROOTMCEvent *mcEvent, NGeom *geomBrch, std::vector<bool> *cutsPass,
 		const ConfigFile *, const RunWeights *) {
@@ -45,11 +47,24 @@ void FitDataSample::processEvent(ROOTPhysicsEvent *eventBrch,
 		}
 	}
 
-	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
+	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,burstBrch,
 			fFitBrch))
 		return;
 
 	x = eventBrch->x;
+
+	//double mpi0 = eventBrch->pi0.P.M();
+	//double factor = Mpi0/mpi0;
+
+	//TLorentzVector ep = eventBrch->ep.P,em = eventBrch->em.P, gamma = eventBrch->gamma.P;
+	//ep *= factor;
+	//em *= factor;
+	//gamma *= factor;
+
+	//double nmpi0 = (ep+em+gamma).M();
+	double newx = pow((eventBrch->ep.P*1.01+eventBrch->em.P*1.01).M()/Mpi0, 2.);
+	dXDiff->Fill(x-newx);
+	//x = newx;
 	if (mcEvent)
 		xTrue = mcEvent->xTrue;
 	weight = 1.;	//+2.*a*x+a*a*x*x;
@@ -80,6 +95,7 @@ void FitDataSample::doGet(TDirectory* inputFD, TFile* tempFD) {
 
 void FitDataSample::doWrite() {
 	dSig->Write();
+	dXDiff->Write();
 }
 
 void FitDataSample::doSetName() {
@@ -91,6 +107,7 @@ void FitDataSample::initHisto(int nbins, double* bins, const ConfigFile *cfg) {
 		dSig = new TH1D("sig", "signal sample", nbins - 1, bins);
 	else
 		dSig = new TH1D("sig", "signal sample", NBINS, 0, MAXBIN);
+	dXDiff = new TH1D("diffx", "diffx", 1000, -1, 1);
 }
 
 void FitDataSample::scale() {
