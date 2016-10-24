@@ -53,12 +53,14 @@ ROOTRawEvent &rawEvent = *xxx;
 		ROOTPhysicsEvent *eventBrch = new ROOTPhysicsEvent();
 		ROOTCorrectedEvent *corrBrch = new ROOTCorrectedEvent();
 		ROOTRawEvent *rawBrch = xxx;
+		ROOTBurst *rawBurst = new ROOTBurst();
 		NGeom *geomBrch = new NGeom();
 		TTree *t = (TTree*) fd->Get("event");
 		TTree *th = (TTree*)fd->Get("header");
 		t->SetBranchAddress("pi0dEvent", &eventBrch);
 		t->SetBranchAddress("corrEvent", &corrBrch);
 		t->SetBranchAddress("rawEvent", &rawBrch);
+		t->SetBranchAddress("rawBurst", &rawBurst);
 		th->SetBranchAddress("geom", &geomBrch);
 
 		th->GetEntry(0);
@@ -77,7 +79,7 @@ ROOTRawEvent &rawEvent = *xxx;
 		for (i = 0; i < NSig; i++) {
 			t->GetEntry(i);
 
-			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, fStruct)) continue;
+			if(!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, rawBurst, fStruct)) continue;
 			x = eventBrch->x;
 
 			setVals.insert(x);

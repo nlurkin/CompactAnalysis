@@ -7,6 +7,8 @@
 using namespace std;
 
 ConfigFile cfg;
+bool filterLoaded = false;
+std::vector<eventID> badEventsList;
 
 /*************************
  * Globals
@@ -34,10 +36,65 @@ void loadBins(double *bins, int& nbins){
 		bins[nbins] = val;
 		nbins++;
 	}
+	fd.close();
 }
 
-bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom, ROOTRawEvent *rawEvent, fitStruct &fitBrch){
+void loadEventsFilter(){
+	int run, burst, time;
+
+	ifstream fd("/afs/cern.ch/user/n/nlurkin/Compact/filterout.dat");
+	while(fd >> run >> burst >> time){
+		badEventsList.push_back(eventID(run, burst, time));
+	}
+	fd.close();
+
+
+//	fd.open("/afs/cern.ch/user/n/nlurkin/Compact/eop.dat");
+//	while(fd >> run >> burst >> time){
+//		badEventsList.push_back(eventID(run, burst, time));
+//	}
+//	fd.close();
+
+	filterLoaded = true;
+}
+
+bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom, ROOTRawEvent *rawEvent, ROOTBurst *burst, fitStruct &fitBrch){
 	TVector3 propPos, propPos2, propPos3;
+	if(!filterLoaded) loadEventsFilter();
+
+	if(burst->isData && isFilteredEvent(burst->nrun, burst->time, rawEvent->timeStamp, badEventsList)){
+		fitBrch.selEvents--;
+		return false;
+	}
+
+	//HOD efficiency
+//	double eff, eff2;
+//	double rndNum, rndNum2;
+//	int nOk = 0;
+//	TVector3 mom;
+//	if(burst->isMC){
+//		eff = 0.9976;
+//		for(auto it : corrEvent->pTrack){
+//			propPos = propagateAfter(11946.50, it, *rawEvent);
+//			if (propPos.X()>-0.01 && propPos.X()<0.01) eff=0;
+//			if (propPos.Y()>-0.01 && propPos.Y()<0.01) eff=0;
+//
+//			rndNum = (double)(rand()/(double)RAND_MAX);
+//			//cout << rndNum << ">" << eff << endl;
+//			if(rndNum<=eff){
+//				nOk++;
+//			} else{
+//				propPos2 = propPos;
+//				eff2 = eff;
+//				rndNum2 = rndNum;
+//				mom = it.momentum;
+//			}
+//		}
+//	}
+//	if(nOk==0){
+//		fitBrch.selEvents--;
+//		return false;
+//	}
 
 	/*if(rootBurst->period!=1){
 		fitBrch.selEvents--;
