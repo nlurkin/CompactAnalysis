@@ -14,13 +14,15 @@
 #include <iomanip>
 #include "Functions.h"
 #include <TStyle.h>
+#include "funLib.h"
+
+extern double Mpi0;
 
 using namespace std;
 
 FitMCSample::FitMCSample() :
 		d1(nullptr), d2(nullptr), d3(nullptr), dNew(nullptr), dAlpha(nullptr), dBeta(
 				nullptr), dGamma(nullptr) {
-
 }
 
 FitMCSample::~FitMCSample() {
@@ -54,7 +56,7 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	if (!cfg->testUseRun(burstBrch->nrun, burstBrch->period))
 		return;
 
-	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
+	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,burstBrch,
 			fFitBrch))
 		return;
 
@@ -72,6 +74,17 @@ void FitMCSample::processEvent(ROOTPhysicsEvent *eventBrch,
 
 	aweight = 1.;
 
+	/*double mpi0 = eventBrch->pi0.P.M();
+	double factor = Mpi0/mpi0;*/
+
+	/*TLorentzVector ep = eventBrch->ep.P,em = eventBrch->em.P, gamma = eventBrch->gamma.P;
+	ep *= factor;
+	em *= factor;
+	gamma *= factor;
+
+	double nmpi0 = (ep+em+gamma).M();
+	double newx = pow((ep+em).M()/Mpi0, 2.);*/
+	//x = newx;
 	if (passNormal) {
 		dNew->Fill(x, 	bweight * aweight * weight);
 		dAlpha->Fill(x, (1 / pow(1 + 0.032 * xTrue, 2.) 		) * weight);
