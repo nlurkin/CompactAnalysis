@@ -253,13 +253,15 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	else
 		xCandNb = pid(xTrack, tempObj.tempGamma, OptionsParser::K2PI);
 
+	if(xCandNb>1)
+		std::cout << PRINTVAR(xCandNb) << options.isSelectRandomPid() << std::endl;
 	if(xCandNb==0){
 		pid_res_pi.incNoID(!flBad);
 		xMCNoID.Fill(rootMC.xTrue);
 		xTruexFalseNo.Fill(xTrue, xFalse);
 		xTruexMCNo.Fill(xTrue, rootMC.xTrue);
 	}
-	else if(xCandNb==1){
+	else if(xCandNb==1 || options.isSelectRandomPid()){
 		if(!flBad){
 			if(xTrack == xPart){
 				pid_res_pi.incGoodId();
@@ -274,6 +276,7 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 		pid_res_pi.incIded(!flBad);
 	}
 	else if(xCandNb>1){
+		std::cout << "Passing here" << std::endl;
 		pid_res_pi.incManyID(!flBad);
 		xMCManyID.Fill(rootMC.xTrue);
 		xTruexFalseMany.Fill(xTrue, xFalse);
@@ -283,7 +286,7 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	// 13) Number of candidates K2PI
 	if(options.isOptDebug()) cout << "~~~~ Cut 13 (K2PI)~~~~" << endl;
 	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << xCandNb << "\t != 1: rejected" << endl;
-	if(xCandNb!=io.cutsDefinition.numXCandidates) return 13+firstCutIndex;
+	if((xCandNb!=io.cutsDefinition.numXCandidates && options.isSelectRandomPid()) || xCandNb==0) return 13+firstCutIndex;
 
 	if(tempObj.xPreSelected!=-1) selTrackDiff.Fill(tempObj.xPreSelected-xTrack);
 
@@ -421,8 +424,8 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 
 	if(!pi0d_L3Trigger(t_ep) && !pi0d_L3Trigger(t_em)) return 19+firstCutIndex;
 
-	if(options.isOptDebug()) cout << tempObj.piEvent.x << " <= 0.01 || " << tempObj.piEvent.x << " > 1 : rejected" << endl;
-	if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
+	//if(options.isOptDebug()) cout << tempObj.piEvent.x << " <= 0.01 || " << tempObj.piEvent.x << " > 1 : rejected" << endl;
+	//if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
 
 	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep, rawEvent);
 	//e+ in square
@@ -719,6 +722,8 @@ int main(int argc, char **argv){
 	// Get options
 
 	if(!options.parse(argc, argv, io)) return 0;
+
+	srand (time(NULL));
 
 	// Generate cuts
 	if(options.isDoScan()) io.cutsDefinition.generateLists(options.getScan());
