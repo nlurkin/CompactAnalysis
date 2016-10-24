@@ -1,6 +1,7 @@
 #include "exportClasses.h"
 #include "TObject.h"
 #include "reader.h"
+#include <iostream>
 //#include "compact-7.3.x"
 
 //##########################
@@ -177,7 +178,8 @@ NGeom& NGeom::operator=(GeomCompact *ref){
 	Dch[3].PosChamber.SetXYZ(ref->Dch[3].PosChamber.x, ref->Dch[3].PosChamber.y, ref->Dch[3].PosChamber.z);
 
 	Lkr.SetXYZ(ref->Lkr.x, ref->Lkr.y, ref->Lkr.z);
-
+	HOD.SetXYZ(ref->Hodoscope.x, ref->Hodoscope.y, ref->Hodoscope.z);
+	std::cout << "HOD: " << ref->Hodoscope.z << std::endl << std::endl;
 	return *this;
 }
 

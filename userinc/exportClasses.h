@@ -281,6 +281,7 @@ public:
 public:
 	NDCH Dch[4];
 	Nxyz Lkr;
+	Nxyz HOD;
 	ClassDefNV(NGeom, 1);
 };
 
