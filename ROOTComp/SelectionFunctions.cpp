@@ -1,8 +1,25 @@
 /// Compact includes
-#include "funLib.h"
 
 #include "SelectionFunctions.h"
-#include "pid_res.h"
+
+#include <exportClasses.h>
+#include <funLib.h>
+#include <stddef.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TLorentzVector.h>
+#include <TVector3.h>
+#include <algorithm>
+#include <iomanip>
+#include <cmath>
+#include <iostream>
+#include <vector>
+
+#include "CompactRead/CompactIO.h"
+#include "CompactRead/ROOTOutput.h"
+#include "Support/OptionsParser.h"
+#include "Support/pid_res.h"
+#include "Support/ScanCuts.h"
 
 CompactIO io;
 OptionsParser options;
@@ -94,6 +111,17 @@ TH1D eopx_goode = TH1D("eopx_goode", "eopx_goode", 1500, 0, 1.5);
 TH1D eoplowest = TH1D("eoplowest", "eoplowest", 1500, 0, 1.5);
 TH1D eopsecond = TH1D("eopsecond", "eopsecond", 1500, 0, 1.5);
 TH1D eophighest = TH1D("eophighest", "eophighest", 1500, 0, 1.5);
+
+TH1D epemdist_bad = TH1D("epemdist_bad", "epemdist_bad", 600, -0.02, 0.04);
+TH1D epemdist_good = TH1D("epemdist_good", "epemdist_good", 600, -0.02, 0.04);
+TH1D HODEfficiency = TH1D("HODEfficiency", "HODEfficiency", 100, 0, 1);
+
+
+TH1D mcPi0Mass = TH1D("mcPi0Mass", "mcPi0Mass", 400, 0, 0.4);
+TH1D mcKMass = TH1D("mcKMass", "mcKMass", 600, 0.2, 0.8);
+
+int nDouble=0;
+int nZero=0;
 
 int em, ep, xPart;
 bool flBad;
@@ -285,6 +313,7 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 			cout << " x:" << x1 << " <0 || " << x1 << " >1 : rejected" << endl;
 			cout << " y:" << y1 << " <0 || " << y1 << " >1 : rejected" << endl;
 		}
+
 		//if( (diffpi01<io.cutsDefinition.k2pi.maxPi0MassDiff) && diffk1<io.cutsDefinition.k2pi.maxKaonMassDiff){
 		if( ee1.M() > io.cutsDefinition.k2pi.minPi0MassDiff && ee1.M() < io.cutsDefinition.k2pi.maxPi0MassDiff
 				&& k1.M() > io.cutsDefinition.k2pi.minKaonMassDiff && k1.M() < io.cutsDefinition.k2pi.maxKaonMassDiff
@@ -319,6 +348,11 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 			nCandidates++;
 			xCandidate= goodTrack1;
 		}
+	}
+
+	if(nCandidates==2){
+		double rndNum = ((double) rand() / (double)(RAND_MAX));
+		xCandidate = rndNum < 0.5 ? goodTrack1 : goodTrack2;
 	}
 
 	meegTotal.Fill(ee1.M());
@@ -365,6 +399,14 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 
 			xTrue = pow((tem+t1ep).M()/Mpi0, 2.);
 			xFalse = pow((tem+t2ep).M()/Mpi0, 2.);
+			//if(k1.M()<0.49 && ee1.M()>0.2) cout << endl << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
+			if(k1.M()>0.59) cout << endl << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
+			if(options.isOptDebug()){
+				cout << "tem " << tem << endl;
+				cout << "tep " << t1ep << endl;
+				cout << "tx " << t1x << endl;
+				cout << "gamma " << gamma << endl;
+			}
 		}
 		else if(xPart==goodTrack1){
 			meegTrue.Fill(ee2.M());
@@ -385,6 +427,14 @@ int pid(int &xCandidate, TLorentzVector &gamma, OptionsParser::ESelectionType t)
 
 			xTrue = pow((tem+t2ep).M()/Mpi0,2.);
 			xFalse = pow((tem+t1ep).M()/Mpi0, 2.);
+			//if(k2.M()<0.49 && ee2.M()>0.2) cout << endl << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
+			if(k2.M()>0.59) cout << endl << rootBurst.nrun << " " << rootBurst.time << " " << rawEvent.timeStamp << endl;
+			if(options.isOptDebug()){
+				cout << "tem " << tem << endl;
+				cout << "tep " << t2ep << endl;
+				cout << "tx " << t2x << endl;
+				cout << "gamma " << gamma << endl;
+			}
 		}
 	}
 
@@ -708,6 +758,7 @@ int pi0d_goodClusters_loose(){
 		cond = 0;
 
 		if(options.isOptDebug()) cout << "\tTrying cluster :\t" << i << endl;
+		if(options.isOptDebug()) cout << c.position << endl;
 
 		//Ignore clusters outside acceptance
 		if(options.isOptDebug()) cout << "\tLKr Acceptance " << rawEvent.cluster[c.clusterID].lkr_acc << " = 1 : reject" << endl;
@@ -999,6 +1050,15 @@ void savePlots(){
 	eoplowest.Write();
 	eopsecond.Write();
 	eophighest.Write();
+
+	epemdist_bad.Write();
+	epemdist_good.Write();
+
+	HODEfficiency.Write();
+
+	mcPi0Mass.Write();
+	mcKMass.Write();
+	cout << PRINTVAR(nZero) << PRINTVAR(nDouble) << endl;
 }
 
 bool pi0d_failCutInc(int i, bool assoc, bool good, bool bad, struct alt_pid_res *pid_res){
@@ -1056,6 +1116,12 @@ bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_
 	int ep1=-1, ep2=-1, ep3=-1;
 	int em1=-1, em2=-1, em3=-1;
 	//Find out the real tracks
+	if(options.isOptDebug()) {
+		cout << "mc ep: " << rootMC.ep.P << " " << rootMC.ep.vertex << " " << rootMC.ep.decay.Z() << endl;
+		cout << "mc em: " << rootMC.em.P << " " << rootMC.em.vertex.Z() << " " << rootMC.em.decay.Z() << endl;
+		cout << "mc pip: " << rootMC.pip.P << " " << rootMC.pip.vertex.Z() << " " << rootMC.pip.decay.Z() << endl;
+		cout << "mc gamma: " << rootMC.gamma.P << " " << rootMC.gamma.vertex.Z() << " " << rootMC.gamma.decay.Z() << endl;
+	}
 	if((rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag()<limit) ep1=0;
 	if((rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()<limit) ep2=1;
 	if((rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()<limit) ep3=2;
@@ -1063,6 +1129,18 @@ bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_
 	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag()<limit) em1=0;
 	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag()<limit) em2=1;
 	if((rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag()<limit) em3=2;
+
+	TLorentzVector pi0 = rootMC.ep.P + rootMC.em.P + rootMC.gamma.P;
+	TLorentzVector kaon = rootMC.pip.P + pi0;
+	mcPi0Mass.Fill(pi0.M());
+	mcKMass.Fill(kaon.M());
+//	if((rootMC.ep.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p).Mag()<limit) ep1=0;
+//	if((rootMC.ep.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p).Mag()<limit) ep2=1;
+//	if((rootMC.ep.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p).Mag()<limit) ep3=2;
+//
+//	if((rootMC.em.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p).Mag()<limit) em1=0;
+//	if((rootMC.em.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p).Mag()<limit) em2=1;
+//	if((rootMC.em.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p).Mag()<limit) em3=2;
 
 	if((ep1==-1 && ep2==-1 && ep3!=-1) || (ep1==-1 && ep2!=-1 && ep3==-1) || (ep1!=-1 && ep2==-1 && ep3==-1)){
 		//OK
@@ -1103,8 +1181,32 @@ bool associateMCTracks(struct alt_pid_res &pid_res, struct alt_pid_res *pid_res_
 		else if((ep==1 && em==2) || (ep==2 && em==1)) xPart=0;
 		pid_res.incAssociated();
 		if(pid_res_mu) pid_res_mu->incAssociated();
+		epemdist_good.Fill((rootMC.ep.P.Vect().Unit()-rootMC.em.P.Vect().Unit()).Mag());
 	}
 	else{
+		double mep1 = (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag();
+		double mep2 = (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag();
+		double mep3 = (rootMC.ep.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag();
+		double mem1 = (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum).Mag();
+		double mem2 = (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[1]].momentum).Mag();
+		double mem3 = (rootMC.em.P.Vect().Unit()-corrEvent.pTrack[corrEvent.goodTracks[2]].momentum).Mag();
+
+		if((ep1==-1 && ep2==-1 && ep3==-1) || (em1==-1 && em2==-1 && em3==-1)) nZero++;
+		else nDouble++;
+//		cout << rootMC.ep.P.Vect().Mag() << " " << rootMC.em.P.Vect().Mag() << " " << rootMC.pip.P.Vect().Mag() << endl;
+//		cout << (rootMC.ep.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p).Mag() << endl;
+//		cout << (rootMC.ep.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p).Mag() << endl;
+//		cout << (rootMC.ep.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p).Mag() << endl;
+//		cout << (rootMC.em.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[0]].p).Mag() << endl;
+//		cout << (rootMC.em.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[1]].p).Mag() << endl;
+//		cout << (rootMC.em.P.Vect()-corrEvent.pTrack[corrEvent.goodTracks[0]].momentum*corrEvent.pTrack[corrEvent.goodTracks[2]].p).Mag() << endl;
+//		cout << endl;
+
+		using namespace std;
+//		std::cout << "Bad because em(" << setw(10) << em1 << "," << setw(10) << em2 << "," << setw(10) << em3 << ") ep(" << setw(10) << ep1 << "," << setw(10) << ep2 << "," << setw(10) << ep3 << ")" << std::endl;
+//		std::cout << "            em(" << setw(10) << mem1 << "," << setw(10) << mem2 << "," << setw(10) << mem3 << ") ep(" << setw(10) << mep1 << "," << setw(10) << mep2 << "," << setw(10) << mep3 << ")" << std::endl;
+//		std::cout << "MC ep-em " << (rootMC.ep.P.Vect().Unit()-rootMC.em.P.Vect().Unit()).Mag() <<  std::endl;
+		epemdist_bad.Fill((rootMC.ep.P.Vect().Unit()-rootMC.em.P.Vect().Unit()).Mag());
 		ep = -1;
 		em = -1;
 		xPart = -1;
