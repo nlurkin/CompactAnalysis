@@ -15,37 +15,27 @@ OptionsParser::OptionsParser() :
 				true), doExtraTrack(true), selectionType(K2PI), desc(
 				"Allowed options") {
 	// Declare the supported options.
-	desc.add_options()("help,h", "produce help message")("nevt,n",
-			po::value<int>(), "max number of events")("start,s",
-			po::value<int>(), "First event to process")("file,i",
-			po::value<std::string>(), "input file name")("list,l",
-			po::value<std::string>(), "list of input files")("prefix,p",
-			po::value<std::string>(), "prefix for output files")("debug,d",
-			po::value<bool>()->implicit_value(true)->default_value(false),
-			"Activate verbose debugging")("negpid",
-			po::value<bool>()->implicit_value(true)->default_value(false),
-			"Activate negative PID (assign pion to negative beam charge)")(
-			"invertt",
-			po::value<bool>()->implicit_value(true)->default_value(false),
-			"Invert cluster timing cut")("filter,f", po::value<std::string>(),
-			"Filter file")("dooutput",
-			po::value<bool>()->implicit_value(true)->default_value(false),
-			"Activate output text files")("period",
-			po::value<int>()->default_value(0),
-			"Keep only events from specified period")("mod,m",
-			po::value<int>()->default_value(1), "Event number printing modulo")(
-			"cuts,c", po::value<std::string>(), "Cuts file")("sel",
-			po::value<std::string>(), "Selection type")("scan",
-			po::value<int>()->default_value(0), "Do a scan with n values")(
-			"eall,e",
-			po::value<bool>()->implicit_value(true)->default_value(false),
-			"Export all events, even failed")("tracktime",
-			po::value<bool>()->implicit_value(false)->default_value(true),
-			"Don't check track timing")("vtxcharge",
-			po::value<bool>()->implicit_value(false)->default_value(true),
-			"Don't check vertex charge")("extratrack",
-			po::value<bool>()->implicit_value(false)->default_value(true),
-			"DonAllow extra track");
+	desc.add_options()("help,h", "produce help message")
+			("nevt,n", po::value<int>(), "max number of events")
+			("start,s", po::value<int>(), "First event to process")
+			("file,i", po::value<std::string>(), "input file name")
+			("list,l", po::value<std::string>(), "list of input files")
+			("prefix,p", po::value<std::string>(), "prefix for output files")
+			("debug,d", po::value<bool>()->implicit_value(true)->default_value(false), "Activate verbose debugging")
+			("negpid", po::value<bool>()->implicit_value(true)->default_value(false), "Activate negative PID (assign pion to negative beam charge)")
+			("invertt", po::value<bool>()->implicit_value(true)->default_value(false), "Invert cluster timing cut")
+			("filter,f", po::value<std::string>(), "Filter file")
+			("dooutput", po::value<bool>()->implicit_value(true)->default_value(false), "Activate output text files")
+			("period", po::value<int>()->default_value(0), "Keep only events from specified period")
+			("mod,m", po::value<int>()->default_value(1), "Event number printing modulo")
+			("cuts,c", po::value<std::string>(), "Cuts file")
+			("sel", po::value<std::string>(), "Selection type")
+			("scan", po::value<int>()->default_value(0), "Do a scan with n values")
+			("eall,e", po::value<bool>()->implicit_value(true)->default_value(false), "Export all events, even failed")
+			("tracktime", po::value<bool>()->implicit_value(false)->default_value(true), "Don't check track timing")
+			("vtxcharge", po::value<bool>()->implicit_value(false)->default_value(true), "Don't check vertex charge")
+			("extratrack", po::value<bool>()->implicit_value(false)->default_value(true), "Don't allow extra track")
+			("rndpid", po::value<bool>()->implicit_value(false)->default_value(false), "Use random pid if > 1 hypothesis");
 }
 
 OptionsParser::~OptionsParser() {
@@ -120,6 +110,8 @@ bool OptionsParser::parse(int argc, char** argv, CompactIO &io) {
 		doVertexCharge = vm["vtxcharge"].as<bool>();
 	if (vm.count("extratrack"))
 		doExtraTrack = vm["extratrack"].as<bool>();
+	if (vm.count("rndpid"))
+		selectRandomPID = vm["rndpid"].as<bool>();
 	if (vm.count("scan")) {
 		nScan = vm["scan"].as<int>();
 		doScan = nScan > 0;

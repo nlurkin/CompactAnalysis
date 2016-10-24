@@ -89,6 +89,10 @@ public:
 		return doExtraTrack;
 	}
 
+	bool isSelectRandomPid() const {
+		return selectRandomPID;
+	}
+
 private:
 	int maxEvents;
 	bool optDebug;
@@ -103,6 +107,7 @@ private:
 	bool doTrackTiming;
 	bool doVertexCharge;
 	bool doExtraTrack;
+	bool selectRandomPID;
 	ESelectionType selectionType;
 	po::options_description desc;
 	std::string optString;
