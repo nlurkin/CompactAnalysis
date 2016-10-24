@@ -109,36 +109,42 @@ void ScanDrawer::generateResult(TPad* pad) {
 		pad2->SetGrid(); // vertical grid
 		pad2->cd();
 	} else {
-		pad->SetTopMargin(0.2);
+		pad->SetTopMargin(0.08);
 		pad->SetBottomMargin(0.2);
+		pad->SetRightMargin(0.05);
 		pad->SetGrid();
 		pad->cd();
 	}
-
-	scanWErr->SetTitle("FF Slope fit result");
-	scanWErr->GetXaxis()->SetTitle("Cut value");
-	scanWErr->GetYaxis()->SetTitle("FF Slope a");
-	scanWErr->GetYaxis()->SetTitleOffset(2.2);
-
-	scanWErr->SetTitle("");
-	scanWErr->SetLineWidth(2);
-	scanWErr->GetYaxis()->SetNdivisions(505);
-	scanWErr->GetYaxis()->SetTitleSize(15);
-	scanWErr->GetYaxis()->SetTitleFont(43);
-	scanWErr->GetYaxis()->SetTitleOffset(1.4);
-	scanWErr->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
-	scanWErr->GetYaxis()->SetLabelSize(15);
-	scanWErr->GetXaxis()->SetLabelFont(43);
-	scanWErr->GetXaxis()->SetLabelSize(15);
-	scanWErr->GetYaxis()->SetRangeUser(0.0249, 0.051);
 	scanWErr->Draw("AP");
-
-	scanwUncorr->SetTitle("");
-	scanwUncorr->SetLineWidth(3);
-	scanwUncorr->GetYaxis()->SetRangeUser(0.0249, 0.051);
 	scanwUncorr->Draw("PSAME");
 	scanDefault->Draw("PSAME");
+
+	scanWErr->SetTitle("FF Slope fit result");
+	scanWErr->SetTitle("");
+	scanWErr->SetLineWidth(2);
+
+	scanWErr->GetYaxis()->SetTitle("FF Slope a");
+	scanWErr->GetYaxis()->SetNdivisions(505);
+	scanWErr->GetYaxis()->SetTitleSize(25);
+	scanWErr->GetYaxis()->SetTitleFont(43);
+	scanWErr->GetYaxis()->SetTitleOffset(0.5);
+	scanWErr->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+	scanWErr->GetYaxis()->SetLabelSize(15);
+	scanWErr->GetYaxis()->SetRangeUser(0.0249, 0.051);
+
+	scanWErr->GetXaxis()->SetTitle("Cut value");
+	scanWErr->GetXaxis()->SetTitleSize(25);
+	scanWErr->GetXaxis()->SetTitleFont(43);
+	scanWErr->GetXaxis()->SetTitleColor(kBlack);
+	scanWErr->GetXaxis()->SetLabelFont(43);
+	scanWErr->GetXaxis()->SetLabelSize(15);
+	scanWErr->GetXaxis()->SetTitleOffset(0.7);
+
+	pad->SaveAs("fitResult.pdf");
+	pad->SaveAs("fitResult.png");
+
 }
+
 
 void ScanDrawer::generateNSelected(TPad* pad) {
 	//Creation
@@ -157,6 +163,9 @@ void ScanDrawer::generateNSelected(TPad* pad) {
 			fNSelected[fDefaultCutValue]);
 	scanDefault->SetPointError(fDefaultCutValue, 0, 99999999);
 
+	scanSelected->Draw("APL");
+	scanDefault->Draw("PSAME");
+
 	//Style
 	scanSelected->SetMarkerStyle(20);
 	scanSelected->SetMarkerColor(4);
@@ -170,22 +179,36 @@ void ScanDrawer::generateNSelected(TPad* pad) {
 	scanDefault->SetFillStyle(0);
 
 	//Plotting
-	pad->SetTopMargin(0.2);
+	pad->SetTopMargin(0.08);
 	pad->SetBottomMargin(0.2);
+	pad->SetRightMargin(0.05);
 	pad->SetGrid(); // vertical grid
 	pad->cd();
 	//scanSelected->SetTitle("Number of selected events");
-	scanSelected->GetXaxis()->SetTitle("Cut value");
 	scanSelected->GetYaxis()->SetTitle("Selected events");
-	scanSelected->GetYaxis()->SetTitleOffset(1.5);
-	scanSelected->Draw("APL");
-	scanDefault->Draw("PSAME");
+	scanSelected->GetYaxis()->SetTitleSize(25);
+	scanSelected->GetYaxis()->SetTitleFont(43);
+	scanSelected->GetYaxis()->SetTitleOffset(0.7);
+	scanSelected->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+	scanSelected->GetYaxis()->SetLabelSize(15);
+
+	scanSelected->GetXaxis()->SetTitle("Cut value");
+	scanSelected->GetXaxis()->SetTitleSize(25);
+	scanSelected->GetXaxis()->SetTitleFont(43);
+	scanSelected->GetXaxis()->SetTitleColor(kBlack);
+	scanSelected->GetXaxis()->SetLabelFont(43);
+	scanSelected->GetXaxis()->SetLabelSize(15);
+	scanSelected->GetXaxis()->SetTitleOffset(0.7);
+
+	pad->SaveAs("nSelected.pdf");
+	pad->SaveAs("nSelected.png");
+
 }
 
 void ScanDrawer::draw() {
-	TCanvas *c1 = new TCanvas("plot");
+	TCanvas *c1 = new TCanvas("plot", "", 600, 300);
 	generateResult(c1);
-	TCanvas *c2 = new TCanvas("Selected");
+	TCanvas *c2 = new TCanvas("Selected", "", 600, 300);
 	generateNSelected(c2);
 }
 
