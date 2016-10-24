@@ -23,3 +23,5 @@ add_library(Combiner Combiner.h Combiner.cpp)
 add_library(Samples ${sampleHdr} ${sampleSrc})
 
 add_library(common pi0DalitzHeader.h style.cpp ConfigFile.h ConfigFile.cpp RunWeights.cpp RunWeights.h DataGetter.h DataGetter.cpp Functions.h pk_corr.cpp)
+add_library(common-so SHARED pi0DalitzHeader.h style.cpp ConfigFile.h ConfigFile.cpp RunWeights.cpp RunWeights.h DataGetter.h DataGetter.cpp Functions.h pk_corr.cpp)
+install(TARGETS common-so DESTINATION lib)
