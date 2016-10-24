@@ -33,7 +33,7 @@ void initFitStruct(fitStruct &s);
 void sumTreeFitStruct(fitStruct &in, TTree *t, fitStruct &out, double factor);
 
 
-bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom, ROOTRawEvent *rawEvent, fitStruct &fitBrch);
+bool testAdditionalCondition(ROOTPhysicsEvent *evt, ROOTCorrectedEvent *corrEvent, NGeom *rootGeom, ROOTRawEvent *rawEvent, ROOTBurst *burstBrch, fitStruct &fitBrch);
 double secondOrder_Pk(int nrun, double pkgen, int mcPartType);
 
 
