@@ -26,7 +26,7 @@ void CombineMCSample::fillHisto(ROOTPhysicsEvent* evt, ROOTRawEvent* rawEvt,
 		ROOTCorrectedEvent* corrEvent, ROOTMCEvent* mcEvent, NGeom* rootGeom,
 		ROOTBurst* rootBurst, const RunWeights *weights) {
 
-	double weight = weights->applyWeights(rootBurst->nrun) * corrEvent->weight;
+	double weight = weights->applyWeights(rootBurst->nrun);// * corrEvent->weight;
 	if(fUsePk==1)
 		weight *= corrEvent->weight;
 	else if(fUsePk==2)

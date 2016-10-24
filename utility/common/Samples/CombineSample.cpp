@@ -37,7 +37,7 @@ void CombineSample::processEvent(ROOTPhysicsEvent *eventBrch,
 	if (!cfg->testUseRun(burstBrch->nrun, burstBrch->period))
 		return;
 
-	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch,
+	if (!testAdditionalCondition(eventBrch, corrBrch, geomBrch, rawBrch, burstBrch,
 			fFitBrch))
 		return;
 
