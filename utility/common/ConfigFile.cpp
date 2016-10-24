@@ -80,7 +80,14 @@ bool ConfigFile::readFile(string fileName){
 
 	if (vm.count("mcfiles")) {
 		tempVec = tokenize(vm["mcfiles"].as<string>());
-		for(auto it : tempVec) fMCFileNames.push_back(it.Data());
+		for(auto it : tempVec) {
+			std::string val;
+			if(it.Contains("/castor/") && !it.Contains("castorpublic"))
+				val = Form("xroot://castorpublic.cern.ch/%s", it.Data());
+			else
+				val = it.Data();
+			fMCFileNames.push_back(val);
+		}
 	}
 	if (vm.count("mcout")) {
 		tempVec = tokenize(vm["mcout"].as<string>());
@@ -105,7 +112,14 @@ bool ConfigFile::readFile(string fileName){
 
 	if (vm.count("datafiles")) {
 		tempVec = tokenize(vm["datafiles"].as<string>());
-		for(auto it : tempVec) fDataFileNames.push_back(it.Data());
+		for(auto it : tempVec) {
+			std::string val;
+			if(it.Contains("/castor/") && !it.Contains("castorpublic"))
+				val = Form("xroot://castorpublic.cern.ch/%s", it.Data());
+			else
+				val = it.Data();
+			fDataFileNames.push_back(val);
+		}
 	}
 	if (vm.count("dataout")) {
 		tempVec = tokenize(vm["dataout"].as<string>());
