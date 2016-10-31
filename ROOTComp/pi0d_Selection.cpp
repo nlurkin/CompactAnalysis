@@ -206,13 +206,13 @@ bool nico_pi0DalitzSelect_Common(tempObjects &tempObj){
 
 	//Start Kinematic cuts
 	// 10) Tracks momenta
-	if(options.isOptDebug()) cout << "~~~~ Cut 10 ~~~~" << endl;
-	if(options.isOptDebug()) cout << "p_1 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[0]].p << "\t <5 || > 60 : rejected" << endl;
-	if(options.isOptDebug()) cout << "p_2 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[1]].p << "\t <5 || > 60 : rejected" << endl;
-	if(options.isOptDebug()) cout << "p_3 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[2]].p << "\t <5 || > 60 : rejected" << endl;
-	if(corrEvent.pTrack[corrEvent.goodTracks[0]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[0]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[1]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[1]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
-	if(corrEvent.pTrack[corrEvent.goodTracks[2]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[2]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	//if(options.isOptDebug()) cout << "~~~~ Cut 10 ~~~~" << endl;
+	//if(options.isOptDebug()) cout << "p_1 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[0]].p << "\t <5 || > 60 : rejected" << endl;
+	//if(options.isOptDebug()) cout << "p_2 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[1]].p << "\t <5 || > 60 : rejected" << endl;
+	//if(options.isOptDebug()) cout << "p_3 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[2]].p << "\t <5 || > 60 : rejected" << endl;
+	//if(corrEvent.pTrack[corrEvent.goodTracks[0]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[0]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	//if(corrEvent.pTrack[corrEvent.goodTracks[1]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[1]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	//if(corrEvent.pTrack[corrEvent.goodTracks[2]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[2]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
 
 	return true;
 }
@@ -300,6 +300,17 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 			}
 		}
 	}
+
+	//Start Kinematic cuts
+	// 10) Tracks momenta
+	if(options.isOptDebug()) cout << "~~~~ Cut 10 ~~~~" << endl;
+	if(options.isOptDebug()) cout << "p_1 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p << "\t <5 || > 60 : rejected" << endl;
+	if(options.isOptDebug()) cout << "p_2 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p << "\t <5 || > 60 : rejected" << endl;
+	if(options.isOptDebug()) cout << "p_3 :\t\t\t\t" << corrEvent.pTrack[corrEvent.goodTracks[xTrack]].p << "\t <5 || > 60 : rejected" << endl;
+	if(corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[emTrack]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p<=io.cutsDefinition.minTrackMomentum || corrEvent.pTrack[corrEvent.goodTracks[epTrack]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+	if(corrEvent.pTrack[corrEvent.goodTracks[xTrack]].p<=io.cutsDefinition.minTrackMomentum  || corrEvent.pTrack[corrEvent.goodTracks[xTrack]].p>=io.cutsDefinition.maxTrackMomentum) {pi0d_failCut(10+firstCutIndex); return false;}
+
 
 	//Create physics event from tracks (e+, e-, x+-)
 	tempObj.piEvent.em.parentTrack = corrEvent.goodTracks[emTrack];
@@ -392,6 +403,7 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	tempObj.piEvent.x = pow(tempObj.piEvent.mee/Mpi0, 2.);
 	tempObj.piEvent.y = 2.*(tempObj.piEvent.em.P.E() - tempObj.piEvent.ep.P.E())/(Mpi0*(1-tempObj.piEvent.x));
 
+	//return -1;
 	//Trigger cut
 	// 18) L2: E_lkr > 14GeV
 	double ELKr_ep = 0;
@@ -424,8 +436,8 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 
 	if(!pi0d_L3Trigger(t_ep) && !pi0d_L3Trigger(t_em)) return 19+firstCutIndex;
 
-	//if(options.isOptDebug()) cout << tempObj.piEvent.x << " <= 0.01 || " << tempObj.piEvent.x << " > 1 : rejected" << endl;
-	//if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
+	if(options.isOptDebug()) cout << tempObj.piEvent.x << " <= 0.01 || " << tempObj.piEvent.x << " > 1 : rejected" << endl;
+	if(tempObj.piEvent.x <= 0.01 || tempObj.piEvent.x > 1 ) return 20+firstCutIndex;
 
 	propPos = propagateBefore(rootGeom.Dch[0].PosChamber.z, t_ep, rawEvent);
 	//e+ in square
