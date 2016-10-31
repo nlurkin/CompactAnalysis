@@ -37,6 +37,7 @@ Cuts::Cuts(){
 	minDeadCellDist = 2;
 	minGammaDCHRadius = 11;
 	unDeflectedElDist = 20;
+	deflectedElDist = 20;
 	k2pi.minTotalMomentum = 70.0;
 	k2pi.maxTotalMomentum = 78.0;
 	kmu3.maxTotalMomentum = 78;
@@ -73,6 +74,7 @@ void Cuts::print(){
 	std::cout << "minGammaEnergy\t\t--> " << minGammaEnergy << std::endl;
 	std::cout << "minDeadCellDist\t\t--> " << minDeadCellDist << std::endl;
 	std::cout << "minGammaDCHRadius\t--> " << minGammaDCHRadius << std::endl;
+	std::cout << "deflectedElDist\t--> " << deflectedElDist << std::endl;
 	std::cout << "unDeflectedElDist\t--> " << unDeflectedElDist << std::endl;
 	std::cout << "  -> K2Pi specific" << std::endl;
 	std::cout << "minTotalMomentum\t--> " << k2pi.minTotalMomentum << std::endl;
@@ -222,6 +224,9 @@ bool ScanCuts::parseCuts(std::string fileName) {
 			}
 			else if(name.compare("minGammaDCHRadius")==0){
 				cutsLists[id].minGammaDCHRadius = atoi(value.c_str());
+			}
+			else if(name.compare("deflectedElDist")==0){
+				cutsLists[id].deflectedElDist = atoi(value.c_str());
 			}
 			else if(name.compare("unDeflectedElDist")==0){
 				cutsLists[id].unDeflectedElDist = atoi(value.c_str());

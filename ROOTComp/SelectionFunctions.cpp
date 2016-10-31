@@ -787,7 +787,7 @@ int pi0d_goodClusters_loose(){
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
 		if(rawEvent.track[t1.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
-			cutDistance = 20;
+			cutDistance = io.cutsDefinition.deflectedElDist;
 		else
 			cutDistance = 10;
 		if(options.isOptDebug()) cout << "\t\td_LKr_1 :\t\t" << distance << "\t > " << cutDistance << " || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
@@ -804,7 +804,7 @@ int pi0d_goodClusters_loose(){
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
 		if(rawEvent.track[t2.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
-			cutDistance = 20;
+			cutDistance = io.cutsDefinition.deflectedElDist;
 		else
 			cutDistance = 10;
 		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > " << cutDistance << " || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
@@ -819,7 +819,7 @@ int pi0d_goodClusters_loose(){
 		distance = distance2D(propPos, c.position);
 		trackR = distance2D(propPos, TVector3(0,0,0));
 		if(rawEvent.track[t3.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
-			cutDistance = 20;
+			cutDistance = io.cutsDefinition.deflectedElDist;
 		else
 			cutDistance = 10;
 		if(options.isOptDebug()) cout << "\t\tR_LKr_2 :\t\t" << distance << "\t > " << cutDistance << " || R_LKr_1 :\t" <<  trackR << "<10 : ++" << endl;
@@ -903,7 +903,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		propPos = propagateAfter(rootGeom.Lkr.z, x, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(options.isOptDebug()) cout << "\t\tR_LKr_x :\t\t" << distance << "\t > 50 : ++" << endl;
-		if(distance>20 || distance2D(propPos, TVector3(0,0,0))<10) cond++;
+		if(distance>io.cutsDefinition.deflectedElDist || distance2D(propPos, TVector3(0,0,0))<10) cond++;
 		//cond++;
 
 		// separation from undeflected x impact point >20cm
@@ -917,7 +917,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		propPos = propagateAfter(rootGeom.Lkr.z, ep, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(rawEvent.track[ep.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
-			cutDistance = 20;
+			cutDistance = io.cutsDefinition.deflectedElDist;
 		else
 			cutDistance = 10;
 		if(options.isOptDebug()) cout << "\t\tR_LKr_e+ :\t\t" << distance << "\t > " << cutDistance << " : ++" << endl;
@@ -927,7 +927,7 @@ int pi0d_goodClusters_tight(NRecoParticle &xParticle, ROOTPhysicsEvent &event){
 		propPos = propagateAfter(rootGeom.Lkr.z, em, rawEvent);
 		distance = distance2D(propPos, c.position);
 		if(rawEvent.track[em.trackID].q==rawEvent.vtx[corrEvent.goodVertexID].charge)
-			cutDistance = 20;
+			cutDistance = io.cutsDefinition.deflectedElDist;
 		else
 			cutDistance = 10;
 		if(options.isOptDebug()) cout << "\t\tR_LKr_e- :\t\t" << distance << "\t > " << cutDistance << " : ++" << endl;

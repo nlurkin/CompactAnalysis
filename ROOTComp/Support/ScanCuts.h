@@ -33,6 +33,7 @@ public:
 	int minGammaEnergy;
 	int minDeadCellDist;
 	int minGammaDCHRadius;
+	int deflectedElDist;
 	int unDeflectedElDist;
 	class k2pi_t: public TObject{
 	public:
