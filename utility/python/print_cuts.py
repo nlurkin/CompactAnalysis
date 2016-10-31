@@ -40,6 +40,7 @@ def printCuts(left,right, index, changed):
     print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("minGammaEnergy", left.minGammaEnergy, right.minGammaEnergy, color=checkColor("minGammaEnergy", changed))
     print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("minDeadCellDist", left.minDeadCellDist, right.minDeadCellDist, color=checkColor("minDeadCellDist", changed))
     print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("minGammaDCHRadius", left.minGammaDCHRadius, right.minGammaDCHRadius, color=checkColor("minGammaDCHRadius", changed))
+    print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("deflectedElDist", left.deflectedElDist, right.deflectedElDist, color=checkColor("deflectedElDist", changed))
     print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("unDeflectedElDist", left.unDeflectedElDist, right.unDeflectedElDist, color=checkColor("unDeflectedElDist", changed))
     print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("k2pi.minTotalMomentum", left.k2pi.minTotalMomentum, right.k2pi.minTotalMomentum, color=checkColor("k2pi.minTotalMomentum", changed))
     print "{color}{0:25} {1:>10} {2:>10}\033[0m".format("k2pi.maxTotalMomentum", left.k2pi.maxTotalMomentum, right.k2pi.maxTotalMomentum, color=checkColor("k2pi.maxTotalMomentum", changed))
@@ -84,6 +85,8 @@ def compareCuts(left, right):
         listDiff.append("minDeadCellDist")
     if left.minGammaDCHRadius       != right.minGammaDCHRadius:
         listDiff.append("minGammaDCHRadius")
+    if left.deflectedElDist       != right.deflectedElDist:
+        listDiff.append("deflectedElDist")
     if left.unDeflectedElDist       != right.unDeflectedElDist:
         listDiff.append("unDeflectedElDist")
     if left.k2pi.minTotalMomentum   != right.k2pi.minTotalMomentum:
