@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <math.h>
 
 ClassImp(ScanCuts)
 ClassImp(Cuts)
@@ -304,9 +305,10 @@ double ScanCuts::getDiff(const ScanCuts* other) const {
 	else if(minGammaEnergy != other->minGammaEnergy) return minGammaEnergy;
 	else if(minDeadCellDist != other->minDeadCellDist) return minDeadCellDist;
 	else if(minGammaDCHRadius != other->minGammaDCHRadius) return minGammaDCHRadius;
+	else if(deflectedElDist != other->deflectedElDist) return deflectedElDist;
 	else if(unDeflectedElDist != other->unDeflectedElDist) return unDeflectedElDist;
-	else if(k2pi.minTotalMomentum != other->k2pi.minTotalMomentum) return k2pi.minTotalMomentum;
-	else if(k2pi.maxTotalMomentum != other->k2pi.maxTotalMomentum) return k2pi.maxTotalMomentum;
+	else if(k2pi.minTotalMomentum != other->k2pi.minTotalMomentum) return fabs(k2pi.minTotalMomentum-74.);
+	else if(k2pi.maxTotalMomentum != other->k2pi.maxTotalMomentum) return fabs(k2pi.maxTotalMomentum-74.);
 	else if(k2pi.maxPt != other->k2pi.maxPt) return k2pi.maxPt;
 	else if(k2pi.minPi0MassDiff != other->k2pi.minPi0MassDiff) return k2pi.minPi0MassDiff;
 	else if(k2pi.maxPi0MassDiff != other->k2pi.maxPi0MassDiff) return k2pi.maxPi0MassDiff;
