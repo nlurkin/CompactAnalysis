@@ -1,6 +1,6 @@
 #!/bin/env python
 
-from plotLib import loadWeights, applyWeights
+from plotLib import loadWeights, applyWeights, plotRatio, plotSimple
 from scanLib import extractScan
 from pyconfig import LineDescription, ScanDescription, Header
 import pyconfig
@@ -11,9 +11,10 @@ import argparse
 
 import rootpy.ROOT as ROOT 
 
-#from rootpy.interactive import wait
+from rootpy.interactive import wait
 from rootpy.io import root_open, Directory
 #from rootpy.plotting import Hist2D, Graph2D, Canvas, Hist1D, HistStack, Legend
+from rootpy.plotting import Canvas, HistStack, Hist1D
 #from rootpy.tree import Tree, TreeModel, IntCol
 from rootpy.plotting.style import set_style
 #from rootpy.plotting.utils import draw
@@ -21,13 +22,6 @@ from rootpy.plotting.style import set_style
 #from root_numpy import tree2array
 import os
 import yaml
-
-def scaleHisto(totalMCNorm, ndata, hist):
-    factor = (float(ndata)) / totalMCNorm
-    hist.Scale(factor)
-
-def scaleSample(header, BR, hist, scaleFactor=1.):
-    hist.Scale(BR / (header.NProcessedEvents * scaleFactor))
 
 def buildRatio(mc, data):
     mcSum = Hist1D(data.nbins(), data.lowerbound(), data.upperbound())
@@ -109,8 +103,7 @@ def drawPlots(plotProperties):
     ROOT.gStyle.SetOptStat(0)
     
     shortName = plotProperties.shortName
-    
-    plotProperties.read()
+    plotProperties.read(tfd)
     plotProperties.setStyle()
     
     plotProperties.scaleSample()
@@ -160,6 +153,7 @@ def drawScans(plotProperties):
     c.SaveAs("{0}.pdf".format(shortName))
 
 def processFile(fileName, doBuild, rootFile):
+    global tfd
     if rootFile is None:
         rootFile = "tmp.root"
         

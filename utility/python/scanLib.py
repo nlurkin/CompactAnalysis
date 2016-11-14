@@ -44,16 +44,16 @@ def generateResult(fList):
         scanWErr.SetPointError(i, 0, fResultErrors[i])
         scanwUncorr.SetPointError(i, 0, fUncorrErrors[i])
 
-    if (*min_element(fScanValues.begin(), fScanValues.end()) == 0) {
-        int size = fScanValues.size()
-        scanWErr.SetPoint(size, -0.5, 0)
-    }
+    #if (min_element(fScanValues.begin(), fScanValues.end()) == 0) {
+    #    int size = fScanValues.size()
+    #    scanWErr.SetPoint(size, -0.5, 0)
+    #}
 
     scanDefault.SetPoint(fDefaultCutValue, fScanValues[fDefaultCutValue],
             0.04)
     scanDefault.SetPointError(fDefaultCutValue, 0, 10)
 
-    //Style
+    #//Style
     scanWErr.SetMarkerStyle(23)
     scanWErr.SetMarkerColor(4)
     scanWErr.SetLineColor(4)
@@ -70,42 +70,42 @@ def generateResult(fList):
     scanDefault.SetLineColor(8)
     scanDefault.SetFillStyle(0)
 
-    THStack* mcStack = getStackFromFile("mcStack")
-    THStack* dataStack = getStackFromFile("sigStack")
-    TLegend* legend = getLegendFromFile()
+    #THStack* mcStack = getStackFromFile("mcStack")
+    #THStack* dataStack = getStackFromFile("sigStack")
+    #TLegend* legend = getLegendFromFile()
 
-    //Plotting
-    if (mcStack || dataStack) {
-        pad.Divide(1, 2)
-        pad.cd(1)
-        TPad* pad1 = static_cast<TPad*>(pad.GetPad(1))
-        pad1.SetPad(0, 0.3, 1, 1.0)
-        pad1.SetBottomMargin(3)
-        pad1.SetGrid()
-        pad1.cd()               // pad1 becomes the current pad
+    #//Plotting
+    #if (mcStack || dataStack) {
+    #    pad.Divide(1, 2)
+    #    pad.cd(1)
+    #    TPad* pad1 = static_cast<TPad*>(pad.GetPad(1))
+    #    pad1.SetPad(0, 0.3, 1, 1.0)
+    #    pad1.SetBottomMargin(3)
+    #    pad1.SetGrid()
+    #    pad1.cd()               // pad1 becomes the current pad
 
-        if (mcStack)
-            mcStack.Draw("HIST")
-        if (dataStack)
-            dataStack.Draw("SAME E P")
-        if (legend)
-            legend.Draw()
-        if (mcStack)
-            mcStack.GetXaxis().SetRangeUser(scanWErr.GetXaxis().GetXmin(),
-                    scanWErr.GetXaxis().GetXmax())
+    #    if (mcStack)
+    #        mcStack.Draw("HIST")
+    #    if (dataStack)
+    #        dataStack.Draw("SAME E P")
+    #    if (legend)
+    #        legend.Draw()
+    #    if (mcStack)
+    #        mcStack.GetXaxis().SetRangeUser(scanWErr.GetXaxis().GetXmin(),
+    #                scanWErr.GetXaxis().GetXmax())
 
-        TPad* pad2 = static_cast<TPad*>(pad.GetPad(2))
-        pad2.SetPad(0, 0.05, 1, 0.3)
-        pad2.SetTopMargin(0.2)
-        pad2.SetBottomMargin(0.2)
-        pad2.SetGrid() // vertical grid
-        pad2.cd()
-    } else {
-        pad.SetTopMargin(0.2)
-        pad.SetBottomMargin(0.2)
-        pad.SetGrid()
-        pad.cd()
-    }
+    #    TPad* pad2 = static_cast<TPad*>(pad.GetPad(2))
+    #    pad2.SetPad(0, 0.05, 1, 0.3)
+    #    pad2.SetTopMargin(0.2)
+    #    pad2.SetBottomMargin(0.2)
+    #    pad2.SetGrid() // vertical grid
+    #    pad2.cd()
+    #} else {
+    #    pad.SetTopMargin(0.2)
+    #    pad.SetBottomMargin(0.2)
+    #    pad.SetGrid()
+    #    pad.cd()
+    #}
 
     scanWErr.SetTitle("FF Slope fit result")
     scanWErr.GetXaxis().SetTitle("Cut value")
@@ -118,7 +118,7 @@ def generateResult(fList):
     scanWErr.GetYaxis().SetTitleSize(15)
     scanWErr.GetYaxis().SetTitleFont(43)
     scanWErr.GetYaxis().SetTitleOffset(1.4)
-    scanWErr.GetYaxis().SetLabelFont(43) // Absolute font size in pixel (precision 3)
+    #scanWErr.GetYaxis().SetLabelFont(43) // Absolute font size in pixel (precision 3)
     scanWErr.GetYaxis().SetLabelSize(15)
     scanWErr.GetXaxis().SetLabelFont(43)
     scanWErr.GetXaxis().SetLabelSize(15)

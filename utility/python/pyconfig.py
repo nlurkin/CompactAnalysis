@@ -1,6 +1,13 @@
 from rootpy.io.pickler import dump,load
+from rootpy.plotting import Legend
+import rootpy.ROOT as ROOT
 
-tfd = None
+def scaleHisto(totalMCNorm, ndata, hist):
+    factor = (float(ndata)) / totalMCNorm
+    hist.Scale(factor)
+
+def scaleSample(header, BR, hist, scaleFactor=1.):
+    hist.Scale(BR / (header.NProcessedEvents * scaleFactor))
 
 class Description(object):
     def __init__(self):
@@ -45,8 +52,7 @@ class Description(object):
         setattr(self, sample, plot.clone("{0}_{1}".format(plot.name, sample)))
         #getattr(self, sample).Add(plot, 1.0)
         
-    def write(self):
-        global tfd
+    def write(self, tfd):
         if self.testSample("data"):
             self.data.write()
         if self.testSample("pi"):
@@ -57,8 +63,7 @@ class Description(object):
             self.e.write()
         dump([self.hdata, self.hpi, self.hmu, self.he], tfd, key="head_{0}".format(self.shortName))
     
-    def read(self):
-        global tdf
+    def read(self, tfd):
         if self.testSample("data"):
             self.data = tfd.Get("{0}/{0}_data".format(self.shortName))
         if self.testSample("pi"):

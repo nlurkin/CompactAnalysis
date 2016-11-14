@@ -419,7 +419,7 @@ def plotRatio(pad, stack, data, ratio, legend, plotProperties):
     ratio.GetYaxis().SetTitleFont(43)
     ratio.GetYaxis().SetTitleOffset(1.70)
     ratio.GetYaxis().SetLabelFont(43)
-    ratio.GetYaxis().SetLabelSize(15)
+    ratio.GetYaxis().SetLabelSize(20)
     
     # X axis ratio plot settings
     ratio.GetXaxis().SetTitle(plotProperties.xtitle)
@@ -428,7 +428,7 @@ def plotRatio(pad, stack, data, ratio, legend, plotProperties):
     ratio.GetXaxis().SetTitleFont(43)
     ratio.GetXaxis().SetTitleOffset(4.)
     ratio.GetXaxis().SetLabelFont(43)
-    ratio.GetXaxis().SetLabelSize(15)
+    ratio.GetXaxis().SetLabelSize(20)
 
 def plotSimple(pad, stack, data, legend, plotProperties):
     pad.cd()
@@ -453,4 +453,4 @@ def plotSimple(pad, stack, data, legend, plotProperties):
     stack.GetXaxis().SetTitleColor(1)
     stack.GetXaxis().SetTitleFont(43)
     stack.GetXaxis().SetLabelFont(43)
-    stack.GetXaxis().SetLabelSize(15)
+    stack.GetXaxis().SetLabelSize(20)
