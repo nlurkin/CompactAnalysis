@@ -374,6 +374,7 @@ def plotRatio(pad, stack, data, ratio, legend, plotProperties):
     pad1.SetPad(0, 0.3, 1, 1.0)
     pad1.SetBottomMargin(0.03)
     pad1.SetRightMargin(0.05)
+    pad1.SetLeftMargin(0.16)
     #pad1.SetGrid()
     pad1.cd()
     #pad1->SetLogy()
@@ -391,14 +392,18 @@ def plotRatio(pad, stack, data, ratio, legend, plotProperties):
     stack.GetYaxis().SetTitle(plotProperties.ytitle)
     stack.GetYaxis().SetTitleSize(25)
     stack.GetYaxis().SetTitleFont(43)
-    stack.GetYaxis().SetTitleOffset(1.70)
+    stack.GetYaxis().SetTitleOffset(2.2)
+    stack.GetYaxis().SetLabelFont(43)
+    stack.GetYaxis().SetLabelSize(20)
     stack.GetXaxis().SetLabelOffset(999)
+    stack.GetXaxis().SetLabelSize(0)
 
     pad2 = pad.GetPad(2)
     pad2.SetPad(0, 0.05, 1, 0.3)
     pad2.SetTopMargin(0)
     pad2.SetBottomMargin(0.3)
     pad2.SetRightMargin(0.05)
+    pad2.SetLeftMargin(0.16)
     pad2.SetGrid()
     pad2.cd()
     ratio.SetStats(0)
@@ -417,7 +422,7 @@ def plotRatio(pad, stack, data, ratio, legend, plotProperties):
     ratio.GetYaxis().SetNdivisions(505)
     ratio.GetYaxis().SetTitleSize(25)
     ratio.GetYaxis().SetTitleFont(43)
-    ratio.GetYaxis().SetTitleOffset(1.70)
+    ratio.GetYaxis().SetTitleOffset(2.2)
     ratio.GetYaxis().SetLabelFont(43)
     ratio.GetYaxis().SetLabelSize(20)
     
@@ -446,6 +451,9 @@ def plotSimple(pad, stack, data, legend, plotProperties):
     stack.GetYaxis().SetTitleSize(25)
     stack.GetYaxis().SetTitleFont(43)
     stack.GetYaxis().SetTitleOffset(1.50)
+    stack.GetYaxis().SetLabelFont(43)
+    stack.GetYaxis().SetLabelSize(20)
+
 
     # X axis ratio plot settings
     stack.GetXaxis().SetTitle(plotProperties.xtitle)

@@ -103,8 +103,8 @@
    xmin      : 0.42
    xmax      : 0.56
    usewpk    : True
-   ytitle    : Events/(1 Mev/c^{2})
-   xtitle    : M_{#pi#pi} [Gev/c^{2}]
+   ytitle    : Events/(1 MeV/c^{2})
+   xtitle    : M_{#pi#pi} [GeV/c^{2}]
    doRatio   : False
    log       : True
    arrowLoc  : [0.46, 0.52]
@@ -116,8 +116,8 @@
    xmin      : 0.46
    xmax      : 0.52
    usewpk    : True
-   ytitle    : Events/(0.5 Mev/c^{2})
-   xtitle    : M_{#pi#pi} [Gev/c^{2}]
+   ytitle    : Events/(0.5 MeV/c^{2})
+   xtitle    : M_{#pi#pi} [GeV/c^{2}]
    doRatio   : True
    log       : False
    
@@ -128,8 +128,8 @@
    xmin      : 0.10
    xmax      : 0.17
    usewpk    : True
-   ytitle    : Events/(0.5 Mev/c^{2})
-   xtitle    : M_{ee#gamma} [Gev/c^{2}]
+   ytitle    : Events/(0.5 MeV/c^{2})
+   xtitle    : M_{ee#gamma} [GeV/c^{2}]
    doRatio   : False
    log       : True
    arrowLoc  : [0.115, 0.145]
@@ -141,8 +141,8 @@
    xmin      : 0.115
    xmax      : 0.145
    usewpk    : True
-   ytitle    : Events/(0.2 Mev/c^{2})
-   xtitle    : M_{ee#gamma} [Gev/c^{2}]
+   ytitle    : Events/(0.2 MeV/c^{2})
+   xtitle    : M_{ee#gamma} [GeV/c^{2}]
    doRatio   : True
    log       : False
    
