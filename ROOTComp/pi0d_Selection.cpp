@@ -285,8 +285,8 @@ int nico_pi0DalitzSelect_K2PI(tempObjects &tempObj, bool &good, bool &bad){
 	nxCandidatesNew.Fill(xCandNb);
 	// 13) Number of candidates K2PI
 	if(options.isOptDebug()) cout << "~~~~ Cut 13 (K2PI)~~~~" << endl;
-	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << xCandNb << "\t != 1: rejected" << endl;
-	if((xCandNb!=io.cutsDefinition.numXCandidates && options.isSelectRandomPid()) || xCandNb==0) return 13+firstCutIndex;
+	if(options.isOptDebug()) cout << "Number of pi track candidates :\t" << xCandNb << "\t != " << io.cutsDefinition.numXCandidates << ": rejected" << endl;
+	if((xCandNb!=io.cutsDefinition.numXCandidates && !options.isSelectRandomPid()) || xCandNb==0) return 13+firstCutIndex;
 
 	if(tempObj.xPreSelected!=-1) selTrackDiff.Fill(tempObj.xPreSelected-xTrack);
 
