@@ -101,7 +101,7 @@ def normal():
     
     alphaPlot.GetXaxis().SetTitle("run #")
     alphaPlot.GetXaxis().SetTitleColor(1)
-    alphaPlot.GetYaxis().SetTitle("#alpha factor")
+    alphaPlot.GetYaxis().SetTitle("#alpha factor [GeV^{-1}]")
     alphaPlot.GetYaxis().SetTitleColor(1)
     betaPlot.GetXaxis().SetTitle("run #")
     betaPlot.GetXaxis().SetTitleColor(1)
@@ -109,7 +109,7 @@ def normal():
     betaPlot.GetYaxis().SetTitleColor(1)
     lambdaPlot.GetXaxis().SetTitle("run #")
     lambdaPlot.GetXaxis().SetTitleColor(1)
-    lambdaPlot.GetYaxis().SetTitle("#lambda_{r}")
+    lambdaPlot.GetYaxis().SetTitle("#lambda_{r} [GeV^{-2}]")
     lambdaPlot.GetYaxis().SetTitleColor(1)
     wait()
 
