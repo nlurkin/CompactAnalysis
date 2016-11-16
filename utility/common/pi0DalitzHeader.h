@@ -3,6 +3,7 @@
 #include "ConfigFile.h"
 #include "../userinc/funLib.h"
 #include "Interface/Sample.h"
+#include "../userinc/mystructs.h"
 
 using namespace std;
 

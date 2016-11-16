@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <TColor.h>
 
 using namespace std;
 
@@ -61,20 +62,28 @@ void ScanDrawer::generateResult(TPad* pad) {
 			0.04);
 	scanDefault->SetPointError(fDefaultCutValue, 0, 10);
 
+
 	//Style
 	scanWErr->SetMarkerStyle(23);
+	//scanWErr->SetMarkerStyle(0);
 	scanWErr->SetMarkerColor(4);
+	//scanWErr->SetMarkerColor(TColor::GetColor(137,116,232));
+	scanWErr->SetMarkerSize(1);
 	scanWErr->SetLineColor(4);
+	//scanWErr->SetLineColor(TColor::GetColor(137,116,232));
+	scanWErr->SetLineWidth(3);
 	scanWErr->SetFillStyle(0);
 
 	scanwUncorr->SetMarkerStyle(0);
 	scanwUncorr->SetMarkerColor(4);
-	scanwUncorr->SetLineColor(6);
+	scanwUncorr->SetLineColor(kRed);
+	//scanwUncorr->SetLineColor(TColor::GetColor(232,126,116));
+	scanwUncorr->SetLineWidth(4);
 	scanwUncorr->SetFillStyle(0);
 
 	scanDefault->SetMarkerStyle(0);
 	scanDefault->SetLineStyle(7);
-	scanDefault->SetLineWidth(2);
+	scanDefault->SetLineWidth(3);
 	scanDefault->SetLineColor(8);
 	scanDefault->SetFillStyle(0);
 
@@ -116,12 +125,12 @@ void ScanDrawer::generateResult(TPad* pad) {
 		pad->cd();
 	}
 	scanWErr->Draw("AP");
-	scanwUncorr->Draw("PSAME");
 	scanDefault->Draw("PSAME");
+	scanWErr->Draw("PSAME");
+	scanwUncorr->Draw("PSAME");
 
 	scanWErr->SetTitle("FF Slope fit result");
 	scanWErr->SetTitle("");
-	scanWErr->SetLineWidth(2);
 
 	scanWErr->GetYaxis()->SetTitle("FF Slope a");
 	scanWErr->GetYaxis()->SetNdivisions(505);
@@ -163,18 +172,20 @@ void ScanDrawer::generateNSelected(TPad* pad) {
 			fNSelected[fDefaultCutValue]);
 	scanDefault->SetPointError(fDefaultCutValue, 0, 99999999);
 
-	scanSelected->Draw("APL");
+	scanSelected->Draw("AP");
 	scanDefault->Draw("PSAME");
+	scanSelected->Draw("PLSAME");
 
 	//Style
 	scanSelected->SetMarkerStyle(20);
 	scanSelected->SetMarkerColor(4);
 	scanSelected->SetLineColor(4);
+	scanSelected->SetLineWidth(3);
 	scanSelected->SetFillStyle(0);
 
 	scanDefault->SetMarkerStyle(0);
 	scanDefault->SetLineStyle(7);
-	scanDefault->SetLineWidth(2);
+	scanDefault->SetLineWidth(3);
 	scanDefault->SetLineColor(8);
 	scanDefault->SetFillStyle(0);
 
